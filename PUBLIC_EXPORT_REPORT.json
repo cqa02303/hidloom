@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "b2973b658c3af64052b7920657baeea3e1e300c9",
-    "base_tree": "c257febbf42bc730ea7925bade3f0cda94e00d01",
-    "base_revision_count": 1909,
+    "base_commit": "17bb3a43573ced5ded1f776aed8941a63fb9beef",
+    "base_tree": "eb6f276be6ada37810d167a5876611a4e8c6993b",
+    "base_revision_count": 1912,
     "selected_path_count": 1182,
-    "selected_snapshot_sha256": "82e9be571f425bde69d94efb9b93fb7947f83a73afca3b4e0c3de18fa20d03ea"
+    "selected_snapshot_sha256": "cb76434523a57ec6b7dc487926debcb6180c1c6ec413ddafe2f733a8856104f0"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
@@ -48,7 +48,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": ".github/workflows/public-ci.yml",
-      "line": 87,
+      "line": 89,
       "excerpt": "GH_TOKEN: ${{ github.token }}",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -1659,7 +1659,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 481,
+      "line": 508,
       "excerpt": "- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
