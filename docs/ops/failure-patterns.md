@@ -455,6 +455,24 @@
 - regression check: local repository fixtureでclone/verify contractを維持し、clean private/public snapshotでは検証済みcacheを使ってBuildroot configureとcanonical suiteを完走する。公開CIのonline fetchは別途初回Actionsで確認する。
 - evidence: 2026-07-15、GitLab hostname解決失敗を直接prepareで確認し、local checkout `67449130e9fdd71a38ca26539dddfa8c882b1977`、canonical origin、tracked diff 0を照合後にvalidationへ使用した。
 
+## Public CI runner lacks the cross-build Rust target
+
+- symptom: clean public `main`のcanonical suiteが終盤の`test_cross_build_host_check_tool.py`で停止し、`missing: rust target aarch64-unknown-linux-musl`を出す。それ以前のsource、privacy、runtime、native build回帰はpassする。
+- likely cause: development hostにはcross-build targetが導入済みだが、fresh GitHub-hosted runnerの初期toolchainへ同targetがあると仮定し、Public CIが明示的にinstallしていない。
+- detect: failed Actions logで`rustup target list --installed`相当のhost-check出力を確認し、workflow内の`rustup target add aarch64-unknown-linux-musl`がcanonical suiteより前に一度だけ実行されるか検査する。
+- recovery: Public CIへcross-build targetの明示導入stepを追加して再実行する。host-checkをskipしたり、test期待値をmissing許容へ弱めたり、開発hostだけの状態でpass扱いにしない。
+- regression check: `script/test_public_ci_workflow.py`でtarget導入commandの一意性とcanonical suiteより前の順序を固定し、standalone public branchの`Public CI / validate`をpassさせる。
+- evidence: 2026-07-15、public初回commit `f2b99c4b3be50ba40b6acac52b6062e2d356115b`のActions run `29389956649`で再現した。runnerは`rustup`、`cargo`、`rust-lld`を持っていたがtargetだけがなく、canonical suite 218 entrypoint中のhost-checkで停止した。
+
+## OLED layout regression depends on the CI runner hostname
+
+- symptom: local canonical suiteではpassする`test_i2cd_direct_frame_fps.py`がGitHub-hosted runnerだけで罫線座標のexact assertionに失敗する。FPS label、daemon badge、描画処理自体はそれ以前まで正常である。
+- likely cause: testがmodule import時の`socket.gethostname()`由来globalをそのまま使い、短いdevelopment hostnameでは1行、長いephemeral runner hostnameでは2行へwrapする。後続要素のY座標が1行分ずれるため、固定座標がhost identityを暗黙fixtureにする。
+- detect: failed logのasserted separator座標と`i2cd._HOSTNAME`の表示幅を確認し、同testを短い値と長い値で実行してnode行数と下流Y座標を比較する。
+- recovery: ready画面の固定geometryを検査するtestでは短いhostname fixtureを明示設定し、`finally`でglobalを復元する。長いhostnameのwrap behaviorは専用testで独立に検査する。
+- regression check: FPS表示あり/なしの両ready testが同じ短いfixtureを使い、`test_long_node_name_wraps_to_two_lines`だけが長いfixtureと2行配置を要求する。standalone public CIでcanonical suiteを再実行する。
+- evidence: 2026-07-15、cross-build target修正branch `8efdde63b52fc900ee0943d0726246c05a4ca005`のActions run `29392276992`でhost-check通過後に再現した。失敗点は`[(1, 33), (62, 33)]`の罫線だけで、ambient hostnameをfixture化して切り離した。
+
 ## Public bootstrap regression misclassifies linked Git worktrees
 
 - symptom: `script/test_public_repository_bootstrap.py`をlinked worktreeで実行すると、private sourceからclean exportを作らずworktree rootをpublic exportとしてbootstrap planへ渡し、`PUBLIC_EXPORT_REPORT.json`欠落等で停止する。

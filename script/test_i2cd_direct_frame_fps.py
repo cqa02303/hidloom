@@ -101,8 +101,10 @@ def test_fps_monitor() -> None:
 def test_ready_display_includes_fps_line() -> None:
     draw = FakeDraw()
     old_canvas = i2cd.canvas
+    old_hostname = i2cd._HOSTNAME
     try:
         i2cd.canvas = lambda _device: FakeCanvas(draw)  # type: ignore[assignment]
+        i2cd._HOSTNAME = "hidloom"
         i2cd._draw_ready(
             FakeDevice(),
             FakeFont(),
@@ -115,6 +117,7 @@ def test_ready_display_includes_fps_line() -> None:
             system_status={"cpu_percent": 12, "cpu_temp": 52.0},
         )
     finally:
+        i2cd._HOSTNAME = old_hostname
         i2cd.canvas = old_canvas  # type: ignore[assignment]
 
     assert "T:52 C" in draw.texts
@@ -138,8 +141,10 @@ def test_ready_display_includes_fps_line() -> None:
 def test_ready_display_hides_inactive_fps_line() -> None:
     draw = FakeDraw()
     old_canvas = i2cd.canvas
+    old_hostname = i2cd._HOSTNAME
     try:
         i2cd.canvas = lambda _device: FakeCanvas(draw)  # type: ignore[assignment]
+        i2cd._HOSTNAME = "hidloom"
         i2cd._draw_ready(
             FakeDevice(),
             FakeFont(),
@@ -152,6 +157,7 @@ def test_ready_display_hides_inactive_fps_line() -> None:
             system_status={"cpu_percent": 12, "cpu_temp": 52.0},
         )
     finally:
+        i2cd._HOSTNAME = old_hostname
         i2cd.canvas = old_canvas  # type: ignore[assignment]
 
     assert "T:52 C" in draw.texts
