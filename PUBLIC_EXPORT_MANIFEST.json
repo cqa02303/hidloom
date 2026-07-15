@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "b2973b658c3af64052b7920657baeea3e1e300c9",
-    "base_tree": "c257febbf42bc730ea7925bade3f0cda94e00d01",
-    "base_revision_count": 1909,
+    "base_commit": "0bf20462a2c4fa2e98d26bb7f11460c0abe00457",
+    "base_tree": "cfda1c9f502a9fccc599a09e3add107851f5947a",
+    "base_revision_count": 1913,
     "selected_path_count": 1182,
-    "selected_snapshot_sha256": "82e9be571f425bde69d94efb9b93fb7947f83a73afca3b4e0c3de18fa20d03ea"
+    "selected_snapshot_sha256": "7f152b6f91f2e2ed09b7bb578efe55c08f4f4fe45b8e77ebb572da1b837397ad"
   },
   "files": [
     {
@@ -71,8 +71,8 @@
       "path": ".github/workflows/public-ci.yml",
       "kind": "file",
       "mode": 420,
-      "size": 3180,
-      "sha256": "0ac18bdc5507fd6d2f44f6b92bbb3e007a7de3afddfe9040e05d74a6f15cf86c"
+      "size": 3284,
+      "sha256": "6836bfde259ea29d7a3e7cf87faa93cac883f719fa953762d6fc33a556d5f4dc"
     },
     {
       "path": ".gitignore",
@@ -184,14 +184,14 @@
       "kind": "file",
       "mode": 420,
       "size": 383306,
-      "sha256": "51d27daff25c92ddb055c8d6d87d1c81cac16e8f2141120a31abf356c3fd6fe5"
+      "sha256": "0af24478858012b6414b0d88182552779a70b14b7f0609849d9118f45ac0fc4a"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
       "size": 158041,
-      "sha256": "d3e682532f5c7213f70a6cd7298bca29293fefb0bd5effd8dc35238ff23e43c5"
+      "sha256": "b30152fe40649bf781b1136a71d21245fc536712698d9edf002d07b6f040edb3"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
@@ -212,7 +212,7 @@
       "kind": "file",
       "mode": 420,
       "size": 21228,
-      "sha256": "be6027faa48864e1c64227c73871e856a5ca42e5c6a6d4b0228faf5688ae8b6d"
+      "sha256": "4cc20760223a1ef636665c5244198d1e7a87f7beace9e12b13c138d80ff84c0a"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.md",
@@ -240,7 +240,7 @@
       "kind": "file",
       "mode": 420,
       "size": 46590,
-      "sha256": "bcfeb26803f50ce1a91e8b82334fac348efe72c851a88c558e451c4545c26a0d"
+      "sha256": "409de5abb899846ebce72b26f5ea7e4250baa2d26e7959bea5f4ca9b8ea2bb83"
     },
     {
       "path": "SECURITY.md",
@@ -4180,8 +4180,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 81404,
-      "sha256": "c66b6e3fc8a00c6e1a83b751bbfec29b601eb19572bc468bb970c56876293f74"
+      "size": 87699,
+      "sha256": "295f94b4c727142065f4581c77c36da55566a6c3bae77f43b87886361eec459d"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -5454,8 +5454,8 @@
       "path": "script/test_i2cd_direct_frame_fps.py",
       "kind": "file",
       "mode": 420,
-      "size": 7520,
-      "sha256": "9d8b1b75c5d00ae876c8834e6d5062174bb6c2aec54e8d2e1e4e9a37702ad9a3"
+      "size": 7734,
+      "sha256": "cd0455d91a052062cc19cad6efcbc812346a3c8e3697389ee6b8ba0106b7546e"
     },
     {
       "path": "script/test_i2cd_immediate_alert.py",
@@ -6448,8 +6448,8 @@
       "path": "script/test_public_ci_workflow.py",
       "kind": "file",
       "mode": 420,
-      "size": 1560,
-      "sha256": "0a824153860ebbd50e95dc3397e0f4b05444f7eb7ac0f94cf4e0d5ad164cd2ea"
+      "size": 1768,
+      "sha256": "d9057a1bb21878bad35e90c956b7f32cd25e0873f05803f7b63f057119c212dc"
     },
     {
       "path": "script/test_public_community_health.py",
@@ -6504,8 +6504,8 @@
       "path": "script/test_public_release_readiness.py",
       "kind": "file",
       "mode": 420,
-      "size": 27188,
-      "sha256": "32795307b2904a1e0e08abe4452d4d5beef9272d29aed26141ba606bd22955c2"
+      "size": 27212,
+      "sha256": "8b2c90bb14ebc724a7fd964848edcc3888c43de0b34ece2edd9d27779ad9884f"
     },
     {
       "path": "script/test_public_repository_bootstrap.py",
@@ -6525,8 +6525,8 @@
       "path": "script/test_public_repository_policy.py",
       "kind": "file",
       "mode": 420,
-      "size": 11166,
-      "sha256": "27470e283fbbdd3daaa7da1ab36c427c784fea0b757c5cccf8e4cc4076fa6d04"
+      "size": 13016,
+      "sha256": "86561ab2521641eb3039521a096b52925b874bd241c9ad752adc3c85038c9bd1"
     },
     {
       "path": "script/test_public_source_archive.py",
@@ -8191,8 +8191,8 @@
       "path": "tools/public_repository_policy.py",
       "kind": "file",
       "mode": 420,
-      "size": 23015,
-      "sha256": "c909156b9e3a6c5b47f4dea1eb928ce2f0a12c399e94b517acf209326e84acc9"
+      "size": 24283,
+      "sha256": "fcccfb88b66c6651c6a395bdd9aa893b74d26c5633bce2ba4312b433bbdbb6a3"
     },
     {
       "path": "tools/public_source_archive.py",
