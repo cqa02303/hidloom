@@ -72,7 +72,7 @@
     "required_status_checks": {
       "strict": true,
       "contexts": [
-        "Public CI / validate"
+        "validate"
       ]
     },
     "enforce_admins": true,

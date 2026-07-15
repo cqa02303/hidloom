@@ -7,6 +7,7 @@
     "https_url": "https://github.com/cqa02303/hidloom",
     "ssh_url": "git@github.com:cqa02303/hidloom.git"
   },
+  "published_release_tags": [],
   "blocked_repository_slugs": [
     "cqa02303/cqa02303v5rpi"
   ],

@@ -76,7 +76,12 @@ with Path(os.environ["HIDLOOM_FAKE_GH_LOG"]).open("a", encoding="utf-8") as stre
     stream.write(json.dumps(record, sort_keys=True) + "\\n")
 if method == "GET":
     fixtures = json.loads(Path(os.environ["HIDLOOM_FAKE_GH_FIXTURE"]).read_text())
-    print(json.dumps(fixtures[endpoint]))
+    payload = fixtures[endpoint]
+    status = payload.pop("__error_status__", None)
+    print(json.dumps(payload))
+    if status is not None:
+        print(payload.get("message", "GitHub API error"), file=sys.stderr)
+        raise SystemExit(1)
 """,
         encoding="utf-8",
     )
@@ -127,6 +132,10 @@ def main() -> None:
     assert policy["api_host"] == "github.com"
     assert validate_contract(ROOT, policy) == []
     expected = expected_state(ROOT, policy)
+    assert expected["branch_protection"]["required_status_checks"] == {
+        "strict": True,
+        "contexts": ["validate"],
+    }
     plan = plan_payload(policy, expected)
     assert plan["schema"] == "hidloom.public-repository-policy-plan.v1"
     assert plan["api_host"] == "github.com"
@@ -298,6 +307,41 @@ def main() -> None:
         drift_audit = run_tool("audit", fake_gh, fixture, log)
         assert drift_audit.returncode == 2
         assert json.loads(drift_audit.stdout)["ready"] is False
+
+        log.unlink()
+        preapply_fixture = deepcopy(
+            {endpoints[name]: value for name, value in snapshots.items()}
+        )
+        preapply_fixture[endpoints["actions_permissions"]] = {
+            "enabled": True,
+            "allowed_actions": "all",
+            "sha_pinning_required": False,
+        }
+        preapply_fixture[endpoints["selected_actions"]] = {
+            "__error_status__": "409",
+            "message": "Conflict",
+            "status": "409",
+        }
+        preapply_fixture[endpoints["branch_protection"]] = {
+            "__error_status__": "404",
+            "message": "Branch not protected",
+            "status": "404",
+        }
+        fixture.write_text(json.dumps(preapply_fixture), encoding="utf-8")
+        preapply_audit = run_tool("audit", fake_gh, fixture, log)
+        assert preapply_audit.returncode == 2
+        preapply_payload = json.loads(preapply_audit.stdout)
+        assert preapply_payload["schema"] == "hidloom.public-repository-policy-audit.v1"
+        assert preapply_payload["ready"] is False
+        assert "actions_permissions.allowed_actions:mismatch" in preapply_payload["issues"]
+        assert "actions_permissions.sha_pinning_required:mismatch" in preapply_payload["issues"]
+        assert "selected_actions.github_owned_allowed:missing" in preapply_payload["issues"]
+        assert "branch_protection.required_status_checks:expected-object" in preapply_payload["issues"]
+        records = read_records(log)
+        assert len(records) == 5
+        assert not any(
+            record["endpoint"] == endpoints["selected_actions"] for record in records
+        )
 
     print("ok: public repository policy is declarative, auditable, and confirmation-gated")
 

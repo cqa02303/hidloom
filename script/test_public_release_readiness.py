@@ -306,7 +306,7 @@ def main() -> None:
         tampered_compliance = Path(tmp) / "tampered-compliance.tar.zst"
         shutil.copy2(compliance, tampered_compliance)
         tampered_content = bytearray(tampered_compliance.read_bytes())
-        tampered_content[len(tampered_content) // 2] ^= 0x01
+        tampered_content[0] ^= 0xFF
         tampered_compliance.write_bytes(tampered_content)
         tampered_binary = subprocess.run(
             [
@@ -320,7 +320,7 @@ def main() -> None:
             capture_output=True,
             text=True,
         )
-        assert tampered_binary.returncode == 2
+        assert tampered_binary.returncode == 2, tampered_binary.stdout + tampered_binary.stderr
         tampered_payload = json.loads(tampered_binary.stdout)
         assert tampered_payload["binary_distribution_issues"] == [
             "compliance-bundle-verification-failed"

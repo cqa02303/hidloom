@@ -11,7 +11,7 @@
     "activate_only_after_pid_codes_merge": true,
     "recheck_availability_before_request": true,
     "availability_evidence": {
-      "checked_date": "2026-07-14",
+      "checked_date": "2026-07-15",
       "upstream_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
       "origin_head_ref": "refs/remotes/origin/master",
       "remote_head_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",

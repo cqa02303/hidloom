@@ -1,9 +1,9 @@
 # HIDloom Public Export Report
 
-- Source base commit: `b2973b658c3af64052b7920657baeea3e1e300c9`
+- Source base commit: `dff749a133e4aeb52a22e78efc420f8f39a748b6`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `82e9be571f425bde69d94efb9b93fb7947f83a73afca3b4e0c3de18fa20d03ea`
+- Selected source snapshot: `b05d3ed7811020c80c5f8ac9d11eb2dd2c3a3756717ae6539e06b2674564858a`
 - Files: 1182
 - Tracked source paths: 1249
 - Private-only paths: 67
@@ -16,7 +16,7 @@
 
 ## Findings
 
-- `warn` `credential_word` `.github/workflows/public-ci.yml:87` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
+- `warn` `credential_word` `.github/workflows/public-ci.yml:89` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
 - `warn` `credential_word` `CONTRIBUTING.md:38` `documentation_security_keyword` — `secret-bearing backup.`
 - `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
 - `warn` `credential_word` `SECURITY.md:10` `documentation_security_keyword` — `Do not open a public issue for an unpatched vulnerability, credential, private key, or device-specific secret.`
@@ -66,7 +66,7 @@
 - `warn` `credential_word` `config/public-export.json:255` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
 - `warn` `credential_word` `config/public-export.json:300` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
 - `warn` `credential_word` `config/public-export.json:325` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
-- `warn` `legacy_project_name` `config/publication-policy.json:11` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
+- `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:192` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:193` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:199` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
@@ -190,12 +190,12 @@
 - `warn` `credential_word` `docs/keycode/qmk-vial-keycode-support.md:130` `documentation_security_keyword` — `| QMK Macro | `QK_MACRO_*` 系 | 一部対応 | Vial Macro buffer を `settings.vial_macro_buffer` に保持し、`M0`-`M7` を `MACRO:VIAL0`-`MACRO:VIAL7` として実行する。text / tap / down / up / delay は実行用 token へ変換する |`
 - `warn` `credential_word` `docs/macro/compatibility-plan.md:40` `documentation_security_keyword` — `-> daemon/logicd/macro.py token runner`
 - `warn` `credential_word` `docs/macro/kml-qmk-macro-keycode-design.md:137` `documentation_security_keyword` — `- script / system / connectivity / power / arbitrary C 相当 token の rejection。`
-- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:529` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
+- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:528` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
 - `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:208` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:442` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:481` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:460` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:535` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
