@@ -80,6 +80,7 @@ class GitHubClient:
         method: str,
         endpoint: str,
         body: dict[str, Any] | None = None,
+        accepted_error_statuses: frozenset[str] = frozenset(),
     ) -> dict[str, Any]:
         command = [
             self.executable,
@@ -110,6 +111,15 @@ class GitHubClient:
         except OSError as error:
             raise GitHubApiError(f"cannot execute {self.executable}: {error}") from error
         if completed.returncode != 0:
+            try:
+                error_payload = json.loads(completed.stdout)
+            except json.JSONDecodeError:
+                error_payload = None
+            if (
+                isinstance(error_payload, dict)
+                and str(error_payload.get("status", "")) in accepted_error_statuses
+            ):
+                return {}
             detail = completed.stderr.strip() or completed.stdout.strip() or "unknown GitHub API error"
             raise GitHubApiError(f"{method} {endpoint}: {detail}")
         text = completed.stdout.strip()
@@ -481,10 +491,29 @@ def audit_snapshots(expected: dict[str, Any], snapshots: dict[str, dict[str, Any
 
 
 def collect_snapshots(client: GitHubClient, expected: dict[str, Any]) -> dict[str, dict[str, Any]]:
-    return {
-        operation.name: client.request(operation.method, operation.endpoint)
-        for operation in audit_operations(expected)
-    }
+    operations = {operation.name: operation for operation in audit_operations(expected)}
+    snapshots: dict[str, dict[str, Any]] = {}
+    for name in ("repository", "actions_permissions"):
+        operation = operations[name]
+        snapshots[name] = client.request(operation.method, operation.endpoint)
+
+    selected = operations["selected_actions"]
+    if snapshots["actions_permissions"].get("allowed_actions") == "selected":
+        snapshots["selected_actions"] = client.request(selected.method, selected.endpoint)
+    else:
+        snapshots["selected_actions"] = {}
+
+    for name in ("workflow_permissions", "private_vulnerability_reporting"):
+        operation = operations[name]
+        snapshots[name] = client.request(operation.method, operation.endpoint)
+
+    protection = operations["branch_protection"]
+    snapshots["branch_protection"] = client.request(
+        protection.method,
+        protection.endpoint,
+        accepted_error_statuses=frozenset({"404"}),
+    )
+    return snapshots
 
 
 def plan_payload(policy: dict[str, Any], expected: dict[str, Any]) -> dict[str, Any]:
