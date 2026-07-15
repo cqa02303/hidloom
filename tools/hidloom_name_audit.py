@@ -5,7 +5,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import re
-import subprocess
+
+from repository_hygiene import tracked_files
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,10 +39,8 @@ HARDWARE_DEVICE_TEMPLATE = "cqa02303v5" + "-$(DEVICE)"
 
 
 def tracked_paths(root: Path) -> list[Path]:
-    output = subprocess.check_output(
-        ["git", "ls-files", "-z"], cwd=root
-    )
-    return [root / item.decode() for item in output.split(b"\0") if item]
+    paths, _modes, _inventory = tracked_files(root)
+    return [root / item for item in paths]
 
 
 def audit(root: Path) -> list[str]:

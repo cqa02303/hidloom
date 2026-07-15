@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 from typing import Any
+from urllib.parse import unquote
 
 
 GITHUB_REFERENCE_RE = re.compile(
@@ -24,6 +25,11 @@ ABSOLUTE_LOCAL_REMOTE_RE = re.compile(
     r"|(?:git|ssh)://(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?/[^\s\"'`<>]+"
     r"|https?://(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?/[^\s\"'`<>]*\.git(?:[/#?][^\s\"'`<>]*)?)"
 )
+PUBLIC_RELEASE_REFERENCE_RE = re.compile(
+    r"(?i)(?P<url>(?:https?://)?github\.com/"
+    r"(?P<owner>[A-Za-z0-9_.-]+)/(?P<repository>[A-Za-z0-9_.-]+)/releases/tag/"
+    r"(?P<tag>[^\s\"'`<>)\]?#]+))"
+)
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -40,6 +46,22 @@ def normalized_repository(match: re.Match[str]) -> tuple[str, str]:
     if owner is None or repository is None:
         raise ValueError("repository reference is missing an owner or name")
     return owner.lower(), repository.removesuffix(".git").lower()
+
+
+def published_release_tags(policy: dict[str, Any]) -> set[str]:
+    raw_tags = policy.get("published_release_tags")
+    if not isinstance(raw_tags, list) or any(
+        not isinstance(tag, str)
+        or not tag
+        or any(character.isspace() for character in tag)
+        for tag in raw_tags
+    ):
+        raise SystemExit(
+            "publication policy requires a list of non-empty release tags without whitespace"
+        )
+    if raw_tags != sorted(set(raw_tags)):
+        raise SystemExit("publication policy release tags must be unique and sorted")
+    return set(raw_tags)
 
 
 def identity_findings(root: Path, policy: dict[str, Any]) -> list[dict[str, Any]]:
@@ -95,6 +117,7 @@ def audit(root: Path, policy_path: Path) -> dict[str, Any]:
     allowed_owner_slugs = {
         str(item).lower() for item in policy["allowed_owner_repository_slugs"]
     }
+    declared_release_tags = published_release_tags(policy)
     excluded = set(policy.get("excluded_scan_paths", []))
     findings = identity_findings(root, policy)
     references: list[dict[str, Any]] = []
@@ -148,6 +171,20 @@ def audit(root: Path, policy_path: Path) -> dict[str, Any]:
                         "url": match.group("url"),
                     }
                 )
+            for match in PUBLIC_RELEASE_REFERENCE_RE.finditer(line):
+                slug = f"{match.group('owner')}/{match.group('repository')}".lower()
+                tag = unquote(match.group("tag")).rstrip(".:")
+                if slug == expected_slug and tag not in declared_release_tags:
+                    findings.append(
+                        {
+                            "severity": "block",
+                            "kind": "undeclared_public_release_reference",
+                            "path": relative,
+                            "line": line_number,
+                            "tag": tag,
+                            "url": match.group("url"),
+                        }
+                    )
     findings.sort(key=lambda item: (item["path"], item.get("line", 0), item["kind"]))
     blockers = [item for item in findings if item["severity"] == "block"]
     public_references = [item for item in references if item["slug"] == expected_slug]
@@ -159,6 +196,7 @@ def audit(root: Path, policy_path: Path) -> dict[str, Any]:
             "https_url": expected["https_url"],
             "ssh_url": expected["ssh_url"],
         },
+        "published_release_tags": sorted(declared_release_tags),
         "summary": {
             "files_scanned": files_scanned,
             "repository_references": len(references),
@@ -181,6 +219,7 @@ def markdown(payload: dict[str, Any]) -> str:
         f"- Files scanned: {summary['files_scanned']}",
         f"- Repository references: {summary['repository_references']}",
         f"- Public repository references: {summary['public_repository_references']}",
+        f"- Declared public release tags: {len(payload['published_release_tags'])}",
         f"- Blockers: {summary['blockers']}",
         "",
         "## Findings",

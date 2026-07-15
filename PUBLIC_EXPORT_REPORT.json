@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "b2973b658c3af64052b7920657baeea3e1e300c9",
-    "base_tree": "c257febbf42bc730ea7925bade3f0cda94e00d01",
-    "base_revision_count": 1909,
+    "base_commit": "f926d6026e8f8ba7b7eac5c88a0b98eb5fc9321b",
+    "base_tree": "3f51f30408f39996f80377d33907921107e02d59",
+    "base_revision_count": 1921,
     "selected_path_count": 1182,
-    "selected_snapshot_sha256": "82e9be571f425bde69d94efb9b93fb7947f83a73afca3b4e0c3de18fa20d03ea"
+    "selected_snapshot_sha256": "340c9644c37cc487f43020945cba3585a16c7312c9ecdc902be35fc4d9f0892e"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
@@ -48,7 +48,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": ".github/workflows/public-ci.yml",
-      "line": 87,
+      "line": 89,
       "excerpt": "GH_TOKEN: ${{ github.token }}",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -498,7 +498,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/publication-policy.json",
-      "line": 11,
+      "line": 12,
       "excerpt": "\"cqa02303/cqa02303v5rpi\"",
       "disposition": "scanner_definition",
       "reason": "the publication policy records the retired private repository slug it rejects"
@@ -1614,7 +1614,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 529,
+      "line": 528,
       "excerpt": "M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1650,7 +1650,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 442,
+      "line": 460,
       "excerpt": "- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1659,7 +1659,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 481,
+      "line": 535,
       "excerpt": "- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
