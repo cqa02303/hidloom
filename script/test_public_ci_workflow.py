@@ -38,6 +38,9 @@ def main() -> None:
     assert workflow.count("python3 script/test_source_syntax_hygiene.py") == 1
     assert workflow.count("python3 script/test_development_residue_hygiene.py") == 1
     assert "python3 -m compileall" not in workflow
+    rust_target = "rustup target add aarch64-unknown-linux-musl"
+    assert workflow.count(rust_target) == 1
+    assert workflow.index(rust_target) < workflow.index("python3 script/test_validation_suite.py")
     assert "cargo fetch --locked" in workflow
     assert "cargo test --locked" in workflow
     assert "git diff --check" in workflow

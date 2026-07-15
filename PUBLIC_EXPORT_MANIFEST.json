@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "b2973b658c3af64052b7920657baeea3e1e300c9",
-    "base_tree": "c257febbf42bc730ea7925bade3f0cda94e00d01",
-    "base_revision_count": 1909,
+    "base_commit": "ce816a58c8beb169d8f64a640b8f91ec0024accd",
+    "base_tree": "97d199ff4795be0c83b181dda22453bde695a54c",
+    "base_revision_count": 1919,
     "selected_path_count": 1182,
-    "selected_snapshot_sha256": "82e9be571f425bde69d94efb9b93fb7947f83a73afca3b4e0c3de18fa20d03ea"
+    "selected_snapshot_sha256": "2e0fcbee166550a6c25ae456ffe2bcbea1c95f3c638537e7e80ae5cc9eb89684"
   },
   "files": [
     {
@@ -71,8 +71,8 @@
       "path": ".github/workflows/public-ci.yml",
       "kind": "file",
       "mode": 420,
-      "size": 3180,
-      "sha256": "0ac18bdc5507fd6d2f44f6b92bbb3e007a7de3afddfe9040e05d74a6f15cf86c"
+      "size": 3284,
+      "sha256": "6836bfde259ea29d7a3e7cf87faa93cac883f719fa953762d6fc33a556d5f4dc"
     },
     {
       "path": ".gitignore",
@@ -184,14 +184,14 @@
       "kind": "file",
       "mode": 420,
       "size": 383306,
-      "sha256": "51d27daff25c92ddb055c8d6d87d1c81cac16e8f2141120a31abf356c3fd6fe5"
+      "sha256": "0ba478869b19966780f35576ea5a82b5773b366e438e63f10b5dd822d7372eff"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
       "size": 158041,
-      "sha256": "d3e682532f5c7213f70a6cd7298bca29293fefb0bd5effd8dc35238ff23e43c5"
+      "sha256": "7347bccfd6df39d23141ed8c0f83b7a573d2596fe1e734e9ed35604a164f1265"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
@@ -211,15 +211,15 @@
       "path": "PUBLIC_REFERENCE_AUDIT.json",
       "kind": "file",
       "mode": 420,
-      "size": 21228,
-      "sha256": "be6027faa48864e1c64227c73871e856a5ca42e5c6a6d4b0228faf5688ae8b6d"
+      "size": 20892,
+      "sha256": "087dcd75eef55f358cb2f7ef2edda359719ccbdf25b380ab296a3796994c2067"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.md",
       "kind": "file",
       "mode": 420,
-      "size": 232,
-      "sha256": "8cc02e2f69de9eea6d52e1077da958e9e94bef31586ae207563a4f9f093764a1"
+      "size": 266,
+      "sha256": "14d60c99a0547c6f9cf6797546643e54181c34832fd019f9996a159484ba1ffe"
     },
     {
       "path": "README.md",
@@ -240,7 +240,7 @@
       "kind": "file",
       "mode": 420,
       "size": 46590,
-      "sha256": "bcfeb26803f50ce1a91e8b82334fac348efe72c851a88c558e451c4545c26a0d"
+      "sha256": "6e91b08ea1c6028e45fa16510d47b501839500cc43b2d08363b5676e8882c89d"
     },
     {
       "path": "SECURITY.md",
@@ -1268,8 +1268,8 @@
       "path": "config/publication-policy.json",
       "kind": "file",
       "mode": 420,
-      "size": 530,
-      "sha256": "c33f3630801324fdb9975767a32bc4d89379e39a6db7dd624eeb91c8bda67b81"
+      "size": 562,
+      "sha256": "9150b3f20ae2f924e8e7dbd9a26bfd1838a603237a379d5732040b45778aadf7"
     },
     {
       "path": "config/repository-hygiene.json",
@@ -4159,8 +4159,8 @@
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
       "kind": "file",
       "mode": 420,
-      "size": 37727,
-      "sha256": "8ff5e6612976f5787dbb027cf840aa01fe6ccd33d1933d40e2ddb593e800cc2f"
+      "size": 37728,
+      "sha256": "a219fe291f47c0c92f69c1db337d855fb120fdae968f819fef8c54169ca76e3c"
     },
     {
       "path": "docs/ops/buildroot-m6-legal-summary.json",
@@ -4180,8 +4180,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 81404,
-      "sha256": "c66b6e3fc8a00c6e1a83b751bbfec29b601eb19572bc468bb970c56876293f74"
+      "size": 90951,
+      "sha256": "4c1553530650aa67c9d621cd664233753f3dac5a27d52d2cac3e2d4d4ec4b425"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -5202,8 +5202,8 @@
       "path": "script/test_hidloom_name_audit.py",
       "kind": "file",
       "mode": 420,
-      "size": 2213,
-      "sha256": "04a1f26febe5a0bfa2e2de2093898e69a6b1b65e4e95794113fdb8f3a9cb9cbe"
+      "size": 3046,
+      "sha256": "9e97655ad441d1daf0d8b10d4ed72ac9fb1d7b48be7dee10846b29f4dbf8cdc5"
     },
     {
       "path": "script/test_hidloom_outputd_tool.py",
@@ -5454,8 +5454,8 @@
       "path": "script/test_i2cd_direct_frame_fps.py",
       "kind": "file",
       "mode": 420,
-      "size": 7520,
-      "sha256": "9d8b1b75c5d00ae876c8834e6d5062174bb6c2aec54e8d2e1e4e9a37702ad9a3"
+      "size": 7734,
+      "sha256": "cd0455d91a052062cc19cad6efcbc812346a3c8e3697389ee6b8ba0106b7546e"
     },
     {
       "path": "script/test_i2cd_immediate_alert.py",
@@ -6448,8 +6448,8 @@
       "path": "script/test_public_ci_workflow.py",
       "kind": "file",
       "mode": 420,
-      "size": 1560,
-      "sha256": "0a824153860ebbd50e95dc3397e0f4b05444f7eb7ac0f94cf4e0d5ad164cd2ea"
+      "size": 1768,
+      "sha256": "d9057a1bb21878bad35e90c956b7f32cd25e0873f05803f7b63f057119c212dc"
     },
     {
       "path": "script/test_public_community_health.py",
@@ -6490,8 +6490,8 @@
       "path": "script/test_public_reference_audit.py",
       "kind": "file",
       "mode": 420,
-      "size": 1927,
-      "sha256": "74abbd96f5eebe89103a41f02d2c82f345d71f0ab4300b3767de9641846b4581"
+      "size": 4190,
+      "sha256": "d8fe01ed39248502af9a5cb3eccc0870aba5d50d52d8cc333ad4a26692d15f52"
     },
     {
       "path": "script/test_public_release_bundle.py",
@@ -6504,8 +6504,8 @@
       "path": "script/test_public_release_readiness.py",
       "kind": "file",
       "mode": 420,
-      "size": 27188,
-      "sha256": "32795307b2904a1e0e08abe4452d4d5beef9272d29aed26141ba606bd22955c2"
+      "size": 27212,
+      "sha256": "8b2c90bb14ebc724a7fd964848edcc3888c43de0b34ece2edd9d27779ad9884f"
     },
     {
       "path": "script/test_public_repository_bootstrap.py",
@@ -6525,8 +6525,8 @@
       "path": "script/test_public_repository_policy.py",
       "kind": "file",
       "mode": 420,
-      "size": 11166,
-      "sha256": "27470e283fbbdd3daaa7da1ab36c427c784fea0b757c5cccf8e4cc4076fa6d04"
+      "size": 13016,
+      "sha256": "86561ab2521641eb3039521a096b52925b874bd241c9ad752adc3c85038c9bd1"
     },
     {
       "path": "script/test_public_source_archive.py",
@@ -7624,8 +7624,8 @@
       "path": "tools/hidloom_name_audit.py",
       "kind": "file",
       "mode": 420,
-      "size": 3053,
-      "sha256": "f42aec0f235364a5c176d0499d07cb58386121d3b7fbc397a39dbda8d06be51f"
+      "size": 3014,
+      "sha256": "32c5846a035dcdf14e4fdcbd1409d165cead97860bc8f0f329237d53ea6bf2aa"
     },
     {
       "path": "tools/hidloom_outputd/Cargo.lock",
@@ -8156,8 +8156,8 @@
       "path": "tools/public_reference_audit.py",
       "kind": "file",
       "mode": 420,
-      "size": 9223,
-      "sha256": "1c93c04a701653a2dd53d5f488679d4f8873996bd60e4954400c3c22b6cc91c9"
+      "size": 10982,
+      "sha256": "c07875af0eda2a8a49e6ebc1e70bd9c45e42f697b54b97d5a0dabeb1c5be79b3"
     },
     {
       "path": "tools/public_release_bundle.py",
@@ -8191,8 +8191,8 @@
       "path": "tools/public_repository_policy.py",
       "kind": "file",
       "mode": 420,
-      "size": 23015,
-      "sha256": "c909156b9e3a6c5b47f4dea1eb928ce2f0a12c399e94b517acf209326e84acc9"
+      "size": 24283,
+      "sha256": "fcccfb88b66c6651c6a395bdd9aa893b74d26c5633bce2ba4312b433bbdbb6a3"
     },
     {
       "path": "tools/public_source_archive.py",

@@ -6,10 +6,11 @@
     "https_url": "https://github.com/cqa02303/hidloom",
     "ssh_url": "git@github.com:cqa02303/hidloom.git"
   },
+  "published_release_tags": [],
   "summary": {
     "files_scanned": 1181,
-    "repository_references": 124,
-    "public_repository_references": 45,
+    "repository_references": 122,
+    "public_repository_references": 43,
     "findings": 0,
     "blockers": 0
   },
@@ -417,24 +418,6 @@
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
-      "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 316,
-      "slug": "cqa02303/hidloom",
-      "url": "https://github.com/cqa02303/hidloom"
-    },
-    {
-      "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 422,
-      "slug": "cqa02303/hidloom",
-      "url": "https://github.com/cqa02303/hidloom"
-    },
-    {
-      "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 444,
-      "slug": "cqa02303/hidloom",
-      "url": "https://github.com/cqa02303/hidloom"
-    },
-    {
       "path": "docs/ops/buildroot-m6-legal-summary.json",
       "line": 33,
       "slug": "bootlin/buildroot-toolchains",
@@ -481,6 +464,12 @@
       "line": 420,
       "slug": "raspberrypi/linux",
       "url": "https://github.com/raspberrypi/linux"
+    },
+    {
+      "path": "docs/ops/failure-patterns.md",
+      "line": 282,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
@@ -646,7 +635,7 @@
     },
     {
       "path": "script/test_public_repository_policy.py",
-      "line": 165,
+      "line": 170,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },

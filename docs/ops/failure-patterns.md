@@ -266,6 +266,24 @@
 - regression check: name audit fixtureでpublic repository URLとhardware profileを許可し、owner由来server名とD-Bus pathを拒否する。MCP/BLE/Buildroot/setup/public exportの個別testもcanonical値を固定する。
 - evidence: 2026-07-14、公開前の広域namespace検索で6用途の残存を検出し、実装・文書・scannerを同一変更で移行した。private/public canonical 206件、public export blocker 0、standalone public cloneのlocked Cargo 0/2/3/19件とclean worktreeを確認した。
 
+## Retired-name audit requires Git metadata absent from the source archive
+
+- symptom: Git checkoutではretired-name auditがpassするが、Release候補から展開したsource archiveで`fatal: not a git repository`と`git ls-files`の例外を出し、公開source単体の名称監査を完走できない。
+- likely cause: repository hygiene、source syntax、development residueはGit indexがない場合に`PUBLIC_EXPORT_MANIFEST.json`へ切り替える一方、`hidloom_name_audit.py`だけがGit indexを直接inventoryとしていた。Release source archiveは意図的に`.git`を含まない。
+- detect: `*-source.tar.zst`を一時directoryへ展開し、`.git`がないことを確認してから`python3 tools/hidloom_name_audit.py --root <extracted-root>`を実行する。
+- recovery: inventoryを`repository_hygiene.tracked_files`へ統一し、root自身がGit top-levelならindex、そうでなければschema v2 public manifest掲載fileとmanifest自身を使う。archiveへGit metadataや互換用の偽repositoryを追加しない。
+- regression check: Git fixtureとGit metadataを持たないraw manifest fixtureの双方で許可名をpassし、retired contentを拒否する。実Release source archiveでも1194-file inventory、名称finding 0、manifest外file 0を確認する。
+- evidence: 2026-07-15、`0.1.0-dev.0bf20462a2c4`候補はbundle/checksum/binary-distribution gateをpassした後、追加raw archive名称監査だけがGit必須で停止した。manifest fallback実装後は同じarchiveをGit metadataなしでpassした。
+
+## Private test artifact becomes a broken canonical Release link
+
+- symptom: 移行前の非公開試験artifactを説明する公開文書が、canonical repositoryの`/releases/tag/<tag>`へlinkして404になる。文面も現在のpublic Releaseで取得できるように見える。
+- likely cause: repository名称のhard cutで旧repository URLだけを新canonical slugへ機械置換し、tag / Releaseをpublic repositoryへ移行しない判断をlinkのavailabilityと分離しなかった。
+- detect: 公開export中のcanonical `https://github.com/cqa02303/hidloom/releases/tag/`を抽出し、`config/publication-policy.json`の`published_release_tags`に未宣言のtagを`public_reference_audit.py`でblockする。実repositoryのRelease一覧とも公開前に照合する。
+- recovery: 移行しない過去artifactへのURLと「published」表現を削除し、非公開試験bundle、pinned sourceからの再build、checksum照合として記録する。公開済みReleaseを文書から参照する場合だけtagをpolicyへ明示追加する。
+- regression check: canonical repositoryの未宣言Release URLをfixtureへ追加して`undeclared_public_release_reference`を確認し、同tagをsorted/uniqueな宣言一覧へ追加した場合だけpassさせる。private/local repository拒否も同時に維持する。
+- evidence: 2026-07-15、M1/M2/M3の公開候補文書6か所と、M4および旧package tagのprivate運用記録6か所が、移行していない新public repositoryのReleaseへ誤linkしていることを検出した。過去artifactをRelease非移行へ訂正し、宣言制reference gateを追加した。
+
 ## Dirty worktree export claims the current HEAD as its source
 
 - symptom: 未commitの変更を含むpublic exportでも`PUBLIC_EXPORT_REPORT.json`が現在のHEADだけをsource commitとして記録し、同じcommitからbyte再現できないartifactをsyncまたはreleaseへ渡せる。
@@ -454,6 +472,42 @@
 - recovery: network復旧後に通常fetchを再実行するか、canonical origin、pinned commit、tracked diff 0を検証済みのlocal checkoutだけをsnapshotのignored cache pathへ接続する。source config、commit、export内容、test期待値を変更して回避しない。
 - regression check: local repository fixtureでclone/verify contractを維持し、clean private/public snapshotでは検証済みcacheを使ってBuildroot configureとcanonical suiteを完走する。公開CIのonline fetchは別途初回Actionsで確認する。
 - evidence: 2026-07-15、GitLab hostname解決失敗を直接prepareで確認し、local checkout `67449130e9fdd71a38ca26539dddfa8c882b1977`、canonical origin、tracked diff 0を照合後にvalidationへ使用した。
+
+## Public CI runner lacks the cross-build Rust target
+
+- symptom: clean public `main`のcanonical suiteが終盤の`test_cross_build_host_check_tool.py`で停止し、`missing: rust target aarch64-unknown-linux-musl`を出す。それ以前のsource、privacy、runtime、native build回帰はpassする。
+- likely cause: development hostにはcross-build targetが導入済みだが、fresh GitHub-hosted runnerの初期toolchainへ同targetがあると仮定し、Public CIが明示的にinstallしていない。
+- detect: failed Actions logで`rustup target list --installed`相当のhost-check出力を確認し、workflow内の`rustup target add aarch64-unknown-linux-musl`がcanonical suiteより前に一度だけ実行されるか検査する。
+- recovery: Public CIへcross-build targetの明示導入stepを追加して再実行する。host-checkをskipしたり、test期待値をmissing許容へ弱めたり、開発hostだけの状態でpass扱いにしない。
+- regression check: `script/test_public_ci_workflow.py`でtarget導入commandの一意性とcanonical suiteより前の順序を固定し、standalone public branchの`Public CI / validate`をpassさせる。
+- evidence: 2026-07-15、public初回commit `f2b99c4b3be50ba40b6acac52b6062e2d356115b`のActions run `29389956649`で再現した。runnerは`rustup`、`cargo`、`rust-lld`を持っていたがtargetだけがなく、canonical suite 218 entrypoint中のhost-checkで停止した。
+
+## OLED layout regression depends on the CI runner hostname
+
+- symptom: local canonical suiteではpassする`test_i2cd_direct_frame_fps.py`がGitHub-hosted runnerだけで罫線座標のexact assertionに失敗する。FPS label、daemon badge、描画処理自体はそれ以前まで正常である。
+- likely cause: testがmodule import時の`socket.gethostname()`由来globalをそのまま使い、短いdevelopment hostnameでは1行、長いephemeral runner hostnameでは2行へwrapする。後続要素のY座標が1行分ずれるため、固定座標がhost identityを暗黙fixtureにする。
+- detect: failed logのasserted separator座標と`i2cd._HOSTNAME`の表示幅を確認し、同testを短い値と長い値で実行してnode行数と下流Y座標を比較する。
+- recovery: ready画面の固定geometryを検査するtestでは短いhostname fixtureを明示設定し、`finally`でglobalを復元する。長いhostnameのwrap behaviorは専用testで独立に検査する。
+- regression check: FPS表示あり/なしの両ready testが同じ短いfixtureを使い、`test_long_node_name_wraps_to_two_lines`だけが長いfixtureと2行配置を要求する。standalone public CIでcanonical suiteを再実行する。
+- evidence: 2026-07-15、cross-build target修正branch `8efdde63b52fc900ee0943d0726246c05a4ca005`のActions run `29392276992`でhost-check通過後に再現した。失敗点は`[(1, 33), (62, 33)]`の罫線だけで、ambient hostnameをfixture化して切り離した。
+
+## Compressed archive middle-byte tamper remains semantically valid
+
+- symptom: 同じpublic commitのpush validationはpassする一方、pull-request validationではcompliance bundle tamper fixtureがreadiness exit 2を返さず停止する。untampered bundleのverifyとbinary readinessはどちらもpassする。
+- likely cause: `.tar.zst`の中央byteを反転するだけでは、zstd versionや圧縮layoutによってtar padding等の意味を持たない領域に当たり、展開・payload checksum検査をすべて通る場合がある。byte差分とsemantic corruptionを同一視している。
+- detect: tampered commandのreturn codeとstdout/stderrをassertionへ含め、同じfixtureを複数runner/eventで実行する。archive先頭magicと検証対象payloadのどちらを壊したかを区別する。
+- recovery: invalid archive経路のfixtureはzstd magic headerを決定的に破壊し、verifierが展開前に必ず拒否する入力にする。semantic payload改ざんは展開directory内の収録fileを変更して再packする別fixtureで検査する。
+- regression check: `script/test_public_release_readiness.py`がheader破損bundleをexit 2、issue `compliance-bundle-verification-failed`で拒否し、失敗時はchild stdout/stderrを表示する。push/pull_request双方のPublic CIでcanonical suiteをpassさせる。
+- evidence: 2026-07-15、public draft PR #3のrun `29394739762`で中央byte反転がexit 2にならず再現した。同じcommitのpush run `29393880518`では同fixtureがpassしており、publication sourceではなくtamper生成の非決定性と切り分けた。
+
+## Pre-policy GitHub defaults abort repository audit
+
+- symptom: 空repositoryを初回pushした後、policy適用前のread-only auditが`selected-actions`の409 Conflictでerror payloadを返し、未保護`main`まで監査できない。
+- likely cause: Actionsが`allowed_actions=all`の間はselected-actions APIが409を返し、branch protection未設定時はprotection APIが404を返す。どちらも期待されるpolicy driftだが、transport failureと同一扱いにしていた。
+- detect: 実repositoryでactions permissions、selected-actions、workflow permissions、private vulnerability reporting、branch protectionを個別GETし、成功payloadと409/404を区別する。audit結果がerror schemaではなく、全差分を持つaudit schemaになることを確認する。
+- recovery: repository設定を変更せず、actions permissionsが`selected`でない場合はselected-actions GETを省略し、未保護branchの404を空snapshotとして比較する。その後、明示確認付きpolicy applyまで`ready=false`を維持する。
+- prevention: fake GitHub fixtureで`allowed_actions=all`、selected-actions 409、branch protection 404を同時再現し、5 GET、selected-actions省略、actions/branch双方のdrift issueを固定する。未知statusや、selected設定後のAPI failureは引き続きerrorとして停止する。
+- evidence: 2026-07-15、`cqa02303/hidloom`のpolicy適用前auditでselected-actionsが409、branch protectionが404、workflow PR approvalが`false`であることをread-only確認した。repository policy、visibility、branch、workflowは変更していない。
 
 ## Public bootstrap regression misclassifies linked Git worktrees
 
