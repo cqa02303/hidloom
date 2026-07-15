@@ -589,3 +589,12 @@
 - recovery: 文書を正しいカテゴリindexからlinkするか、不要・内部運用文書なら削除または明示private-onlyへ分類する。code fence内の例示linkや生成reportの手書き変更で到達済みにしない。
 - regression check: directory linkを配下`README.md`へ解決し、fenced-code内だけに現れるlinkをnavigationとして数えず、孤立fixtureを`public_documentation_orphan`で拒否する。readinessはmanifest hashを更新した偽のorphan countも実treeとの再計算差分で拒否する。
 - evidence: 2026-07-14、公開対象Markdown graphで187件を監査し、`docs/daemon/specs/_template.md`と`docs/ops/kc-sh/README.md`の2件だけが孤立していた。各正本indexへ導線を追加し、documentation audit schema v2へ到達数と孤立pathを固定した。
+
+## Branch protection requires a workflow display name instead of a check name
+
+- symptom: Public CIはpassしているが、policy適用直後にPRが`CLEAN`から`BLOCKED`へ変わり、required checksは0件と表示される。
+- likely cause: branch protectionのcontextへworkflow表示名とjob IDを連結した`Public CI / validate`を設定した。GitHubのcheck run名はjob ID由来の`validate`なので一致しない。
+- detect: branch protection APIの`required_status_checks.contexts`、commit check-runs APIの`name`、`gh pr checks --required`を比較する。combined statusがpendingかつstatus 0件でもcheck-runsに`validate` successがあれば名称不一致を疑う。
+- recovery: required contextを実check run名`validate`へ修正してpolicyを再適用する。status checkを無効化したりadmin bypassでmergeしたりしない。
+- regression check: `script/test_public_repository_policy.py`で期待contextを`validate`へ固定し、`script/test_public_ci_workflow.py`で同名job IDがworkflowに存在することを検査する。
+- evidence: 2026-07-15、PR #8のhead `0372d1570a1e0c2032862876eaa9feb96fd854e4`には`validate` successが2件あったが、適用済みpolicyは`Public CI / validate`を要求してPRを`BLOCKED`にした。

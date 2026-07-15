@@ -277,7 +277,7 @@ def validate_contract(root: Path, policy: dict[str, Any]) -> list[str]:
     required = protection.get("required_status_checks", {})
     if required.get("strict") is not True:
         issues.append("required-checks-not-strict")
-    if required.get("contexts") != ["Public CI / validate"]:
+    if required.get("contexts") != ["validate"]:
         issues.append("required-check-set-mismatch")
     for field in (
         "enforce_admins",

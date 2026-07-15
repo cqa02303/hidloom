@@ -132,6 +132,10 @@ def main() -> None:
     assert policy["api_host"] == "github.com"
     assert validate_contract(ROOT, policy) == []
     expected = expected_state(ROOT, policy)
+    assert expected["branch_protection"]["required_status_checks"] == {
+        "strict": True,
+        "contexts": ["validate"],
+    }
     plan = plan_payload(policy, expected)
     assert plan["schema"] == "hidloom.public-repository-policy-plan.v1"
     assert plan["api_host"] == "github.com"

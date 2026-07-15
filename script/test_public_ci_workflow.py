@@ -2,6 +2,7 @@
 """Static checks for the standalone public CI contract."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +22,13 @@ APT_PACKAGES = (
 
 def main() -> None:
     workflow = (ROOT / ".github" / "workflows" / "public-ci.yml").read_text(encoding="utf-8")
+    policy = json.loads(
+        (ROOT / "config" / "public-repository-policy.json").read_text(encoding="utf-8")
+    )
+    required_contexts = policy["branch_protection"]["required_status_checks"]["contexts"]
+    assert required_contexts == ["validate"]
+    for context in required_contexts:
+        assert f"  {context}:\n" in workflow
 
     assert workflow.count("runs-on: ubuntu-24.04") == 2
     assert "ubuntu-latest" not in workflow

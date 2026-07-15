@@ -1,9 +1,9 @@
 # HIDloom Public Export Report
 
-- Source base commit: `f926d6026e8f8ba7b7eac5c88a0b98eb5fc9321b`
+- Source base commit: `dff749a133e4aeb52a22e78efc420f8f39a748b6`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `340c9644c37cc487f43020945cba3585a16c7312c9ecdc902be35fc4d9f0892e`
+- Selected source snapshot: `b05d3ed7811020c80c5f8ac9d11eb2dd2c3a3756717ae6539e06b2674564858a`
 - Files: 1182
 - Tracked source paths: 1249
 - Private-only paths: 67

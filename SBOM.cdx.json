@@ -2,12 +2,12 @@
   "$schema": "https://cyclonedx.org/schema/bom-1.7.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
-  "serialNumber": "urn:uuid:195c3a02-73f2-511e-a787-1974553fa2ba",
+  "serialNumber": "urn:uuid:a02c0b57-7e5c-5b87-8c59-e7c202b4850d",
   "version": 1,
   "metadata": {
     "component": {
       "type": "application",
-      "bom-ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40f926d6026e8f8ba7b7eac5c88a0b98eb5fc9321b",
+      "bom-ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40dff749a133e4aeb52a22e78efc420f8f39a748b6",
       "name": "HIDloom",
       "version": "0.1.0",
       "licenses": [
@@ -15,11 +15,11 @@
           "expression": "GPL-3.0-or-later"
         }
       ],
-      "purl": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40f926d6026e8f8ba7b7eac5c88a0b98eb5fc9321b",
+      "purl": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40dff749a133e4aeb52a22e78efc420f8f39a748b6",
       "properties": [
         {
           "name": "hidloom:source-base-commit",
-          "value": "f926d6026e8f8ba7b7eac5c88a0b98eb5fc9321b"
+          "value": "dff749a133e4aeb52a22e78efc420f8f39a748b6"
         },
         {
           "name": "hidloom:source-mode",
@@ -27,7 +27,7 @@
         },
         {
           "name": "hidloom:source-snapshot-sha256",
-          "value": "340c9644c37cc487f43020945cba3585a16c7312c9ecdc902be35fc4d9f0892e"
+          "value": "b05d3ed7811020c80c5f8ac9d11eb2dd2c3a3756717ae6539e06b2674564858a"
         },
         {
           "name": "hidloom:device-profiles",
@@ -1438,7 +1438,7 @@
   ],
   "dependencies": [
     {
-      "ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40f926d6026e8f8ba7b7eac5c88a0b98eb5fc9321b",
+      "ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40dff749a133e4aeb52a22e78efc420f8f39a748b6",
       "dependsOn": [
         "third-party:buildroot:busybox:1.38.0",
         "third-party:buildroot:expat:2.8.1",
