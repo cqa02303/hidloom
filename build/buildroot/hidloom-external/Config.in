@@ -1,0 +1,6 @@
+menu "HIDloom external packages"
+source "$BR2_EXTERNAL_HIDLOOM_PATH/package/hidloom-matrixd/Config.in"
+source "$BR2_EXTERNAL_HIDLOOM_PATH/package/hidloom-m3-router/Config.in"
+source "$BR2_EXTERNAL_HIDLOOM_PATH/package/python-luma-core/Config.in"
+source "$BR2_EXTERNAL_HIDLOOM_PATH/package/python-luma-oled/Config.in"
+endmenu

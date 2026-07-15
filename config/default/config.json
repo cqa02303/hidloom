@@ -1,0 +1,126 @@
+{
+  "version": "1.0",
+  "device": {
+    "vendor_id": "0x1d6b",
+    "product_id": "0x0105",
+    "manufacturer": "__HOSTNAME__",
+    "product_name": "__HOSTNAME__",
+    "serial_number": "vial:f64c2b3c",
+    "hid_country_code": 0
+  },
+  "settings": {
+    "hidg": "/dev/hidg0",
+    "mouse_hidg": "/dev/hidg0",
+    "consumer_hidg": "/dev/hidg0",
+    "usb_keyboard_identity_strings": {
+      "profile": "default"
+    },
+    "usb_split_keyboard": {
+      "enabled": true,
+      "route": "jis_special_us_default"
+    },
+    "windows_ime_custom_hid": {
+      "enabled": false
+    },
+    "us_keyboard": {
+      "identity_string": "US101"
+    },
+    "us_sub_keyboard": {
+      "enabled": true,
+      "identity_string": "US101"
+    },
+    "console_fallback": true,
+    "outputs": ["auto"],
+    "usbd_hid_report_broker": true,
+    "auto_bt_fallback": true,
+    "pty_terminal_host_profile": "windows_text_editor_us_sub_keyboard",
+    "host_led_output": {
+      "enabled": true,
+      "fallback_internal_toggle": false,
+      "states": {
+        "caps_lock": true,
+        "num_lock": true,
+        "scroll_lock": true,
+        "compose": false,
+        "kana": true
+      }
+    },
+    "script_dir": "/mnt/p3/script",
+    "interaction": {
+      "tapping_term": 0.200,
+      "hold_on_other_key_press": true,
+      "combo_term": 0.050,
+      "tap_dance_term": 0.200,
+      "combos": [],
+      "tap_dances": {},
+      "morse_behaviors": {
+        "main": {
+          "dot_threshold": 0.18,
+          "sequence_timeout": 0.7,
+          "max_depth": 4,
+          "force_commit": [
+            "---",
+            "--.-",
+            "--..",
+            "-.--",
+            "-.-.",
+            "-..-",
+            "-...",
+            ".---",
+            ".--.",
+            ".-..",
+            "..-.",
+            "...-",
+            "...."
+          ],
+          "map": {
+            ".": "KC_E",
+            "-": "KC_T",
+            ".-": "KC_A",
+            "-...": "KC_B",
+            "-.-.": "KC_C",
+            "-..": "KC_D",
+            "..-.": "KC_F",
+            "--.": "KC_G",
+            "....": "KC_H",
+            "..": "KC_I",
+            ".---": "KC_J",
+            "-.-": "KC_K",
+            ".-..": "KC_L",
+            "--": "KC_M",
+            "-.": "KC_N",
+            "---": "KC_O",
+            ".--.": "KC_P",
+            "--.-": "KC_Q",
+            ".-.": "KC_R",
+            "...": "KC_S",
+            "..-": "KC_U",
+            "...-": "KC_V",
+            ".--": "KC_W",
+            "-..-": "KC_X",
+            "-.--": "KC_Y",
+            "--..": "KC_Z"
+          }
+        }
+      },
+      "key_overrides": []
+    },
+    "http_basic_auth": {
+      "username": "admin",
+      "password": "__HOSTNAME__"
+    },
+    "http_tls": {
+      "cert": "/mnt/p3/httpd.crt",
+      "key": "/mnt/p3/httpd.key"
+    }
+  },
+  "uinput": {
+    "repeat_delay_ms": 500,
+    "repeat_period_ms": 100,
+    "device_name": "Virtual Keyboard"
+  },
+  "layers": [
+    {}
+  ],
+  "macros": {}
+}

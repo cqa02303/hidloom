@@ -1,0 +1,24 @@
+.TH HIDLOOM-NOTIFY 1 "@HIDLOOM_VERSION@" "HIDloom" "User Commands"
+.SH NAME
+hidloom-notify \- log and send a short OLED notification
+.SH SYNOPSIS
+.B hidloom-notify
+[\fB--socket\fR \fIPATH\fR]
+\fBalert\fR|\fBwarning\fR \fIMESSAGE\fR [\fISEC\fR]
+.SH DESCRIPTION
+.B hidloom-notify
+logs to syslog and forwards an alert or warning to i2cd. It is intended for
+scripts that need both persistent logs and front-panel feedback.
+.SH OPTIONS
+.TP
+.B --socket PATH
+i2cd event socket path. The default is \fB/tmp/i2c_events.sock\fR.
+.TP
+.B -h, --help
+Show command help.
+.SH SEE ALSO
+.BR hidloom-oled (1),
+.BR i2cd (8)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

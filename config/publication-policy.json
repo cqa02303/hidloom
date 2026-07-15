@@ -1,0 +1,21 @@
+{
+  "schema": "hidloom.publication-policy.v1",
+  "public_repository": {
+    "host": "github.com",
+    "owner": "cqa02303",
+    "name": "hidloom",
+    "https_url": "https://github.com/cqa02303/hidloom",
+    "ssh_url": "git@github.com:cqa02303/hidloom.git"
+  },
+  "blocked_repository_slugs": [
+    "cqa02303/cqa02303v5rpi"
+  ],
+  "allowed_owner_repository_slugs": [
+    "cqa02303/hidloom"
+  ],
+  "excluded_scan_paths": [
+    "config/publication-policy.json",
+    "PUBLIC_REFERENCE_AUDIT.json",
+    "PUBLIC_REFERENCE_AUDIT.md"
+  ]
+}

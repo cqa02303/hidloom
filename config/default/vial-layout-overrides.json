@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "notes": [
+    "mkvial.py applies these overrides after reading keyboard-layout.json slots and KiCad-derived switch points.",
+    "slot keys use keyboard-layout.json row index and key order within that row: row:<row>,order:<order>.",
+    "virtual_slots are emitted as Vial labels but do not consume a physical switch point."
+  ],
+  "exclude_sources": [
+    "encoder_pulse"
+  ],
+  "slot_overrides": {},
+  "virtual_slots": {
+    "row:9,order:2": "0,0\n\n\n\n\n\n\n\n\ne",
+    "row:9,order:3": "0,1\n\n\n\n\n\n\n\n\ne"
+  }
+}

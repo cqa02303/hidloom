@@ -1,0 +1,15 @@
+HIDLOOM_MATRIXD_VERSION = 1
+HIDLOOM_MATRIXD_SITE = $(BR2_EXTERNAL_HIDLOOM_PATH)/../../../daemon/matrixd
+HIDLOOM_MATRIXD_SITE_METHOD = local
+HIDLOOM_MATRIXD_LICENSE = GPL-3.0-or-later
+HIDLOOM_MATRIXD_LICENSE_FILES = COPYING
+
+define HIDLOOM_MATRIXD_BUILD_CMDS
+	$(TARGET_CC) $(TARGET_CFLAGS) -std=c11 -D_POSIX_C_SOURCE=200809L -o $(@D)/matrixd $(@D)/matrixd.c $(@D)/debounce.c
+endef
+
+define HIDLOOM_MATRIXD_INSTALL_TARGET_CMDS
+	$(INSTALL) -D -m 0755 $(@D)/matrixd $(TARGET_DIR)/usr/bin/matrixd
+endef
+
+$(eval $(generic-package))

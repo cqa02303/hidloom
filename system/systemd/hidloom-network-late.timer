@@ -1,0 +1,10 @@
+[Unit]
+Description=Start networking outside the keyboard boot path
+
+[Timer]
+OnBootSec=25s
+AccuracySec=1s
+Unit=hidloom-network-late.service
+
+[Install]
+WantedBy=timers.target

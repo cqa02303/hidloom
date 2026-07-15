@@ -1,0 +1,8 @@
+[Unit]
+Description=HIDloom late network startup
+Documentation=file://@HIDLOOM_REPO_ROOT@/docs/ops/real-device-test-checklist.md
+After=dbus.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'systemctl --no-block start NetworkManager.service'

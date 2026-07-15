@@ -1,0 +1,479 @@
+{
+  "schema": "hidloom.buildroot-legal-summary.v1",
+  "profile": "buildroot-m6",
+  "inputs": {
+    "manifest_sha256": "065563bee89111162e3dd8595e52fc5ce43ca8673682548a3ffc1e8587806650",
+    "host_manifest_sha256": "5f96096a968a377bbea2182ad4ea4af65a61344cb978888bf74d80d0e2b5deea",
+    "readme_sha256": "34733abfe1a06f8c76ab07ba74a263db922f81ed7dbb19cd7a44a00325741e63",
+    "checksum_manifest_sha256": "c980860136134551df416146c6a79f6e2058e8227bf8ff8bb321cf3c47ce943c"
+  },
+  "buildroot_source": {
+    "repository": "https://gitlab.com/buildroot.org/buildroot.git",
+    "commit": "67449130e9fdd71a38ca26539dddfa8c882b1977",
+    "reproducible_checkout": true,
+    "included_in_legal_info": false
+  },
+  "toolchain_evidence": {
+    "schema": "hidloom.buildroot-toolchain-evidence.v2",
+    "package": "toolchain-external-bootlin",
+    "version": "2025.08-1",
+    "archive": "armv7-eabihf--glibc--stable-2025.08-1.tar.xz",
+    "archive_sha256": "97d6fbaf19832002f3d6aa8fd31b2d29c1dc7b0752f4ae8ed35860fd33c1f9b4",
+    "license_summary": "GPL-3.0-with-GCC-exception; GPL-2.0-or-later; LGPL-2.1-or-later; BSD-3-Clause; MIT; GPL-3.0-or-later; LGPL-2.0-or-later; LGPL-3.0-or-later",
+    "official_evidence": {
+      "release_page": "https://toolchains.bootlin.com/releases_armv7-eabihf.html",
+      "readme": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/readmes/armv7-eabihf--glibc--stable-2025.08-1.txt",
+      "readme_sha256": "cddfc934582650b5a2f9a222debe6ff7b5dfcbf64943e4d486d147873600504e",
+      "summary": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/summaries/armv7-eabihf--glibc--stable-2025.08-1.csv",
+      "summary_sha256": "a38d7c0484d9d51a5d8d7272b3320d957c89bd8e13ffdffd29a8d2b032f96c66",
+      "sources": "https://toolchains.bootlin.com/downloads/releases/sources/",
+      "licenses": "https://toolchains.bootlin.com/downloads/releases/licenses/"
+    },
+    "builder_source": {
+      "repository": "https://github.com/bootlin/buildroot-toolchains.git",
+      "ref": "refs/tags/toolchains.bootlin.com-2025.08.1",
+      "commit": "83947c7bb6158072bc2f52b58e90891cd3dc04a2"
+    },
+    "target_components": [
+      {
+        "name": "gcc-final",
+        "version": "14.3.0",
+        "license": "GPL-3.0-with-GCC-exception",
+        "license_files": [
+          "COPYING.RUNTIME"
+        ]
+      },
+      {
+        "name": "glibc",
+        "version": "2.41-70-g1502c248d58cb99a203731707987a4342926e830",
+        "license": "GPL-2.0-or-later (programs), LGPL-2.1-or-later, BSD-3-Clause, MIT (library)",
+        "license_files": [
+          "COPYING",
+          "COPYING.LIB",
+          "LICENSES"
+        ]
+      },
+      {
+        "name": "linux-headers",
+        "version": "5.4.296",
+        "license": "GPL-2.0-only",
+        "license_files": []
+      },
+      {
+        "name": "gdb",
+        "version": "15.2",
+        "license": "GPL-2.0-or-later, LGPL-2.0-or-later, GPL-3.0-or-later, LGPL-3.0-or-later",
+        "license_files": [
+          "COPYING",
+          "COPYING.LIB",
+          "COPYING3",
+          "COPYING3.LIB"
+        ]
+      }
+    ],
+    "review": "complete",
+    "binary_release_requirement": "Bundle the verified Bootlin README, summary, component source archives, and license texts with the Buildroot compliance material."
+  },
+  "source_audit_ready": true,
+  "binary_release_ready": false,
+  "summary": {
+    "target_packages": 20,
+    "target_complete": 20,
+    "source_archives_saved": 20,
+    "host_packages": 40,
+    "warnings": 2,
+    "release_blockers": 2
+  },
+  "warnings": [
+    "the Buildroot source code has not been saved",
+    "toolchain-external-bootlin-2025.08-1: cannot save license (TOOLCHAIN_EXTERNAL_BOOTLIN_LICENSE_FILES not defined)"
+  ],
+  "release_blockers": [
+    {
+      "id": "buildroot-source-not-bundled",
+      "resolution": "Archive the exact pinned Buildroot commit with the binary release."
+    },
+    {
+      "id": "bootlin-toolchain-compliance-not-bundled",
+      "resolution": "Bundle the verified Bootlin README, summary, component source archives, and license texts with the Buildroot compliance material."
+    }
+  ],
+  "target_packages": [
+    {
+      "name": "toolchain-external-bootlin",
+      "version": "2025.08-1",
+      "manifest_version": "2025.08-1",
+      "license": "GPL-3.0-with-GCC-exception; GPL-2.0-or-later; LGPL-2.1-or-later; BSD-3-Clause; MIT; GPL-3.0-or-later; LGPL-2.0-or-later; LGPL-3.0-or-later",
+      "license_files": [],
+      "license_files_saved": [],
+      "license_evidence": "bootlin-official-summary",
+      "source_archive": "armv7-eabihf--glibc--stable-2025.08-1.tar.xz",
+      "source_archive_sha256": "97d6fbaf19832002f3d6aa8fd31b2d29c1dc7b0752f4ae8ed35860fd33c1f9b4",
+      "source_site": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "busybox",
+      "version": "1.38.0",
+      "manifest_version": "1.38.0",
+      "license": "GPL-2.0, bzip2-1.0.4",
+      "license_files": [
+        "LICENSE",
+        "archival/libarchive/bz/LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE",
+        "archival/libarchive/bz/LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "busybox-1.38.0.tar.bz2",
+      "source_archive_sha256": "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2",
+      "source_site": "https://www.busybox.net/downloads",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "kmod",
+      "version": "34.2",
+      "manifest_version": "34.2",
+      "license": "LGPL-2.1+ (library), GPL-2.0+ (tools)",
+      "license_files": [
+        "libkmod/COPYING",
+        "COPYING"
+      ],
+      "license_files_saved": [
+        "libkmod/COPYING",
+        "COPYING"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "kmod-34.2.tar.xz",
+      "source_archive_sha256": "5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54",
+      "source_site": "https://cdn.kernel.org/pub/linux/utils/kernel/kmod",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "xz",
+      "version": "5.8.3",
+      "manifest_version": "5.8.3",
+      "license": "Public Domain, BSD-0-Clause, GPL-2.0+, GPL-3.0+, LGPL-2.1+",
+      "license_files": [
+        "COPYING",
+        "COPYING.0BSD",
+        "COPYING.GPLv2",
+        "COPYING.GPLv3",
+        "COPYING.LGPLv2.1"
+      ],
+      "license_files_saved": [
+        "COPYING",
+        "COPYING.0BSD",
+        "COPYING.GPLv2",
+        "COPYING.GPLv3",
+        "COPYING.LGPLv2.1"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "xz-5.8.3.tar.bz2",
+      "source_archive_sha256": "33bf69c0d6c698e83a68f77e6c1f465778e418ca0b3d59860d3ab446f4ac99a6",
+      "source_site": "https://github.com/tukaani-project/xz/releases/download/v5.8.3",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "libzlib",
+      "version": "1.3.2",
+      "manifest_version": "1.3.2",
+      "license": "Zlib",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "zlib-1.3.2.tar.xz",
+      "source_archive_sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+      "source_site": "https://www.zlib.net",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "libxcrypt",
+      "version": "4.5.2",
+      "manifest_version": "4.5.2",
+      "license": "LGPL-2.1+",
+      "license_files": [
+        "LICENSING",
+        "COPYING.LIB"
+      ],
+      "license_files_saved": [
+        "LICENSING",
+        "COPYING.LIB"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "libxcrypt-4.5.2.tar.xz",
+      "source_archive_sha256": "71513a31c01a428bccd5367a32fd95f115d6dac50fb5b60c779d5c7942aec071",
+      "source_site": "https://github.com/besser82/libxcrypt/releases/download/v4.5.2",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "expat",
+      "version": "2.8.1",
+      "manifest_version": "2.8.1",
+      "license": "MIT",
+      "license_files": [
+        "COPYING"
+      ],
+      "license_files_saved": [
+        "COPYING"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "expat-2.8.1.tar.xz",
+      "source_archive_sha256": "10b195ee78160a908388180a8fe3603d4e9a12f4755fbf5f3816b23a9d750da0",
+      "source_site": "https://github.com/libexpat/libexpat/releases/download/R_2_8_1",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "libffi",
+      "version": "3.5.2",
+      "manifest_version": "3.5.2",
+      "license": "MIT",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "libffi-3.5.2.tar.gz",
+      "source_archive_sha256": "f3a3082a23b37c293a4fcd1053147b371f2ff91fa7ea1b2a52e335676bac82dc",
+      "source_site": "https://github.com/libffi/libffi/releases/download/v3.5.2",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python-cbor2",
+      "version": "5.9.0",
+      "manifest_version": "5.9.0",
+      "license": "MIT",
+      "license_files": [
+        "LICENSE.txt"
+      ],
+      "license_files_saved": [
+        "LICENSE.txt"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "cbor2-5.9.0.tar.gz",
+      "source_archive_sha256": "85c7a46279ac8f226e1059275221e6b3d0e370d2bb6bd0500f9780781615bcea",
+      "source_site": "https://files.pythonhosted.org/packages/bd/cb/09939728be094d155b5d4ac262e39877875f5f7e36eea66beb359f647bd0",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python3",
+      "version": "3.14.6",
+      "manifest_version": "3.14.6",
+      "license": "Python-2.0, others",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "Python-3.14.6.tar.xz",
+      "source_archive_sha256": "143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63",
+      "source_site": "https://python.org/ftp/python/3.14.6",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python-pillow",
+      "version": "12.0.0",
+      "manifest_version": "12.0.0",
+      "license": "HPND",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "pillow-12.0.0.tar.gz",
+      "source_archive_sha256": "87d4f8125c9988bfbed67af47dd7a953e2fc7b0cc1e7800ec6d2080d490bb353",
+      "source_site": "https://files.pythonhosted.org/packages/5a/b0/cace85a1b0c9775a9f8f5d5423c8261c858760e2466c79b2dd184638b056",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python-pybind",
+      "version": "3.0.1",
+      "manifest_version": "3.0.1",
+      "license": "BSD-3-Clause",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "python-pybind-3.0.1.tar.gz",
+      "source_archive_sha256": "741633da746b7c738bb71f1854f957b9da660bcd2dce68d71949037f0969d0ca",
+      "source_site": "https://github.com/pybind/pybind11/archive/v3.0.1",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python-rpi-ws281x",
+      "version": "5.0.0",
+      "manifest_version": "5.0.0",
+      "license": "BSD-2-Clause",
+      "license_files": [
+        "LICENSE",
+        "lib/LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE",
+        "lib/LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "rpi_ws281x-5.0.0.tar.gz",
+      "source_archive_sha256": "00ce6db771436b778d0930245cf8ea2aae11008cc5fd67d57789c5422af3ee55",
+      "source_site": "https://files.pythonhosted.org/packages/c0/1e/642208a685c5e96d38323f42c75d9b24f95e2d1b8390dd104e04a712f29e",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python-smbus2",
+      "version": "0.6.1",
+      "manifest_version": "0.6.1",
+      "license": "MIT",
+      "license_files": [
+        "LICENSE"
+      ],
+      "license_files_saved": [
+        "LICENSE"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "smbus2-0.6.1.tar.gz",
+      "source_archive_sha256": "2b043372abf8f6029a632c3aab36b641c5d5872b1cbad599fc68e17ac4fd90a5",
+      "source_site": "https://files.pythonhosted.org/packages/87/37/b3f7b501502c4915ba3819d1dc277bf3f5fae4a9d067caa4f502aaddd889",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "rpi-firmware",
+      "version": "063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+      "manifest_version": "063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+      "license": "BSD-3-Clause",
+      "license_files": [
+        "boot/LICENCE.broadcom"
+      ],
+      "license_files_saved": [
+        "boot/LICENCE.broadcom"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68.tar.gz",
+      "source_archive_sha256": "812cb64617d6ffbc76f9b8dce8237b31159a1216b31845faec1bb75b6b6b291f",
+      "source_site": "https://github.com/raspberrypi/firmware/archive/063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "sudo",
+      "version": "1.9.17p2",
+      "manifest_version": "1.9.17p2",
+      "license": "ISC, BSD-3-Clause",
+      "license_files": [
+        "LICENSE.md"
+      ],
+      "license_files_saved": [
+        "LICENSE.md"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "sudo-1.9.17p2.tar.gz",
+      "source_archive_sha256": "4a38a1ab3adb1199257edc2a7c4a2bd714665eb605b04368843b06dada2cfcfb",
+      "source_site": "https://www.sudo.ws/sudo/dist",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "linux",
+      "version": "21b410140c47ffab5668399f6f143c7d7b935c8b",
+      "manifest_version": "custom",
+      "license": "GPL-2.0",
+      "license_files": [
+        "COPYING",
+        "LICENSES/preferred/GPL-2.0",
+        "LICENSES/exceptions/Linux-syscall-note"
+      ],
+      "license_files_saved": [
+        "COPYING",
+        "LICENSES/preferred/GPL-2.0",
+        "LICENSES/exceptions/Linux-syscall-note"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "linux-21b410140c47ffab5668399f6f143c7d7b935c8b.tar.gz",
+      "source_archive_sha256": "7c31df8061aae748a6e72417bfe743a54198fb5bdc96e229ecc605dc621d32ef",
+      "source_site": "https://github.com/raspberrypi/linux/archive/21b410140c47ffab5668399f6f143c7d7b935c8b",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "hidloom-matrixd",
+      "version": "1",
+      "manifest_version": "1",
+      "license": "GPL-3.0-or-later",
+      "license_files": [
+        "COPYING"
+      ],
+      "license_files_saved": [
+        "COPYING"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "hidloom-matrixd-1.tar.gz",
+      "source_archive_sha256": "441746b023fa942bfe91bf78b7d13e303f153dc9d23b6d428517efeaf0c60e83",
+      "source_site": "project:daemon/matrixd",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python-luma-core",
+      "version": "2.5.3",
+      "manifest_version": "2.5.3",
+      "license": "MIT",
+      "license_files": [
+        "LICENSE.rst"
+      ],
+      "license_files_saved": [
+        "LICENSE.rst"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "luma_core-2.5.3.tar.gz",
+      "source_archive_sha256": "ecfb1c12fc32f8ee6cff0f613804b2609387c17547f739d002649f2e6d56ec2f",
+      "source_site": "https://files.pythonhosted.org/packages/source/l/luma.core",
+      "source_saved": true,
+      "review": "complete"
+    },
+    {
+      "name": "python-luma-oled",
+      "version": "3.15.0",
+      "manifest_version": "3.15.0",
+      "license": "MIT",
+      "license_files": [
+        "LICENSE.rst"
+      ],
+      "license_files_saved": [
+        "LICENSE.rst"
+      ],
+      "license_evidence": "buildroot-legal-info",
+      "source_archive": "luma_oled-3.15.0.tar.gz",
+      "source_archive_sha256": "16925fe668f484803df0683add800b19e5dd7316a1d64eb06ec2ae817473901e",
+      "source_site": "https://files.pythonhosted.org/packages/source/l/luma.oled",
+      "source_saved": true,
+      "review": "complete"
+    }
+  ]
+}

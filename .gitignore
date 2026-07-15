@@ -1,0 +1,122 @@
+# KiCad generated/personal files (should not be tracked)
+kicad/*-backups/*
+kicad/**/*-backups/
+kicad/**/backups/
+kicad/*.history/
+kicad/**/.history
+kicad/**/.history/
+kicad/*production/*fp-info-cache
+kicad/*/*rpi*.csv
+kicad/*/*rpi*.json
+*.kicad_prl
+_autosave-*
+~*.lck
+*.dsn
+*.ses
+*-save.pro
+*-save.kicad_pro
+
+# Common IDE and editor files
+.vscode/
+*.swp
+*.swo
+*~
+*.bak
+*.bak[0-9]*
+*.orig
+*.rej
+*.backup
+
+# Python generated/cache files
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.Python
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+# Python build/test artifacts
+.coverage
+.coverage.*
+htmlcov/
+dist/
+site/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+kicad/.history_trim
+
+# temporary data
+.env
+*.log
+*.temp
+*.tmp
+conf/http_basic_auth.local.json
+config/default/http_basic_auth.local.json
+build/artifacts/
+build/packages/
+build/package-work/
+build/deb-work/
+build/rpi-matrixd/
+build/rpi-rust/
+build/rpi-hidloom-send/
+build/rpi-usb-gadget-fast/
+demo/assets/
+codex_tasks/inbox/*
+!codex_tasks/inbox/*.sample
+codex_tasks/running/*
+!codex_tasks/running/*.sample
+codex_tasks/done/*
+!codex_tasks/done/*.sample
+codex_tasks/failed/*
+!codex_tasks/failed/*.sample
+tmp/*
+.tmp-*/
+.tmp-*.zip
+windows-jis-main-us-sub*.reg
+windows-driver/package/
+windows-driver/*.log
+windows-driver/*.cer
+
+# generated packages, images, and release archives
+*.7z
+*.deb
+*.img
+*.iso
+*.rar
+*.rpm
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.zst
+
+# native build artifacts
+daemon/matrixd/matrixd
+target/
+tools/*/target/
+tools/*/.build/
+
+# media assets
+*.mp4

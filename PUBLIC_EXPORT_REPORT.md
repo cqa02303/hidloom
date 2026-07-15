@@ -1,0 +1,1101 @@
+# HIDloom Public Export Report
+
+- Source base commit: `b2973b658c3af64052b7920657baeea3e1e300c9`
+- Source mode: `clean-head`
+- Publishable source: `true`
+- Selected source snapshot: `82e9be571f425bde69d94efb9b93fb7947f83a73afca3b4e0c3de18fa20d03ea`
+- Files: 1182
+- Tracked source paths: 1249
+- Private-only paths: 67
+- Tracked generated outputs: 0
+- Unclassified paths: 0
+- Blocking findings: 0
+- Warnings: 1083
+- Untriaged warnings: 0
+- Action-required warnings: 12
+
+## Findings
+
+- `warn` `credential_word` `.github/workflows/public-ci.yml:87` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
+- `warn` `credential_word` `CONTRIBUTING.md:38` `documentation_security_keyword` — `secret-bearing backup.`
+- `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
+- `warn` `credential_word` `SECURITY.md:10` `documentation_security_keyword` — `Do not open a public issue for an unpatched vulnerability, credential, private key, or device-specific secret.`
+- `warn` `credential_word` `SECURITY.md:37` `documentation_security_keyword` — `The current experimental M6 Buildroot image creates the local console account `pi` with the initial password `pi`.`
+- `warn` `linux_foundation_vid` `USB_GADGET_SETUP.md:8` `migration_documentation` — `現在の`config/default/config.json`にある`0x1d6b:0x0105`は、既存実機との互換確認と開発rehearsalだけに使う暫定値です。`
+- `warn` `linux_foundation_vid` `USB_GADGET_SETUP.md:9` `migration_documentation` — ``0x1d6b`はLinux FoundationのVIDであり、HIDloomの公開製品IDとして割り当てられたものではありません。`
+- `warn` `linux_foundation_vid` `WIRING_ANALYSIS.md:23` `pid_codes_migration_required` — `- **USB gadget設定**: VID:0x1d6b, PID:0x0105で対応済み`
+- `warn` `linux_foundation_vid` `build/buildroot/hidloom-external/board/hidloom/rootfs_overlay/usr/bin/hidloom-hid-gadget-m1:14` `pid_codes_migration_required` — `VENDOR_ID="${HIDLOOM_M1_VENDOR_ID:-0x1d6b}"`
+- `warn` `linux_foundation_vid` `build/buildroot/hidloom-external/board/hidloom/rootfs_overlay_m4/usr/bin/hidloom-hid-gadget-m4:28` `pid_codes_migration_required` — `printf '0x1d6b\n' > idVendor`
+- `warn` `credential_word` `build/buildroot/hidloom-external/package/hidloom-m3-router/src/COPYING:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
+- `warn` `legacy_project_name` `build/generated/README.md:69` `allowed_device_profile` — `canonical inputは`kicad/cqa02303v5rpi/keymap.kicad_sch`と`
+- `warn` `legacy_project_name` `build/generated/README.md:70` `allowed_device_profile` — ``kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb`です。`
+- `warn` `legacy_project_name` `build/generated/pcb_analysis_sw_report.txt:3` `allowed_device_profile` — `入力PCB: kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb`
+- `warn` `legacy_project_name` `build/generators/analyze_kicad_matrix.py:378` `allowed_device_profile` — `os.path.join(repo_root, "kicad", "cqa02303v5rpi", "keymap.kicad_sch")`
+- `warn` `legacy_project_name` `build/generators/analyze_kicad_pcb.py:311` `allowed_device_profile` — `default_pcb = os.path.join(repo_root, "kicad", "cqa02303v5rpi", "cqa02303v5rpi.kicad_pcb")`
+- `warn` `legacy_project_name` `build/generators/analyze_kicad_pcb_led.py:20` `allowed_device_profile` — `PCB_FILE  : kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb`
+- `warn` `legacy_project_name` `build/generators/analyze_kicad_pcb_led.py:165` `allowed_device_profile` — `repo_root, "kicad", "cqa02303v5rpi", "cqa02303v5rpi.kicad_pcb"`
+- `warn` `credential_word` `build/generators/mkvial.py:114` `implementation_security_keyword` — `token = m.group(1)`
+- `warn` `credential_word` `build/generators/mkvial.py:115` `implementation_security_keyword` — `ref = token if token.upper().startswith(("SW", "JOY")) else f"SW{token}"`
+- `warn` `linux_foundation_vid` `config/default/config.json:4` `pid_codes_migration_required` — `"vendor_id": "0x1d6b",`
+- `warn` `credential_word` `config/default/config.json:110` `implementation_security_keyword` — `"password": "__HOSTNAME__"`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:12` `implementation_security_keyword` — `# 接続中 Wi-Fi の SSID を取得（利用可能なコマンドを順に試す）`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:13` `implementation_security_keyword` — `SSID=""`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:15` `implementation_security_keyword` — `SSID=$(iwgetid -r 2>/dev/null)`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:17` `implementation_security_keyword` — `if [ -z "$SSID" ] && command -v nmcli >/dev/null 2>&1; then`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:18` `implementation_security_keyword` — `SSID=$(nmcli -t -f active,ssid dev wifi 2>/dev/null \`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:21` `implementation_security_keyword` — `[ -z "$SSID" ] && SSID="N/A"`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:30` `implementation_security_keyword` — `hidloom-notify alert "Node: ${NODE} SSID: ${SSID} IP: ${IP}" 7`
+- `warn` `legacy_project_name` `config/public-assets.json:86` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb",`
+- `warn` `legacy_project_name` `config/public-assets.json:87` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",`
+- `warn` `legacy_project_name` `config/public-assets.json:88` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:89` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/keymap.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:90` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/led.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:91` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:92` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:93` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",`
+- `warn` `legacy_project_name` `config/public-assets.json:94` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro",`
+- `warn` `legacy_project_name` `config/public-assets.json:95` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:96` `allowed_device_profile` — `"kicad/cqa02303v5rpi/keymap.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:97` `allowed_device_profile` — `"kicad/cqa02303v5rpi/led.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:98` `allowed_device_profile` — `"kicad/cqa02303v5rpi/mouse_sch.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:99` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
+- `warn` `credential_word` `config/public-export-deny-patterns.json:56` `implementation_security_keyword` — `"pattern": "(?i)\\b(?:password|passwd|secret|token|ssid|psk)\\b"`
+- `warn` `linux_foundation_vid` `config/public-export-deny-patterns.json:64` `scanner_definition` — `"pattern": "(?i)0x1d6b"`
+- `warn` `credential_word` `config/public-export.json:105` `implementation_security_keyword` — `"macro/examples/password.kml",`
+- `warn` `credential_word` `config/public-export.json:249` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:255` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:300` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:325` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
+- `warn` `legacy_project_name` `config/publication-policy.json:11` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:192` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:193` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:199` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:200` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
+- `warn` `linux_foundation_vid` `daemon/btd/gatt_hid.py:94` `pid_codes_migration_required` — `_env_u16("HIDLOOM_USB_VENDOR_ID", 0x1D6B),`
+- `warn` `credential_word` `daemon/http/README.md:19` `security_implementation_keyword` — `| Basic 認証 | 全ページ、API、WebSocket を Basic 認証で保護。Settings から password を変更可能 |`
+- `warn` `credential_word` `daemon/http/README.md:106` `security_implementation_keyword` — `Basic 認証の初期値は `config/default/config.json` の `settings.http_basic_auth` から読みます。未設定時の初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。Settings タブから password を変更した場合は `HTTPD_BASIC_AUTH_FILE` の小`
+- `warn` `credential_word` `daemon/http/README.md:132` `security_implementation_keyword` — `| `/api/settings/http-auth` | POST | Basic 認証 password 変更 |`
+- `warn` `credential_word` `daemon/http/README.md:150` `security_implementation_keyword` — `- POST / PUT / DELETE と `/ws` は CSRF token を要求する。`/` と API GET で`
+- `warn` `credential_word` `daemon/http/auth_tls.py:31` `security_implementation_keyword` — `def hash_http_basic_auth_password(password: str, *, iterations: int = 200_000) -> str:`
+- `warn` `credential_word` `daemon/http/auth_tls.py:33` `security_implementation_keyword` — `digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), iterations)`
+- `warn` `credential_word` `daemon/http/auth_tls.py:37` `security_implementation_keyword` — `def verify_http_basic_auth_password(password: str, stored: str) -> bool:`
+- `warn` `credential_word` `daemon/http/auth_tls.py:43` `security_implementation_keyword` — `actual = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt_hex), iterations)`
+- `warn` `credential_word` `daemon/http/auth_tls.py:47` `security_implementation_keyword` — `return hmac.compare_digest(password, stored)`
+- `warn` `credential_word` `daemon/http/auth_tls.py:60` `security_implementation_keyword` — `password = socket.gethostname()`
+- `warn` `credential_word` `daemon/http/auth_tls.py:66` `security_implementation_keyword` — `if "password" in auth_cfg:`
+- `warn` `credential_word` `daemon/http/auth_tls.py:67` `security_implementation_keyword` — `password = resolve_initial_http_basic_auth_password(auth_cfg.get("password"))`
+- `warn` `credential_word` `daemon/http/auth_tls.py:69` `security_implementation_keyword` — `password = auth_cfg["password_hash"]`
+- `warn` `credential_word` `daemon/http/auth_tls.py:78` `security_implementation_keyword` — `if isinstance(auth_data.get("password"), str):`
+- `warn` `credential_word` `daemon/http/auth_tls.py:79` `security_implementation_keyword` — `password = auth_data["password"]`
+- `warn` `credential_word` `daemon/http/auth_tls.py:81` `security_implementation_keyword` — `password = auth_data["password_hash"]`
+- `warn` `credential_word` `daemon/http/auth_tls.py:84` `security_implementation_keyword` — `return username, password`
+- `warn` `credential_word` `daemon/http/auth_tls.py:89` `security_implementation_keyword` — `password: str,`
+- `warn` `credential_word` `daemon/http/auth_tls.py:97` `security_implementation_keyword` — `password_hash = hash_password(password)`
+- `warn` `private_ipv4` `daemon/http/httpd.py:226` `allowed_private_network_range` — `ipaddress.ip_network("10.0.0.0/8"),`
+- `warn` `private_ipv4` `daemon/http/httpd.py:227` `allowed_private_network_range` — `ipaddress.ip_network("172.16.0.0/12"),`
+- `warn` `private_ipv4` `daemon/http/httpd.py:228` `allowed_private_network_range` — `ipaddress.ip_network("192.168.0.0/16"),`
+- `warn` `credential_word` `daemon/http/httpd.py:271` `security_implementation_keyword` — `set_csrf_cookie(response, cookie_name=HTTPD_CSRF_COOKIE, token=HTTPD_CSRF_TOKEN)`
+- `warn` `credential_word` `daemon/http/httpd.py:294` `security_implementation_keyword` — `def _hash_http_basic_auth_password(password: str, *, iterations: int = 200_000) -> str:`
+- `warn` `credential_word` `daemon/http/httpd.py:295` `security_implementation_keyword` — `return hash_http_basic_auth_password(password, iterations=iterations)`
+- `warn` `credential_word` `daemon/http/httpd.py:298` `security_implementation_keyword` — `def _verify_http_basic_auth_password(password: str, stored: str) -> bool:`
+- `warn` `credential_word` `daemon/http/httpd.py:299` `security_implementation_keyword` — `return verify_http_basic_auth_password(password, stored)`
+- `warn` `credential_word` `daemon/http/httpd.py:313` `security_implementation_keyword` — `def _write_http_basic_auth_file(username: str, password: str) -> tuple[Path, str]:`
+- `warn` `credential_word` `daemon/http/httpd.py:316` `security_implementation_keyword` — `password,`
+- `warn` `credential_word` `daemon/http/httpd.py:359` `security_implementation_keyword` — `log.warning("Rejecting request with invalid CSRF token: method=%s path=%s", request.method, request.path)`
+- `warn` `credential_word` `daemon/http/security_middleware.py:47` `security_implementation_keyword` — `def csrf_token_valid(value: str | None, token: str) -> bool:`
+- `warn` `credential_word` `daemon/http/security_middleware.py:50` `security_implementation_keyword` — `return hmac.compare_digest(value, token)`
+- `warn` `credential_word` `daemon/http/security_middleware.py:63` `security_implementation_keyword` — `def set_csrf_cookie(response: web.StreamResponse, *, cookie_name: str, token: str) -> None:`
+- `warn` `credential_word` `daemon/http/security_middleware.py:66` `security_implementation_keyword` — `token,`
+- `warn` `credential_word` `daemon/http/settings_api.py:157` `security_implementation_keyword` — `return web.json_response({"result": "error", "msg": "password fields must be strings"}, status=400), None`
+- `warn` `credential_word` `daemon/http/settings_api.py:159` `security_implementation_keyword` — `return web.json_response({"result": "error", "msg": "current password does not match"}, status=403), None`
+- `warn` `credential_word` `daemon/http/settings_api.py:161` `security_implementation_keyword` — `return web.json_response({"result": "error", "msg": "new password confirmation does not match"}, status=400), None`
+- `warn` `credential_word` `daemon/http/settings_api.py:163` `security_implementation_keyword` — `return web.json_response({"result": "error", "msg": "new password must not be empty"}, status=400), None`
+- `warn` `credential_word` `daemon/http/settings_api.py:165` `security_implementation_keyword` — `return web.json_response({"result": "error", "msg": "new password is too long"}, status=400), None`
+- `warn` `credential_word` `daemon/http/settings_api.py:170` `security_implementation_keyword` — `log.warning("HTTP Basic auth password update failed: %s", exc)`
+- `warn` `credential_word` `daemon/http/settings_api.py:174` `security_implementation_keyword` — `log.info("HTTP Basic auth password updated for user=%s file=%s", username, auth_file)`
+- `warn` `credential_word` `daemon/http/settings_api.py:177` `security_implementation_keyword` — `"msg": "password updated",`
+- `warn` `credential_word` `daemon/http/static/csrf.js:22` `security_implementation_keyword` — `const token = csrfToken();`
+- `warn` `credential_word` `daemon/http/static/csrf.js:23` `security_implementation_keyword` — `if (token) headers.set(HIDLOOM_CSRF_HEADER, token);`
+- `warn` `credential_word` `daemon/http/static/csrf.js:30` `security_implementation_keyword` — `const token = csrfToken();`
+- `warn` `credential_word` `daemon/http/static/csrf.js:31` `security_implementation_keyword` — `if (token) url.searchParams.set("csrf", token);`
+- `warn` `credential_word` `daemon/http/static/index.html:299` `security_implementation_keyword` — `<label for="settings-current-password">Current password</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:300` `security_implementation_keyword` — `<input id="settings-current-password" type="password" autocomplete="current-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:303` `security_implementation_keyword` — `<label for="settings-new-password">New password</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:304` `security_implementation_keyword` — `<input id="settings-new-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:307` `security_implementation_keyword` — `<label for="settings-confirm-password">Confirm password</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:308` `security_implementation_keyword` — `<input id="settings-confirm-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/settings_panel.js:15` `security_implementation_keyword` — `for (const id of ["settings-current-password", "settings-new-password", "settings-confirm-password"]) {`
+- `warn` `credential_word` `daemon/http/static/settings_panel.js:518` `security_implementation_keyword` — `const currentPassword = settingsEl("settings-current-password")?.value || "";`
+- `warn` `credential_word` `daemon/http/static/settings_panel.js:519` `security_implementation_keyword` — `const newPassword = settingsEl("settings-new-password")?.value || "";`
+- `warn` `credential_word` `daemon/http/static/settings_panel.js:520` `security_implementation_keyword` — `const confirmPassword = settingsEl("settings-confirm-password")?.value || "";`
+- `warn` `credential_word` `daemon/http/static/status_panel.js:94` `security_implementation_keyword` — `wifiEl.textContent = wifi.ssid ? `On ${wifi.ssid}` : "Connected";`
+- `warn` `credential_word` `daemon/http/static/status_panel.js:105` `security_implementation_keyword` — `wifiEl.title = `Wi-Fi: interface=${wifi.interface || ""}, powered=${wifi.powered}, blocked=${wifi.blocked}, connected=${wifi.connected}, ssid=${wifi.ssid || ""}, ${mode}${errors}`;`
+- `warn` `credential_word` `daemon/http/wifi_status.py:40` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
+- `warn` `credential_word` `daemon/http/wifi_status.py:47` `security_implementation_keyword` — `"ssid": ssid,`
+- `warn` `credential_word` `daemon/i2cd/connectivity.py:91` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
+- `warn` `credential_word` `daemon/i2cd/connectivity.py:98` `security_implementation_keyword` — `"ssid": ssid,`
+- `warn` `credential_word` `daemon/logicd/generate_config.py:38` `security_implementation_keyword` — `# The lookup uses the LAST non-empty "\n"-separated token of the label.`
+- `warn` `credential_word` `daemon/logicd/generate_config.py:104` `security_implementation_keyword` — `# Fall back to last non-empty token (e.g. "~\n`" → "`")`
+- `warn` `credential_word` `daemon/logicd/input_events.py:708` `security_implementation_keyword` — `message = f"Wi-Fi ON\n{status.ssid or 'connected'}"`
+- `warn` `credential_word` `daemon/logicd/macro_integration.py:167` `security_implementation_keyword` — `if any(token in text for token in _FORBIDDEN_TOKENS):`
+- `warn` `credential_word` `daemon/logicd/text_send_safety.py:708` `security_implementation_keyword` — `"secret / password text is out of scope",`
+- `warn` `credential_word` `daemon/logicd/wifi_manager.py:22` `security_implementation_keyword` — `ssid: str = ""`
+- `warn` `credential_word` `daemon/logicd/wifi_manager.py:33` `security_implementation_keyword` — `ssid = f" ssid={self.ssid}" if self.ssid else ""`
+- `warn` `credential_word` `daemon/logicd/wifi_manager.py:34` `security_implementation_keyword` — `return f"Wi-Fi {state}{ssid}"`
+- `warn` `credential_word` `daemon/logicd/wifi_manager.py:96` `security_implementation_keyword` — `ssid = ""`
+- `warn` `credential_word` `daemon/logicd/wifi_manager.py:99` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli, self.interface)`
+- `warn` `credential_word` `daemon/logicd/wifi_manager.py:100` `security_implementation_keyword` — `return WifiStatus(blocked=blocked, connected=connected, ssid=ssid)`
+- `warn` `credential_word` `daemon/matrixd/COPYING:340` `security_implementation_keyword` — `source code form), and must require no special password or key for`
+- `warn` `credential_word` `daemon/spid/README.md:125` `security_implementation_keyword` — `- Linux HID gadget は USB IN polling token を userspace callback として直接通知しない。`
+- `warn` `credential_word` `daemon/viald/README.md:122` `security_implementation_keyword` — `実行用 macro token へ変換します。`
+- `warn` `credential_word` `dev/mcp/keyboard/README.md:124` `documentation_security_keyword` — `This stdio server does not use MCP-level bearer token or OAuth authentication.`
+- `warn` `credential_word` `dev/mcp/keyboard/README.md:270` `documentation_security_keyword` — `at this checkout's stdio command. It redacts environment values, bearer token`
+- `warn` `credential_word` `dev/mcp/keyboard/README.md:301` `documentation_security_keyword` — `returns values only for a small allowlist of non-secret operational flags, and`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:2412` `implementation_security_keyword` — `"token": confirmation_token,`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:2414` `implementation_security_keyword` — `"note": "The token is informational only; this read-only tool never accepts or executes confirmation.",`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:2938` `implementation_security_keyword` — `"auth_boundary": "stdio uses OS user, SSH, trusted-project, and filesystem permissions; no MCP bearer token or OAuth is used",`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:2939` `implementation_security_keyword` — `"redaction": "env values, bearer token env names, and HTTP header values are not returned",`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:3090` `implementation_security_keyword` — `password: str | None = None,`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:3095` `implementation_security_keyword` — `password_value = password if password is not None else socket.gethostname()`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:3097` `implementation_security_keyword` — `token = base64.b64encode(f"{username}:{password_value}".encode("utf-8")).decode("ascii")`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:3098` `implementation_security_keyword` — `request.add_header("Authorization", f"Basic {token}")`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:4660` `implementation_security_keyword` — `"password": {"type": "string"},`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:4669` `implementation_security_keyword` — `password=str(args.get("password")) if args.get("password") is not None else None,`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:4894` `implementation_security_keyword` — `parser.add_argument("--password", help="HTTP basic auth password for get_http_status_summary; defaults to hostname")`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:5060` `implementation_security_keyword` — `if args.password is not None:`
+- `warn` `credential_word` `dev/mcp/keyboard/server.py:5061` `implementation_security_keyword` — `tool_args["password"] = args.password`
+- `warn` `credential_word` `docs/architecture/module-structure.md:119` `documentation_security_keyword` — `| `daemon/http/auth_tls.py` | HTTP Basic auth、password hash / verify、auth override file、TLS cert/key path、SSL context |`
+- `warn` `credential_word` `docs/architecture/module-structure.md:120` `documentation_security_keyword` — `| `daemon/http/security_middleware.py` | private-network allowlist、CSRF token / cookie、audit log helper |`
+- `warn` `credential_word` `docs/architecture/specification.md:187` `documentation_security_keyword` — ``config/default/config.json` の初期 password は `__HOSTNAME__` を指定でき、その場合は`
+- `warn` `credential_word` `docs/architecture/specification.md:190` `documentation_security_keyword` — `password は平文ではなく `password_hash` として保存します。`
+- `warn` `credential_word` `docs/architecture/specification.md:247` `documentation_security_keyword` — `logicd macro token へ変換します。`
+- `warn` `credential_word` `docs/architecture/specification.md:279` `documentation_security_keyword` — ``httpd` は Basic 認証付きの HTTPS UI を提供します。初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。`
+- `warn` `credential_word` `docs/architecture/specification.md:297` `documentation_security_keyword` — `- Settings タブでの Basic 認証 password 変更`
+- `warn` `credential_word` `docs/architecture/specification.md:299` `documentation_security_keyword` — `Settings タブで password を変更すると、現在 password を確認したうえで専用 override`
+- `warn` `credential_word` `docs/bluetooth/host-rename-forget-design.md:157` `documentation_security_keyword` — `- CSRF token.`
+- `warn` `credential_word` `docs/bluetooth/multi-host-ui-design.md:113` `documentation_security_keyword` — `- password や pairing secret は log に出さない。`
+- `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-design.md:430` `documentation_security_keyword` — `| secret logging | payload log は default off。debug opt-in 時だけ許可。status は counts / state 中心 |`
+- `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-implementation-notes.md:577` `documentation_security_keyword` — `## 2026-06-14 sessiond_ctl key token guard slice`
+- `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-implementation-notes.md:581` `documentation_security_keyword` — `- manual smoke 用の `sessiond_ctl key` が巨大な action / modifier 名や非ASCII token を socket へ送り、`
+- `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-implementation-notes.md:586` `documentation_security_keyword` — `- `sessiond_ctl key` は action / modifier token を ASCII かつ 1-64 bytes に制限する。`
+- `warn` `credential_word` `docs/input/touch-panel-flick-input-design.md:26` `documentation_security_keyword` — `- host IME / layout の自動判定はしない。日本語入力は `KC_KANA` / `KC_LANG1` / macro token など既存 action と明示設定で扱う。`
+- `warn` `credential_word` `docs/input/touch-panel-flick-input-design.md:110` `documentation_security_keyword` — `2. kana / punctuation は [unicode-send-string-safety-design.md](unicode-send-string-safety-design.md) の UTF / Unicode / Send String 経路が安全に扱えることを確認してから、macro token または explicit action として扱う。`
+- `warn` `credential_word` `docs/input/unicode-send-string-safety-design.md:211` `documentation_security_keyword` — `- password / secret 用途には使わないと明記する。`
+- `warn` `credential_word` `docs/input/unicode-send-string-safety-design.md:298` `documentation_security_keyword` — `- secret / password 送信用途を想定する必要がある。`
+- `warn` `credential_word` `docs/keycode/action-patterns.md:23` `documentation_security_keyword` — `| `MACRO:name` | `MACRO:VIAL0`, `MACRO:hello` | macro | macro token sequence へ展開 | delegated | 展開後 action を送る | token ごとの route | Vial macro ID と local macro 名の codec 境界を保つ |`
+- `warn` `credential_word` `docs/keycode/action-patterns.md:25` `documentation_security_keyword` — `| `SEND_STRING(...)` | `SEND_STRING("ABC")` | text send / macro | QMK macro compatible runner が text token として扱う | delegated | plan 次第 | active output keyboard | host layout 依存。直接 HID string ではない |`
+- `warn` `credential_word` `docs/keycode/action-patterns.md:29` `documentation_security_keyword` — `| `M0`-`M31` | `M0` | Vial macro shorthand | Vial macro action へ変換 | delegated | 展開後 action を送る | token ごとの route | codec では `MACRO:VIALn` と対応する |`
+- `warn` `credential_word` `docs/keycode/action-patterns.md:41` `documentation_security_keyword` — `| Macro runner | text / tap / down / up / delay token を順に実行し、cancel 条件を維持 |`
+- `warn` `credential_word` `docs/keycode/action-routing-matrix.md:51` `documentation_security_keyword` — `| Macro | `MACRO:name`, `M0`, Vial macro | token sequence へ展開 | 展開後に送る | text / tap / down / up / delay の cancel 条件を維持 |`
+- `warn` `credential_word` `docs/keycode/qmk-vial-keycode-support.md:130` `documentation_security_keyword` — `| QMK Macro | `QK_MACRO_*` 系 | 一部対応 | Vial Macro buffer を `settings.vial_macro_buffer` に保持し、`M0`-`M7` を `MACRO:VIAL0`-`MACRO:VIAL7` として実行する。text / tap / down / up / delay は実行用 token へ変換する |`
+- `warn` `credential_word` `docs/macro/compatibility-plan.md:40` `documentation_security_keyword` — `-> daemon/logicd/macro.py token runner`
+- `warn` `credential_word` `docs/macro/kml-qmk-macro-keycode-design.md:137` `documentation_security_keyword` — `- script / system / connectivity / power / arbitrary C 相当 token の rejection。`
+- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:529` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
+- `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
+- `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
+- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:208` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:442` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:481` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:102` `documentation_security_keyword` — `この場合も認証は SSH key と remote user 権限で扱い、MCP server 自体には secret を持たせません。`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:140` `documentation_security_keyword` — `| [`get_http_status_summary`](#get_http_status_summary) | local HTTPS `/api/status` の health を要約 | `url`, `username`, `password`, `timeout_sec`, `verify_tls` | なし |`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:763` `documentation_security_keyword` — `local Codex CLI からこの MCP server を使える状態かを、secret を返さずに要約します。`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:776` `documentation_security_keyword` — `- bearer token env var 名`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:858` `documentation_security_keyword` — `- 情報用 confirmation token と `REFLECT ...` phrase`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:900` `documentation_security_keyword` — `- allowlist 済みの非 secret operational flag の値`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:1169` `documentation_security_keyword` — `- HTTP transport を採用する場合の bearer token / OAuth 設計:`
+- `warn` `credential_word` `docs/ops/performance-tuning-plan.md:62` `documentation_security_keyword` — `Linux HID gadget の `/dev/hidgX` は、USB host の IN polling token を userspace callback として直接通知する interface ではない。`
+- `warn` `credential_word` `docs/ops/script-safety-metadata.md:52` `documentation_security_keyword` — `- 危険 script の通常 run が backend 経由になった場合、API 側でも確認 token なし実行を拒否する。`
+- `warn` `credential_word` `docs/ops/test-script-inventory.md:80` `documentation_security_keyword` — `- public repositoryのvisibility/main、feature/merge設定、secret scanning、private vulnerability reporting、Actions allowlist、`
+- `warn` `credential_word` `docs/policy/decisions-spec.md:130` `documentation_security_keyword` — `- HTTP UI に Settings タブを追加し、Basic 認証 password を変更できるようにする。`
+- `warn` `credential_word` `docs/policy/decisions-spec.md:132` `documentation_security_keyword` — `- `config/default/config.json` の `settings.http_basic_auth.password` は `__HOSTNAME__` を許可し、`
+- `warn` `credential_word` `docs/policy/decisions-spec.md:133` `documentation_security_keyword` — `fresh install の初期 password は node 名 (`hostname` の出力) とする。`
+- `warn` `credential_word` `docs/policy/decisions-spec.md:135` `documentation_security_keyword` — `- password 変更値は専用 override ファイルへ保存する。`
+- `warn` `credential_word` `docs/policy/decisions-spec.md:139` `documentation_security_keyword` — `- 保存形式は平文 `password` ではなく、salt 付き PBKDF2-SHA256 の `password_hash` とする。`
+- `warn` `credential_word` `docs/policy/decisions-spec.md:140` `documentation_security_keyword` — `- 専用 override ファイルは `0600` で作成し、ログには password 本体を出さない。`
+- `warn` `credential_word` `docs/policy/decisions-spec.md:154` `documentation_security_keyword` — `- POST / PUT / DELETE と `/ws` は CSRF token を要求する。通常 UI は `hidloom_csrf``
+- `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:42` `documentation_security_keyword` — `| Auth | Bearer token for local/private first slice, OAuth only if multi-user remote access is needed. |`
+- `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:43` `documentation_security_keyword` — `| Token storage | Token values stay out of repo docs and `.env` examples. Use env var names only. |`
+- `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:72` `documentation_security_keyword` — `Bearer-token first slice:`
+- `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:88` `documentation_security_keyword` — `Token value rules:`
+- `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:91` `documentation_security_keyword` — `- Docs may mention the env var name, not the token.`
+- `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:92` `documentation_security_keyword` — `- Logs must redact `Authorization` and configured token env names.`
+- `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:95` `documentation_security_keyword` — `audience, scopes, callback URL, token lifetime, and revocation path before implementation.`
+- `warn` `credential_word` `docs/policy/mcp-write-capable-tool-design.md:16` `documentation_security_keyword` — `- secret、Bluetooth address full value、長い log body、任意 diff hunk は返さない。`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:1316` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:3146` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:4479` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:5206` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:6144` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:6231` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:10603` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:12777` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:21546` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:22210` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:28524` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:31095` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:34075` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:35486` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:36902` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:51369` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:61781` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:69888` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:70705` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:70858` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:71315` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:71472` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:492` `allowed_device_profile` — `"filename": "cqa02303v5rpi-01.kicad_pro",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:592` `allowed_device_profile` — `"bom_export_filename": "cqa02303v5rpi.csv",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:791` `allowed_device_profile` — `"filename": "cqa02303v5rpi-01.kicad_sch",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:792` `allowed_device_profile` — `"name": "cqa02303v5rpi-01",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:806` `allowed_device_profile` — `"cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6207` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6289` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6369` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6475` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6570` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6650` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6732` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6810` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6888` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6970` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7052` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7134` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7222` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7300` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7378` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7456` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7538` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7616` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7694` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7772` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:7969` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8051` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8129` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8207` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8293` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8371` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8454` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8532` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8619` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:8735` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:9021` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7229` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7307` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7389` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7468` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7551` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7630` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7708` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7790` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7869` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:7948` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8027` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8106` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8185` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8264` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8343` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8421` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8504` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8582` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8665` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8747` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8842` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:8925` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9003` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9082` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9161` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9244` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9322` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9400` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9478` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9561` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9640` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9719` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9802` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9881` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:9959` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10038` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10117` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10195` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10273` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10356` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10438` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10517` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10596` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10679` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10757` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10836` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10918` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:10997` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11080` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11159` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11238` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11317` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11400` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11478` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11557` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11639` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11718` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11796` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11874` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:11953` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12031` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12110` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12189` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12268` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12346` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12425` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12504` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12587` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12666` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12749` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12827` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12910` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:12993` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13071` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13150` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13232` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13311` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13394` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13473` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13558` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13637` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13719` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13798` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13876` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:13971` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14049` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14127` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14206` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14289` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14368` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14447` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14530` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14613` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14692` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14770` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14848` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:14931` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15009` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15088` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15167` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15245` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15328` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15407` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15490` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15586` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15669` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15752` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15831` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15914` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:15993` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16072` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16151` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16234` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16317` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16396` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16478` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16561` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16644` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16722` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16804` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16887` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:16970` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17048` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17131` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17210` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17293` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17372` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17451` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17530` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17613` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17691` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17773` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17852` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:17931` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18014` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18092` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18170` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18248` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18327` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18406` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18489` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18568` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18647` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18730` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18812` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/keymap.kicad_sch:18891` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:5448` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:5530` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:5608` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:5690` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:5777` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:5864` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:5942` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6029` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6111` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6193` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6280` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6367` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6454` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6536` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6623` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6705` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6792` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6874` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:6956` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7034` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7121` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7208` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7290` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7372` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7454` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7541` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7623` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7705` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7792` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7874` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:7961` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8048` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8130` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8212` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8294` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8381` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8463` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8545` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8632` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8719` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8801` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8888` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:8975` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9062` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9149` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9231` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9318` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9400` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9487` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9569` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9651` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9738` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9825` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9912` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:9994` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10076` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10163` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10241` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10328` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10415` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10497` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10575` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10662` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10749` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10836` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:10918` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11000` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11082` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11169` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11251` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11338` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11425` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11512` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11594` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11676` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11763` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11845` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:11927` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12009` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12096` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12183` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12270` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12357` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12444` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12531` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12618` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12705` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12792` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12874` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:12956` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13043` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13130` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13212` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13294` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13376` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13463` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13545` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13632` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13719` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13801` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13888` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:13970` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14052` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14139` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14221` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14303` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14385` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14472` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14559` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14646` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14733` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14815` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14902` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:14989` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15076` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15163` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15245` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15327` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15409` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15491` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15573` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15660` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15742` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15824` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15906` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:15988` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16070` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16152` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16234` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16321` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16403` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16485` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16563` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16645` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16727` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16809` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16896` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:16978` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17065` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17152` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17234` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17321` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17408` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17495` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17582` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17664` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17746` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17833` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:17920` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18007` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18094` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18181` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18268` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18355` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18437` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18524` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18606` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18693` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18780` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18862` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:18949` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19031` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19109` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19196` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19278` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19360` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19442` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19529` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19616` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19698` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19785` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19867` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:19949` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20036` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20118` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20205` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20292` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20379` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20461` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20543` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20625` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20707` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/led.kicad_sch:20789` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch:1099` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch:1180` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch:1262` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch:1372` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:1316` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:3146` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:4479` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:5206` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:6144` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:6231` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:10603` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:12777` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:21546` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:22210` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:28524` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:31095` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:34075` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:35486` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:36902` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:51369` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:61781` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:69888` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:70705` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:70858` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:71315` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:71472` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro:492` `allowed_device_profile` — `"filename": "cqa02303v5rpi.kicad_pro",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro:592` `allowed_device_profile` — `"bom_export_filename": "cqa02303v5rpi.csv",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro:791` `allowed_device_profile` — `"filename": "cqa02303v5rpi.kicad_sch",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro:792` `allowed_device_profile` — `"name": "cqa02303v5rpi",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro:806` `allowed_device_profile` — `"cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6207` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6289` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6369` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6475` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6570` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6650` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6732` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6810` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6888` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:6970` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7052` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7134` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7222` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7300` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7378` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7456` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7538` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7616` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7694` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7772` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:7969` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8051` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8129` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8207` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8293` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8371` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8454` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8532` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8619` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:8735` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch:9021` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7229` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7307` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7389` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7468` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7551` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7630` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7708` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7790` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7869` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:7948` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8027` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8106` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8185` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8264` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8343` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8421` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8504` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8582` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8665` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8747` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8842` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:8925` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9003` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9082` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9161` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9244` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9322` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9400` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9478` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9561` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9640` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9719` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9802` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9881` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:9959` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10038` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10117` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10195` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10273` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10356` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10438` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10517` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10596` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10679` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10757` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10836` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10918` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:10997` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11080` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11159` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11238` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11317` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11400` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11478` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11557` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11639` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11718` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11796` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11874` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:11953` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12031` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12110` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12189` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12268` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12346` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12425` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12504` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12587` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12666` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12749` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12827` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12910` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:12993` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13071` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13150` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13232` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13311` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13394` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13473` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13558` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13637` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13719` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13798` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13876` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:13971` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14049` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14127` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14206` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14289` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14368` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14447` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14530` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14613` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14692` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14770` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14848` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:14931` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15009` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15088` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15167` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15245` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15328` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15407` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15490` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15586` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15669` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15752` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15831` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15914` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:15993` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16072` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16151` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16234` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16317` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16396` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16478` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16561` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16644` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16722` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16804` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16887` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:16970` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17048` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17131` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17210` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17293` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17372` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17451` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17530` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17613` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17691` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17773` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17852` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:17931` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18014` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18092` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18170` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18248` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18327` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18406` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18489` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18568` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18647` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18730` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18812` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/keymap.kicad_sch:18891` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:5448` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:5530` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:5608` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:5690` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:5777` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:5864` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:5942` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6029` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6111` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6193` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6280` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6367` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6454` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6536` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6623` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6705` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6792` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6874` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:6956` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7034` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7121` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7208` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7290` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7372` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7454` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7541` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7623` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7705` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7792` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7874` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:7961` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8048` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8130` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8212` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8294` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8381` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8463` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8545` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8632` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8719` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8801` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8888` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:8975` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9062` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9149` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9231` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9318` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9400` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9487` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9569` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9651` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9738` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9825` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9912` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:9994` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10076` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10163` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10241` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10328` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10415` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10497` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10575` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10662` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10749` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10836` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:10918` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11000` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11082` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11169` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11251` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11338` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11425` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11512` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11594` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11676` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11763` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11845` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:11927` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12009` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12096` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12183` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12270` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12357` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12444` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12531` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12618` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12705` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12792` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12874` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:12956` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13043` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13130` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13212` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13294` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13376` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13463` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13545` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13632` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13719` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13801` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13888` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:13970` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14052` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14139` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14221` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14303` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14385` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14472` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14559` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14646` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14733` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14815` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14902` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:14989` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15076` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15163` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15245` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15327` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15409` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15491` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15573` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15660` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15742` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15824` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15906` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:15988` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16070` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16152` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16234` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16321` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16403` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16485` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16563` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16645` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16727` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16809` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16896` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:16978` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17065` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17152` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17234` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17321` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17408` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17495` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17582` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17664` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17746` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17833` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:17920` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18007` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18094` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18181` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18268` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18355` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18437` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18524` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18606` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18693` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18780` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18862` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:18949` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19031` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19109` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19196` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19278` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19360` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19442` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19529` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19616` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19698` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19785` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19867` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:19949` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20036` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20118` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20205` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20292` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20379` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20461` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20543` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20625` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20707` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/led.kicad_sch:20789` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/mouse_sch.kicad_sch:1099` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/mouse_sch.kicad_sch:1180` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/mouse_sch.kicad_sch:1262` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/mouse_sch.kicad_sch:1372` `allowed_device_profile` — `(project "cqa02303v5rpi"`
+- `warn` `credential_word` `macro/README.md:65` `documentation_security_keyword` — `- `examples/password.kml` - パスワード入力デモ`
+- `warn` `credential_word` `script/start_touch_panel_browser.sh:234` `implementation_security_keyword` — `--password-store=basic \`
+- `warn` `credential_word` `script/test_current_status_doc.py:263` `test_fixture` — `assert config["settings"]["http_basic_auth"]["password"] == "__HOSTNAME__"`
+- `warn` `credential_word` `script/test_http_interaction_ui_assets.py:128` `test_fixture` — `assert 'id="settings-current-password"' in index_html`
+- `warn` `credential_word` `script/test_http_interaction_ui_assets.py:129` `test_fixture` — `assert 'id="settings-new-password"' in index_html`
+- `warn` `credential_word` `script/test_http_interaction_ui_assets.py:130` `test_fixture` — `assert 'id="settings-confirm-password"' in index_html`
+- `warn` `credential_word` `script/test_http_script_store.py:37` `test_fixture` — `assert "SSID: ${SSID}" in default_sh3`
+- `warn` `private_ipv4` `script/test_http_security.py:21` `test_fixture` — `assert httpd._remote_ip_allowed("10.1.2.3")`
+- `warn` `private_ipv4` `script/test_http_security.py:22` `test_fixture` — `assert httpd._remote_ip_allowed("172.16.0.1")`
+- `warn` `private_ipv4` `script/test_http_security.py:23` `test_fixture` — `assert httpd._remote_ip_allowed("172.31.255.254")`
+- `warn` `credential_word` `script/test_http_settings_api.py:35` `test_fixture` — `"password": "old-pass",`
+- `warn` `credential_word` `script/test_http_settings_api.py:99` `test_fixture` — `assert stored_config["settings"]["http_basic_auth"]["password"] == "old-pass"`
+- `warn` `credential_word` `script/test_http_settings_api.py:102` `test_fixture` — `assert "password" not in stored_auth`
+- `warn` `credential_word` `script/test_http_settings_api.py:255` `test_fixture` — `print("ok: HTTP Settings API updates Basic auth password")`
+- `warn` `legacy_project_name` `script/test_kicad_generation.py:40` `allowed_device_profile` — `"kicad/cqa02303v5rpi/keymap.kicad_sch",`
+- `warn` `legacy_project_name` `script/test_kicad_generation.py:41` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",`
+- `warn` `legacy_project_name` `script/test_kicad_generation.py:54` `allowed_device_profile` — `(fixture / "kicad/cqa02303v5rpi/keymap.kicad_sch").unlink()`
+- `warn` `legacy_project_name` `script/test_kicad_generation.py:98` `allowed_device_profile` — `raw_leds = led_gen._extract_led_positions(str(ROOT / "kicad" / "cqa02303v5rpi" / "cqa02303v5rpi.kicad_pcb"))`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:51` `test_fixture` — `secret = "fixture-secret-value"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:54` `test_fixture` — `f"HIDLOOM_HTTPD_BASIC_AUTH_PASSWORD={secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:61` `test_fixture` — `assert secret not in canonical.stdout + canonical.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:64` `test_fixture` — `env_file.write_text(f"{retired_key}={secret}\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:69` `test_fixture` — `assert secret not in retired.stdout + retired.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:75` `test_fixture` — `f" export {retired_key} = {secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:84` `test_fixture` — `assert secret not in planned.stdout + planned.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:98` `test_fixture` — `assert secret not in wrong_confirmation.stdout + wrong_confirmation.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:119` `test_fixture` — `assert secret not in applied.stdout + applied.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:124` `test_fixture` — `f"{retired_key}={secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:132` `test_fixture` — `assert secret not in collision_plan.stdout + collision_plan.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:145` `test_fixture` — `env_file.write_text("not an assignment with secret material\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:149` `test_fixture` — `assert "secret material" not in malformed.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:158` `test_fixture` — `env_file.write_text(f"{retired_key}={secret}\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:162` `test_fixture` — `assert env_file.read_text(encoding="utf-8") == f"{retired_key}={secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:163` `test_fixture` — `assert secret not in insecure_plan.stdout + insecure_plan.stderr`
+- `warn` `credential_word` `script/test_logicd_wifi_actions.py:84` `test_fixture` — `wifi.status = WifiStatus(blocked=False, connected=True, ssid="HomeAP")`
+- `warn` `credential_word` `script/test_logicd_wifi_manager.py:56` `test_fixture` — `assert status.ssid == "HomeAP"`
+- `warn` `credential_word` `script/test_mcp_keyboard_server.py:1371` `test_fixture` — `(root / "done" / "task-a.result.md").write_text("secret body should not return", encoding="utf-8")`
+- `warn` `credential_word` `script/test_mcp_keyboard_server.py:1383` `test_fixture` — `assert "secret body" not in encoded`
+- `warn` `credential_word` `script/test_public_export.py:234` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:237` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:240` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
+- `warn` `credential_word` `script/test_public_usb_identity.py:269` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
+- `warn` `credential_word` `script/test_text_send_safety.py:122` `test_fixture` — `assert not send_string_name_valid("../secret")`
+- `warn` `credential_word` `script/test_unicode_send_string_safety_design_doc.py:62` `test_fixture` — `assert "secret / password" in text`
+- `warn` `linux_foundation_vid` `script/test_usb_gadget_descriptor.py:49` `test_fixture` — `assert "`0x1d6b:0x0105`" in documentation`
+- `warn` `linux_foundation_vid` `script/test_vial_raw_hid_host.py:17` `pid_codes_migration_required` — `VENDOR_ID = 0x1D6B`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:46` `test_fixture` — `secret = "fixture-secret-value"`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:47` `test_fixture` — `environment_text = f"HIDLOOM_SECRET={secret}\n"`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:60` `test_fixture` — `write(review_backup, secret)`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:61` `test_fixture` — `write(nested_environment, secret)`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:92` `test_fixture` — `assert secret not in failed.stdout + failed.stderr`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:100` `test_fixture` — `assert review_backup.read_text(encoding="utf-8") == secret`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:102` `test_fixture` — `assert nested_environment.read_text(encoding="utf-8") == secret`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:108` `test_fixture` — `assert secret not in cleaned.stdout + cleaned.stderr`
+- `warn` `credential_word` `script/test_workspace_debris_hygiene.py:117` `test_fixture` — `assert secret not in clean.stdout + clean.stderr`
+- `warn` `linux_foundation_vid` `script/windows_ime_raw_hid_receiver_poc.py:25` `pid_codes_migration_required` — `VENDOR_ID = 0x1D6B`
+- `warn` `credential_word` `system/install/setup_fresh_rpi.sh:208` `implementation_security_keyword` — `local token="$2"`
+- `warn` `credential_word` `system/install/setup_fresh_rpi.sh:213` `implementation_security_keyword` — `printf '%s\n' "$line" | tr ' ' '\n' | awk -v token="$token" '$0 != token' | paste -sd' ' - >"$file"`
+- `warn` `credential_word` `system/install/setup_fresh_rpi.sh:327` `implementation_security_keyword` — `user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"`
+- `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:11` `pid_codes_migration_required` — `VENDOR_ID="0x1d6b"`
+- `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:37` `pid_codes_migration_required` — `sh("VENDOR_ID"; .device.vendor_id // "0x1d6b"),`
+- `warn` `credential_word` `tools/README.md:83` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
+- `warn` `credential_word` `tools/btd_bluez_pairing_window.py:53` `implementation_security_keyword` — `token in line`
+- `warn` `credential_word` `tools/btd_bluez_pairing_window.py:54` `implementation_security_keyword` — `for token in (`
+- `warn` `credential_word` `tools/buildroot_m1_compare.py:71` `implementation_security_keyword` — `if any(token in line for token in ("hid", "usb", "cqa02303v5", "1d6b:0105")):`
+- `warn` `credential_word` `tools/collect_license_evidence.py:90` `implementation_security_keyword` — `if not any(token in relative.name.upper() for token in ("LICENSE", "COPYING", "NOTICE")):`
+- `warn` `credential_word` `tools/development_residue_hygiene.py:122` `implementation_security_keyword` — `for token in tokens:`
+- `warn` `credential_word` `tools/development_residue_hygiene.py:123` `implementation_security_keyword` — `if token.type != tokenize.COMMENT:`
+- `warn` `credential_word` `tools/development_residue_hygiene.py:125` `implementation_security_keyword` — `line_number, column = token.start`
+- `warn` `credential_word` `tools/development_residue_hygiene.py:127` `implementation_security_keyword` — `comments[offset : offset + len(token.string)] = token.string`
+- `warn` `credential_word` `tools/generate_third_party_inventory.py:80` `implementation_security_keyword` — `values.extend(token for token in lexer if re.fullmatch(r"[A-Za-z0-9_.+-]+", token))`
+- `warn` `linux_foundation_vid` `tools/hidloom_usb_gadget_fast/README.md:19` `pid_codes_migration_required` — `- `HIDLOOM_USB_VENDOR_ID` defaults to `0x1d6b``
+- `warn` `linux_foundation_vid` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:21` `pid_codes_migration_required` — `#define DEFAULT_VENDOR_ID "0x1d6b"`
+- `warn` `credential_word` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:306` `implementation_security_keyword` — `char *password = strchr(group_name, ':');`
+- `warn` `credential_word` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:307` `implementation_security_keyword` — `if (!password) continue;`
+- `warn` `credential_word` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:308` `implementation_security_keyword` — `*password = '\0';`
+- `warn` `credential_word` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:311` `implementation_security_keyword` — `char *gid_text = strchr(password + 1, ':');`
+- `warn` `credential_word` `tools/local_environment_hygiene.py:283` `implementation_security_keyword` — `metavar="TOKEN",`
+- `warn` `credential_word` `tools/morse_browser_smoke.py:222` `implementation_security_keyword` — `token = base64.b64encode(f"{args.username}:{args.password}".encode("utf-8")).decode("ascii")`
+- `warn` `credential_word` `tools/morse_browser_smoke.py:223` `implementation_security_keyword` — `client.call("Network.setExtraHTTPHeaders", {"headers": {"Authorization": f"Basic {token}"}})`
+- `warn` `credential_word` `tools/morse_browser_smoke.py:327` `implementation_security_keyword` — `parser.add_argument("--password", default="<keyboard-host>")`
+- `warn` `credential_word` `tools/sessiond_ctl.py:155` `implementation_security_keyword` — `for token in tokens:`
+- `warn` `credential_word` `tools/sessiond_ctl.py:157` `implementation_security_keyword` — `data = token.encode("ascii")`
+- `warn` `legacy_project_name` `windows-driver/README.md:9` `allowed_device_profile` — `- `build-sign-install-cqa-jis-inf-admin.ps1`: INF を package 化し、自己署名 catalog を作成して install する管理者用 script。`
+- `warn` `legacy_project_name` `windows-driver/README.md:10` `allowed_device_profile` — `- `install-cqa-jis-inf-admin.ps1`: 署名済み package を使わず、INF を直接 `pnputil` に渡す最小 script。`
+- `warn` `legacy_project_name` `windows-driver/README.md:23` `allowed_device_profile` — `違う version の Windows SDK を使う場合は、`build-sign-install-cqa-jis-inf-admin.ps1` の`
+- `warn` `legacy_project_name` `windows-driver/README.md:40` `allowed_device_profile` — `.\build-sign-install-cqa-jis-inf-admin.ps1`
+- `warn` `legacy_project_name` `windows-driver/README.md:45` `allowed_device_profile` — `で install される。log は `build-sign-install-cqa-jis-inf.log` に残る。`
+- `warn` `legacy_project_name` `windows-driver/README.md:70` `allowed_device_profile` — ``build-sign-install-cqa-jis-inf-admin.ps1` が失敗した場合は、まず log を見る。`
+- `warn` `legacy_project_name` `windows-driver/README.md:73` `allowed_device_profile` — `Get-Content .\build-sign-install-cqa-jis-inf.log -Tail 80`
+- `warn` `legacy_project_name` `windows-driver/README.md:84` `allowed_device_profile` — `必要に応じて repository root の `script\cleanup_windows_cqa_stale_devices.ps1` を使う。`
+- `warn` `legacy_project_name` `windows-driver/build-sign-install-cqa-jis-inf-admin.ps1:9` `allowed_device_profile` — `$LogPath = Join-Path $Root "build-sign-install-cqa-jis-inf.log"`

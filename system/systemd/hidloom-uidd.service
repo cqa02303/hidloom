@@ -1,0 +1,23 @@
+[Unit]
+Description=HIDloom native uinput report sink
+Documentation=file://@HIDLOOM_REPO_ROOT@/docs/architecture/native-output-routing-uidd-design.md
+After=local-fs.target
+ConditionPathExists=/dev/uinput
+
+[Service]
+Type=simple
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+ExecStart=@HIDLOOM_REPO_ROOT@/bin/hidloom-uidd
+Restart=always
+RestartSec=0.2
+User=root
+Group=root
+SyslogIdentifier=hidloom-uidd
+Environment=UIDD_REPORT_SOCKET=/tmp/uidd_reports.sock
+Environment=UIDD_STATUS_PATH=/run/hidloom/uidd-status.json
+Environment=UIDD_UINPUT_PATH=/dev/uinput
+Environment=UIDD_DRY_RUN=0
+Environment=UIDD_REPORT_SOCKET_MODE=0666
+
+[Install]
+WantedBy=multi-user.target

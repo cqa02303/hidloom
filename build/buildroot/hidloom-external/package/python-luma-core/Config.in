@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_LUMA_CORE
+	bool "python-luma-core"
+	select BR2_PACKAGE_PYTHON_PILLOW
+	select BR2_PACKAGE_PYTHON_SMBUS2
+	select BR2_PACKAGE_PYTHON_CBOR2
+	help
+	  SBC display driver support library used by the M6 OLED daemon.

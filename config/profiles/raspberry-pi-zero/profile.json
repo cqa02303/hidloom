@@ -1,0 +1,24 @@
+{
+  "profile_id": "raspberry-pi-zero",
+  "title": "Raspberry Pi Zero low-latency runtime profile",
+  "target": {
+    "model_family": [
+      "Raspberry Pi Zero W",
+      "Raspberry Pi Zero"
+    ],
+    "tested_device": "Raspberry Pi Zero W Rev 1.1",
+    "tested_os": "Raspbian trixie armhf",
+    "tested_at": "2026-06-13"
+  },
+  "overrides": {
+    "matrixd": "overrides/matrixd.json",
+    "i2cd": "overrides/i2cd.json",
+    "ledd": "overrides/ledd.json"
+  },
+  "services": "services.json",
+  "notes": [
+    "Use this runtime profile separately from config/boards wiring profiles.",
+    "Bluetooth HID is intentionally disabled in this profile unless explicitly needed.",
+    "Analog stick polling is disabled because ADS1115 polling can add latency on Zero-class hardware."
+  ]
+}

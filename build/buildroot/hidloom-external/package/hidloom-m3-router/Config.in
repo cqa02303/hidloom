@@ -1,0 +1,4 @@
+config BR2_PACKAGE_HIDLOOM_M3_ROUTER
+	bool "hidloom-m3-router"
+	help
+	  Minimal M3 matrix event to HID report router.

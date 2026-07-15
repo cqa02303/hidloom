@@ -1,0 +1,31 @@
+[Unit]
+Description=HIDloom native HID report broker
+Documentation=file://@HIDLOOM_REPO_ROOT@/docs/daemon/specs/hidd/m0-implementation-spec.md
+DefaultDependencies=no
+After=hidloom-usb-gadget.service
+Wants=dev-hidg0.device dev-hidg2.device
+Before=basic.target multi-user.target
+Conflicts=usbd.service
+
+[Service]
+Type=simple
+ExecStart=@HIDLOOM_REPO_ROOT@/bin/hidloom-hidd
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=0.2s
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hidloom-hidd
+Environment=USBD_HID_REPORT_SOCKET=/tmp/usbd_hid_reports.sock
+Environment=USBD_HID_REPORT_PATH=/dev/hidg0
+Environment=USBD_US_SUB_HID_REPORT_PATH=/dev/hidg2
+Environment=HIDD_STATUS_PATH=/run/hidloom/hidd-status.json
+RuntimeDirectory=hidloom
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=sysinit.target

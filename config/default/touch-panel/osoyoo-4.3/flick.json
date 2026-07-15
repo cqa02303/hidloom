@@ -1,0 +1,64 @@
+{
+  "_schema": "hidloom-touch-flick/1",
+  "_note": [
+    "Phone-style Japanese flick definitions for the OSOYOO 4.3 inch profile.",
+    "Keymap entries use KC_FLICK(layer,index); this file owns the visible label and five-direction output for each pad.",
+    "Direction order is center/tap, up, right, down, left."
+  ],
+  "columns": 3,
+  "rows": 4,
+  "directions": ["center", "up", "right", "down", "left"],
+  "layers": [
+    {
+      "name": "kana-0",
+      "pads": [
+        {"key": "a", "label": "あ", "actions": {"center": "あ", "up": "う", "right": "え", "down": "お", "left": "い"}},
+        {"key": "ka", "label": "か", "actions": {"center": "か", "up": "く", "right": "け", "down": "こ", "left": "き"}},
+        {"key": "sa", "label": "さ", "actions": {"center": "さ", "up": "す", "right": "せ", "down": "そ", "left": "し"}},
+        {"key": "ta", "label": "た", "actions": {"center": "た", "up": "つ", "right": "て", "down": "と", "left": "ち"}},
+        {"key": "na", "label": "な", "actions": {"center": "な", "up": "ぬ", "right": "ね", "down": "の", "left": "に"}},
+        {"key": "ha", "label": "は", "actions": {"center": "は", "up": "ふ", "right": "へ", "down": "ほ", "left": "ひ"}},
+        {"key": "ma", "label": "ま", "actions": {"center": "ま", "up": "む", "right": "め", "down": "も", "left": "み"}},
+        {"key": "ya", "label": "や", "actions": {"center": "や", "up": "ゆ", "right": "「", "down": "よ", "left": "」"}},
+        {"key": "ra", "label": "ら", "actions": {"center": "ら", "up": "る", "right": "れ", "down": "ろ", "left": "り"}},
+        {"key": "mark", "label": "”゜小", "actions": {"center": "゛", "up": "ぁ", "right": "ゃ", "down": "ょ", "left": "゜"}},
+        {"key": "wa", "label": "わ", "actions": {"center": "わ", "up": "を", "right": "ん", "down": "ー", "left": "、"}},
+        {"key": "punct", "label": "、。？！定", "actions": {"center": "、", "up": "？", "right": "！", "down": "。", "left": {"label": "定", "action": "TEXT(kana_a)", "output": "text"}}}
+      ]
+    },
+    {
+      "name": "alpha-1",
+      "pads": [
+        {"key": "sym1", "label": "＠＃／＆＿", "actions": {"center": "KC_AT", "up": "KC_SLSH", "right": "KC_AMPR", "down": "KC_UNDS", "left": "KC_HASH"}},
+        {"key": "abc", "label": "ABC", "actions": {"center": "KC_A", "up": "KC_C", "left": "KC_B"}},
+        {"key": "def", "label": "DEF", "actions": {"center": "KC_D", "up": "KC_F", "left": "KC_E"}},
+        {"key": "ghi", "label": "GHI", "actions": {"center": "KC_G", "up": "KC_I", "left": "KC_H"}},
+        {"key": "jkl", "label": "JKL", "actions": {"center": "KC_J", "up": "KC_L", "left": "KC_K"}},
+        {"key": "mno", "label": "MNO", "actions": {"center": "KC_M", "up": "KC_O", "left": "KC_N"}},
+        {"key": "pqrs", "label": "PQRS", "actions": {"center": "KC_P", "up": "KC_R", "right": "KC_S", "left": "KC_Q"}},
+        {"key": "tuv", "label": "TUV", "actions": {"center": "KC_T", "up": "KC_V", "left": "KC_U"}},
+        {"key": "wxyz", "label": "WXYZ", "actions": {"center": "KC_W", "up": "KC_Y", "right": "KC_Z", "left": "KC_X"}},
+        {"key": "caps", "label": "a/A", "actions": {"center": "KC_CAPS"}},
+        {"key": "quote_paren", "label": "'\"()", "actions": {"center": "KC_QUOT", "up": "KC_LPRN", "right": "KC_RPRN", "left": "KC_DQUO"}},
+        {"key": "punct_ascii", "label": ",.?!", "actions": {"center": "KC_COMM", "up": "KC_QUES", "right": "KC_EXLM", "left": "KC_DOT"}}
+      ]
+    },
+    {
+      "name": "symbol-2",
+      "pads": [
+        {"key": "num1", "label": "１☆♪→", "actions": {"center": "１", "up": "♪", "right": "→", "left": "☆"}},
+        {"key": "num2", "label": "２￥＄€", "actions": {"center": "２", "up": "＄", "right": "€", "left": "￥"}},
+        {"key": "num3", "label": "３％°＃", "actions": {"center": "３", "up": "°", "right": "＃", "left": "％"}},
+        {"key": "num4", "label": "４゜＊・", "actions": {"center": "４", "up": "＊", "right": "・", "left": "゜"}},
+        {"key": "num5", "label": "５＋×÷", "actions": {"center": "５", "up": "×", "right": "÷", "left": "＋"}},
+        {"key": "num6", "label": "６＜＝＞", "actions": {"center": "６", "up": "＝", "right": "＞", "left": "＜"}},
+        {"key": "num7", "label": "７「」：", "actions": {"center": "７", "up": "」", "right": "：", "left": "「"}},
+        {"key": "num8", "label": "８〓々〆", "actions": {"center": "８", "up": "々", "right": "〆", "left": "〓"}},
+        {"key": "num9", "label": "９＾｜ヽ", "actions": {"center": "９", "up": "｜", "right": "ヽ", "left": "＾"}},
+        {"key": "brackets", "label": "（）［］", "actions": {"center": "（", "up": "［", "right": "］", "left": "）"}},
+        {"key": "num0", "label": "０～...", "actions": {"center": "０", "up": ".", "right": ".", "down": ".", "left": "～"}},
+        {"key": "punct_symbol", "label": "．，‐／", "actions": {"center": "．", "up": "‐", "right": "／", "left": "，"}}
+      ]
+    }
+  ]
+}

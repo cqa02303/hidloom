@@ -1,0 +1,26 @@
+[Unit]
+Description=USB Bridge Daemon (usbd)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/usbd/README.md
+After=hidloom-usb-gadget.service
+Wants=dev-hidg0.device dev-hidg2.device
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m usbd.usbd
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=2s
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=usbd
+Environment=LOG_LEVEL=INFO
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+Environment=USBD_HID_REPORT_SOCKET_ENABLED=1
+Environment=USBD_RAW_HID_BRIDGE_ENABLED=0
+
+[Install]
+WantedBy=multi-user.target

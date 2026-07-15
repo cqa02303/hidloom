@@ -1,0 +1,38 @@
+[Unit]
+Description=Keyboard Logic Companion Daemon (logicd companion)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/logicd/README.md
+After=matrixd.service hidloom-logicd-core.service
+Wants=hidloom-logicd-core.service
+
+[Service]
+Type=simple
+ExecStartPre=/bin/rm -f /tmp/logicd_delegate_events.sock /tmp/ctrl_events.sock /tmp/ledd_events.sock /tmp/key_events.sock
+ExecStart=/usr/bin/python3 -S -m logicd.logicd
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=2s
+TimeoutStopSec=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=logicd-companion
+Environment=LOG_SYSLOG=1
+Environment=LOG_LEVEL=INFO
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+Environment=HIDLOOM_REPO_ROOT=@HIDLOOM_REPO_ROOT@
+Environment=LOGICD_MATRIX_SOCKET=none
+Environment=LOGICD_DELEGATE_SOCKET=/tmp/logicd_delegate_events.sock
+Environment=LOGICD_CORE_KEY_EVENT_CTRL_SOCKET=/tmp/logicd_core_ctrl.sock
+Environment=LOGICD_OUTPUTS=debug
+Environment=LOGICD_NATIVE_OUTPUTD_CTRL=1
+Environment=LOGICD_OUTPUTD_CTRL_SOCKET=/tmp/hidloom_output_ctrl.sock
+Environment=LOGICD_AUTO_BT_FALLBACK=1
+Environment=LOGICD_USBD_HID_REPORT_BROKER=0
+
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,26 @@
+[Unit]
+Description=I2C Display Daemon (i2cd)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/i2cd/README.md
+# ローカルFSマウント後すぐに起動（I2Cデバイスはカーネル起動時に利用可能）
+# logicd の起動は不要: i2cd 内でサービス状態をポーリングしてブート画面を表示する
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m i2cd.i2cd
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=3s
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=i2cd
+Environment=LOG_SYSLOG=1
+Environment=LOG_LEVEL=INFO
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+
+[Install]
+WantedBy=multi-user.target

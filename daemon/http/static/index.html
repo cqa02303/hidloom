@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{HOSTNAME} Virtual Keyboard</title>
+  <link rel="icon" type="image/svg+xml" href="/static/hidloom-mark.svg">
+  <link rel="icon" href="/static/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/android-chrome-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/static/android-chrome-512x512.png">
+  <link rel="stylesheet" href="/static/keyboard.css">
+  <link rel="stylesheet" href="/static/lighting_panel.css">
+  <link rel="stylesheet" href="/static/interaction_panel.css">
+</head>
+<body>
+  <header>
+    <h1><a class="repo-title-link" href="https://github.com/cqa02303/hidloom" target="_blank" rel="noopener noreferrer">{HOSTNAME} Virtual Keyboard</a></h1>
+    <span id="ws-status" class="status disconnected" role="button" tabindex="0" title="Reload" onclick="reloadFromReadyStatus()" onkeydown="handleReadyStatusKeydown(event)">Disconnected</span>
+  </header>
+
+  <section id="system-status">
+    <div class="sysstat-toolbar">
+      <span class="sysstat-title">System</span>
+      <div class="sysstat-view-toggle" role="group" aria-label="ステータス表示">
+        <button id="status-view-simple" type="button" onclick="setStatusViewMode('simple')">簡易</button>
+        <button id="status-view-detail" type="button" onclick="setStatusViewMode('detail')">詳細</button>
+      </div>
+    </div>
+    <div class="sysstat-row">
+      <span class="sysstat-label">HID Gadget</span>
+      <span id="stat-hid" class="status disconnected">–</span>
+    </div>
+    <div class="sysstat-row">
+      <span class="sysstat-label">Output mode</span>
+      <span id="stat-mode" class="status disconnected">–</span>
+    </div>
+    <div class="sysstat-row">
+      <span class="sysstat-label">Bluetooth</span>
+      <span id="stat-bluetooth" class="status disconnected">–</span>
+      <span id="stat-bt-indicators" class="bt-indicators" aria-label="Bluetooth state indicators">
+        <span class="bt-step-wrap"><span id="stat-bt-power" class="bt-step off" title="Power"></span><span class="bt-step-label">Power</span></span>
+        <span class="bt-step-wrap"><span id="stat-bt-pairing" class="bt-step off" title="Pairing"></span><span class="bt-step-label">Pair</span></span>
+        <span class="bt-step-wrap"><span id="stat-bt-connected" class="bt-step off" title="Connected"></span><span class="bt-step-label">Conn</span></span>
+      </span>
+      <span class="bt-actions" aria-label="Bluetooth actions">
+        <button id="bt-pair-on-btn" type="button" class="bt-action-btn" onclick="setBluetoothPairing('on')">Pair on</button>
+        <button id="bt-pair-off-btn" type="button" class="bt-action-btn" onclick="setBluetoothPairing('off')">Off</button>
+        <button id="bt-forget-btn" type="button" class="bt-action-btn bt-forget-btn" onclick="forgetBluetoothDevices()">Forget</button>
+      </span>
+    </div>
+    <div class="sysstat-row" data-service="logicd-core"><span class="sysstat-label">logicd-core</span><span id="stat-logicd-core" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="logicd-companion"><span class="sysstat-label">logicd-companion</span><span id="stat-logicd-companion" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="httpd"><span class="sysstat-label">httpd</span><span id="stat-httpd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="matrixd"><span class="sysstat-label">matrixd</span><span id="stat-matrixd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="ledd"><span class="sysstat-label">ledd</span><span id="stat-ledd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="viald"><span class="sysstat-label">viald</span><span id="stat-viald" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="hidd"><span class="sysstat-label">hidd</span><span id="stat-hidd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="outputd"><span class="sysstat-label">outputd</span><span id="stat-outputd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="uidd"><span class="sysstat-label">uidd</span><span id="stat-uidd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="i2cd"><span class="sysstat-label">i2cd</span><span id="stat-i2cd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="btd"><span class="sysstat-label">btd</span><span id="stat-btd" class="status disconnected">–</span></div>
+    <div class="sysstat-row" data-service="spid"><span class="sysstat-label">spid</span><span id="stat-spid" class="status disconnected">–</span></div>
+  </section>
+
+  <div id="log-panel">
+    <div id="log-panel-header">
+      <span id="log-panel-title">ログ</span>
+      <button class="log-btn" onclick="refreshLog()">更新</button>
+      <button class="log-btn log-btn-close" onclick="closeLogPanel()">✕</button>
+    </div>
+    <pre id="log-output">読み込み中…</pre>
+  </div>
+
+  <nav id="app-tabs" aria-label="表示切り替え">
+    <button class="app-tab active" data-app-tab="keyboard" onclick="setActiveTab('keyboard')">キーボード</button>
+    <button class="app-tab" data-app-tab="keymap" onclick="setActiveTab('keymap')">キーコード変更</button>
+    <button class="app-tab" data-app-tab="lighting" onclick="setActiveTab('lighting')">LED Effect</button>
+    <button class="app-tab" data-app-tab="scripts" onclick="setActiveTab('scripts')">スクリプト</button>
+    <button class="app-tab" data-app-tab="interaction" onclick="setActiveTab('interaction')">Interaction</button>
+    <button class="app-tab" data-app-tab="settings" onclick="setActiveTab('settings')">Settings</button>
+  </nav>
+
+  <div id="keymap-tab-toolbar" class="tab-hidden">
+    <label class="remap-layer-label">レイヤー:
+      <select id="remap-layer-sel"></select>
+    </label>
+    <button id="layer-add-btn" class="remap-vil-btn" onclick="addRuntimeLayer()">Layer追加</button>
+    <button id="layer-clear-btn" class="remap-vil-btn" onclick="clearCurrentLayer()">Layer削除</button>
+    <button class="remap-vil-btn" onclick="exportVilLayout()">.vil書き出し</button>
+    <button class="remap-vil-btn" onclick="document.getElementById('vil-import-file').click()">.vil読み込み</button>
+    <input id="vil-import-file" type="file" accept=".vil,application/json" onchange="importVilLayout(this.files[0]); this.value=''" hidden>
+    <button id="kle-open-btn" class="remap-vil-btn kle-open-btn" onclick="openKleForCurrentLayer()"><span class="kle-open-icon" aria-hidden="true">KLE</span><span>KLEで表示</span></button>
+    <button id="matrix-coords-toggle" class="remap-vil-btn" onclick="setKeyboardMatrixCoordsEnabled(!keyboardMatrixCoordsEnabled)">Matrix座標: OFF</button>
+    <button class="remap-reset-btn" onclick="resetSavedKeymap()">保存済みキー配置を初期化</button>
+  </div>
+
+  <section id="lighting-panel" class="tab-hidden">
+    <div class="lighting-controls">
+      <div class="lighting-field lighting-effect-field">
+        <label>LED Effect</label>
+        <input id="lighting-mode" type="hidden" value="2">
+        <div id="lighting-current-effect" class="lighting-current-effect">–</div>
+        <div id="lighting-effect-groups" class="lighting-effect-groups"></div>
+      </div>
+      <div class="lighting-side-controls">
+        <div class="lighting-field"><label for="lighting-brightness">Brightness <span id="lighting-brightness-value">–</span></label><div class="lighting-range-row"><input id="lighting-brightness" type="range" min="0" max="255" value="128"><input id="lighting-brightness-number" class="lighting-number" type="number" min="0" max="255" value="128"></div></div>
+        <div class="lighting-field"><label for="lighting-speed">Speed <span id="lighting-speed-value">–</span></label><div class="lighting-range-row"><input id="lighting-speed" type="range" min="0" max="255" value="128"><input id="lighting-speed-number" class="lighting-number" type="number" min="0" max="255" value="128"></div></div>
+        <div class="lighting-field"><label for="lighting-hue">Hue <span id="lighting-hue-value">–</span></label><div class="lighting-range-row"><input id="lighting-hue" type="range" min="0" max="255" value="0"><input id="lighting-hue-number" class="lighting-number" type="number" min="0" max="255" value="0"></div></div>
+        <div class="lighting-field"><label for="lighting-saturation">Saturation <span id="lighting-saturation-value">–</span></label><div class="lighting-range-row"><input id="lighting-saturation" type="range" min="0" max="255" value="0"><input id="lighting-saturation-number" class="lighting-number" type="number" min="0" max="255" value="0"></div></div>
+        <div class="lighting-field lighting-color-field"><label for="lighting-color">Color</label><div class="lighting-color-row"><input id="lighting-color" type="color" value="#ffffff" title="Color"><div id="lighting-color-presets" class="lighting-color-presets"></div></div></div>
+        <div class="lighting-actions"><button class="lighting-btn" id="lighting-apply" type="button" onclick="applyLighting()">反映</button><button class="lighting-btn" type="button" onclick="resetSavedLighting()">リセット</button><button class="lighting-btn" type="button" onclick="fetchLighting()">再読込</button><span id="lighting-status" class="lighting-status">–</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="scripts-panel" class="tab-hidden">
+    <div class="script-toolbar">
+      <label for="script-select">スクリプト</label>
+      <select id="script-select"></select>
+      <button class="lighting-btn script-save-btn" type="button" onclick="saveScriptContent()">保存</button>
+      <button class="lighting-btn script-run-btn" type="button" onclick="runSavedScriptContent()">通常実行</button>
+      <button class="lighting-btn script-save-run-btn" type="button" onclick="saveAndRunScriptContent()">保存して実行</button>
+      <button class="lighting-btn" type="button" onclick="checkRunScriptContent()">チェック実行</button>
+      <button class="lighting-btn" type="button" onclick="resetScriptContent()">初期化</button>
+      <span id="script-status" class="script-status">–</span>
+    </div>
+    <div class="script-command-tools">
+      <details class="script-command-help">
+        <summary>組み込みコマンド</summary>
+        <div class="script-command-list">
+          <div><span>OLEDにワーニングメッセージを表示する</span><code>hidloom-oled warning "message" 3</code><button type="button" onclick="insertScriptSnippet('oledWarning')">挿入</button></div>
+          <div><span>OLEDに通常通知メッセージを表示する</span><code>hidloom-oled alert "message" 2</code><button type="button" onclick="insertScriptSnippet('oledAlert')">挿入</button></div>
+          <div><span>OLED表示とjournal記録をまとめて行う</span><code>hidloom-notify warning "message" 3</code><button type="button" onclick="insertScriptSnippet('notifyWarning')">挿入</button></div>
+          <div><span>通常通知をOLEDとjournalへ送る</span><code>hidloom-notify alert "message" 2</code><button type="button" onclick="insertScriptSnippet('notifyAlert')">挿入</button></div>
+          <div><span>文字列をキーボード入力として送る</span><code>hidloom-keytext "ABCabc\n"</code><button type="button" onclick="insertScriptSnippet('keytext')">挿入</button></div>
+          <div><span>HIDキーコードとmodifierを直接tapする</span><code>hidloom-key tap 0x0204</code><button type="button" onclick="insertScriptSnippet('keyTap')">挿入</button></div>
+          <div><span>次の処理まで少し待つ</span><code>sleep 0.2</code><button type="button" onclick="insertScriptSnippet('sleep')">挿入</button></div>
+          <div><span>systemd journalにログを残す</span><code>logger -t KC_SH "message"</code><button type="button" onclick="insertScriptSnippet('logger')">挿入</button></div>
+          <div><span>logicd control socketからlayer状態を取得する</span><code>hidloom-ctrl layer get</code><button type="button" onclick="insertScriptSnippet('ctrlLayerGet')">挿入</button></div>
+          <div><span>出力先をBluetoothへ切り替える</span><code>hidloom-ctrl output bt</code><button type="button" onclick="insertScriptSnippet('ctrlOutputBt')">挿入</button></div>
+          <div><span>Bluetoothペアリング状態を切り替える</span><code>hidloom-ctrl bt pairing-toggle</code><button type="button" onclick="insertScriptSnippet('ctrlBtPairing')">挿入</button></div>
+          <div><span>LED effectを直接指定する</span><code>hidloom-ctrl led effect 40 128 175 77 160</code><button type="button" onclick="insertScriptSnippet('ctrlLedEffect')">挿入</button></div>
+        </div>
+      </details>
+      <details class="script-command-help script-hid-key-help">
+        <summary>HIDキーコード</summary>
+        <div class="script-hid-key-panel">
+          <label class="script-hid-prefix"><input id="script-hid-command-prefix" type="checkbox" onchange="updateScriptHidPreview()">hidloom-key tapを付ける</label>
+          <label><span>Key</span><select id="script-hid-key-select" onchange="selectScriptHidKeyCode(this.value)"></select></label>
+          <label><span>Code</span><input id="script-hid-key-code" type="text" value="0x04" oninput="updateScriptHidPreview()"></label>
+          <div class="script-hid-modifiers">
+            <label><input class="script-hid-mod" type="checkbox" value="0x01" onchange="updateScriptHidPreview()">Ctrl</label>
+            <label><input class="script-hid-mod" type="checkbox" value="0x02" onchange="updateScriptHidPreview()">Shift</label>
+            <label><input class="script-hid-mod" type="checkbox" value="0x04" onchange="updateScriptHidPreview()">Alt</label>
+            <label><input class="script-hid-mod" type="checkbox" value="0x08" onchange="updateScriptHidPreview()">Win</label>
+          </div>
+          <code id="script-hid-preview">0x04</code>
+          <button type="button" onclick="insertScriptHidCommand()">キー挿入</button>
+          <label class="script-hid-text-field"><span>Text</span><input id="script-hid-text-input" type="text" placeholder="ABCabc" oninput="updateScriptHidPreview()"></label>
+          <div class="script-hid-modifiers script-hid-text-modifiers">
+            <label><input class="script-hid-text-mod" type="checkbox" value="0x01" onchange="updateScriptHidPreview()">Ctrl</label>
+            <label><input class="script-hid-text-mod" type="checkbox" value="0x02" onchange="updateScriptHidPreview()">Shift</label>
+            <label><input class="script-hid-text-mod" type="checkbox" value="0x04" onchange="updateScriptHidPreview()">Alt</label>
+            <label><input class="script-hid-text-mod" type="checkbox" value="0x08" onchange="updateScriptHidPreview()">Win</label>
+          </div>
+          <code id="script-hid-text-preview">文字列を入力してください</code>
+          <button type="button" onclick="insertScriptHidTextCommand()">文字列挿入</button>
+        </div>
+      </details>
+    </div>
+    <textarea id="script-content" class="script-content" spellcheck="false">スクリプトを選択してください</textarea>
+  </section>
+
+  <section id="interaction-panel" class="tab-hidden">
+    <div class="interaction-toolbar">
+      <button class="lighting-btn" type="button" onclick="fetchInteractionSettings()">再読込</button>
+      <button class="lighting-btn" type="button" onclick="formatInteractionSettings()">整形</button>
+      <button class="lighting-btn" type="button" onclick="validateInteractionSettings()">検証</button>
+      <button class="lighting-btn" type="button" onclick="saveInteractionSettings(true)">保存してreload</button>
+      <button class="lighting-btn" type="button" onclick="saveInteractionSettings(false)">保存のみ</button>
+      <span id="interaction-status" class="script-status">–</span>
+    </div>
+    <div class="interaction-grid">
+      <div class="interaction-editor-wrap">
+        <div class="interaction-mode-switch" role="group" aria-label="Interaction editor mode">
+          <button id="interaction-mode-gui-btn" class="lighting-btn active" type="button" onclick="setInteractionEditorMode('gui')">GUI editor</button>
+          <button id="interaction-mode-raw-btn" class="lighting-btn" type="button" onclick="setInteractionEditorMode('raw')">Raw editor</button>
+        </div>
+        <div id="interaction-gui-editors" class="interaction-gui-editors"></div>
+        <details id="interaction-raw-accordion" class="interaction-accordion interaction-mode-raw">
+          <summary>Raw editor</summary>
+          <div class="interaction-accordion-body">
+            <label for="interaction-editor">settings.interaction JSON</label>
+            <textarea id="interaction-editor" class="interaction-editor" spellcheck="false">読み込み中…</textarea>
+            <div class="interaction-action-tools">
+              <div class="interaction-action-title">Action picker</div>
+              <div class="interaction-picker-row">
+                <select id="interaction-keycode-picker"></select>
+                <button class="lighting-btn" type="button" onclick="insertSelectedInteractionAction()">入力欄へ</button>
+              </div>
+              <div id="interaction-action-buttons" class="interaction-action-buttons"></div>
+              <datalist id="interaction-action-datalist"></datalist>
+              <div class="interaction-snippet-buttons">
+                <button class="lighting-btn" type="button" onclick="insertInteractionSnippet('combo')">Combo</button>
+                <button class="lighting-btn" type="button" onclick="insertInteractionSnippet('tapDance')">Tap Dance</button>
+                <button class="lighting-btn" type="button" onclick="insertInteractionSnippet('override')">Override</button>
+                <button class="lighting-btn" type="button" onclick="insertInteractionSnippet('conditional')">Conditional</button>
+                <button class="lighting-btn" type="button" onclick="insertInteractionSnippet('timing')">Timing</button>
+              </div>
+            </div>
+          </div>
+        </details>
+        <details id="interaction-builders-accordion" class="interaction-accordion interaction-builders-accordion" open>
+          <summary>Combo / Tap Dance / Key Override / Timing</summary>
+          <div class="interaction-accordion-body">
+            <div class="interaction-builder interaction-combo-builder">
+              <div class="interaction-action-title">Combo builder</div>
+              <div class="interaction-builder-grid interaction-combo-grid">
+                <div class="interaction-combo-key-block">
+                  <div class="interaction-combo-key-label">Key 1</div>
+                  <label><span>Row</span><input id="interaction-combo-row-1" type="number" min="0" value="0"></label>
+                  <label><span>Col</span><input id="interaction-combo-col-1" type="number" min="0" value="1"></label>
+                  <button class="lighting-btn interaction-combo-pick-btn" type="button" onclick="pickInteractionComboKey(1)">Pick key</button>
+                </div>
+                <div class="interaction-combo-key-block">
+                  <div class="interaction-combo-key-label">Key 2</div>
+                  <label><span>Row</span><input id="interaction-combo-row-2" type="number" min="0" value="0"></label>
+                  <label><span>Col</span><input id="interaction-combo-col-2" type="number" min="0" value="2"></label>
+                  <button class="lighting-btn interaction-combo-pick-btn" type="button" onclick="pickInteractionComboKey(2)">Pick key</button>
+                </div>
+                <div class="interaction-combo-key-block">
+                  <div class="interaction-combo-key-label">Key 3</div>
+                  <label><span>Row</span><input id="interaction-combo-row-3" type="number" min="0" placeholder="optional"></label>
+                  <label><span>Col</span><input id="interaction-combo-col-3" type="number" min="0" placeholder="optional"></label>
+                  <button class="lighting-btn interaction-combo-pick-btn" type="button" onclick="pickInteractionComboKey(3)">Pick key</button>
+                </div>
+                <label class="interaction-builder-action"><span>Action</span><input id="interaction-combo-action" class="interaction-action-input" list="interaction-action-datalist" type="text" value="KC_ESC"></label>
+              </div>
+              <button class="lighting-btn" type="button" onclick="appendInteractionCombo()">Add Combo</button>
+            </div>
+            <div class="interaction-builder interaction-tap-dance-builder">
+              <div class="interaction-action-title">Tap Dance builder</div>
+              <div class="interaction-builder-grid">
+                <label><span>Name</span><input id="interaction-tap-dance-name" type="text" value="TD0"></label>
+                <label><span>1 Tap</span><input id="interaction-tap-dance-action-1" class="interaction-action-input" list="interaction-action-datalist" type="text" value="KC_A"></label>
+                <label><span>2 Taps</span><input id="interaction-tap-dance-action-2" class="interaction-action-input" list="interaction-action-datalist" type="text" value="KC_ESC"></label>
+                <label class="interaction-builder-action"><span>3 Taps</span><input id="interaction-tap-dance-action-3" class="interaction-action-input" list="interaction-action-datalist" type="text" placeholder="optional"></label>
+              </div>
+              <button class="lighting-btn" type="button" onclick="appendInteractionTapDance()">Add Tap Dance</button>
+            </div>
+            <div class="interaction-builder interaction-key-override-builder">
+              <div class="interaction-action-title">Key Override builder</div>
+              <div class="interaction-builder-grid">
+                <label><span>Trigger</span><input id="interaction-override-trigger" class="interaction-action-input" list="interaction-action-datalist" type="text" value="KC_LSFT"></label>
+                <label><span>Key</span><input id="interaction-override-key" class="interaction-action-input" list="interaction-action-datalist" type="text" value="KC_1"></label>
+                <label><span>Replacement</span><input id="interaction-override-replacement" class="interaction-action-input" list="interaction-action-datalist" type="text" value="KC_EXLM"></label>
+              </div>
+              <button class="lighting-btn" type="button" onclick="appendInteractionKeyOverride()">Add Override</button>
+            </div>
+            <div class="interaction-builder interaction-timing-builder">
+              <div class="interaction-action-title">Advanced Timing</div>
+              <div class="interaction-builder-grid interaction-timing-grid">
+                <label><span>Tapping Term sec</span><input id="interaction-tapping-term" type="number" min="0.001" step="0.001" value="0.200"></label>
+                <label><span>Combo Term sec</span><input id="interaction-combo-term" type="number" min="0.001" step="0.001" value="0.050"></label>
+                <label><span>Tap Dance Term sec</span><input id="interaction-tap-dance-term" type="number" min="0.001" step="0.001" value="0.200"></label>
+                <label class="interaction-check-field"><input id="interaction-hold-on-other-key-press" type="checkbox" checked><span>Hold on other key press</span></label>
+              </div>
+              <button class="lighting-btn" type="button" onclick="applyInteractionTiming()">Apply Timing</button>
+            </div>
+          </div>
+        </details>
+      </div>
+      <aside class="interaction-help">
+        <h3>Action Expansion</h3>
+        <p>例: <code>S(KC_1)</code>, <code>LCTL(S(KC_A))</code>, <code>KC_EXLM</code></p>
+        <h3>Warnings <span id="interaction-warning-count" class="interaction-warning-count">0</span></h3>
+        <div id="interaction-warnings" class="interaction-warnings interaction-warnings-ok">–</div>
+        <h3>Validation</h3>
+        <pre id="interaction-validation-preview">–</pre>
+        <h3>Reload</h3>
+        <pre id="interaction-reload-result">–</pre>
+        <h3>Metadata</h3>
+        <pre id="interaction-metadata">–</pre>
+      </aside>
+    </div>
+  </section>
+
+  <section id="settings-panel" class="tab-hidden">
+    <div class="settings-grid">
+      <form class="settings-card" onsubmit="saveHttpAuthPassword(event)">
+        <div class="settings-card-title">BASIC認証</div>
+        <div class="settings-field">
+          <label for="settings-http-username">Username</label>
+          <input id="settings-http-username" type="text" value="admin" readonly>
+        </div>
+        <div class="settings-field">
+          <label for="settings-current-password">Current password</label>
+          <input id="settings-current-password" type="password" autocomplete="current-password">
+        </div>
+        <div class="settings-field">
+          <label for="settings-new-password">New password</label>
+          <input id="settings-new-password" type="password" autocomplete="new-password">
+        </div>
+        <div class="settings-field">
+          <label for="settings-confirm-password">Confirm password</label>
+          <input id="settings-confirm-password" type="password" autocomplete="new-password">
+        </div>
+        <div class="settings-actions">
+          <button class="lighting-btn" id="settings-http-auth-save" type="submit">保存</button>
+          <span id="settings-status" class="script-status">–</span>
+        </div>
+      </form>
+      <form class="settings-card" onsubmit="saveSendStrings(event)">
+        <div class="settings-card-title">Text Send named entries</div>
+        <div id="settings-send-strings-rows" class="settings-send-strings-rows"></div>
+        <div class="settings-actions">
+          <button class="lighting-btn" id="settings-send-strings-add" type="button" onclick="addSendStringRow()">行を追加</button>
+        </div>
+        <div class="settings-field settings-field-stacked">
+          <label for="settings-send-strings">settings.send_strings JSON</label>
+          <textarea id="settings-send-strings" class="settings-json-editor" spellcheck="false">{}</textarea>
+        </div>
+        <div class="settings-actions">
+          <button class="lighting-btn" id="settings-send-strings-format" type="button" onclick="formatSendStrings()">整形</button>
+          <button class="lighting-btn" id="settings-send-strings-save" type="submit">保存</button>
+          <label class="settings-inline-check"><input id="settings-send-strings-reload" type="checkbox" checked> reload logicd</label>
+          <span id="settings-send-strings-status" class="script-status">–</span>
+        </div>
+        <pre id="settings-send-strings-validation" class="settings-validation-preview">–</pre>
+        <div class="settings-field">
+          <label for="settings-send-strings-plan-action">Plan action</label>
+          <input id="settings-send-strings-plan-action" type="text" value="TEXT(kana_a)">
+        </div>
+        <div class="settings-actions">
+          <button class="lighting-btn" id="settings-send-strings-plan" type="button" onclick="previewSendStringPlan()">Plan preview</button>
+        </div>
+        <pre id="settings-send-strings-plan-preview" class="settings-validation-preview">–</pre>
+      </form>
+      <form class="settings-card" onsubmit="return false">
+        <div class="settings-card-title">Analog stick calibration</div>
+        <div class="settings-field">
+          <label for="settings-stick-center-duration">Center seconds</label>
+          <input id="settings-stick-center-duration" type="number" min="0.1" max="10" step="0.1" value="2.0">
+        </div>
+        <div class="settings-field">
+          <label for="settings-stick-range-duration">Range seconds</label>
+          <input id="settings-stick-range-duration" type="number" min="1" max="60" step="0.5" value="10.0">
+        </div>
+        <div class="settings-field">
+          <label for="settings-stick-min-range-volts">Min span volts</label>
+          <input id="settings-stick-min-range-volts" type="number" min="0" max="2" step="0.01" value="0.10">
+        </div>
+        <div class="settings-actions">
+          <button class="lighting-btn" id="settings-stick-center-dry" type="button" onclick="calibrateAnalogStick('center', false)">中心を測定</button>
+          <button class="lighting-btn" id="settings-stick-center" type="button" onclick="calibrateAnalogStick('center', true)">中心を保存</button>
+          <button class="lighting-btn" id="settings-stick-range-dry" type="button" onclick="calibrateAnalogStick('range', false)">最大/最小を測定</button>
+          <button class="lighting-btn" id="settings-stick-range" type="button" onclick="calibrateAnalogStick('range', true)">最大/最小を保存</button>
+          <button class="lighting-btn" id="settings-stick-validate" type="button" onclick="calibrateAnalogStick('validate', false)">保存値を検査</button>
+          <span id="settings-stick-status" class="script-status">–</span>
+        </div>
+        <div id="settings-stick-map" class="settings-stick-map" aria-label="Analog stick calibration map"></div>
+        <pre id="settings-stick-current" class="settings-validation-preview">–</pre>
+        <pre id="settings-stick-result" class="settings-validation-preview">–</pre>
+      </form>
+    </div>
+  </section>
+
+  <div id="keyboard-container">
+    <div id="keyboard-tab-toolbar">
+      <label class="keyboard-layer-label">表示レイヤー:
+        <select id="keyboard-layer-sel" onchange="setKeyboardDisplayLayer(this.value)">
+          <option value="active">実機</option>
+        </select>
+      </label>
+      <span id="keyboard-layer-status" class="keyboard-layer-status">Layer 0</span>
+      <span class="keyboard-layer-legend"><span class="layer-swatch layer-swatch-override"></span>置換 <span class="layer-swatch layer-swatch-fallback"></span>TRANS</span>
+      <button id="passthrough-toggle" class="toggle-btn" onclick="setKeyPassthrough(!keyPassthroughEnabled)">キー入力転送: OFF</button>
+      <button id="matrix-tester-toggle" class="toggle-btn" onclick="toggleMatrixTester()">内部キーテスター: OFF</button>
+      <button id="keyboard-fit-toggle" class="toggle-btn" onclick="setKeyboardFitEnabled(!keyboardFitEnabled)">全体表示: OFF</button>
+      <button id="touch-flick-toggle" class="toggle-btn" onclick="setTouchFlickPreviewEnabled(!touchFlickPreviewEnabled)">Flick preview: OFF</button>
+    </div>
+    <div id="keyboard-stage">
+      <div id="keyboard"></div>
+    </div>
+  </div>
+
+  <section id="touch-flick-panel" class="touch-flick-panel" data-profile-guard="osoyoo-4.3" hidden>
+    <div class="touch-flick-header">
+      <span>Flick preview</span>
+      <button id="touch-flick-send-toggle" class="touch-flick-send-toggle" type="button" onclick="setTouchFlickSendEnabled(!touchFlickSendEnabled)">送信: OFF</button>
+      <span id="touch-flick-status" class="touch-flick-status">read-only</span>
+    </div>
+    <div id="touch-flick-grid" class="touch-flick-grid" aria-label="4.3 inch flick input preview"></div>
+    <div id="touch-flick-ime-controls" class="touch-flick-ime-controls" aria-label="Host IME controls preview"></div>
+    <div id="touch-flick-preview" class="touch-flick-preview" data-direction="center">preview/no-op</div>
+  </section>
+
+  <button id="keyboard-overlay-toggle" type="button" onclick="toggleKeyboardControlsOverlay()" aria-label="Controls">☰</button>
+  <div id="keyboard-controls-overlay" hidden>
+    <div class="keyboard-controls-backdrop" onclick="closeKeyboardControlsOverlay()"></div>
+    <div class="keyboard-controls-panel" role="dialog" aria-label="Keyboard controls">
+      <div class="keyboard-controls-header">
+        <span>Controls</span>
+        <button type="button" onclick="closeKeyboardControlsOverlay()">✕</button>
+      </div>
+      <button id="overlay-reload-btn" type="button" onclick="window.location.reload()">Reload</button>
+      <button id="overlay-fit-btn" type="button" onclick="setKeyboardFitEnabled(!keyboardFitEnabled); if (!keyboardFitEnabled) closeKeyboardControlsOverlay(); refreshKeyboardControlsOverlay()">Keyboard only</button>
+      <button id="overlay-flick-btn" type="button" onclick="setTouchFlickPreviewEnabled(!touchFlickPreviewEnabled); refreshKeyboardControlsOverlay()">Flick preview: OFF</button>
+      <button id="overlay-flick-send-btn" type="button" onclick="setTouchFlickSendEnabled(!touchFlickSendEnabled); refreshKeyboardControlsOverlay()">Flick send: OFF</button>
+      <button id="overlay-passthrough-btn" type="button" onclick="setKeyPassthrough(!keyPassthroughEnabled); refreshKeyboardControlsOverlay()">Passthrough</button>
+      <button id="overlay-matrix-btn" type="button" onclick="toggleMatrixTester(); refreshKeyboardControlsOverlay()">Matrix tester</button>
+      <button id="overlay-shutdown-btn" class="danger" type="button" onclick="showShutdownConfirm()">Shutdown</button>
+      <div id="overlay-shutdown-confirm" class="keyboard-controls-confirm" hidden>
+        <span>Shutdown this Raspberry Pi?</span>
+        <div class="keyboard-controls-confirm-actions">
+          <button type="button" onclick="hideShutdownConfirm()">Cancel</button>
+          <button id="overlay-shutdown-confirm-btn" class="danger" type="button" onclick="shutdownSystemFromOverlay()">Shutdown now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-banner" style="display:none"></div>
+
+  <div id="remap-popup" style="display:none">
+    <div class="remap-popup-overlay" onclick="closeRemapPopup()"></div>
+    <div class="remap-popup-content">
+      <div class="remap-popup-hdr">
+        <span id="remap-target-label">キーコード変更</span>
+        <button class="remap-close-btn" onclick="closeRemapPopup()">✕</button>
+      </div>
+      <div class="remap-direct-row">
+        <label for="remap-direct-input">QMK code</label>
+        <input id="remap-direct-input" type="text" spellcheck="false" autocomplete="off" placeholder="LSFT(LGUI(KC_F23))">
+        <button id="remap-direct-apply" type="button" onclick="applyDirectRemapInput()">反映</button>
+        <span id="remap-direct-status"></span>
+      </div>
+      <div class="remap-tabs">
+        <button class="remap-tab active" data-tab="pc104" onclick="switchRemapTab('pc104')">PC104</button>
+        <button class="remap-tab" data-tab="layer" onclick="switchRemapTab('layer')">Layer</button>
+        <button class="remap-tab" data-tab="mouse" onclick="switchRemapTab('mouse')">Mouse</button>
+        <button class="remap-tab" data-tab="media" onclick="switchRemapTab('media')">Media</button>
+        <button class="remap-tab" data-tab="lighting" onclick="switchRemapTab('lighting')">Lighting</button>
+        <button class="remap-tab" data-tab="bt" onclick="switchRemapTab('bt')">BT</button>
+        <button class="remap-tab" data-tab="wifi" onclick="switchRemapTab('wifi')">Wi-Fi</button>
+        <button class="remap-tab" data-tab="system" onclick="switchRemapTab('system')">System</button>
+        <button class="remap-tab" data-tab="interaction" onclick="switchRemapTab('interaction')">Interaction</button>
+        <button class="remap-tab" data-tab="script" onclick="switchRemapTab('script')">Script</button>
+        <button class="remap-tab" data-tab="other" onclick="switchRemapTab('other')">Other</button>
+      </div>
+      <div id="remap-tab-pc104" class="remap-tab-pane"></div>
+      <div id="remap-tab-layer" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-mouse" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-media" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-lighting" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-bt" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-wifi" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-system" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-interaction" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-script" class="remap-tab-pane" style="display:none"></div>
+      <div id="remap-tab-other" class="remap-tab-pane" style="display:none"></div>
+    </div>
+  </div>
+
+  <script src="/static/csrf.js"></script>
+  <script src="/static/scripts_panel.js"></script>
+  <script src="/static/status_panel.js"></script>
+  <script src="/static/lighting_panel.js"></script>
+  <script src="/static/lighting_role_preview_controls.js"></script>
+  <script src="/static/settings_panel.js"></script>
+  <script src="/static/matrix_tester.js"></script>
+  <script src="/static/tabs.js"></script>
+  <script src="/static/key_passthrough.js"></script>
+  <script src="/static/keyboard.js"></script>
+  <script src="/static/remap_key_groups.js"></script>
+  <script src="/static/remap_panel.js"></script>
+  <script src="/static/remap_kle.js"></script>
+  <script src="/static/remap_vil.js"></script>
+  <script src="/static/extra_key_groups.js"></script>
+  <script src="/static/remap_quick_keys.js"></script>
+  <script src="/static/layer_controls.js"></script>
+  <script src="/static/script_editor.js"></script>
+  <script src="/static/interaction_panel.js"></script>
+</body>
+</html>

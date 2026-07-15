@@ -1,0 +1,21 @@
+.TH HIDLOOM-MATRIXD 5 "@HIDLOOM_VERSION@" "HIDloom" "File Formats"
+.SH NAME
+hidloom-matrixd \- matrixd JSON configuration
+.SH DESCRIPTION
+The matrixd configuration defines GPIO scan settings, matrix dimensions,
+direct switches, rotary encoders, and socket paths used by the native matrix
+scanner.
+.SH FILES
+.TP
+.B /usr/lib/hidloom/config/default/matrixd.json
+Packaged default configuration.
+.TP
+.B /mnt/p3
+Device-local runtime state directory. Runtime overrides should be documented
+and tested before deployment.
+.SH SEE ALSO
+.BR matrixd (8),
+.BR logicd (8)
+.br
+Detailed daemon documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/daemon

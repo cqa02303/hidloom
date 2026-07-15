@@ -1,0 +1,15 @@
+[Unit]
+Description=HIDloom boot power shedding
+DefaultDependencies=no
+After=local-fs.target
+Before=multi-user.target lightdm.service
+
+[Service]
+Type=oneshot
+ExecStart=@HIDLOOM_REPO_ROOT@/script/apply_power_shed.sh
+RemainAfterExit=yes
+Environment=HIDLOOM_POWER_CPU_MAX_KHZ=1000000
+Environment=HIDLOOM_POWER_CPU_GOVERNOR=ondemand
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+#!/bin/sh
+case "$1" in
+ start) start-stop-daemon -S -b -m -p /run/hidloom-m3-router.pid -x /usr/bin/hidloom-m3-router ;;
+ stop) start-stop-daemon -K -p /run/hidloom-m3-router.pid ;;
+ *) exit 1 ;;
+esac

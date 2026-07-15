@@ -1,0 +1,13 @@
+[Unit]
+Description=HIDloom touch panel profile selector
+After=local-fs.target
+Before=logicd.service logicd-companion.service httpd.service viald.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sh -c 'sleep "${HIDLOOM_TOUCH_PANEL_PROFILE_DELAY_SEC:-0}"'
+ExecStart=@HIDLOOM_REPO_ROOT@/script/select_touch_panel_profile.py --repo-root @HIDLOOM_REPO_ROOT@ --runtime-dir /mnt/p3 --profile-file /mnt/p3/touch_panel_profile_request
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+.TH USBD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+usbd \- USB HID bridge daemon
+.SH SYNOPSIS
+.B python3 -m usbd.usbd
+.SH DESCRIPTION
+.B usbd
+bridges USB gadget Raw HID traffic and, when enabled, provides the HID report
+broker socket used by logicd and native output helpers.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH ENVIRONMENT
+Common variables include \fBUSBD_RAW_HID_PATH\fR, \fBUSBD_HID_REPORT_PATH\fR,
+\fBUSBD_US_SUB_HID_REPORT_PATH\fR, \fBUSBD_HID_REPORT_SOCKET\fR, and
+\fBVIALD_EVENTS_SOCK\fR.
+.SH SEE ALSO
+.BR viald (8),
+.BR hidloom-hidd (8)
+.br
+USB/HID documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/hid

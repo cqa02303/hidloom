@@ -1,0 +1,361 @@
+{
+  "schema": "hidloom.public-export.v2",
+  "include_prefixes": [
+    ".cargo/",
+    "build/",
+    "case/",
+    "config/",
+    "daemon/",
+    "demo/",
+    "dev/",
+    "docs/",
+    "kicad/",
+    "macro/",
+    "script/",
+    "system/",
+    "tests/",
+    "tools/",
+    "windows-driver/"
+  ],
+  "include_files": [
+    ".env.example",
+    ".gitattributes",
+    ".gitignore",
+    ".github/dependabot.yml",
+    ".github/ISSUE_TEMPLATE/bug.yml",
+    ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/ISSUE_TEMPLATE/feature.yml",
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    ".github/workflows/public-ci.yml",
+    "ACCURATE_SWITCH_MATRIX_TABLE.md",
+    "bin/.gitignore",
+    "bin/README.md",
+    "AUTHORS.md",
+    "CODE_OF_CONDUCT.md",
+    "CQA02303v5.png",
+    "CQA02303v5_switchLayouts9x10.png",
+    "FRESH_INSTALL.md",
+    "GETKEYMAP.md",
+    "LICENSE",
+    "Makefile",
+    "README.md",
+    "RELEASE_CHECKLIST.md",
+    "SECURITY.md",
+    "SETKEYCODE.md",
+    "SUPPORT.md",
+    "THIRD_PARTY_NOTICES.md",
+    "USB_GADGET_SETUP.md",
+    "WIRING_ANALYSIS.md",
+    "CONTRIBUTING.md",
+    "getkeymap.sh",
+    "hidloom_paths.py",
+    "script_metadata.py",
+    "setkeycode.sh",
+    "setup_fresh_rpi.sh",
+    "setup_usb_gadget.sh",
+    "vialrgb_effects.py",
+    "vil_layout.py"
+  ],
+  "generated_output_files": [
+    "PUBLIC_ASSET_PROVENANCE.json",
+    "PUBLIC_ASSET_PROVENANCE.md",
+    "PUBLIC_DOCUMENTATION_AUDIT.json",
+    "PUBLIC_DOCUMENTATION_AUDIT.md",
+    "PUBLIC_EXPORT_MANIFEST.json",
+    "PUBLIC_EXPORT_REPORT.json",
+    "PUBLIC_EXPORT_REPORT.md",
+    "PUBLIC_PRIVACY_AUDIT.json",
+    "PUBLIC_PRIVACY_AUDIT.md",
+    "PUBLIC_REFERENCE_AUDIT.json",
+    "PUBLIC_REFERENCE_AUDIT.md",
+    "SBOM.cdx.json"
+  ],
+  "exclude_globs": [
+    ".github/copilot-instructions.md",
+    ".github/workflows/public-export-check.yml",
+    ".github/workflows/public-sync.yml",
+    ".github/workflows/repository-hygiene.yml",
+    "AGENTS.md",
+    "build/artifacts/**",
+    "codex_tasks/**",
+    "docs/archive/**",
+    "docs/CURRENT_STATUS.md",
+    "docs/TODO_PRIORITY.md",
+    "docs/WISHLIST.md",
+    "docs/REORG_PROGRESS.md",
+    "docs/daemon/specs/coverage-audit-2026-06-26.md",
+    "docs/daemon/specs/matrixd/logicd-stability-status-2026-06-02.md",
+    "docs/daemon/specs/matrixd/scan-stability-progress-2026-06-02.md",
+    "docs/review/**",
+    "docs/ops/boot-userspace-network-handoff.md",
+    "docs/ops/cross-build-host-operations.md",
+    "docs/ops/daemon-service-layout-roadmap.md",
+    "docs/ops/docs-reorg-review-summary.md",
+    "docs/ops/hidloom-public-*.md",
+    "docs/ops/mcp-codex-composite-today-runbook.md",
+    "docs/ops/public-sync-credentials-runbook.md",
+    "docs/ops/repository-layout-reorganization-roadmap.md",
+    "docs/ops/repository-layout-inventory.md",
+    "docs/ops/real-device-next-start.md",
+    "docs/ops/real-device-test-checklist.md",
+    "docs/ops/windows-hidloom-hidd-p3-handoff.md",
+    "docs/ops/workflow-runbook.md",
+    "docs/policy/codex-mailbox-worker-decision.md",
+    "docs/policy/codex-operating-model-decision.md",
+    "macro/examples/password.kml",
+    "**/__pycache__/**",
+    "**/*.pyc"
+  ],
+  "text_replacements": [
+    {
+      "from": "/home/USERNAME/src/hidloom",
+      "to": "/home/USERNAME/src/hidloom"
+    },
+    {
+      "from": "/home/USERNAME/hidloom",
+      "to": "/home/USERNAME/hidloom"
+    },
+    {
+      "from": "/home/USERNAME/.codex",
+      "to": "/home/USERNAME/.codex"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-ip>",
+      "to": "<keyboard-ip>"
+    },
+    {
+      "from": "<keyboard-host>",
+      "to": "<keyboard-host>"
+    },
+    {
+      "from": "<keyboard-host>",
+      "to": "<keyboard-host>"
+    },
+    {
+      "from": "<keyboard-host>",
+      "to": "<keyboard-host>"
+    },
+    {
+      "from": "<keyboard-host>",
+      "to": "<keyboard-host>"
+    },
+    {
+      "from": "operator",
+      "to": "operator"
+    }
+  ],
+  "warning_triage": [
+    {
+      "pattern_id": "legacy_project_name",
+      "path_glob": "kicad/**",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "pattern_id": "legacy_project_name",
+      "path_glob": "config/public-assets.json",
+      "disposition": "allowed_device_profile",
+      "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
+    },
+    {
+      "pattern_id": "legacy_project_name",
+      "path_glob": "config/repository-hygiene.json",
+      "disposition": "allowed_device_profile",
+      "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
+    },
+    {
+      "pattern_id": "legacy_project_name",
+      "path_globs": [
+        "build/generated/README.md",
+        "build/generated/pcb_analysis_sw_report.txt",
+        "build/generators/analyze_kicad_matrix.py",
+        "build/generators/analyze_kicad_pcb.py",
+        "build/generators/analyze_kicad_pcb_led.py",
+        "script/test_kicad_generation.py"
+      ],
+      "disposition": "allowed_device_profile",
+      "reason": "these sources reference the immutable KiCad hardware project path"
+    },
+    {
+      "pattern_id": "legacy_project_name",
+      "path_glob": "windows-driver/**",
+      "disposition": "allowed_device_profile",
+      "reason": "driver files identify the cqa02303v5 hardware profile"
+    },
+    {
+      "pattern_id": "private_ipv4",
+      "path_glob": "script/test_*.py",
+      "disposition": "test_fixture",
+      "reason": "RFC1918 values are parser and deployment test fixtures"
+    },
+    {
+      "pattern_id": "private_ipv4",
+      "path_glob": "tests/**",
+      "disposition": "test_fixture",
+      "reason": "RFC1918 values are test fixtures"
+    },
+    {
+      "pattern_id": "credential_word",
+      "path_globs": [
+        "daemon/http/README.md",
+        "daemon/http/auth_tls.py",
+        "daemon/http/httpd.py",
+        "daemon/http/security_middleware.py",
+        "daemon/http/settings_api.py",
+        "daemon/http/static/csrf.js",
+        "daemon/http/static/index.html",
+        "daemon/http/static/settings_panel.js",
+        "daemon/http/static/status_panel.js",
+        "daemon/http/wifi_status.py",
+        "daemon/i2cd/connectivity.py",
+        "daemon/logicd/generate_config.py",
+        "daemon/logicd/input_events.py",
+        "daemon/logicd/macro_integration.py",
+        "daemon/logicd/text_send_safety.py",
+        "daemon/logicd/wifi_manager.py",
+        "daemon/matrixd/COPYING",
+        "daemon/spid/README.md",
+        "daemon/viald/README.md"
+      ],
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "pattern_id": "credential_word",
+      "path_glob": "script/test_*.py",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "pattern_id": "credential_word",
+      "path_glob": "tests/**",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures"
+    },
+    {
+      "pattern_id": "linux_foundation_vid",
+      "path_glob": "config/public-export-deny-patterns.json",
+      "disposition": "scanner_definition",
+      "reason": "the scanner contains the value it detects"
+    },
+    {
+      "pattern_id": "linux_foundation_vid",
+      "path_glob": "USB_GADGET_SETUP.md",
+      "disposition": "migration_documentation",
+      "reason": "the public USB guide identifies the development-only value and explicitly blocks its release use"
+    },
+    {
+      "pattern_id": "linux_foundation_vid",
+      "path_glob": "script/test_usb_gadget_descriptor.py",
+      "disposition": "test_fixture",
+      "reason": "the regression test requires the public guide to retain the development-ID warning"
+    },
+    {
+      "pattern_id": "legacy_project_name",
+      "path_glob": "config/publication-policy.json",
+      "disposition": "scanner_definition",
+      "reason": "the publication policy records the retired private repository slug it rejects"
+    },
+    {
+      "pattern_id": "credential_word",
+      "path_globs": [
+        "docs/**",
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "SECURITY.md",
+        "build/buildroot/hidloom-external/package/hidloom-m3-router/src/COPYING",
+        "dev/mcp/keyboard/README.md",
+        "macro/README.md",
+        "tools/README.md"
+      ],
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "pattern_id": "credential_word",
+      "path_globs": [
+        ".github/workflows/public-ci.yml",
+        "build/generators/mkvial.py",
+        "config/default/config.json",
+        "config/default/script/KC_SH3.sh",
+        "config/public-export-deny-patterns.json",
+        "config/public-export.json",
+        "dev/mcp/keyboard/server.py",
+        "script/start_touch_panel_browser.sh",
+        "system/install/setup_fresh_rpi.sh",
+        "tools/btd_bluez_pairing_window.py",
+        "tools/buildroot_m1_compare.py",
+        "tools/collect_license_evidence.py",
+        "tools/development_residue_hygiene.py",
+        "tools/generate_third_party_inventory.py",
+        "tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c",
+        "tools/local_environment_hygiene.py",
+        "tools/morse_browser_smoke.py",
+        "tools/sessiond_ctl.py"
+      ],
+      "disposition": "implementation_security_keyword",
+      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "pattern_id": "credential_word",
+      "path_glob": "*",
+      "disposition": "credential_classification_required",
+      "reason": "credential terminology outside reviewed paths requires explicit classification before publication"
+    },
+    {
+      "pattern_id": "private_ipv4",
+      "path_glob": "daemon/http/**",
+      "disposition": "allowed_private_network_range",
+      "reason": "RFC1918 CIDRs are intentional HTTP access-control ranges"
+    },
+    {
+      "pattern_id": "private_ipv4",
+      "path_glob": "docs/**",
+      "disposition": "public_sanitization_required",
+      "reason": "real-device addresses must become placeholders before publication"
+    },
+    {
+      "pattern_id": "private_ipv4",
+      "path_glob": "*",
+      "disposition": "portable_default_required",
+      "reason": "private deployment defaults must become arguments, environment values, or placeholders"
+    },
+    {
+      "pattern_id": "linux_foundation_vid",
+      "path_glob": "*",
+      "disposition": "pid_codes_migration_required",
+      "reason": "public USB profile must use an assigned pid.codes VID/PID"
+    }
+  ],
+  "expected_license": "GPL-3.0-or-later",
+  "public_repository": "hidloom",
+  "initial_version": "0.1.0"
+}

@@ -1,0 +1,9 @@
+# M6 boots exclusively from the microSD root filesystem.
+# CONFIG_BLK_DEV_INITRD is not set
+# CONFIG_USB_STORAGE is not set
+# CONFIG_USB_UAS is not set
+# CONFIG_MMC_SPI is not set
+# CONFIG_MMC_TEST is not set
+# CONFIG_LOGO is not set
+# CONFIG_SERIAL_8250_CONSOLE is not set
+# CONFIG_SERIAL_AMBA_PL011_CONSOLE is not set

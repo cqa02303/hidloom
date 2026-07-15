@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) modprobe uinput 2>/dev/null || true; UIDD_DRY_RUN=0 UIDD_REPORT_SOCKET=/tmp/uidd_reports.sock UIDD_UINPUT_PATH=/dev/uinput start-stop-daemon -S -b -m -p /run/hidloom-uidd.pid -x /usr/bin/hidloom-uidd;;
+ stop) start-stop-daemon -K -p /run/hidloom-uidd.pid;;
+esac

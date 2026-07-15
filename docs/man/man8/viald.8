@@ -1,0 +1,21 @@
+.TH VIALD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+viald \- Vial Raw HID protocol daemon
+.SH SYNOPSIS
+.B python3 -m viald.viald
+.SH DESCRIPTION
+.B viald
+handles Vial protocol packets received over the Raw HID bridge. It listens on
+the socket selected by \fBVIALD_EVENTS_SOCK\fR.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH ENVIRONMENT
+\fBVIALD_EVENTS_SOCK\fR and \fBVIALD_REPORT_SIZE\fR configure the socket and
+packet size.
+.SH SEE ALSO
+.BR usbd (8)
+.br
+Vial documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/vial

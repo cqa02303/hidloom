@@ -1,0 +1,122 @@
+#!/bin/sh
+# Minimal Buildroot M1 USB HID keyboard gadget.
+
+set -eu
+
+GADGET_NAME="${HIDLOOM_M1_GADGET_NAME:-cqa02303v5m1}"
+CONFIGFS_ROOT="${HIDLOOM_CONFIGFS_ROOT:-/sys/kernel/config}"
+GADGET_ROOT="$CONFIGFS_ROOT/usb_gadget"
+MARKER_FILE="${HIDLOOM_BOOT_MARKER_FILE:-/tmp/hidloom-boot-markers.log}"
+UDC_NAME="${HIDLOOM_M1_UDC:-}"
+SERIAL_NUMBER="${HIDLOOM_M1_SERIAL:-m1-fast-boot}"
+MANUFACTURER="${HIDLOOM_M1_MANUFACTURER:-hidloom}"
+PRODUCT_NAME="${HIDLOOM_M1_PRODUCT:-CQA02303v5 M1 Keyboard}"
+VENDOR_ID="${HIDLOOM_M1_VENDOR_ID:-0x1d6b}"
+PRODUCT_ID="${HIDLOOM_M1_PRODUCT_ID:-0x0105}"
+
+marker() {
+    local uptime
+    uptime="$(cut -d ' ' -f 1 /proc/uptime 2>/dev/null || printf '?')"
+    mkdir -p "$(dirname "$MARKER_FILE")" 2>/dev/null || true
+    printf '%s %s\n' "$uptime" "$1" >> "$MARKER_FILE" 2>/dev/null || true
+}
+
+mount_configfs() {
+    if ! grep -q " $CONFIGFS_ROOT configfs " /proc/mounts 2>/dev/null; then
+        mkdir -p "$CONFIGFS_ROOT"
+        mount -t configfs configfs "$CONFIGFS_ROOT"
+    fi
+}
+
+load_modules() {
+    modprobe libcomposite 2>/dev/null || true
+}
+
+remove_gadget() {
+    if [ ! -d "$GADGET_ROOT/$GADGET_NAME" ]; then
+        return 0
+    fi
+    cd "$GADGET_ROOT/$GADGET_NAME"
+    printf '' > UDC 2>/dev/null || true
+    rm -f configs/c.1/hid.usb0 2>/dev/null || true
+    rmdir configs/c.1/strings/0x409 2>/dev/null || true
+    rmdir configs/c.1 2>/dev/null || true
+    rmdir configs 2>/dev/null || true
+    rmdir functions/hid.usb0 2>/dev/null || true
+    rmdir functions 2>/dev/null || true
+    rmdir strings/0x409 2>/dev/null || true
+    rmdir strings 2>/dev/null || true
+    cd "$GADGET_ROOT"
+    rmdir "$GADGET_NAME" 2>/dev/null || true
+}
+
+write_keyboard_report_desc() {
+    # Standard 8-byte boot keyboard descriptor, no Report ID.
+    printf '\005\001\011\006\241\001\005\007\031\340\051\347\025\000\045\001\165\001\225\010\201\002\225\001\165\010\201\001\225\005\165\001\005\010\031\001\051\005\221\002\225\001\165\003\221\001\225\006\165\010\025\000\045\145\005\007\031\000\051\145\201\000\300' > report_desc
+}
+
+start_gadget() {
+    marker "m1_start"
+    load_modules
+    mount_configfs
+    mkdir -p "$GADGET_ROOT"
+    cd "$GADGET_ROOT"
+    remove_gadget
+
+    mkdir -p "$GADGET_NAME"
+    cd "$GADGET_NAME"
+    printf '%s\n' "$VENDOR_ID" > idVendor
+    printf '%s\n' "$PRODUCT_ID" > idProduct
+    printf '0x0100\n' > bcdDevice
+    printf '0x0200\n' > bcdUSB
+
+    mkdir -p strings/0x409
+    printf '%s\n' "$SERIAL_NUMBER" > strings/0x409/serialnumber
+    printf '%s\n' "$MANUFACTURER" > strings/0x409/manufacturer
+    printf '%s\n' "$PRODUCT_NAME" > strings/0x409/product
+
+    mkdir -p functions/hid.usb0
+    cd functions/hid.usb0
+    printf '1\n' > protocol
+    printf '1\n' > subclass
+    printf '8\n' > report_length
+    write_keyboard_report_desc
+    cd ../..
+
+    mkdir -p configs/c.1/strings/0x409
+    printf 'Config 1: M1 HID Keyboard\n' > configs/c.1/strings/0x409/configuration
+    printf '100\n' > configs/c.1/MaxPower
+    ln -s functions/hid.usb0 configs/c.1/
+    marker "hidg_ready"
+
+    if [ -z "$UDC_NAME" ]; then
+        UDC_NAME="$(ls /sys/class/udc 2>/dev/null | head -1)"
+    fi
+    if [ -z "$UDC_NAME" ]; then
+        echo "no UDC found" >&2
+        exit 1
+    fi
+    printf '%s\n' "$UDC_NAME" > UDC
+    marker "m1_udc_bound"
+    echo "M1 HID gadget bound to $UDC_NAME"
+}
+
+case "${1:-start}" in
+    start)
+        start_gadget
+        ;;
+    stop)
+        mount_configfs
+        mkdir -p "$GADGET_ROOT"
+        remove_gadget
+        marker "m1_stop"
+        ;;
+    restart)
+        "$0" stop
+        "$0" start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}" >&2
+        exit 1
+        ;;
+esac

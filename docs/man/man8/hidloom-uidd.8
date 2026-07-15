@@ -1,0 +1,23 @@
+.TH HIDLOOM-UIDD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+hidloom-uidd \- native Linux uinput report sink
+.SH SYNOPSIS
+.B hidloom-uidd
+[\fB--frames\fR \fIN\fR]
+.SH DESCRIPTION
+.B hidloom-uidd
+receives canonical HID report frames and emits Linux input events through
+uinput for local console output mode.
+.SH OPTIONS
+.TP
+.B --frames N
+Process a bounded number of frames, mainly for tests.
+.TP
+.B -h, --help
+Show command help.
+.SH SEE ALSO
+.BR hidloom-outputd (8),
+.BR logicd (8)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

@@ -1,0 +1,19 @@
+.TH LEDD-SHUTDOWN 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+ledd-shutdown \- set LEDs to the shutdown indicator color
+.SH SYNOPSIS
+.B python3 -m ledd.shutdown
+.SH DESCRIPTION
+.B ledd-shutdown
+is a one-shot service used by the systemd shutdown sequence to display the
+configured shutdown LED signal.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH SEE ALSO
+.BR ledd (8),
+.BR hidloom-ledd (5)
+.br
+Lighting documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/lighting

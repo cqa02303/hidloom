@@ -1,0 +1,76 @@
+#!/bin/sh
+set -eu
+
+GADGET_NAME=cqa02303v5m4
+GADGET_ROOT=/sys/kernel/config/usb_gadget
+
+remove_gadget() {
+    [ -d "$GADGET_ROOT/$GADGET_NAME" ] || return 0
+    cd "$GADGET_ROOT/$GADGET_NAME"
+    printf '' > UDC 2>/dev/null || true
+    rm -f configs/c.1/hid.usb0 configs/c.1/hid.usb1 configs/c.1/hid.usb2 2>/dev/null || true
+    rmdir configs/c.1/strings/0x409 configs/c.1 functions/hid.usb0 functions/hid.usb1 functions/hid.usb2 2>/dev/null || true
+    rmdir configs functions strings/0x409 strings 2>/dev/null || true
+    cd "$GADGET_ROOT"
+    rmdir "$GADGET_NAME" 2>/dev/null || true
+}
+
+start_gadget() {
+    modprobe libcomposite 2>/dev/null || true
+    grep -q ' /sys/kernel/config configfs ' /proc/mounts 2>/dev/null || {
+        mkdir -p /sys/kernel/config
+        mount -t configfs configfs /sys/kernel/config
+    }
+    mkdir -p "$GADGET_ROOT"
+    remove_gadget
+    mkdir "$GADGET_ROOT/$GADGET_NAME"
+    cd "$GADGET_ROOT/$GADGET_NAME"
+    printf '0x1d6b\n' > idVendor
+    printf '0x0105\n' > idProduct
+    printf '0x0100\n' > bcdDevice
+    printf '0x0200\n' > bcdUSB
+    mkdir -p strings/0x409
+    printf 'm4-native-split\n' > strings/0x409/serialnumber
+    printf 'hidloom\n' > strings/0x409/manufacturer
+    printf 'CQA02303v5 M4 JP+US Keyboard\n' > strings/0x409/product
+
+    mkdir -p functions/hid.usb0
+    cd functions/hid.usb0
+    printf '0\n' > protocol
+    printf '0\n' > subclass
+    printf '9\n' > report_length
+    echo -ne '\x05\x01\x09\x06\xA1\x01\x85\x01\x05\x07\x19\xE0\x29\xE7\x15\x00\x25\x01\x75\x01\x95\x08\x81\x02\x95\x01\x75\x08\x81\x03\x95\x06\x75\x08\x15\x00\x26\xFF\x00\x05\x07\x19\x00\x2A\xFF\x00\x81\x00\x05\x08\x19\x01\x29\x05\x15\x00\x25\x01\x75\x01\x95\x05\x91\x02\x75\x03\x95\x01\x91\x03\xC0\x05\x01\x09\x02\xA1\x01\x85\x02\x09\x01\xA1\x00\x05\x09\x19\x01\x29\x05\x15\x00\x25\x01\x75\x01\x95\x05\x81\x02\x75\x03\x95\x01\x81\x03\x05\x01\x09\x30\x09\x31\x09\x38\x15\x81\x25\x7F\x75\x08\x95\x03\x81\x06\xC0\xC0\x05\x0C\x09\x01\xA1\x01\x85\x03\x15\x00\x26\xFF\x03\x19\x00\x2A\xFF\x03\x75\x10\x95\x01\x81\x00\xC0' > report_desc
+    cd ../..
+
+    mkdir -p functions/hid.usb1
+    cd functions/hid.usb1
+    printf '0\n' > protocol
+    printf '0\n' > subclass
+    printf '32\n' > report_length
+    echo -ne '\x06\x60\xff\x09\x61\xa1\x01\x15\x00\x26\xff\x00\x75\x08\x95\x20\x09\x62\x81\x02\x95\x20\x09\x63\x91\x02\xc0' > report_desc
+    cd ../..
+
+    mkdir -p functions/hid.usb2
+    cd functions/hid.usb2
+    printf '1\n' > protocol
+    printf '1\n' > subclass
+    printf '8\n' > report_length
+    echo -ne '\x05\x01\x09\x06\xa1\x01\x05\x07\x19\xe0\x29\xe7\x15\x00\x25\x01\x75\x01\x95\x08\x81\x02\x95\x01\x75\x08\x81\x03\x95\x06\x75\x08\x15\x00\x26\xff\x00\x05\x07\x19\x00\x2a\xff\x00\x81\x00\x05\x08\x19\x01\x29\x05\x15\x00\x25\x01\x75\x01\x95\x05\x91\x02\x75\x03\x95\x01\x91\x03\xc0' > report_desc
+    cd ../..
+
+    mkdir -p configs/c.1/strings/0x409
+    printf 'Config 1: JP composite + Raw HID + US sub keyboard\n' > configs/c.1/strings/0x409/configuration
+    printf '100\n' > configs/c.1/MaxPower
+    ln -s functions/hid.usb0 configs/c.1/
+    ln -s functions/hid.usb1 configs/c.1/
+    ln -s functions/hid.usb2 configs/c.1/
+    UDC_NAME="$(ls /sys/class/udc 2>/dev/null | head -1)"
+    [ -n "$UDC_NAME" ]
+    printf '%s\n' "$UDC_NAME" > UDC
+}
+
+case "${1:-start}" in
+    start) start_gadget ;;
+    stop) remove_gadget ;;
+    restart) remove_gadget; start_gadget ;;
+esac

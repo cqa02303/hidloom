@@ -1,0 +1,19 @@
+.TH HIDLOOM-LEDD 5 "@HIDLOOM_VERSION@" "HIDloom" "File Formats"
+.SH NAME
+hidloom-ledd \- ledd JSON configuration
+.SH DESCRIPTION
+The ledd configuration defines LED topology, animation defaults, semantic
+roles, direct-frame socket paths, and fallback behavior.
+.SH FILES
+.TP
+.B /usr/lib/hidloom/config/default/ledd.json
+Packaged default configuration.
+.TP
+.B /mnt/p3/led_state.json
+Runtime LED state persisted by logicd.
+.SH SEE ALSO
+.BR ledd (8),
+.BR logicd (8)
+.br
+Lighting documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/lighting

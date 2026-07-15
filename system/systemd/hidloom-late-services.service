@@ -1,0 +1,9 @@
+[Unit]
+Description=HIDloom late UI, Vial, and Bluetooth services
+Documentation=file://@HIDLOOM_REPO_ROOT@/docs/ops/real-device-test-checklist.md
+After=logicd-companion.service hidloom-usb-gadget.service
+
+[Service]
+Type=oneshot
+Environment=HIDLOOM_LATE_BLUETOOTH=1
+ExecStart=/bin/sh -c 'if [ "${HIDLOOM_LATE_BLUETOOTH:-1}" != "0" ]; then systemctl --no-block start hidloom-bluetooth-unblock.service btd.service; fi; systemctl --no-block start viald.service httpd.service'

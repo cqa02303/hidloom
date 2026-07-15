@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) rm -f /tmp/logicd_delegate_events.sock /tmp/ctrl_events.sock /tmp/ledd_events.sock /tmp/key_events.sock; PYTHONPATH=/usr/share/hidloom/daemon:/usr/share/hidloom HIDLOOM_REPO_ROOT=/usr/share/hidloom LOGICD_MATRIX_SOCKET=none LOGICD_DELEGATE_SOCKET=/tmp/logicd_delegate_events.sock LOGICD_CORE_KEY_EVENT_CTRL_SOCKET=/tmp/logicd_core_ctrl.sock LOGICD_OUTPUTS=debug LOGICD_NATIVE_OUTPUTD_CTRL=1 LOGICD_OUTPUTD_CTRL_SOCKET=/tmp/hidloom_output_ctrl.sock LOGICD_USBD_HID_REPORT_BROKER=0 LOGICD_SHUTDOWN_COMMAND=poweroff start-stop-daemon -S -b -m -p /run/logicd-companion.pid -x /usr/bin/python3 -O /var/log/logicd-companion.log -- -m logicd.logicd;;
+ stop) start-stop-daemon -K -p /run/logicd-companion.pid;;
+esac

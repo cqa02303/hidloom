@@ -1,0 +1,41 @@
+.TH HIDLOOM-KEY 1 "@HIDLOOM_VERSION@" "HIDloom" "User Commands"
+.SH NAME
+hidloom-key \- send key press, release, or tap events to logicd
+.SH SYNOPSIS
+.B hidloom-key
+[\fB--socket\fR \fIPATH\fR] [\fB--hold-us\fR \fIN\fR] [\fB--gap-us\fR \fIN\fR]
+.B tap
+\fIKEYCHORD\fR [\fIKEYCHORD\fR...]
+.br
+.B hidloom-key
+[\fB--socket\fR \fIPATH\fR]
+.BR press | release
+\fIKEYCHORD\fR|\fIKEY\fR [\fIMOD\fR]
+.SH DESCRIPTION
+.B hidloom-key
+connects to the logicd key event socket and emits binary synthetic key events.
+It is intended for local smoke tests, scripts, and recovery actions.
+.SH OPTIONS
+.TP
+.B --socket PATH
+Unix socket path. The default is the logicd key event socket.
+.TP
+.B --hold-us N
+Hold duration for tap events.
+.TP
+.B --gap-us N
+Gap between tap events.
+.TP
+.B -h, --help
+Show command help.
+.SH KEY FORMAT
+\fIKEYCHORD\fR is normally written as \fB0xMMKK\fR, where \fBMM\fR is the modifier
+byte and \fBKK\fR is the HID keycode. A key without modifier may be written as
+\fB0xKK\fR.
+.SH SEE ALSO
+.BR hidloom-keytext (1),
+.BR hidloom-ctrl (1),
+.BR logicd (8)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

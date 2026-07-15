@@ -1,0 +1,21 @@
+# Vial generation report
+
+slots: 90
+switch_points: 84
+assigned_slots: 90
+virtual_slots: 2
+slot_overrides: 0
+exclude_sources: encoder_pulse
+
+## Virtual Slots
+- row:9,order:2: 0,0
+- row:9,order:3: 0,1
+
+## Slot Overrides
+- (none)
+
+## Unassigned Slots
+- (none)
+
+## Unassigned Switch Points
+- (none)

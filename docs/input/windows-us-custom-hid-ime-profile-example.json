@@ -1,0 +1,25 @@
+{
+  "name": "windows_us_custom_hid_ime",
+  "description": "Diagnostic-only profile for Windows 11 US keyboard layout with a companion custom HID IME receiver. Do not enable by default for normal use.",
+  "custom_hid_ime": {
+    "enabled": false,
+    "receiver_required": true,
+    "receiver_available": false,
+    "route_actions": [
+      "KC_INT4",
+      "KC_INT5",
+      "KC_LANG1",
+      "KC_LANG2",
+      "KC_HENK",
+      "KC_MHEN"
+    ],
+    "report_device_candidate": "/dev/hidg4",
+    "report_size": 8,
+    "notes": [
+      "This route is diagnostic-only because it requires a Windows helper app.",
+      "The Windows receiver owns the mapping from command IDs to VK_CONVERT, VK_NONCONVERT, VK_KANA, VK_IME_ON, or VK_IME_OFF.",
+      "Prefer the helperless standard keyboard HID route for normal use.",
+      "The standard keyboard, mouse, Vial Raw HID, and consumer endpoints must continue to work without this profile."
+    ]
+  }
+}

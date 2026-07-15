@@ -1,0 +1,14 @@
+{
+  "schema": "hidloom.project-identity.v1",
+  "project_name": "HIDloom",
+  "project_slug": "hidloom",
+  "device_profiles": ["cqa02303v5"],
+  "public_repository": "hidloom",
+  "license": "GPL-3.0-or-later",
+  "initial_public_version": "0.1.0",
+  "copyright": {
+    "model": "individual-contributors",
+    "assignment_required": false,
+    "public_notice": "HIDloom contributors"
+  }
+}

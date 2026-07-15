@@ -1,0 +1,38 @@
+[Unit]
+Description=HIDloom native logicd core active input service
+Documentation=file://@HIDLOOM_REPO_ROOT@/docs/daemon/specs/logicd-core-rs/m0-implementation-spec.md
+After=hidloom-outputd.service
+Wants=hidloom-outputd.service
+Before=matrixd.service
+
+[Service]
+Type=simple
+ExecStart=@HIDLOOM_REPO_ROOT@/bin/hidloom-logicd-core --serve
+ExecStop=@HIDLOOM_REPO_ROOT@/bin/hidloom-logicd-core --ctrl-release-all
+ExecStopPost=@HIDLOOM_REPO_ROOT@/bin/hidloom-logicd-core --mark-stopped
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=0.2s
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hidloom-logicd-core
+Environment=HIDLOOM_REPO_ROOT=@HIDLOOM_REPO_ROOT@
+Environment=LOGICD_CORE_MATRIX_SOCKET=/tmp/matrix_events.sock
+Environment=LOGICD_CORE_CTRL_SOCKET=/tmp/logicd_core_ctrl.sock
+Environment=LOGICD_CORE_DELEGATE_SOCKET=/tmp/logicd_delegate_events.sock
+Environment=LOGICD_CORE_MATRIX_TAP_SOCKET=/tmp/matrix_tap_events.sock
+Environment=LOGICD_CORE_HID_REPORT_SOCKET=/tmp/hidloom_output_reports.sock
+Environment=LOGICD_CORE_STATUS_PATH=/run/hidloom/logicd-core-status.json
+Environment=LOGICD_CORE_PREVIEW_LOG_PATH=
+Environment=LOGICD_CORE_OUTPUT_ENABLED=1
+Environment=LOGICD_CORE_MATRIX_SOCKET_MODE=0o666
+Environment=LOGICD_CORE_CTRL_SOCKET_MODE=0660
+RuntimeDirectory=hidloom
+RuntimeDirectoryPreserve=yes
+
+[Install]
+WantedBy=multi-user.target

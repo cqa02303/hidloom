@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img" aria-labelledby="title desc">
+<title id="title">HIDloom System Overview</title>
+  <desc id="desc">Current overview diagram of matrixd, native logicd-core-rs, hidloom-outputd, hidloom-hidd, hidloom-uidd, logicd-companion control plane, PTY mirror capture mode, Vial Raw HID bridge, btd BLE HID, LEDs, OLED, runtime profiles, and persistent files.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#047857"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#b45309"/>
+    </marker>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .title { font: 700 34px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #111827; }
+      .subtitle { font: 500 16px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #475569; }
+      .lane-title { font: 700 18px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #1f2937; }
+      .box-title { font: 700 16px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #111827; }
+      .box-text { font: 500 13px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #374151; }
+      .small { font: 500 12px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #475569; }
+      .tiny { font: 500 11px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #64748b; }
+      .section { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 10; }
+      .input { fill: #eef6ff; stroke: #93c5fd; stroke-width: 1.5; rx: 8; }
+      .core { fill: #f0fdf4; stroke: #86efac; stroke-width: 2; rx: 8; }
+      .companion { fill: #fefce8; stroke: #fde047; stroke-width: 1.8; rx: 8; }
+      .daemon { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; rx: 8; }
+      .output { fill: #fff7ed; stroke: #fdba74; stroke-width: 1.5; rx: 8; }
+      .bt { fill: #eef2ff; stroke: #818cf8; stroke-width: 1.5; rx: 8; }
+      .storage { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; rx: 8; }
+      .ipc { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 1.2; rx: 14; }
+      .arrow { fill: none; stroke: #334155; stroke-width: 2.2; marker-end: url(#arrow); }
+      .arrow-blue { fill: none; stroke: #1d4ed8; stroke-width: 2.4; marker-end: url(#arrow-blue); }
+      .arrow-green { fill: none; stroke: #047857; stroke-width: 2.4; marker-end: url(#arrow-green); }
+      .arrow-orange { fill: none; stroke: #b45309; stroke-width: 2.4; marker-end: url(#arrow-orange); }
+      .dashed { stroke-dasharray: 8 6; }
+      .label { font: 700 12px "Segoe UI", "Noto Sans", Arial, sans-serif; fill: #334155; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1200"/>
+
+<text class="title" x="60" y="62">HIDloom System Overview</text>
+  <text class="subtitle" x="60" y="91">Current default: matrixd -> logicd-core-rs -> hidloom-outputd; PTY mirror temporarily captures matrix input to companion/sessiond.</text>
+
+  <rect class="section" x="40" y="125" width="350" height="930"/>
+  <text class="lane-title" x="65" y="160">Input / Control Sources</text>
+
+  <rect class="section" x="430" y="125" width="420" height="930"/>
+  <text class="lane-title" x="455" y="160">Native Hot Path + Control Plane</text>
+
+  <rect class="section" x="890" y="125" width="330" height="930"/>
+  <text class="lane-title" x="915" y="160">HID Broker / Daemons</text>
+
+  <rect class="section" x="1260" y="125" width="300" height="930"/>
+  <text class="lane-title" x="1285" y="160">Outputs / Host</text>
+
+  <rect class="input" x="70" y="190" width="280" height="78"/>
+  <text class="box-title" x="92" y="218">Physical key matrix</text>
+  <text class="box-text" x="92" y="242">GPIO scan by matrixd</text>
+
+  <rect class="daemon" x="70" y="292" width="280" height="92"/>
+  <text class="box-title" x="92" y="320">httpd</text>
+  <text class="box-text" x="92" y="344">HTTP UI / API / WebSocket</text>
+  <text class="box-text" x="92" y="366">Keyboard, keymap, interaction editor</text>
+
+  <rect class="input" x="70" y="410" width="280" height="80"/>
+  <text class="box-title" x="92" y="438">Analog stick / sensors</text>
+  <text class="box-text" x="92" y="462">i2cd / spid input paths</text>
+
+  <rect class="daemon" x="70" y="515" width="280" height="86"/>
+  <text class="box-title" x="92" y="543">Manual CLI / helpers</text>
+  <text class="box-text" x="92" y="567">sendkey, hidloom-ctrl, smoke tools</text>
+  <text class="box-text" x="92" y="586">KC_SHn + Vial/local macro dispatch</text>
+
+  <rect class="input" x="70" y="645" width="280" height="100"/>
+  <text class="box-title" x="92" y="673">PC host</text>
+  <text class="box-text" x="92" y="697">Vial GUI, USB LED OUT</text>
+  <text class="box-text" x="92" y="719">Receives keyboard / mouse / consumer</text>
+
+  <rect class="core" x="500" y="315" width="280" height="176"/>
+  <text class="box-title" x="525" y="345">logicd-core-rs</text>
+  <text class="box-text" x="525" y="371">Default matrix socket owner</text>
+  <text class="box-text" x="525" y="393">Basic keymap + layer owner</text>
+  <text class="box-text" x="525" y="415">Stable HID key slots</text>
+  <text class="box-text" x="525" y="437">Release safety / null report</text>
+  <text class="box-text" x="525" y="459">Delegates advanced actions</text>
+  <text class="box-text" x="525" y="481">PTY mirror capture mode</text>
+
+  <rect class="companion" x="500" y="530" width="280" height="190"/>
+  <text class="box-title" x="525" y="560">logicd-companion</text>
+  <text class="box-text" x="525" y="586">Control plane / status merge</text>
+  <text class="box-text" x="525" y="608">HTTP, Vial, macro, text send</text>
+  <text class="box-text" x="525" y="630">InteractionEngine advanced actions</text>
+  <text class="box-text" x="525" y="652">BT_* / Wi-Fi / sessiond hooks</text>
+  <text class="box-text" x="525" y="674">Tap-observed matrix state</text>
+  <text class="box-text" x="525" y="696">LOGICD_OUTPUTS=debug; no HID fan-out</text>
+
+  <rect class="daemon" x="500" y="750" width="280" height="78"/>
+  <text class="box-title" x="525" y="780">Keycode-triggered runners</text>
+  <text class="box-text" x="525" y="804">Shell scripts; KML/QMK design TODO</text>
+
+  <rect class="storage" x="500" y="855" width="280" height="138"/>
+  <text class="box-title" x="525" y="885">Configuration / persistence</text>
+  <text class="box-text" x="525" y="911">config/default/keymap.json, vial.json</text>
+  <text class="box-text" x="525" y="932">config/default/config.json</text>
+  <text class="box-text" x="525" y="953">config/profiles/* runtime</text>
+  <text class="box-text" x="525" y="974">/mnt/p3/keymap.json, script, state</text>
+
+  <rect class="ipc" x="430" y="205" width="190" height="34"/>
+  <text class="label" x="458" y="227">matrix_events.sock</text>
+
+  <rect class="ipc" x="430" y="260" width="220" height="34"/>
+  <text class="label" x="452" y="282">matrix_tap_events.sock</text>
+
+  <rect class="ipc" x="610" y="505" width="190" height="34"/>
+  <text class="label" x="638" y="527">logicd_core_ctrl.sock</text>
+
+  <rect class="ipc" x="430" y="725" width="180" height="34"/>
+  <text class="label" x="459" y="747">key_events.sock</text>
+
+  <rect class="daemon" x="930" y="190" width="250" height="176"/>
+  <text class="box-title" x="958" y="220">hidloom-outputd</text>
+  <text class="box-text" x="958" y="246">Native output router</text>
+  <text class="box-text" x="958" y="268">/tmp/hidloom_output_reports.sock</text>
+  <text class="box-text" x="958" y="290">target: usb / uinput / auto</text>
+  <text class="box-text" x="958" y="312">ctrl: hidloom_output_ctrl.sock</text>
+  <text class="box-text" x="958" y="334">release-all on target switch</text>
+
+  <rect class="daemon" x="930" y="405" width="250" height="118"/>
+  <text class="box-title" x="958" y="435">viald</text>
+  <text class="box-text" x="958" y="460">VIA/Vial protocol</text>
+  <text class="box-text" x="958" y="482">Dynamic keymap GET/SET</text>
+  <text class="box-text" x="958" y="504">VialRGB packets</text>
+
+  <rect class="ipc" x="935" y="545" width="240" height="34"/>
+  <text class="label" x="965" y="567">viald_events.sock</text>
+
+  <rect class="daemon" x="930" y="620" width="250" height="76"/>
+  <text class="box-title" x="958" y="650">ledd</text>
+  <text class="box-text" x="958" y="674">VialRGB effects/direct</text>
+
+  <rect class="daemon" x="930" y="730" width="250" height="86"/>
+  <text class="box-title" x="958" y="760">i2cd</text>
+  <text class="box-text" x="958" y="784">Layer/mode/status OLED</text>
+  <text class="box-text" x="958" y="803">Cached Wi-Fi / CPU / temp</text>
+
+  <rect class="bt" x="930" y="850" width="250" height="76"/>
+  <text class="box-title" x="958" y="880">btd</text>
+  <text class="box-text" x="958" y="904">BlueZ BLE HID keyboard</text>
+
+  <rect class="output" x="1295" y="190" width="230" height="150"/>
+  <text class="box-title" x="1320" y="220">hidloom-hidd -> USB HID</text>
+  <text class="box-text" x="1320" y="246">/tmp/usbd_hid_reports.sock</text>
+  <text class="box-text" x="1320" y="270">hidg0 Keyboard/Mouse/Consumer</text>
+  <text class="box-text" x="1320" y="294">hidg1 Raw HID/Vial</text>
+  <text class="box-text" x="1320" y="318">hidg2 US sub keyboard</text>
+
+  <rect class="output" x="1295" y="390" width="230" height="102"/>
+  <text class="box-title" x="1320" y="420">Raw HID / Vial</text>
+  <text class="box-text" x="1320" y="446">hidg1</text>
+  <text class="box-text" x="1320" y="470">Vial GUI on PC</text>
+
+  <rect class="output" x="1295" y="520" width="230" height="86"/>
+  <text class="box-title" x="1320" y="550">hidloom-uidd -> Pi console</text>
+  <text class="box-text" x="1320" y="575">/tmp/uidd_reports.sock</text>
+  <text class="box-text" x="1320" y="594">/dev/uinput virtual keyboard</text>
+
+  <rect class="output" x="1295" y="635" width="230" height="92"/>
+  <text class="box-title" x="1320" y="665">LED output</text>
+  <text class="box-text" x="1320" y="691">ledd -> SK6812MINI-E</text>
+
+  <rect class="output" x="1295" y="755" width="230" height="92"/>
+  <text class="box-title" x="1320" y="785">OLED output</text>
+  <text class="box-text" x="1320" y="811">i2cd -> SH1107</text>
+
+  <rect class="bt" x="1295" y="880" width="230" height="76"/>
+  <text class="box-title" x="1320" y="910">Bluetooth HID host</text>
+  <text class="box-text" x="1320" y="934">BLE keyboard reports</text>
+
+  <path class="arrow-blue" d="M350 229 C390 229, 400 222, 430 222"/>
+  <path class="arrow-blue" d="M620 222 C650 222, 655 285, 655 315"/>
+  <text class="tiny" x="365" y="214">P/R row col</text>
+
+  <path class="arrow-green dashed" d="M640 315 C640 300, 640 287, 650 277"/>
+  <path class="arrow-green dashed" d="M650 277 C705 360, 735 520, 780 586"/>
+  <text class="tiny" x="525" y="300">accepted P/R tap</text>
+
+  <path class="arrow-orange" d="M780 403 C850 403, 870 278, 930 278"/>
+  <text class="tiny" x="802" y="260">64-byte output frames</text>
+
+  <path class="arrow-orange" d="M1180 270 C1230 270, 1250 264, 1295 264"/>
+  <path class="arrow-orange dashed" d="M1180 316 C1235 390, 1250 542, 1295 563"/>
+  <text class="tiny" x="1192" y="356">uinput target</text>
+
+  <path class="arrow-orange" d="M1180 448 C1230 448, 1250 438, 1295 438"/>
+  <path class="arrow-orange" d="M1055 366 L1055 405"/>
+  <path class="arrow-orange" d="M1055 523 L1055 545"/>
+  <path class="arrow-orange" d="M1055 579 L1055 620"/>
+  <text class="tiny" x="1080" y="548">32B request / response</text>
+
+  <path class="arrow-green" d="M350 338 C430 338, 455 558, 500 586"/>
+  <path class="arrow-green" d="M350 450 C430 450, 455 610, 500 630"/>
+  <path class="arrow-green" d="M350 558 C430 558, 455 725, 500 789"/>
+  <path class="arrow-green" d="M610 522 C560 522, 540 505, 640 491"/>
+  <text class="tiny" x="370" y="390">control plane APIs</text>
+
+  <path class="arrow-green" d="M780 620 C840 620, 870 465, 930 465"/>
+  <path class="arrow-green" d="M930 455 C850 445, 820 535, 800 522"/>
+  <text class="tiny" x="805" y="426">SET keymap / RGB / matrix state</text>
+
+  <path class="arrow-green" d="M780 630 C850 650, 870 650, 930 658"/>
+  <path class="arrow-green" d="M1180 658 C1230 658, 1250 682, 1295 681"/>
+
+  <path class="arrow-green" d="M780 652 C850 720, 870 770, 930 773"/>
+  <path class="arrow-green" d="M1180 773 C1230 773, 1250 800, 1295 801"/>
+
+  <path class="arrow-blue dashed" d="M780 652 C860 800, 875 880, 930 888"/>
+  <path class="arrow-blue" d="M1180 888 C1230 888, 1250 918, 1295 918"/>
+
+  <path class="arrow" d="M640 491 L640 530"/>
+  <text class="tiny" x="650" y="517">delegated actions</text>
+
+  <path class="arrow-green dashed" d="M640 720 L640 750"/>
+  <path class="arrow-green dashed" d="M640 828 L640 855"/>
+
+  <rect class="ipc" x="900" y="1090" width="590" height="44"/>
+  <text class="small" x="925" y="1117">Legacy Python usbd.service is normally inactive; hidloom-outputd routes core frames to hidloom-hidd (USB) or hidloom-uidd (Pi console).</text>
+</svg>

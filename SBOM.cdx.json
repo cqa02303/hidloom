@@ -1,0 +1,1726 @@
+{
+  "$schema": "https://cyclonedx.org/schema/bom-1.7.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:408a60da-05db-58b6-9abc-5f1a90bc8bed",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40b2973b658c3af64052b7920657baeea3e1e300c9",
+      "name": "HIDloom",
+      "version": "0.1.0",
+      "licenses": [
+        {
+          "expression": "GPL-3.0-or-later"
+        }
+      ],
+      "purl": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40b2973b658c3af64052b7920657baeea3e1e300c9",
+      "properties": [
+        {
+          "name": "hidloom:source-base-commit",
+          "value": "b2973b658c3af64052b7920657baeea3e1e300c9"
+        },
+        {
+          "name": "hidloom:source-mode",
+          "value": "clean-head"
+        },
+        {
+          "name": "hidloom:source-snapshot-sha256",
+          "value": "82e9be571f425bde69d94efb9b93fb7947f83a73afca3b4e0c3de18fa20d03ea"
+        },
+        {
+          "name": "hidloom:device-profiles",
+          "value": "cqa02303v5"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:busybox:1.38.0",
+      "group": "buildroot",
+      "name": "busybox",
+      "version": "1.38.0",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://www.busybox.net/downloads#busybox-1.38.0.tar.bz2"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "GPL-2.0, bzip2-1.0.4"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:expat:2.8.1",
+      "group": "buildroot",
+      "name": "expat",
+      "version": "2.8.1",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/libexpat/libexpat/releases/download/R_2_8_1#expat-2.8.1.tar.xz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:hidloom-matrixd:1",
+      "group": "buildroot",
+      "name": "hidloom-matrixd",
+      "version": "1",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "project:daemon/matrixd#hidloom-matrixd-1.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "GPL-3.0-or-later"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:kmod:34.2",
+      "group": "buildroot",
+      "name": "kmod",
+      "version": "34.2",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://cdn.kernel.org/pub/linux/utils/kernel/kmod#kmod-34.2.tar.xz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "LGPL-2.1+ (library), GPL-2.0+ (tools)"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:libffi:3.5.2",
+      "group": "buildroot",
+      "name": "libffi",
+      "version": "3.5.2",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/libffi/libffi/releases/download/v3.5.2#libffi-3.5.2.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:libxcrypt:4.5.2",
+      "group": "buildroot",
+      "name": "libxcrypt",
+      "version": "4.5.2",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/besser82/libxcrypt/releases/download/v4.5.2#libxcrypt-4.5.2.tar.xz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "LGPL-2.1+"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:libzlib:1.3.2",
+      "group": "buildroot",
+      "name": "libzlib",
+      "version": "1.3.2",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://www.zlib.net#zlib-1.3.2.tar.xz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "Zlib"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:linux:21b410140c47ffab5668399f6f143c7d7b935c8b",
+      "group": "buildroot",
+      "name": "linux",
+      "version": "21b410140c47ffab5668399f6f143c7d7b935c8b",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/raspberrypi/linux/archive/21b410140c47ffab5668399f6f143c7d7b935c8b#linux-21b410140c47ffab5668399f6f143c7d7b935c8b.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "GPL-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python-cbor2:5.9.0",
+      "group": "buildroot",
+      "name": "python-cbor2",
+      "version": "5.9.0",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://files.pythonhosted.org/packages/bd/cb/09939728be094d155b5d4ac262e39877875f5f7e36eea66beb359f647bd0#cbor2-5.9.0.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python-luma-core:2.5.3",
+      "group": "buildroot",
+      "name": "python-luma-core",
+      "version": "2.5.3",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://files.pythonhosted.org/packages/source/l/luma.core#luma_core-2.5.3.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python-luma-oled:3.15.0",
+      "group": "buildroot",
+      "name": "python-luma-oled",
+      "version": "3.15.0",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://files.pythonhosted.org/packages/source/l/luma.oled#luma_oled-3.15.0.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python-pillow:12.0.0",
+      "group": "buildroot",
+      "name": "python-pillow",
+      "version": "12.0.0",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://files.pythonhosted.org/packages/5a/b0/cace85a1b0c9775a9f8f5d5423c8261c858760e2466c79b2dd184638b056#pillow-12.0.0.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "HPND"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python-pybind:3.0.1",
+      "group": "buildroot",
+      "name": "python-pybind",
+      "version": "3.0.1",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/pybind/pybind11/archive/v3.0.1#python-pybind-3.0.1.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python-rpi-ws281x:5.0.0",
+      "group": "buildroot",
+      "name": "python-rpi-ws281x",
+      "version": "5.0.0",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://files.pythonhosted.org/packages/c0/1e/642208a685c5e96d38323f42c75d9b24f95e2d1b8390dd104e04a712f29e#rpi_ws281x-5.0.0.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-2-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python-smbus2:0.6.1",
+      "group": "buildroot",
+      "name": "python-smbus2",
+      "version": "0.6.1",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://files.pythonhosted.org/packages/87/37/b3f7b501502c4915ba3819d1dc277bf3f5fae4a9d067caa4f502aaddd889#smbus2-0.6.1.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:python3:3.14.6",
+      "group": "buildroot",
+      "name": "python3",
+      "version": "3.14.6",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://python.org/ftp/python/3.14.6#Python-3.14.6.tar.xz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "Python-2.0, others"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:rpi-firmware:063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+      "group": "buildroot",
+      "name": "rpi-firmware",
+      "version": "063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/raspberrypi/firmware/archive/063bcab6c8a90efb0d19f69d88cbbc7ec79cab68#rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "BSD-3-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:sudo:1.9.17p2",
+      "group": "buildroot",
+      "name": "sudo",
+      "version": "1.9.17p2",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://www.sudo.ws/sudo/dist#sudo-1.9.17p2.tar.gz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "ISC, BSD-3-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:toolchain-external-bootlin:2025.08-1",
+      "group": "buildroot",
+      "name": "toolchain-external-bootlin",
+      "version": "2025.08-1",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs#armv7-eabihf--glibc--stable-2025.08-1.tar.xz"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "GPL-3.0-with-GCC-exception; GPL-2.0-or-later; LGPL-2.1-or-later; BSD-3-Clause; MIT; GPL-3.0-or-later; LGPL-2.0-or-later; LGPL-3.0-or-later"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:buildroot:xz:5.8.3",
+      "group": "buildroot",
+      "name": "xz",
+      "version": "5.8.3",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/tukaani-project/xz/releases/download/v5.8.3#xz-5.8.3.tar.bz2"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "buildroot-image-component"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "Public Domain, BSD-0-Clause, GPL-2.0+, GPL-3.0+, LGPL-2.1+"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:itoa:1.0.18",
+      "group": "cargo",
+      "name": "itoa",
+      "version": "1.0.18",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/itoa"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/itoa@1.0.18"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:memchr:2.8.2",
+      "group": "cargo",
+      "name": "memchr",
+      "version": "2.8.2",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/BurntSushi/memchr"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "Unlicense OR MIT"
+        }
+      ],
+      "purl": "pkg:cargo/memchr@2.8.2"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:proc-macro2:1.0.106",
+      "group": "cargo",
+      "name": "proc-macro2",
+      "version": "1.0.106",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/proc-macro2"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/proc-macro2@1.0.106"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:quote:1.0.45",
+      "group": "cargo",
+      "name": "quote",
+      "version": "1.0.45",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/quote"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/quote@1.0.45"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:serde:1.0.228",
+      "group": "cargo",
+      "name": "serde",
+      "version": "1.0.228",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/serde"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde@1.0.228"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:serde_core:1.0.228",
+      "group": "cargo",
+      "name": "serde_core",
+      "version": "1.0.228",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/serde"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde_core@1.0.228"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:serde_derive:1.0.228",
+      "group": "cargo",
+      "name": "serde_derive",
+      "version": "1.0.228",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/serde"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde_derive@1.0.228"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:serde_json:1.0.150",
+      "group": "cargo",
+      "name": "serde_json",
+      "version": "1.0.150",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/json"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde_json@1.0.150"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:syn:2.0.118",
+      "group": "cargo",
+      "name": "syn",
+      "version": "2.0.118",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/syn"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/syn@2.0.118"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:unicode-ident:1.0.24",
+      "group": "cargo",
+      "name": "unicode-ident",
+      "version": "1.0.24",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/unicode-ident"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "(MIT OR Apache-2.0) AND Unicode-3.0"
+        }
+      ],
+      "purl": "pkg:cargo/unicode-ident@1.0.24"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:zmij:1.0.21",
+      "group": "cargo",
+      "name": "zmij",
+      "version": "1.0.21",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/zmij"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:cargo/zmij@1.0.21"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:build-essential:distribution-selected",
+      "group": "debian",
+      "name": "build-essential",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:cargo:distribution-selected",
+      "group": "debian",
+      "name": "cargo",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:fbterm:distribution-selected",
+      "group": "debian",
+      "name": "fbterm",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:fonts-dejavu-mono:distribution-selected",
+      "group": "debian",
+      "name": "fonts-dejavu-mono",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:fonts-noto-cjk:distribution-selected",
+      "group": "debian",
+      "name": "fonts-noto-cjk",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:git:distribution-selected",
+      "group": "debian",
+      "name": "git",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:i2c-tools:distribution-selected",
+      "group": "debian",
+      "name": "i2c-tools",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:jq:distribution-selected",
+      "group": "debian",
+      "name": "jq",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3:distribution-selected",
+      "group": "debian",
+      "name": "python3",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-aiohttp:distribution-selected",
+      "group": "debian",
+      "name": "python3-aiohttp",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-dbus-next:distribution-selected",
+      "group": "debian",
+      "name": "python3-dbus-next",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-dev:distribution-selected",
+      "group": "debian",
+      "name": "python3-dev",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-numpy:distribution-selected",
+      "group": "debian",
+      "name": "python3-numpy",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-opencv:distribution-selected",
+      "group": "debian",
+      "name": "python3-opencv",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-pil:distribution-selected",
+      "group": "debian",
+      "name": "python3-pil",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-pip:distribution-selected",
+      "group": "debian",
+      "name": "python3-pip",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:python3-venv:distribution-selected",
+      "group": "debian",
+      "name": "python3-venv",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:rfkill:distribution-selected",
+      "group": "debian",
+      "name": "rfkill",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:rustc:distribution-selected",
+      "group": "debian",
+      "name": "rustc",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:socat:distribution-selected",
+      "group": "debian",
+      "name": "socat",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:debian:wireless-tools:distribution-selected",
+      "group": "debian",
+      "name": "wireless-tools",
+      "version": "distribution-selected",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "application",
+      "bom-ref": "third-party:github-actions:actions/cache:5.0.5",
+      "group": "github-actions",
+      "name": "actions/cache",
+      "version": "5.0.5",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/actions/cache/tree/27d5ce7f107fe9357f9df03efb73ab90386fccae"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "ci-action-reference"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:github/actions/cache@5.0.5"
+    },
+    {
+      "type": "application",
+      "bom-ref": "third-party:github-actions:actions/checkout:6.0.2",
+      "group": "github-actions",
+      "name": "actions/checkout",
+      "version": "6.0.2",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/actions/checkout/tree/de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "ci-action-reference"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:github/actions/checkout@6.0.2"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:pypi:luma.oled:unpinned",
+      "group": "pypi",
+      "name": "luma.oled",
+      "version": "unpinned",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:pypi:rpi_ws281x:unpinned",
+      "group": "pypi",
+      "name": "rpi_ws281x",
+      "version": "unpinned",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "not-redistributed"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "system/install/setup_fresh_rpi.sh"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "external-install-dependency"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40b2973b658c3af64052b7920657baeea3e1e300c9",
+      "dependsOn": [
+        "third-party:buildroot:busybox:1.38.0",
+        "third-party:buildroot:expat:2.8.1",
+        "third-party:buildroot:hidloom-matrixd:1",
+        "third-party:buildroot:kmod:34.2",
+        "third-party:buildroot:libffi:3.5.2",
+        "third-party:buildroot:libxcrypt:4.5.2",
+        "third-party:buildroot:libzlib:1.3.2",
+        "third-party:buildroot:linux:21b410140c47ffab5668399f6f143c7d7b935c8b",
+        "third-party:buildroot:python-cbor2:5.9.0",
+        "third-party:buildroot:python-luma-core:2.5.3",
+        "third-party:buildroot:python-luma-oled:3.15.0",
+        "third-party:buildroot:python-pillow:12.0.0",
+        "third-party:buildroot:python-pybind:3.0.1",
+        "third-party:buildroot:python-rpi-ws281x:5.0.0",
+        "third-party:buildroot:python-smbus2:0.6.1",
+        "third-party:buildroot:python3:3.14.6",
+        "third-party:buildroot:rpi-firmware:063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+        "third-party:buildroot:sudo:1.9.17p2",
+        "third-party:buildroot:toolchain-external-bootlin:2025.08-1",
+        "third-party:buildroot:xz:5.8.3",
+        "third-party:cargo:itoa:1.0.18",
+        "third-party:cargo:memchr:2.8.2",
+        "third-party:cargo:proc-macro2:1.0.106",
+        "third-party:cargo:quote:1.0.45",
+        "third-party:cargo:serde:1.0.228",
+        "third-party:cargo:serde_core:1.0.228",
+        "third-party:cargo:serde_derive:1.0.228",
+        "third-party:cargo:serde_json:1.0.150",
+        "third-party:cargo:syn:2.0.118",
+        "third-party:cargo:unicode-ident:1.0.24",
+        "third-party:cargo:zmij:1.0.21",
+        "third-party:debian:build-essential:distribution-selected",
+        "third-party:debian:cargo:distribution-selected",
+        "third-party:debian:fbterm:distribution-selected",
+        "third-party:debian:fonts-dejavu-mono:distribution-selected",
+        "third-party:debian:fonts-noto-cjk:distribution-selected",
+        "third-party:debian:git:distribution-selected",
+        "third-party:debian:i2c-tools:distribution-selected",
+        "third-party:debian:jq:distribution-selected",
+        "third-party:debian:python3:distribution-selected",
+        "third-party:debian:python3-aiohttp:distribution-selected",
+        "third-party:debian:python3-dbus-next:distribution-selected",
+        "third-party:debian:python3-dev:distribution-selected",
+        "third-party:debian:python3-numpy:distribution-selected",
+        "third-party:debian:python3-opencv:distribution-selected",
+        "third-party:debian:python3-pil:distribution-selected",
+        "third-party:debian:python3-pip:distribution-selected",
+        "third-party:debian:python3-venv:distribution-selected",
+        "third-party:debian:rfkill:distribution-selected",
+        "third-party:debian:rustc:distribution-selected",
+        "third-party:debian:socat:distribution-selected",
+        "third-party:debian:wireless-tools:distribution-selected",
+        "third-party:github-actions:actions/cache:5.0.5",
+        "third-party:github-actions:actions/checkout:6.0.2",
+        "third-party:pypi:luma.oled:unpinned",
+        "third-party:pypi:rpi_ws281x:unpinned"
+      ]
+    },
+    {
+      "ref": "third-party:buildroot:busybox:1.38.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:expat:2.8.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:hidloom-matrixd:1",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:kmod:34.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:libffi:3.5.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:libxcrypt:4.5.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:libzlib:1.3.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:linux:21b410140c47ffab5668399f6f143c7d7b935c8b",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python-cbor2:5.9.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python-luma-core:2.5.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python-luma-oled:3.15.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python-pillow:12.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python-pybind:3.0.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python-rpi-ws281x:5.0.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python-smbus2:0.6.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:python3:3.14.6",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:rpi-firmware:063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:sudo:1.9.17p2",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:toolchain-external-bootlin:2025.08-1",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:buildroot:xz:5.8.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:itoa:1.0.18",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:memchr:2.8.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:proc-macro2:1.0.106",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:quote:1.0.45",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:serde:1.0.228",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:serde_core:1.0.228",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:serde_derive:1.0.228",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:serde_json:1.0.150",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:syn:2.0.118",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:unicode-ident:1.0.24",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:zmij:1.0.21",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:build-essential:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:cargo:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:fbterm:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:fonts-dejavu-mono:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:fonts-noto-cjk:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:git:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:i2c-tools:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:jq:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-aiohttp:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-dbus-next:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-dev:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-numpy:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-opencv:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-pil:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-pip:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:python3-venv:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:rfkill:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:rustc:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:socat:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:debian:wireless-tools:distribution-selected",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:github-actions:actions/cache:5.0.5",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:github-actions:actions/checkout:6.0.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:pypi:luma.oled:unpinned",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:pypi:rpi_ws281x:unpinned",
+      "dependsOn": []
+    }
+  ]
+}

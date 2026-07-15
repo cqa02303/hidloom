@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) HIDLOOM_REPO_ROOT=/usr/share/hidloom LOGICD_CORE_MATRIX_SOCKET=/tmp/matrix_events.sock LOGICD_CORE_HID_REPORT_SOCKET=/tmp/hidloom_output_reports.sock LOGICD_CORE_OUTPUT_ENABLED=1 start-stop-daemon -S -b -m -p /run/hidloom-logicd-core.pid -x /usr/bin/hidloom-logicd-core -- --serve;;
+ stop) /usr/bin/hidloom-logicd-core --ctrl-release-all || true; start-stop-daemon -K -p /run/hidloom-logicd-core.pid;;
+esac

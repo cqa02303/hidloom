@@ -1,0 +1,27 @@
+[Unit]
+Description=LED Display Daemon (ledd)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/ledd/README.md
+# Start early like i2cd. ledd owns LED hardware and shows a low-power startup
+# effect while logicd-companion is still booting; runtime state is synced later
+# over /tmp/ledd_events.sock.
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m ledd.ledd
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=3s
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ledd
+Environment=LOG_SYSLOG=1
+Environment=LOG_LEVEL=INFO
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+
+[Install]
+WantedBy=multi-user.target

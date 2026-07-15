@@ -1,0 +1,10 @@
+[Unit]
+Description=Delay HIDloom UI and Vial services until after lightweight boot
+
+[Timer]
+OnBootSec=45s
+AccuracySec=1s
+Unit=hidloom-late-services.service
+
+[Install]
+WantedBy=timers.target

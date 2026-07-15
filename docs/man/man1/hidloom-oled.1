@@ -1,0 +1,24 @@
+.TH HIDLOOM-OLED 1 "@HIDLOOM_VERSION@" "HIDloom" "User Commands"
+.SH NAME
+hidloom-oled \- send a short OLED alert or warning
+.SH SYNOPSIS
+.B hidloom-oled
+[\fB--socket\fR \fIPATH\fR]
+\fBalert\fR|\fBwarning\fR \fIMESSAGE\fR [\fISEC\fR]
+.SH DESCRIPTION
+.B hidloom-oled
+sends a JSON-line alert to the i2cd event socket. It is useful for smoke tests
+and local operator feedback.
+.SH OPTIONS
+.TP
+.B --socket PATH
+i2cd event socket path. The default is \fB/tmp/i2c_events.sock\fR.
+.TP
+.B -h, --help
+Show command help.
+.SH SEE ALSO
+.BR i2cd (8),
+.BR hidloom-notify (1)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

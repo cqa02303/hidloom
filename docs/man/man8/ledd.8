@@ -1,0 +1,24 @@
+.TH LEDD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+ledd \- LED animation and direct-frame daemon
+.SH SYNOPSIS
+.B python3 -m ledd.ledd
+.SH DESCRIPTION
+.B ledd
+controls the LED strip, receives semantic key events from logicd, applies
+VialRGB effects, and accepts direct-frame producer input.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH ENVIRONMENT
+Common variables include \fBLEDD_DIRECT_FRAME_SOCK\fR,
+\fBLEDD_DIRECT_FRAME_STATUS\fR, \fBLEDD_DIRECT_FRAME_FALLBACK\fR, and
+\fBLEDD_I2CD_SOCKET\fR.
+.SH SEE ALSO
+.BR hidloom-ledd (5),
+.BR logicd (8),
+.BR ledd-shutdown (8)
+.br
+Lighting documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/lighting

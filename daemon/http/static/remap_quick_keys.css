@@ -1,0 +1,100 @@
+/* Remap popup quick access / pinned / recent key styles. */
+
+.remap-quick-access {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #d7dce3;
+  border-radius: 8px;
+  background: #f7f9fb;
+}
+
+.remap-quick-access[hidden] {
+  display: none !important;
+}
+
+.remap-quick-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.remap-quick-label {
+  min-width: 56px;
+  color: #5b6673;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.remap-quick-key {
+  min-height: 26px;
+  padding: 3px 8px;
+  border: 1px solid #c9d0d8;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #43505c;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.remap-quick-key:hover {
+  border-color: #8fb3d8;
+  background: #eef6ff;
+  color: #1665aa;
+}
+
+.remap-quick-key-pinned,
+.remap-key-pinned {
+  border-color: #e0b949 !important;
+  background: #fff7d6 !important;
+}
+
+.remap-pin-toggle {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  min-width: 16px;
+  min-height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8a5a00;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.72;
+}
+
+.remap-pin-toggle:hover,
+.remap-pin-toggle.active {
+  opacity: 1;
+  color: #b58400;
+}
+
+.remap-unimplemented-guide {
+  margin: -2px 0 8px;
+  padding: 6px 8px;
+  border: 1px dashed #c9d0d8;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #5b6673;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.remap-unimplemented-guide a {
+  color: #1665aa;
+  text-decoration: none;
+}
+
+.remap-unimplemented-guide a:hover {
+  text-decoration: underline;
+}
+
+.remap-key {
+  position: relative;
+}

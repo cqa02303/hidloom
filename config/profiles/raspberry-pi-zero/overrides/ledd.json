@@ -1,0 +1,8 @@
+{
+  "led": {
+    "show_min_interval_sec": 0.05
+  },
+  "animation": {
+    "fps": 4
+  }
+}

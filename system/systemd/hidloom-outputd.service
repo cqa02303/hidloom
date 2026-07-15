@@ -1,0 +1,27 @@
+[Unit]
+Description=HIDloom native HID report output router
+Documentation=file://@HIDLOOM_REPO_ROOT@/docs/architecture/native-output-routing-uidd-design.md
+After=hidloom-hidd.service hidloom-uidd.service
+Wants=hidloom-hidd.service hidloom-uidd.service
+
+[Service]
+Type=simple
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+ExecStart=@HIDLOOM_REPO_ROOT@/bin/hidloom-outputd
+Restart=always
+RestartSec=0.2
+User=root
+Group=root
+SyslogIdentifier=hidloom-outputd
+Environment=OUTPUTD_REPORT_SOCKET=/tmp/hidloom_output_reports.sock
+Environment=OUTPUTD_CTRL_SOCKET=/tmp/hidloom_output_ctrl.sock
+Environment=OUTPUTD_USB_SOCKET=/tmp/usbd_hid_reports.sock
+Environment=OUTPUTD_UIDD_SOCKET=/tmp/uidd_reports.sock
+Environment=OUTPUTD_BT_SOCKET=/tmp/btd_events.sock
+Environment=OUTPUTD_STATUS_PATH=/run/hidloom/outputd-status.json
+Environment=OUTPUTD_TARGET=usb
+Environment=OUTPUTD_REPORT_SOCKET_MODE=0666
+Environment=OUTPUTD_CTRL_SOCKET_MODE=0666
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+.TH LOGICD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+logicd \- keyboard logic companion daemon
+.SH SYNOPSIS
+.B python3 -m logicd.logicd
+[\fICONFIG_JSON\fR]
+.SH DESCRIPTION
+.B logicd
+owns high-level keymap, layer, control socket, notification, and companion
+integration behavior. In the native-owner configuration, hidloom-logicd-core owns
+the hot matrix input path and logicd runs as the companion service.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH ENVIRONMENT
+Common variables include \fBLOG_LEVEL\fR, \fBLOGICD_LED_STATE_PATH\fR,
+\fBLOGICD_CORE_KEY_EVENT_CTRL_SOCKET\fR, \fBLOGICD_MATRIX_ROWS\fR, and
+\fBLOGICD_MATRIX_COLS\fR.
+.SH SEE ALSO
+.BR hidloom-logicd-core (8),
+.BR matrixd (8),
+.BR hidloom-ctrl (1),
+.BR hidloom-keymap (5)
+.br
+Daemon documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/daemon

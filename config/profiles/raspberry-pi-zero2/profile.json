@@ -1,0 +1,21 @@
+{
+  "profile_id": "raspberry-pi-zero2",
+  "title": "Raspberry Pi Zero 2 balanced runtime profile",
+  "target": {
+    "model_family": [
+      "Raspberry Pi Zero 2 W"
+    ],
+    "tested_device": "Raspberry Pi Zero 2 W",
+    "tested_os": "Raspbian trixie armhf",
+    "tested_at": null
+  },
+  "overrides": {
+    "i2cd": "overrides/i2cd.json"
+  },
+  "services": "services.json",
+  "notes": [
+    "Use this runtime profile separately from config/boards wiring profiles.",
+    "OLED refresh is slightly more responsive than the Raspberry Pi Zero 1 profile.",
+    "Bluetooth and analog stick settings are not disabled by this profile."
+  ]
+}

@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) HIDD_RAW_HID_BRIDGE_ENABLED=1 USBD_RAW_HID_PATH=/dev/hidg1 VIALD_EVENTS_SOCK=/tmp/viald_events.sock USBD_HID_REPORT_PATH=/dev/hidg0 USBD_US_SUB_HID_REPORT_PATH=/dev/hidg2 start-stop-daemon -S -b -m -p /run/hidloom-hidd.pid -x /usr/bin/hidloom-hidd;;
+ stop) start-stop-daemon -K -p /run/hidloom-hidd.pid;;
+esac

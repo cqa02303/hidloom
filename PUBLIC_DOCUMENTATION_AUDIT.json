@@ -1,0 +1,900 @@
+{
+  "schema": "hidloom.public-documentation-audit.v2",
+  "ready": true,
+  "summary": {
+    "files_scanned": 237,
+    "public_docs": 187,
+    "reachable_public_docs": 187,
+    "omitted_private_links": 113,
+    "removed_private_navigation_lines": 79,
+    "broken_links": 0,
+    "orphaned_documents": 0
+  },
+  "omitted_private_links": [
+    {
+      "path": "FRESH_INSTALL.md",
+      "line": 184,
+      "target_type": "file"
+    },
+    {
+      "path": "daemon/i2cd/README.md",
+      "line": 343,
+      "target_type": "file"
+    },
+    {
+      "path": "daemon/logicd/README.md",
+      "line": 131,
+      "target_type": "file"
+    },
+    {
+      "path": "daemon/matrixd/README.md",
+      "line": 399,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 11,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 12,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 13,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 14,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 15,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 16,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 35,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 36,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 37,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 38,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 67,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 69,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 70,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 71,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 72,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/architecture/system-overview.md",
+      "line": 33,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/bluetooth/consumer-control-gatt-opt-in-design.md",
+      "line": 97,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/bluetooth/hid-backend-plan.md",
+      "line": 9,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/bluetooth/implementation-plan.md",
+      "line": 9,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/logicd-resolved-action-handler-split-design.md",
+      "line": 27,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/native-fast-input-core-design.md",
+      "line": 106,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/README.md",
+      "line": 43,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 9,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 24,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 39,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 39,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 54,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 67,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 81,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 96,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 110,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 110,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 125,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 138,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 152,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 166,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 178,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/implementation-risk-notes.md",
+      "line": 192,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/scan-stability-plan.md",
+      "line": 8,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 18,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 22,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 32,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 42,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 43,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 52,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 76,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/feature/sequence-engine-design.md",
+      "line": 257,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/hardware/new-board-config-guide.md",
+      "line": 17,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/hardware/new-board-config-guide.md",
+      "line": 261,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/keycode/expansion-plan.md",
+      "line": 37,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/keycode/qmk-vial-keycode-support.md",
+      "line": 199,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/lighting/led-semantic-roles.md",
+      "line": 242,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/morse/wabun-kana-lock-ime-design.md",
+      "line": 139,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 7,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 8,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 10,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 12,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 13,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 33,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 34,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 36,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 38,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 39,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 45,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 46,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 47,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 51,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 54,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 56,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 57,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 58,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 62,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 67,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 69,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/buildroot-fast-boot-experiment.md",
+      "line": 25,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
+      "line": 12,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/failure-patterns.md",
+      "line": 4,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
+      "line": 10,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 9,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 212,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 213,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 233,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 267,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 268,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 325,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 326,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 745,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 746,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 824,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 964,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 993,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 1184,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 1185,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/windows-ime-custom-hid-real-device-runbook.md",
+      "line": 7,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 10,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 11,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 17,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 18,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 15,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 16,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 179,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 204,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 205,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 206,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/documentation-policy.md",
+      "line": 15,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/http-mcp-transport-design.md",
+      "line": 12,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/mcp-write-capable-tool-design.md",
+      "line": 71,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/research/windows-split-keyboard-identity.md",
+      "line": 7,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/research/windows-split-keyboard-identity.md",
+      "line": 9,
+      "target_type": "file"
+    }
+  ],
+  "removed_private_navigation_lines": [
+    {
+      "path": "daemon/i2cd/README.md",
+      "line": 343
+    },
+    {
+      "path": "daemon/logicd/README.md",
+      "line": 131
+    },
+    {
+      "path": "daemon/matrixd/README.md",
+      "line": 399
+    },
+    {
+      "path": "docs/README.md",
+      "line": 11
+    },
+    {
+      "path": "docs/README.md",
+      "line": 12
+    },
+    {
+      "path": "docs/README.md",
+      "line": 13
+    },
+    {
+      "path": "docs/README.md",
+      "line": 14
+    },
+    {
+      "path": "docs/README.md",
+      "line": 15
+    },
+    {
+      "path": "docs/README.md",
+      "line": 16
+    },
+    {
+      "path": "docs/README.md",
+      "line": 35
+    },
+    {
+      "path": "docs/README.md",
+      "line": 36
+    },
+    {
+      "path": "docs/README.md",
+      "line": 37
+    },
+    {
+      "path": "docs/README.md",
+      "line": 38
+    },
+    {
+      "path": "docs/README.md",
+      "line": 67
+    },
+    {
+      "path": "docs/README.md",
+      "line": 69
+    },
+    {
+      "path": "docs/README.md",
+      "line": 70
+    },
+    {
+      "path": "docs/README.md",
+      "line": 71
+    },
+    {
+      "path": "docs/README.md",
+      "line": 72
+    },
+    {
+      "path": "docs/architecture/system-overview.md",
+      "line": 33
+    },
+    {
+      "path": "docs/bluetooth/consumer-control-gatt-opt-in-design.md",
+      "line": 97
+    },
+    {
+      "path": "docs/daemon/logicd-resolved-action-handler-split-design.md",
+      "line": 27
+    },
+    {
+      "path": "docs/daemon/specs/README.md",
+      "line": 43
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 18
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 22
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 32
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 42
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 43
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 52
+    },
+    {
+      "path": "docs/daemon/specs/matrixd/stability-docs.md",
+      "line": 76
+    },
+    {
+      "path": "docs/hardware/new-board-config-guide.md",
+      "line": 17
+    },
+    {
+      "path": "docs/lighting/led-semantic-roles.md",
+      "line": 242
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 7
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 8
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 10
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 12
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 13
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 33
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 34
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 36
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 38
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 39
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 45
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 46
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 47
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 51
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 54
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 56
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 57
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 58
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 62
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 67
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 69
+    },
+    {
+      "path": "docs/ops/buildroot-fast-boot-experiment.md",
+      "line": 25
+    },
+    {
+      "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
+      "line": 12
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 212
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 213
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 233
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 267
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 268
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 325
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 326
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 745
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 746
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 824
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 964
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 993
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 10
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 11
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 17
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 18
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 15
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 16
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 179
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 204
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 205
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 206
+    },
+    {
+      "path": "docs/policy/documentation-policy.md",
+      "line": 15
+    },
+    {
+      "path": "docs/policy/http-mcp-transport-design.md",
+      "line": 12
+    },
+    {
+      "path": "docs/policy/mcp-write-capable-tool-design.md",
+      "line": 71
+    }
+  ],
+  "broken_links": [],
+  "orphaned_documents": []
+}

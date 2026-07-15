@@ -1,0 +1,83 @@
+{
+  "schema": "cqa02303v5.device-profile.v1",
+  "id": "touch-waveshare-8.8",
+  "label": "Touch panel Waveshare 8.8",
+  "kind": "touch-panel",
+  "display": {
+    "match": [
+      "1920x480",
+      "480x1920"
+    ],
+    "default_orientation": "portrait"
+  },
+  "runtime_files": {
+    "keymap.json": "config/default/touch-panel/keymap.json",
+    "keyboard-layout.json": "config/default/touch-panel/keyboard-layout.json",
+    "vial.json": "config/default/touch-panel/vial.json"
+  },
+  "config_files": {},
+  "services": {
+    "enable": [
+      "hidloom-usb-gadget.service",
+      "hidloom-hidd.service",
+      "logicd.service",
+      "httpd.service",
+      "viald.service"
+    ],
+    "disable": [
+      "matrixd.service",
+      "hidloom-logicd-core.service",
+      "logicd-companion.service",
+      "hidloom-outputd.service",
+      "hidloom-uidd.service",
+      "i2cd.service",
+      "ledd.service",
+      "usbd.service",
+      "btd.service",
+      "hidloom-touch-panel-profile.service",
+      "hidloom-late-services.timer",
+      "hidloom-late-services.service"
+    ],
+    "mask": [
+      "matrixd.service",
+      "hidloom-logicd-core.service",
+      "logicd-companion.service",
+      "hidloom-outputd.service",
+      "hidloom-uidd.service"
+    ]
+  },
+  "dropins": {
+    "logicd.service": {
+      "Unit": {
+        "Wants": [
+          "dev-hidg0.device"
+        ]
+      },
+      "Service": {
+        "Environment": {
+          "LOGICD_MATRIX_ROWS": "16",
+          "LOGICD_MATRIX_COLS": "16",
+          "LOGICD_OUTPUTS": "auto"
+        }
+      }
+    },
+    "httpd.service": {
+      "Unit": {
+        "After": [
+          "logicd.service"
+        ],
+        "Wants": [
+          "logicd.service"
+        ]
+      }
+    },
+    "viald.service": {
+      "Unit": {
+        "After": [
+          "hidloom-usb-gadget.service",
+          "logicd.service"
+        ]
+      }
+    }
+  }
+}

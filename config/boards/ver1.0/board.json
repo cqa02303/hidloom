@@ -1,0 +1,10 @@
+{
+  "board_version": "ver1.0",
+  "title": "CQA02303v5 production wiring",
+  "prototype": false,
+  "default": true,
+  "notes": [
+    "Default production board profile.",
+    "Fresh install writes this marker unless another board version is explicitly requested."
+  ]
+}

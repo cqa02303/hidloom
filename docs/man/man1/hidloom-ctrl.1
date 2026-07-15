@@ -1,0 +1,42 @@
+.TH HIDLOOM-CTRL 1 "@HIDLOOM_VERSION@" "HIDloom" "User Commands"
+.SH NAME
+hidloom-ctrl \- send control requests to logicd
+.SH SYNOPSIS
+.B hidloom-ctrl
+[\fB--socket\fR \fIPATH\fR]
+.B json
+\fIJSON\fR
+.br
+.B hidloom-ctrl
+[\fB--socket\fR \fIPATH\fR]
+\fBkeymap\fR|\fBmatrix\fR|\fBsave\fR
+.br
+.B hidloom-ctrl
+[\fB--socket\fR \fIPATH\fR]
+\fBlayer\fR \fBget\fR|\fBadd\fR|\fBclear\fR [\fIN\fR]
+.br
+.B hidloom-ctrl
+[\fB--socket\fR \fIPATH\fR]
+\fBoutput\fR \fBauto\fR|\fBusb\fR|\fBbt\fR|\fBpi\fR
+.SH DESCRIPTION
+.B hidloom-ctrl
+sends one JSON-line request to the logicd control socket and prints the
+response. Shortcuts are provided for common status and routing actions.
+.SH OPTIONS
+.TP
+.B --socket PATH
+Control socket path. The default is \fB/tmp/ctrl_events.sock\fR.
+.TP
+.B -h, --help
+Show command help.
+.SH COMMANDS
+Common commands include \fBkeymap\fR, \fBmatrix\fR, \fBsave\fR,
+\fBlayer\fR, \fBoutput\fR, \fBbt\fR, and \fBled\fR. Use \fB--help\fR for the
+complete shortcut list.
+.SH SEE ALSO
+.BR logicd (8),
+.BR hidloom-key (1),
+.BR hidloom-keytext (1)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

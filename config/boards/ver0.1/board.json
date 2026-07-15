@@ -1,0 +1,10 @@
+{
+  "board_version": "ver0.1",
+  "title": "CQA02303v5 prototype wiring",
+  "prototype": true,
+  "default": false,
+  "notes": [
+    "Legacy prototype wiring.",
+    "Do not select this profile automatically. Use only during fresh install or an explicit command with --prototype."
+  ]
+}

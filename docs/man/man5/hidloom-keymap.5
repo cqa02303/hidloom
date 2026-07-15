@@ -1,0 +1,22 @@
+.TH HIDLOOM-KEYMAP 5 "@HIDLOOM_VERSION@" "HIDloom" "File Formats"
+.SH NAME
+hidloom-keymap \- CQA02303v5 keymap JSON format
+.SH DESCRIPTION
+The keymap JSON defines layers, matrix positions, and resolved action names
+used by logicd and the Web UI. Runtime mutable keymaps normally live under
+\fB/mnt/p3/keymap.json\fR. Package defaults live under
+\fB/usr/lib/hidloom/config/default/keymap.json\fR.
+.SH IMPORTANT RULES
+.IP \(bu 2
+Treat \fB/mnt/p3\fR as device-local mutable state.
+.IP \(bu 2
+Do not edit package defaults as runtime state.
+.IP \(bu 2
+Layer, local command, text, mouse, consumer, and keyboard actions have different
+output routing rules.
+.SH SEE ALSO
+.BR logicd (8),
+.BR hidloom-ctrl (1)
+.br
+Detailed keycode documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/keycode

@@ -1,0 +1,8 @@
+{
+  "scan": {
+    "interval_us": 2000,
+    "idle_interval_us": 4000,
+    "deep_idle_interval_us": 8000,
+    "debounce_ms": 6
+  }
+}

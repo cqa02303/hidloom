@@ -1,0 +1,763 @@
+{
+  "schema": "hidloom.public-reference-audit.v1",
+  "ready": true,
+  "public_repository": {
+    "slug": "cqa02303/hidloom",
+    "https_url": "https://github.com/cqa02303/hidloom",
+    "ssh_url": "git@github.com:cqa02303/hidloom.git"
+  },
+  "summary": {
+    "files_scanned": 1181,
+    "repository_references": 124,
+    "public_repository_references": 45,
+    "findings": 0,
+    "blockers": 0
+  },
+  "references": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "line": 4,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 10,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 18,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 81,
+      "slug": "libexpat/libexpat",
+      "url": "https://github.com/libexpat/libexpat"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 165,
+      "slug": "libffi/libffi",
+      "url": "https://github.com/libffi/libffi"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 193,
+      "slug": "besser82/libxcrypt",
+      "url": "https://github.com/besser82/libxcrypt"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 249,
+      "slug": "raspberrypi/linux",
+      "url": "https://github.com/raspberrypi/linux"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 389,
+      "slug": "pybind/pybind11",
+      "url": "https://github.com/pybind/pybind11"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 501,
+      "slug": "raspberrypi/firmware",
+      "url": "https://github.com/raspberrypi/firmware"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 585,
+      "slug": "tukaani-project/xz",
+      "url": "https://github.com/tukaani-project/xz"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 613,
+      "slug": "dtolnay/itoa",
+      "url": "https://github.com/dtolnay/itoa"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 640,
+      "slug": "burntsushi/memchr",
+      "url": "https://github.com/BurntSushi/memchr"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 667,
+      "slug": "dtolnay/proc-macro2",
+      "url": "https://github.com/dtolnay/proc-macro2"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 694,
+      "slug": "dtolnay/quote",
+      "url": "https://github.com/dtolnay/quote"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 721,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 748,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 775,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 802,
+      "slug": "serde-rs/json",
+      "url": "https://github.com/serde-rs/json"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 829,
+      "slug": "dtolnay/syn",
+      "url": "https://github.com/dtolnay/syn"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 856,
+      "slug": "dtolnay/unicode-ident",
+      "url": "https://github.com/dtolnay/unicode-ident"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 883,
+      "slug": "dtolnay/zmij",
+      "url": "https://github.com/dtolnay/zmij"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1351,
+      "slug": "actions/cache",
+      "url": "https://github.com/actions/cache"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1380,
+      "slug": "actions/checkout",
+      "url": "https://github.com/actions/checkout"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1441,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "USB_GADGET_SETUP.md",
+      "line": 21,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com.git"
+    },
+    {
+      "path": "config/buildroot-toolchain-components.json",
+      "line": 5,
+      "slug": "bootlin/buildroot-toolchains",
+      "url": "https://github.com/bootlin/buildroot-toolchains.git"
+    },
+    {
+      "path": "config/buildroot-toolchain-components.json",
+      "line": 178,
+      "slug": "libexpat/libexpat",
+      "url": "https://github.com/libexpat/libexpat"
+    },
+    {
+      "path": "config/buildroot-toolchain-components.json",
+      "line": 366,
+      "slug": "bminor/glibc",
+      "url": "https://github.com/bminor/glibc"
+    },
+    {
+      "path": "config/buildroot-toolchain-components.json",
+      "line": 418,
+      "slug": "libffi/libffi",
+      "url": "https://github.com/libffi/libffi"
+    },
+    {
+      "path": "config/buildroot-toolchain-components.json",
+      "line": 578,
+      "slug": "thomasdickey/ncurses-snapshots",
+      "url": "https://github.com/ThomasDickey/ncurses-snapshots"
+    },
+    {
+      "path": "config/buildroot-toolchain-components.json",
+      "line": 601,
+      "slug": "nixos/patchelf",
+      "url": "https://github.com/NixOS/patchelf"
+    },
+    {
+      "path": "config/buildroot-toolchain-evidence.json",
+      "line": 18,
+      "slug": "bootlin/buildroot-toolchains",
+      "url": "https://github.com/bootlin/buildroot-toolchains.git"
+    },
+    {
+      "path": "config/github-actions-lock.json",
+      "line": 10,
+      "slug": "actions/cache",
+      "url": "https://github.com/actions/cache"
+    },
+    {
+      "path": "config/github-actions-lock.json",
+      "line": 17,
+      "slug": "actions/checkout",
+      "url": "https://github.com/actions/checkout"
+    },
+    {
+      "path": "config/github-actions-lock.json",
+      "line": 24,
+      "slug": "actions/upload-artifact",
+      "url": "https://github.com/actions/upload-artifact"
+    },
+    {
+      "path": "config/public-repository-policy.json",
+      "line": 9,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "config/public-repository-policy.json",
+      "line": 30,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "config/public-usb-identity.json",
+      "line": 7,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "config/public-usb-identity.json",
+      "line": 31,
+      "slug": "vial-kb/vial-gui",
+      "url": "https://github.com/vial-kb/vial-gui"
+    },
+    {
+      "path": "config/public-usb-identity.json",
+      "line": 91,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "config/public-usb-identity.json",
+      "line": 92,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "daemon/http/static/index.html",
+      "line": 19,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "daemon/http/static/keyboard.js",
+      "line": 81,
+      "slug": "nickcoutsos/keypos",
+      "url": "https://github.com/nickcoutsos/keypos"
+    },
+    {
+      "path": "daemon/http/static/remap_quick_keys.js",
+      "line": 12,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man1/hidloom-ctrl.1",
+      "line": 42,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man1/hidloom-key.1",
+      "line": 41,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man1/hidloom-keytext.1",
+      "line": 34,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man1/hidloom-notify.1",
+      "line": 24,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man1/hidloom-oled.1",
+      "line": 24,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man5/hidloom-keymap.5",
+      "line": 22,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man5/hidloom-ledd.5",
+      "line": 19,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man5/hidloom-matrixd.5",
+      "line": 21,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/btd.8",
+      "line": 19,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/hidloom-hidd.8",
+      "line": 28,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/hidloom-logicd-core.8",
+      "line": 22,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/hidloom-outputd.8",
+      "line": 24,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/hidloom-uidd.8",
+      "line": 23,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/httpd.8",
+      "line": 23,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/i2cd.8",
+      "line": 24,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/ledd-shutdown.8",
+      "line": 19,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/ledd.8",
+      "line": 24,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/logicd.8",
+      "line": 27,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/matrixd.8",
+      "line": 24,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/sessiond.8",
+      "line": 18,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/spid.8",
+      "line": 18,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/usbd.8",
+      "line": 23,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/man/man8/viald.8",
+      "line": 21,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/ops/buildroot-fast-boot-experiment.md",
+      "line": 316,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/ops/buildroot-fast-boot-experiment.md",
+      "line": 422,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/ops/buildroot-fast-boot-experiment.md",
+      "line": 444,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 33,
+      "slug": "bootlin/buildroot-toolchains",
+      "url": "https://github.com/bootlin/buildroot-toolchains.git"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 178,
+      "slug": "tukaani-project/xz",
+      "url": "https://github.com/tukaani-project/xz"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 216,
+      "slug": "besser82/libxcrypt",
+      "url": "https://github.com/besser82/libxcrypt"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 234,
+      "slug": "libexpat/libexpat",
+      "url": "https://github.com/libexpat/libexpat"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 252,
+      "slug": "libffi/libffi",
+      "url": "https://github.com/libffi/libffi"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 324,
+      "slug": "pybind/pybind11",
+      "url": "https://github.com/pybind/pybind11"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 380,
+      "slug": "raspberrypi/firmware",
+      "url": "https://github.com/raspberrypi/firmware"
+    },
+    {
+      "path": "docs/ops/buildroot-m6-legal-summary.json",
+      "line": 420,
+      "slug": "raspberrypi/linux",
+      "url": "https://github.com/raspberrypi/linux"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 27,
+      "slug": "libexpat/libexpat",
+      "url": "https://github.com/libexpat/libexpat"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 60,
+      "slug": "libffi/libffi",
+      "url": "https://github.com/libffi/libffi"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 71,
+      "slug": "besser82/libxcrypt",
+      "url": "https://github.com/besser82/libxcrypt"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 93,
+      "slug": "raspberrypi/linux",
+      "url": "https://github.com/raspberrypi/linux"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 148,
+      "slug": "pybind/pybind11",
+      "url": "https://github.com/pybind/pybind11"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 192,
+      "slug": "raspberrypi/firmware",
+      "url": "https://github.com/raspberrypi/firmware"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 225,
+      "slug": "tukaani-project/xz",
+      "url": "https://github.com/tukaani-project/xz"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 236,
+      "slug": "dtolnay/itoa",
+      "url": "https://github.com/dtolnay/itoa"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 245,
+      "slug": "burntsushi/memchr",
+      "url": "https://github.com/BurntSushi/memchr"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 254,
+      "slug": "dtolnay/proc-macro2",
+      "url": "https://github.com/dtolnay/proc-macro2"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 263,
+      "slug": "dtolnay/quote",
+      "url": "https://github.com/dtolnay/quote"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 272,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 281,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 290,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 299,
+      "slug": "serde-rs/json",
+      "url": "https://github.com/serde-rs/json"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 308,
+      "slug": "dtolnay/syn",
+      "url": "https://github.com/dtolnay/syn"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 317,
+      "slug": "dtolnay/unicode-ident",
+      "url": "https://github.com/dtolnay/unicode-ident"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 326,
+      "slug": "dtolnay/zmij",
+      "url": "https://github.com/dtolnay/zmij"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 524,
+      "slug": "actions/cache",
+      "url": "https://github.com/actions/cache"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 534,
+      "slug": "actions/checkout",
+      "url": "https://github.com/actions/checkout"
+    },
+    {
+      "path": "script/test_http_interaction_ui_assets.py",
+      "line": 16,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_man_pages.py",
+      "line": 60,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_pid_codes_application.py",
+      "line": 74,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com.git"
+    },
+    {
+      "path": "script/test_pid_codes_application.py",
+      "line": 204,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com.git"
+    },
+    {
+      "path": "script/test_pid_codes_application.py",
+      "line": 359,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_public_export.py",
+      "line": 569,
+      "slug": "cqa02303/hidloom",
+      "url": "github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_public_repository_create.py",
+      "line": 188,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_public_repository_policy.py",
+      "line": 165,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_release_bundle_tools.py",
+      "line": 445,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "tools/generate_cyclonedx_sbom.py",
+      "line": 42,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "tools/generate_cyclonedx_sbom.py",
+      "line": 48,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 16,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 22,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 28,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 37,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 46,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 56,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 65,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 76,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 89,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 100,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/Cargo.lock",
+      "line": 106,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/pid_codes_application.py",
+      "line": 48,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "tools/pid_codes_application.py",
+      "line": 158,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "git@github.com:pidcodes/pidcodes.github.com.git"
+    },
+    {
+      "path": "tools/public_usb_identity.py",
+      "line": 174,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "tools/public_usb_identity.py",
+      "line": 251,
+      "slug": "vial-kb/vial-gui",
+      "url": "https://github.com/vial-kb/vial-gui"
+    }
+  ],
+  "findings": []
+}

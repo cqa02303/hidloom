@@ -1,0 +1,28 @@
+[Unit]
+Description=HIDloom Bluetooth HID daemon
+After=bluetooth.service
+Wants=bluetooth.service
+
+[Service]
+Type=simple
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+EnvironmentFile=-/etc/hidloom/usb-identity.env
+ExecStart=/usr/bin/python3 -m btd.btd
+ExecStartPre=/bin/rm -f /tmp/btd_events.sock
+Restart=on-failure
+RestartSec=2
+User=root
+Group=root
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=btd
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+Environment=HIDLOOM_REPO_ROOT=@HIDLOOM_REPO_ROOT@
+Environment=BTD_BACKEND=logging
+Environment=BTD_EVENTS_SOCK=/tmp/btd_events.sock
+Environment=BTD_REPORT_SIZE=8
+Environment=BTD_SOCKET_MODE=666
+
+[Install]
+WantedBy=multi-user.target

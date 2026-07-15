@@ -1,0 +1,1 @@
+console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait ro modules-load=dwc2,libcomposite quiet logo.nologo vt.global_cursor_default=0 loglevel=3

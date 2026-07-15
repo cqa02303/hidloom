@@ -1,0 +1,18 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        /usr/bin/hidloom-hid-gadget-m1 start
+        ;;
+    stop)
+        /usr/bin/hidloom-hid-gadget-m1 stop
+        ;;
+    restart)
+        /usr/bin/hidloom-hid-gadget-m1 stop
+        /usr/bin/hidloom-hid-gadget-m1 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}" >&2
+        exit 1
+        ;;
+esac

@@ -1,0 +1,701 @@
+{
+  "builder_source": {
+    "commit": "83947c7bb6158072bc2f52b58e90891cd3dc04a2",
+    "ref": "refs/tags/toolchains.bootlin.com-2025.08.1",
+    "repository": "https://github.com/bootlin/buildroot-toolchains.git"
+  },
+  "components": [
+    {
+      "license_files": [
+        {
+          "name": "COPYING.EXCEPTION",
+          "sha256": "1f1cde9fb68b9b3cff18c420894bec5bd4defacd700b7d13df54a887301e5350",
+          "size": 1866,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/autoconf-2.72/COPYING.EXCEPTION"
+        },
+        {
+          "name": "COPYINGv3",
+          "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+          "size": 35149,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/autoconf-2.72/COPYINGv3"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+ with exceptions"
+      ],
+      "name": "autoconf",
+      "source": {
+        "name": "autoconf-2.72.tar.xz",
+        "sha256": "ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a",
+        "size": 1389680,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/autoconf-2.72/autoconf-2.72.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//autoconf",
+      "summary_occurrences": 1,
+      "version": "2.72"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195",
+          "size": 35150,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/autoconf-archive-2023.02.20/COPYING"
+        },
+        {
+          "name": "COPYING.EXCEPTION",
+          "sha256": "23ed0b84fa023bfa33433b498192cd08a3bfb1f4864a8ed791a84f3eb48b2dd2",
+          "size": 1865,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/autoconf-archive-2023.02.20/COPYING.EXCEPTION"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+ with exception"
+      ],
+      "name": "autoconf-archive",
+      "source": {
+        "name": "autoconf-archive-2023.02.20.tar.xz",
+        "sha256": "71d4048479ae28f1f5794619c3d72df9c01df49b1c628ef85fde37596dc31a33",
+        "size": 678184,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/autoconf-archive-2023.02.20/autoconf-archive-2023.02.20.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//autoconf-archive",
+      "summary_occurrences": 1,
+      "version": "2023.02.20"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "ab15fd526bd8dd18a9e77ebc139656bf4d33e97fc7238cd11bf60e2b9b8666c6",
+          "size": 17987,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/automake-1.16.5/COPYING"
+        }
+      ],
+      "licenses": [
+        "GPL-2.0+"
+      ],
+      "name": "automake",
+      "source": {
+        "name": "automake-1.16.5.tar.xz",
+        "sha256": "f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469",
+        "size": 1601740,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/automake-1.16.5/automake-1.16.5.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//automake",
+      "summary_occurrences": 1,
+      "version": "1.16.5"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING.LIB",
+          "sha256": "56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d",
+          "size": 25291,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/binutils-2.43.1/COPYING.LIB"
+        },
+        {
+          "name": "COPYING3",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+          "size": 35147,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/binutils-2.43.1/COPYING3"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+, libiberty LGPL-2.1+"
+      ],
+      "name": "binutils",
+      "source": {
+        "name": "binutils-2.43.1.tar.xz",
+        "sha256": "13f74202a3c4c51118b797a39ea4200d3f6cfbe224da6d1d95bb938480132dfd",
+        "size": 28174300,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/binutils-2.43.1/binutils-2.43.1.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//binutils",
+      "summary_occurrences": 1,
+      "version": "2.43.1"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+          "size": 35149,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/bison-3.8.2/COPYING"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+"
+      ],
+      "name": "bison",
+      "source": {
+        "name": "bison-3.8.2.tar.xz",
+        "sha256": "9bba0214ccf7f1079c5d59210045227bcf619519840ebfa80cd3849cff5a5bf2",
+        "size": 2817324,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/bison-3.8.2/bison-3.8.2.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//bison",
+      "summary_occurrences": 1,
+      "version": "3.8.2"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "9755181e27175cb3510b4da8629caa406fb355a19aa8e7d55f06bf8ab33323c4",
+          "size": 18767,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/buildroot/COPYING"
+        }
+      ],
+      "licenses": [
+        "GPL-2.0+"
+      ],
+      "name": "buildroot",
+      "source": null,
+      "source_site": "not saved",
+      "summary_occurrences": 1,
+      "version": "2021.11-18033-g83947c7bb6"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "31b15de82aa19a845156169a17a5488bf597e561b2c318d159ed583139b25e87",
+          "size": 1144,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/expat-2.7.1/COPYING"
+        }
+      ],
+      "licenses": [
+        "MIT"
+      ],
+      "name": "expat",
+      "source": {
+        "name": "expat-2.7.1.tar.xz",
+        "sha256": "354552544b8f99012e5062f7d570ec77f14b412a3ff5c7d8d0dae62c0d217c30",
+        "size": 496108,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/expat-2.7.1/expat-2.7.1.tar.xz"
+      },
+      "source_site": "https://github.com/libexpat/libexpat/releases/download/R_2_7_1",
+      "summary_occurrences": 1,
+      "version": "2.7.1"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+          "size": 35147,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gawk-5.3.1/COPYING"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+"
+      ],
+      "name": "gawk",
+      "source": {
+        "name": "gawk-5.3.1.tar.xz",
+        "sha256": "694db764812a6236423d4ff40ceb7b6c4c441301b72ad502bb5c27e00cd56f78",
+        "size": 3510032,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/gawk-5.3.1/gawk-5.3.1.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//gawk",
+      "summary_occurrences": 1,
+      "version": "5.3.1"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+          "size": 18002,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-final-14.3.0/COPYING"
+        },
+        {
+          "name": "COPYING.LIB",
+          "sha256": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861",
+          "size": 26527,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-final-14.3.0/COPYING.LIB"
+        },
+        {
+          "name": "COPYING.RUNTIME",
+          "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+          "size": 3324,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-final-14.3.0/COPYING.RUNTIME"
+        },
+        {
+          "name": "COPYING3",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+          "size": 35147,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-final-14.3.0/COPYING3"
+        },
+        {
+          "name": "COPYING3.LIB",
+          "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+          "size": 7639,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-final-14.3.0/COPYING3.LIB"
+        }
+      ],
+      "licenses": [
+        "GPL-2.0, GPL-3.0, LGPL-2.1, LGPL-3.0",
+        "GPL-3.0-with-GCC-exception"
+      ],
+      "name": "gcc-final",
+      "source": {
+        "name": "gcc-14.3.0.tar.xz",
+        "sha256": "e0dc77297625631ac8e50fa92fffefe899a4eb702592da5c32ef04e2293aca3a",
+        "size": 95212220,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/gcc-final-14.3.0/gcc-14.3.0.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//gcc/gcc-14.3.0",
+      "summary_occurrences": 2,
+      "version": "14.3.0"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+          "size": 18002,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-initial-14.3.0/COPYING"
+        },
+        {
+          "name": "COPYING.LIB",
+          "sha256": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861",
+          "size": 26527,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-initial-14.3.0/COPYING.LIB"
+        },
+        {
+          "name": "COPYING3",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+          "size": 35147,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-initial-14.3.0/COPYING3"
+        },
+        {
+          "name": "COPYING3.LIB",
+          "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+          "size": 7639,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gcc-initial-14.3.0/COPYING3.LIB"
+        }
+      ],
+      "licenses": [
+        "GPL-2.0, GPL-3.0, LGPL-2.1, LGPL-3.0"
+      ],
+      "name": "gcc-initial",
+      "source": {
+        "name": "gcc-14.3.0.tar.xz",
+        "sha256": "e0dc77297625631ac8e50fa92fffefe899a4eb702592da5c32ef04e2293aca3a",
+        "size": 95212220,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/gcc-initial-14.3.0/gcc-14.3.0.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//gcc/gcc-14.3.0",
+      "summary_occurrences": 1,
+      "version": "14.3.0"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+          "size": 18002,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gdb-15.2/COPYING"
+        },
+        {
+          "name": "COPYING.LIB",
+          "sha256": "56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d",
+          "size": 25291,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gdb-15.2/COPYING.LIB"
+        },
+        {
+          "name": "COPYING3",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+          "size": 35147,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gdb-15.2/COPYING3"
+        },
+        {
+          "name": "COPYING3.LIB",
+          "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+          "size": 7639,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gdb-15.2/COPYING3.LIB"
+        }
+      ],
+      "licenses": [
+        "GPL-2.0+, LGPL-2.0+, GPL-3.0+, LGPL-3.0+"
+      ],
+      "name": "gdb",
+      "source": {
+        "name": "gdb-15.2.tar.xz",
+        "sha256": "83350ccd35b5b5a0cba6b334c41294ea968158c573940904f00b92f76345314d",
+        "size": 24332820,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/gdb-15.2/gdb-15.2.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//gdb",
+      "summary_occurrences": 2,
+      "version": "15.2"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+          "size": 18092,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/COPYING"
+        },
+        {
+          "name": "COPYING.LIB",
+          "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551",
+          "size": 26530,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/COPYING.LIB"
+        },
+        {
+          "name": "LICENSES",
+          "sha256": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+          "size": 19665,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/LICENSES"
+        }
+      ],
+      "licenses": [
+        "GPL-2.0+ (programs), LGPL-2.1+, BSD-3-Clause, MIT (library)"
+      ],
+      "name": "glibc",
+      "source": {
+        "name": "glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830.tar.gz",
+        "sha256": "166b6e7637bb45cb9352e4813005f83dd48f03ef634d3e9e94a30aa5a0300fab",
+        "size": 38626222,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830/glibc-2.41-70-g1502c248d58cb99a203731707987a4342926e830.tar.gz"
+      },
+      "source_site": "https://github.com/bminor/glibc/archive/2.41-70-g1502c248d58cb99a203731707987a4342926e830",
+      "summary_occurrences": 1,
+      "version": "2.41-70-g1502c248d58cb99a203731707987a4342926e830"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING.LESSERv3",
+          "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+          "size": 7639,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gmp-6.3.0/COPYING.LESSERv3"
+        },
+        {
+          "name": "COPYINGv2",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+          "size": 18092,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/gmp-6.3.0/COPYINGv2"
+        }
+      ],
+      "licenses": [
+        "LGPL-3.0+ or GPL-2.0+"
+      ],
+      "name": "gmp",
+      "source": {
+        "name": "gmp-6.3.0.tar.xz",
+        "sha256": "a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898",
+        "size": 2094196,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/gmp-6.3.0/gmp-6.3.0.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//gmp",
+      "summary_occurrences": 1,
+      "version": "6.3.0"
+    },
+    {
+      "license_files": [
+        {
+          "name": "LICENSE",
+          "sha256": "67894089811f93fca47a76f85e017da6f8582d4ba0905963c6e0f1ad6df7a195",
+          "size": 1132,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/libffi-3.4.8/LICENSE"
+        }
+      ],
+      "licenses": [
+        "MIT"
+      ],
+      "name": "libffi",
+      "source": {
+        "name": "libffi-3.4.8.tar.gz",
+        "sha256": "bc9842a18898bfacb0ed1252c4febcc7e78fa139fd27fdc7a3e30d9d9356119b",
+        "size": 1397992,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/libffi-3.4.8/libffi-3.4.8.tar.gz"
+      },
+      "source_site": "https://github.com/libffi/libffi/releases/download/v3.4.8",
+      "summary_occurrences": 1,
+      "version": "3.4.8"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+          "size": 18092,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/libtool-2.4.6/COPYING"
+        },
+        {
+          "name": "libltdl/COPYING.LIB",
+          "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551",
+          "size": 26530,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/libtool-2.4.6/libltdl/COPYING.LIB"
+        }
+      ],
+      "licenses": [
+        "GPL-2.0+ (libtool), LGPL-2.1+ (libltdl)"
+      ],
+      "name": "libtool",
+      "source": {
+        "name": "libtool-2.4.6.tar.xz",
+        "sha256": "7c87a8c2c8c0fc9cd5019e402bed4292462d00a718a7cd5f11218153bf28b26f",
+        "size": 973080,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/libtool-2.4.6/libtool-2.4.6.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//libtool",
+      "summary_occurrences": 1,
+      "version": "2.4.6"
+    },
+    {
+      "license_files": [
+        {
+          "name": "LICENSE",
+          "sha256": "845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243",
+          "size": 1002,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/libzlib-1.3.1/LICENSE"
+        }
+      ],
+      "licenses": [
+        "Zlib"
+      ],
+      "name": "libzlib",
+      "source": {
+        "name": "zlib-1.3.1.tar.xz",
+        "sha256": "38ef96b8dfe510d42707d9c781877914792541133e1870841463bfa73f883e32",
+        "size": 1305740,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/libzlib-1.3.1/zlib-1.3.1.tar.xz"
+      },
+      "source_site": "https://www.zlib.net",
+      "summary_occurrences": 1,
+      "version": "1.3.1"
+    },
+    {
+      "license_files": [],
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "name": "linux-headers",
+      "source": {
+        "name": "linux-5.4.296.tar.xz",
+        "sha256": "3d63614e58bf1befaba3f5713145200d09f26e564832c8948094fdf5b11fa73a",
+        "size": 113049108,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/linux-headers-5.4.296/linux-5.4.296.tar.xz"
+      },
+      "source_site": "https://cdn.kernel.org/pub/linux/kernel/v5.x",
+      "summary_occurrences": 1,
+      "version": "5.4.296"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+          "size": 35149,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/m4-1.4.20/COPYING"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+"
+      ],
+      "name": "m4",
+      "source": {
+        "name": "m4-1.4.20.tar.xz",
+        "sha256": "e236ea3a1ccf5f6c270b1c4bb60726f371fa49459a8eaaebc90b216b328daf2b",
+        "size": 2044756,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/m4-1.4.20/m4-1.4.20.tar.xz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//m4",
+      "summary_occurrences": 1,
+      "version": "1.4.20"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING.LESSER",
+          "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+          "size": 7651,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/mpc-1.3.1/COPYING.LESSER"
+        }
+      ],
+      "licenses": [
+        "LGPL-3.0+"
+      ],
+      "name": "mpc",
+      "source": {
+        "name": "mpc-1.3.1.tar.gz",
+        "sha256": "ab642492f5cf882b74aa0cb730cd410a81edcdbec895183ce930e706c1c759b8",
+        "size": 773573,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/mpc-1.3.1/mpc-1.3.1.tar.gz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//mpc",
+      "summary_occurrences": 1,
+      "version": "1.3.1"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING.LESSER",
+          "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+          "size": 7652,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/mpfr-4.1.1/COPYING.LESSER"
+        }
+      ],
+      "licenses": [
+        "LGPL-3.0+"
+      ],
+      "name": "mpfr",
+      "source": {
+        "name": "mpfr-4.1.1.tar.xz",
+        "sha256": "ffd195bd567dbaffc3b98b23fd00aad0537680c9896171e44fe3ff79e28ac33d",
+        "size": 1429836,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/mpfr-4.1.1/mpfr-4.1.1.tar.xz"
+      },
+      "source_site": "http://www.mpfr.org/mpfr-4.1.1",
+      "summary_occurrences": 1,
+      "version": "4.1.1"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "708999f95527e1ffa670c6fce288c6c600cb477dd04afcc1171422b3dd4ee226",
+          "size": 1447,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/ncurses-6.5-20250720/COPYING"
+        }
+      ],
+      "licenses": [
+        "MIT with advertising clause"
+      ],
+      "name": "ncurses",
+      "source": {
+        "name": "ncurses-6.5-20250720.tar.gz",
+        "sha256": "fc3871f051e941a637488c07c81d984f731003e65c0f78353606e18296011aac",
+        "size": 3659703,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/ncurses-6.5-20250720/ncurses-6.5-20250720.tar.gz"
+      },
+      "source_site": "https://github.com/ThomasDickey/ncurses-snapshots/archive/v6_5_20250720",
+      "summary_occurrences": 1,
+      "version": "6.5-20250720"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+          "size": 35147,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/patchelf-0.13/COPYING"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+"
+      ],
+      "name": "patchelf",
+      "source": {
+        "name": "patchelf-0.13.tar.bz2",
+        "sha256": "4c7ed4bcfc1a114d6286e4a0d3c1a90db147a4c3adda1814ee0eee0f9ee917ed",
+        "size": 172499,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/patchelf-0.13/patchelf-0.13.tar.bz2"
+      },
+      "source_site": "https://github.com/NixOS/patchelf/releases/download/0.13",
+      "summary_occurrences": 1,
+      "version": "0.13"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "07ee94b50a41ee3fc4e13a9b9c60b26fc28488494c465639f7e5f07a3952ec04",
+          "size": 509,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/pkgconf-2.3.0/COPYING"
+        }
+      ],
+      "licenses": [
+        "pkgconf license"
+      ],
+      "name": "pkgconf",
+      "source": {
+        "name": "pkgconf-2.3.0.tar.xz",
+        "sha256": "3a9080ac51d03615e7c1910a0a2a8df08424892b5f13b0628a204d3fcce0ea8b",
+        "size": 316160,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/pkgconf-2.3.0/pkgconf-2.3.0.tar.xz"
+      },
+      "source_site": "https://distfiles.ariadne.space/pkgconf",
+      "summary_occurrences": 1,
+      "version": "2.3.0"
+    },
+    {
+      "license_files": [
+        {
+          "name": "LICENSE",
+          "sha256": "78b12c3a81360b357002334f0e70ea0e92eebf7a9b358805c03c48484945f3bb",
+          "size": 13809,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/python3-3.13.5/LICENSE"
+        }
+      ],
+      "licenses": [
+        "Python-2.0, others"
+      ],
+      "name": "python3",
+      "source": {
+        "name": "Python-3.13.5.tar.xz",
+        "sha256": "93e583f243454e6e9e4588ca2c2662206ad961659863277afcdb96801647d640",
+        "size": 22856016,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/python3-3.13.5/Python-3.13.5.tar.xz"
+      },
+      "source_site": "https://python.org/ftp/python/3.13.5",
+      "summary_occurrences": 1,
+      "version": "3.13.5"
+    },
+    {
+      "license_files": [
+        {
+          "name": "COPYING",
+          "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+          "size": 35149,
+          "url": "https://toolchains.bootlin.com/downloads/releases/licenses/tar-1.35/COPYING"
+        }
+      ],
+      "licenses": [
+        "GPL-3.0+"
+      ],
+      "name": "tar",
+      "source": {
+        "name": "tar-1.35.cpio.gz",
+        "sha256": "c77a38fcf25b21fd8209d20d35638744344ded239cfc7df80138bf46d3c6b16d",
+        "size": 4625633,
+        "url": "https://toolchains.bootlin.com/downloads/releases/sources/tar-1.35/tar-1.35.cpio.gz"
+      },
+      "source_site": "https://mirrors.kernel.org/gnu//tar",
+      "summary_occurrences": 1,
+      "version": "1.35"
+    }
+  ],
+  "official_evidence": {
+    "readme": {
+      "sha256": "cddfc934582650b5a2f9a222debe6ff7b5dfcbf64943e4d486d147873600504e",
+      "size": 1110,
+      "url": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/readmes/armv7-eabihf--glibc--stable-2025.08-1.txt"
+    },
+    "summary": {
+      "sha256": "a38d7c0484d9d51a5d8d7272b3320d957c89bd8e13ffdffd29a8d2b032f96c66",
+      "size": 7470,
+      "url": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/summaries/armv7-eabihf--glibc--stable-2025.08-1.csv"
+    }
+  },
+  "schema": "hidloom.bootlin-toolchain-components.v1",
+  "summary": {
+    "components": 25,
+    "license_files": 41,
+    "source_archives": 24,
+    "summary_rows": 27,
+    "unique_objects": 46
+  },
+  "toolchain": {
+    "archive": "armv7-eabihf--glibc--stable-2025.08-1.tar.xz",
+    "archive_sha256": "97d6fbaf19832002f3d6aa8fd31b2d29c1dc7b0752f4ae8ed35860fd33c1f9b4",
+    "package": "toolchain-external-bootlin",
+    "version": "2025.08-1"
+  }
+}

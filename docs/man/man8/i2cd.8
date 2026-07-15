@@ -1,0 +1,24 @@
+.TH I2CD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+i2cd \- OLED and status display daemon
+.SH SYNOPSIS
+.B python3 -m i2cd.i2cd
+.SH DESCRIPTION
+.B i2cd
+renders boot, daemon status, output mode, layer, warning, and direct-frame FPS
+status to the OLED display. It also exposes an event socket for short alerts.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH FILES
+.TP
+.B /usr/lib/hidloom/config/default/i2cd.json
+Packaged default configuration.
+.SH SEE ALSO
+.BR hidloom-oled (1),
+.BR hidloom-notify (1),
+.BR logicd (8)
+.br
+Display documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/daemon

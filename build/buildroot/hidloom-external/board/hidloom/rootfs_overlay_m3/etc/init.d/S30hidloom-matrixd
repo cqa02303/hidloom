@@ -1,0 +1,13 @@
+#!/bin/sh
+case "$1" in
+ start)
+  if [ ! -c /dev/gpiomem ]; then
+   echo "M3 ERROR: /dev/gpiomem missing" >/dev/console
+   exit 1
+  fi
+  echo "M3 matrixd starting with /dev/gpiomem" >/dev/console
+  start-stop-daemon -S -b -m -p /run/hidloom-matrixd.pid -x /usr/bin/matrixd -- /etc/hidloom/matrixd.json
+  ;;
+ stop) start-stop-daemon -K -p /run/hidloom-matrixd.pid ;;
+ *) exit 1 ;;
+esac

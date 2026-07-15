@@ -1,0 +1,10 @@
+# M1 needs only configfs + HID gadget. Keep Raw HID/Vial and other device
+# features out of this first boot-time measurement image.
+CONFIG_CONFIGFS_FS=y
+CONFIG_USB_DWC2=y
+CONFIG_USB_DWC2_PERIPHERAL=y
+CONFIG_USB_GADGET=y
+CONFIG_USB_LIBCOMPOSITE=y
+CONFIG_USB_CONFIGFS=y
+CONFIG_USB_CONFIGFS_HID=y
+CONFIG_USB_F_HID=y

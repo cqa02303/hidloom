@@ -1,0 +1,40 @@
+{
+  "schema": "cqa02303v5.device-profile.v1",
+  "id": "keyboard-ver0-prototype",
+  "label": "Keyboard ver0.1 prototype",
+  "kind": "keyboard",
+  "prototype": true,
+  "source": {
+    "board_profile": "ver0.1"
+  },
+  "runtime_files": {
+    "keymap.json": "config/boards/ver0.1/conf/keymap.json",
+    "keyboard-layout.json": "config/boards/ver0.1/conf/keyboard-layout.json",
+    "vial.json": "config/boards/ver0.1/conf/vial.json"
+  },
+  "config_files": {
+    "matrixd.json": "config/boards/ver0.1/conf/matrixd.json",
+    "ledd.json": "config/boards/ver0.1/conf/ledd.json",
+    "i2cd.json": "config/boards/ver0.1/conf/i2cd.json"
+  },
+  "services": {
+    "enable": [
+      "hidloom-usb-gadget.service",
+      "hidloom-hidd.service",
+      "hidloom-uidd.service",
+      "hidloom-outputd.service",
+      "hidloom-logicd-core.service",
+      "matrixd.service",
+      "logicd-companion.service",
+      "httpd.service",
+      "i2cd.service",
+      "ledd.service",
+      "hidloom-late-services.timer",
+      "hidloom-network-late.timer"
+    ],
+    "disable": [
+      "logicd.service",
+      "hidloom-touch-panel-profile.service"
+    ]
+  }
+}

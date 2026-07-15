@@ -1,0 +1,35 @@
+[Unit]
+Description=HIDloom Web UI Daemon
+After=logicd-companion.service
+Wants=logicd-companion.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 @HIDLOOM_REPO_ROOT@/daemon/http/httpd.py
+ExecStartPre=@HIDLOOM_REPO_ROOT@/script/ensure_httpd_tls_cert.sh /mnt/p3/httpd.crt /mnt/p3/httpd.key
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=4
+SendSIGKILL=yes
+
+# Unix socket に書ける権限を logicd と揃える
+User=root
+Group=root
+
+# 環境変数で設定を上書き可能
+Environment=MATRIX_EVENTS_SOCK=/tmp/matrix_events.sock
+Environment=HTTPD_HOST=0.0.0.0
+Environment=HTTPD_PORT=443
+Environment=HTTPD_TLS_CERT=/mnt/p3/httpd.crt
+Environment=HTTPD_TLS_KEY=/mnt/p3/httpd.key
+Environment=HTTPD_PRIVATE_ONLY=1
+Environment=HTTPD_AUTH_BYPASS_LOOPBACK=0
+Environment=HTTPD_SHUTDOWN_TIMEOUT_SECONDS=0.75
+Environment=HTTPD_WS_CLOSE_TIMEOUT_SECONDS=0.25
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=httpd
+
+[Install]
+WantedBy=multi-user.target

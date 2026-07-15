@@ -1,0 +1,206 @@
+{
+  "schema": "hidloom.repository-hygiene.v5",
+  "portable_path_policy": {
+    "unicode_normalization": "NFC",
+    "casefold_collisions": true,
+    "max_relative_path_utf16_units": 180,
+    "max_component_utf16_units": 255
+  },
+  "tracked_content_policy": {
+    "encoding": "UTF-8",
+    "line_endings": "LF",
+    "reject_bom": true,
+    "require_final_newline": true,
+    "reject_trailing_whitespace": true,
+    "executable_requires_shebang": true,
+    "shell_requires_executable": true,
+    "shell_path_globs": [
+      "**/*.sh"
+    ],
+    "binary_path_globs": [
+      "**/*.f3d",
+      "**/*.ico",
+      "**/*.png"
+    ],
+    "empty_file_allow_globs": [
+      "daemon/i2cd/__init__.py",
+      "daemon/logicd/__init__.py"
+    ]
+  },
+  "forbidden_path_globs": [
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+    "**/.mypy_cache/**",
+    "**/.ruff_cache/**",
+    "**/.tox/**",
+    "**/.nox/**",
+    "**/target/**",
+    "**/*.egg-info/**",
+    "build/artifacts/**",
+    "build/packages/**",
+    "build/package-work/**",
+    "build/deb-work/**",
+    "demo/assets/**",
+    "dist/**",
+    "htmlcov/**",
+    "kicad/OLD/**",
+    "site/**",
+    "tmp/**",
+    "windows-driver/package/**"
+  ],
+  "forbidden_name_globs": [
+    ".gitkeep",
+    ".DS_Store",
+    ".coverage",
+    ".coverage.*",
+    ".env",
+    "Thumbs.db",
+    "desktop.ini",
+    "*.7z",
+    "*.a",
+    "*.bak",
+    "*.bak[0-9]*",
+    "*.class",
+    "*.deb",
+    "*.dll",
+    "*.dylib",
+    "*.exe",
+    "*.gz",
+    "*.img",
+    "*.iso",
+    "*.jar",
+    "*.log",
+    "*.o",
+    "*.obj",
+    "*.orig",
+    "*.pyo",
+    "*.pyc",
+    "*.rar",
+    "*.rej",
+    "*.rpm",
+    "*.so",
+    "*.swo",
+    "*.swp",
+    "*.tar",
+    "*.temp",
+    "*.tgz",
+    "*.tmp",
+    "*.war",
+    "*.xz",
+    "*.zip",
+    "*.zst",
+    "*~"
+  ],
+  "ephemeral_roots": [
+    {
+      "path": "codex_tasks/inbox/",
+      "allowed_globs": [
+        "codex_tasks/inbox/*.sample"
+      ]
+    },
+    {
+      "path": "codex_tasks/running/",
+      "allowed_globs": [
+        "codex_tasks/running/*.sample"
+      ]
+    },
+    {
+      "path": "codex_tasks/done/",
+      "allowed_globs": [
+        "codex_tasks/done/*.sample"
+      ]
+    },
+    {
+      "path": "codex_tasks/failed/",
+      "allowed_globs": [
+        "codex_tasks/failed/*.sample"
+      ]
+    }
+  ],
+  "required_companion_rules": [
+    {
+      "source_glob": "tools/*/Cargo.toml",
+      "companion_name": "Cargo.lock"
+    }
+  ],
+  "large_file_threshold_bytes": 1048576,
+  "large_file_allow_globs": [
+    "case/*.f3d",
+    "kicad/**/*.kicad_pcb"
+  ],
+  "duplicate_file_threshold_bytes": 1,
+  "duplicate_file_allow_groups": [
+    {
+      "paths": [
+        "LICENSE",
+        "build/buildroot/hidloom-external/package/hidloom-m3-router/src/COPYING",
+        "daemon/matrixd/COPYING"
+      ],
+      "reason": "Standalone Buildroot package source trees must carry the declared GPL license file."
+    },
+    {
+      "paths": [
+        "build/buildroot/hidloom-external/package/hidloom-m3-router/hidloom-m3-router.hash",
+        "build/buildroot/hidloom-external/package/hidloom-matrixd/hidloom-matrixd.hash"
+      ],
+      "reason": "Both local Buildroot packages verify the same GPL COPYING payload."
+    },
+    {
+      "paths": [
+        "config/boards/ver0.1/conf/matrixd.json",
+        "config/boards/ver1.0/conf/matrixd.json"
+      ],
+      "reason": "Each independently applicable board profile must include a complete matrix configuration."
+    },
+    {
+      "paths": [
+        "config/boards/ver1.0/conf/i2cd.json",
+        "config/default/i2cd.json"
+      ],
+      "reason": "The production board profile and repository fallback are independently deployable snapshots."
+    },
+    {
+      "paths": [
+        "config/boards/ver1.0/conf/keyboard-layout.json",
+        "config/default/keyboard-layout.json"
+      ],
+      "reason": "The production board profile and repository fallback are independently deployable snapshots."
+    },
+    {
+      "paths": [
+        "config/boards/ver1.0/conf/keymap.json",
+        "config/default/keymap.json"
+      ],
+      "reason": "The production board profile and repository fallback are independently deployable snapshots."
+    },
+    {
+      "paths": [
+        "config/boards/ver1.0/conf/ledd.json",
+        "config/default/ledd.json"
+      ],
+      "reason": "The production board profile and repository fallback are independently deployable snapshots."
+    },
+    {
+      "paths": [
+        "config/boards/ver1.0/conf/vial.json",
+        "config/default/vial.json"
+      ],
+      "reason": "The production board profile and repository fallback are independently deployable snapshots."
+    },
+    {
+      "paths": [
+        "kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",
+        "kicad/cqa02303v5rpi/fabrication-toolkit-options.json"
+      ],
+      "reason": "Each self-contained KiCad project stores its local fabrication plugin settings."
+    },
+    {
+      "paths": [
+        "kicad/cqa02303v5rpi-01/other.kicad_sch",
+        "kicad/cqa02303v5rpi/other.kicad_sch"
+      ],
+      "reason": "Each self-contained KiCad hardware revision includes every hierarchical sheet."
+    }
+  ],
+  "max_total_tracked_bytes": 67108864
+}

@@ -1,0 +1,4 @@
+config BR2_PACKAGE_HIDLOOM_MATRIXD
+	bool "hidloom-matrixd"
+	help
+	  HIDloom physical GPIO matrix scanner.

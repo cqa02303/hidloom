@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) PYTHONPATH=/usr/share/hidloom/daemon:/usr/share/hidloom HIDLOOM_REPO_ROOT=/usr/share/hidloom start-stop-daemon -S -b -m -p /run/i2cd.pid -x /usr/bin/python3 -- -m i2cd.i2cd;;
+ stop) start-stop-daemon -K -p /run/i2cd.pid;;
+esac

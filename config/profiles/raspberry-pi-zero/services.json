@@ -1,0 +1,34 @@
+{
+  "profile_id": "raspberry-pi-zero",
+  "systemd": {
+    "active": [
+      "hidloom-usb-gadget.service",
+      "matrixd.service",
+      "logicd.service",
+      "i2cd.service",
+      "ledd.service",
+      "httpd.service",
+      "viald.service",
+      "hidloom-hidd.service"
+    ],
+    "disabled": [
+      "btd.service",
+      "bluetooth.service",
+      "hidloom-bluetooth-unblock.service"
+    ],
+    "masked": [
+      "serial-getty@ttyS0.service"
+    ],
+    "manual_active_but_disabled": [
+      "ledd.service"
+    ]
+  },
+  "rfkill": {
+    "bluetooth": "blocked"
+  },
+  "reason": {
+    "bluetooth": "Bluetooth and btd add background work on Zero W and are not needed for USB-only testing.",
+    "serial-getty": "Serial console login is not used and can wake on tty activity.",
+    "ledd": "Keep LED feedback available, but avoid boot auto-enable unless logicd starts it."
+  }
+}

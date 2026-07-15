@@ -1,0 +1,32 @@
+[Unit]
+Description=Keyboard Matrix Scanner Daemon (matrixd)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/matrixd/README.md
+After=hidloom-logicd-core.service
+Requires=hidloom-logicd-core.service
+
+[Service]
+Type=simple
+ExecStart=@HIDLOOM_REPO_ROOT@/daemon/matrixd/matrixd @HIDLOOM_REPO_ROOT@/config/default/matrixd.json
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Nice=-20
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=99
+IOSchedulingClass=realtime
+IOSchedulingPriority=0
+LimitRTPRIO=99
+LimitNICE=-20
+
+Restart=on-failure
+RestartSec=2s
+
+TimeoutStopSec=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=matrixd
+
+[Install]
+WantedBy=multi-user.target

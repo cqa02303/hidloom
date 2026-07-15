@@ -1,0 +1,21 @@
+[Unit]
+Description=LED Shutdown Signal (Red Light)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/ledd/README.md
+DefaultDependencies=no
+Before=poweroff.target reboot.target halt.target kexec.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -m ledd.shutdown
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ledd-shutdown
+Environment=LOG_SYSLOG=1
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+
+[Install]
+WantedBy=poweroff.target reboot.target halt.target kexec.target

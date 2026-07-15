@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) OUTPUTD_TARGET=usb start-stop-daemon -S -b -m -p /run/hidloom-outputd.pid -x /usr/bin/hidloom-outputd;;
+ stop) start-stop-daemon -K -p /run/hidloom-outputd.pid;;
+esac

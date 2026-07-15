@@ -1,0 +1,31 @@
+#!/bin/sh
+# Manual M2 smoke helper for the Buildroot M1 boot keyboard gadget.
+
+set -eu
+
+DEVICE="${1:-/dev/hidg0}"
+USAGE_HEX="${2:-04}"
+HOLD_SEC="${3:-0.08}"
+
+case "$USAGE_HEX" in
+    [0-9a-fA-F][0-9a-fA-F])
+        ;;
+    *)
+        echo "usage: $0 [device] [usage_hex] [hold_sec]" >&2
+        echo "example: $0 /dev/hidg0 04 0.08" >&2
+        exit 1
+        ;;
+esac
+
+if [ ! -c "$DEVICE" ]; then
+    echo "not a character device: $DEVICE" >&2
+    exit 1
+fi
+
+usage_dec=$((0x$USAGE_HEX))
+octal="$(printf '%03o' "$usage_dec")"
+
+# 8-byte boot keyboard report: modifiers, reserved, six key slots.
+printf "\000\000\\$octal\000\000\000\000\000" > "$DEVICE"
+sleep "$HOLD_SEC"
+printf '\000\000\000\000\000\000\000\000' > "$DEVICE"

@@ -1,0 +1,567 @@
+{
+  "schema": "hidloom.third-party-inventory.v2",
+  "generated_from": [
+    "tools/*/Cargo.lock",
+    "system/install/setup_fresh_rpi.sh",
+    ".github/workflows/public-ci.yml",
+    "config/github-actions-lock.json",
+    "docs/ops/buildroot-m6-legal-summary.json"
+  ],
+  "components": [
+    {
+      "ecosystem": "buildroot",
+      "name": "busybox",
+      "version": "1.38.0",
+      "license": "GPL-2.0, bzip2-1.0.4",
+      "source": "https://www.busybox.net/downloads#busybox-1.38.0.tar.bz2",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "expat",
+      "version": "2.8.1",
+      "license": "MIT",
+      "source": "https://github.com/libexpat/libexpat/releases/download/R_2_8_1#expat-2.8.1.tar.xz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "10b195ee78160a908388180a8fe3603d4e9a12f4755fbf5f3816b23a9d750da0"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "hidloom-matrixd",
+      "version": "1",
+      "license": "GPL-3.0-or-later",
+      "source": "project:daemon/matrixd#hidloom-matrixd-1.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "441746b023fa942bfe91bf78b7d13e303f153dc9d23b6d428517efeaf0c60e83"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "kmod",
+      "version": "34.2",
+      "license": "LGPL-2.1+ (library), GPL-2.0+ (tools)",
+      "source": "https://cdn.kernel.org/pub/linux/utils/kernel/kmod#kmod-34.2.tar.xz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "libffi",
+      "version": "3.5.2",
+      "license": "MIT",
+      "source": "https://github.com/libffi/libffi/releases/download/v3.5.2#libffi-3.5.2.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "f3a3082a23b37c293a4fcd1053147b371f2ff91fa7ea1b2a52e335676bac82dc"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "libxcrypt",
+      "version": "4.5.2",
+      "license": "LGPL-2.1+",
+      "source": "https://github.com/besser82/libxcrypt/releases/download/v4.5.2#libxcrypt-4.5.2.tar.xz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "71513a31c01a428bccd5367a32fd95f115d6dac50fb5b60c779d5c7942aec071"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "libzlib",
+      "version": "1.3.2",
+      "license": "Zlib",
+      "source": "https://www.zlib.net#zlib-1.3.2.tar.xz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "linux",
+      "version": "21b410140c47ffab5668399f6f143c7d7b935c8b",
+      "license": "GPL-2.0",
+      "source": "https://github.com/raspberrypi/linux/archive/21b410140c47ffab5668399f6f143c7d7b935c8b#linux-21b410140c47ffab5668399f6f143c7d7b935c8b.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "7c31df8061aae748a6e72417bfe743a54198fb5bdc96e229ecc605dc621d32ef"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python-cbor2",
+      "version": "5.9.0",
+      "license": "MIT",
+      "source": "https://files.pythonhosted.org/packages/bd/cb/09939728be094d155b5d4ac262e39877875f5f7e36eea66beb359f647bd0#cbor2-5.9.0.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "85c7a46279ac8f226e1059275221e6b3d0e370d2bb6bd0500f9780781615bcea"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python-luma-core",
+      "version": "2.5.3",
+      "license": "MIT",
+      "source": "https://files.pythonhosted.org/packages/source/l/luma.core#luma_core-2.5.3.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "ecfb1c12fc32f8ee6cff0f613804b2609387c17547f739d002649f2e6d56ec2f"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python-luma-oled",
+      "version": "3.15.0",
+      "license": "MIT",
+      "source": "https://files.pythonhosted.org/packages/source/l/luma.oled#luma_oled-3.15.0.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "16925fe668f484803df0683add800b19e5dd7316a1d64eb06ec2ae817473901e"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python-pillow",
+      "version": "12.0.0",
+      "license": "HPND",
+      "source": "https://files.pythonhosted.org/packages/5a/b0/cace85a1b0c9775a9f8f5d5423c8261c858760e2466c79b2dd184638b056#pillow-12.0.0.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "87d4f8125c9988bfbed67af47dd7a953e2fc7b0cc1e7800ec6d2080d490bb353"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python-pybind",
+      "version": "3.0.1",
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/pybind/pybind11/archive/v3.0.1#python-pybind-3.0.1.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "741633da746b7c738bb71f1854f957b9da660bcd2dce68d71949037f0969d0ca"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python-rpi-ws281x",
+      "version": "5.0.0",
+      "license": "BSD-2-Clause",
+      "source": "https://files.pythonhosted.org/packages/c0/1e/642208a685c5e96d38323f42c75d9b24f95e2d1b8390dd104e04a712f29e#rpi_ws281x-5.0.0.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "00ce6db771436b778d0930245cf8ea2aae11008cc5fd67d57789c5422af3ee55"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python-smbus2",
+      "version": "0.6.1",
+      "license": "MIT",
+      "source": "https://files.pythonhosted.org/packages/87/37/b3f7b501502c4915ba3819d1dc277bf3f5fae4a9d067caa4f502aaddd889#smbus2-0.6.1.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "2b043372abf8f6029a632c3aab36b641c5d5872b1cbad599fc68e17ac4fd90a5"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "python3",
+      "version": "3.14.6",
+      "license": "Python-2.0, others",
+      "source": "https://python.org/ftp/python/3.14.6#Python-3.14.6.tar.xz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "rpi-firmware",
+      "version": "063bcab6c8a90efb0d19f69d88cbbc7ec79cab68",
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/raspberrypi/firmware/archive/063bcab6c8a90efb0d19f69d88cbbc7ec79cab68#rpi-firmware-063bcab6c8a90efb0d19f69d88cbbc7ec79cab68.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "812cb64617d6ffbc76f9b8dce8237b31159a1216b31845faec1bb75b6b6b291f"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "sudo",
+      "version": "1.9.17p2",
+      "license": "ISC, BSD-3-Clause",
+      "source": "https://www.sudo.ws/sudo/dist#sudo-1.9.17p2.tar.gz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "4a38a1ab3adb1199257edc2a7c4a2bd714665eb605b04368843b06dada2cfcfb"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "toolchain-external-bootlin",
+      "version": "2025.08-1",
+      "license": "GPL-3.0-with-GCC-exception; GPL-2.0-or-later; LGPL-2.1-or-later; BSD-3-Clause; MIT; GPL-3.0-or-later; LGPL-2.0-or-later; LGPL-3.0-or-later",
+      "source": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/tarballs#armv7-eabihf--glibc--stable-2025.08-1.tar.xz",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "bootlin-official-summary",
+      "source_archive_sha256": "97d6fbaf19832002f3d6aa8fd31b2d29c1dc7b0752f4ae8ed35860fd33c1f9b4"
+    },
+    {
+      "ecosystem": "buildroot",
+      "name": "xz",
+      "version": "5.8.3",
+      "license": "Public Domain, BSD-0-Clause, GPL-2.0+, GPL-3.0+, LGPL-2.1+",
+      "source": "https://github.com/tukaani-project/xz/releases/download/v5.8.3#xz-5.8.3.tar.bz2",
+      "review": "complete",
+      "distribution_scope": "buildroot-image-component",
+      "license_evidence": "buildroot-legal-info",
+      "source_archive_sha256": "33bf69c0d6c698e83a68f77e6c1f465778e418ca0b3d59860d3ab446f4ac99a6"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "itoa",
+      "version": "1.0.18",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/dtolnay/itoa",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "memchr",
+      "version": "2.8.2",
+      "license": "Unlicense OR MIT",
+      "source": "https://github.com/BurntSushi/memchr",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "proc-macro2",
+      "version": "1.0.106",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/dtolnay/proc-macro2",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "quote",
+      "version": "1.0.45",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/dtolnay/quote",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "serde",
+      "version": "1.0.228",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/serde-rs/serde",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "serde_core",
+      "version": "1.0.228",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/serde-rs/serde",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "serde_derive",
+      "version": "1.0.228",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/serde-rs/serde",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "serde_json",
+      "version": "1.0.150",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/serde-rs/json",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "syn",
+      "version": "2.0.118",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://github.com/dtolnay/syn",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "unicode-ident",
+      "version": "1.0.24",
+      "license": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "source": "https://github.com/dtolnay/unicode-ident",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "zmij",
+      "version": "1.0.21",
+      "license": "MIT",
+      "source": "https://github.com/dtolnay/zmij",
+      "review": "complete",
+      "distribution_scope": "linked-binary"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "build-essential",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "cargo",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "fbterm",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "fonts-dejavu-mono",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "fonts-noto-cjk",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "git",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "i2c-tools",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "jq",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-aiohttp",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-dbus-next",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-dev",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-numpy",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-opencv",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-pil",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-pip",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "python3-venv",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "rfkill",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "rustc",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "socat",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "debian",
+      "name": "wireless-tools",
+      "version": "distribution-selected",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "github-actions",
+      "name": "actions/cache",
+      "version": "5.0.5",
+      "license": "MIT",
+      "source": "https://github.com/actions/cache/tree/27d5ce7f107fe9357f9df03efb73ab90386fccae",
+      "review": "not-redistributed",
+      "distribution_scope": "ci-action-reference",
+      "commit_sha": "27d5ce7f107fe9357f9df03efb73ab90386fccae"
+    },
+    {
+      "ecosystem": "github-actions",
+      "name": "actions/checkout",
+      "version": "6.0.2",
+      "license": "MIT",
+      "source": "https://github.com/actions/checkout/tree/de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "review": "not-redistributed",
+      "distribution_scope": "ci-action-reference",
+      "commit_sha": "de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "luma.oled",
+      "version": "unpinned",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "rpi_ws281x",
+      "version": "unpinned",
+      "license": "REVIEW_REQUIRED",
+      "source": "system/install/setup_fresh_rpi.sh",
+      "review": "not-redistributed",
+      "distribution_scope": "external-install-dependency"
+    }
+  ],
+  "summary": {
+    "total": 56,
+    "complete": 31,
+    "not_redistributed": 25,
+    "review_required": 0,
+    "redistributed_total": 31,
+    "redistributed_complete": 31,
+    "redistributed_review_required": 0
+  }
+}

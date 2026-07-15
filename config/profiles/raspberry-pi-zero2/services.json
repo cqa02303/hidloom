@@ -1,0 +1,26 @@
+{
+  "profile_id": "raspberry-pi-zero2",
+  "systemd": {
+    "keep_active": [
+      "hidloom-usb-gadget.service",
+      "matrixd.service",
+      "logicd.service",
+      "i2cd.service",
+      "ledd.service",
+      "httpd.service",
+      "viald.service",
+      "hidloom-hidd.service",
+      "btd.service",
+      "bluetooth.service"
+    ],
+    "stop_disable": [],
+    "mask": []
+  },
+  "rfkill": {
+    "bluetooth": "unblocked"
+  },
+  "reasons": {
+    "oled": "Zero 2 has more CPU headroom than Zero 1, so OLED can refresh a little faster.",
+    "bluetooth": "Keep Bluetooth available unless a local latency investigation shows it should be disabled."
+  }
+}

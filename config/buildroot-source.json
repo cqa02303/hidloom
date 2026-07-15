@@ -1,0 +1,5 @@
+{
+  "schema": "hidloom.buildroot-source.v1",
+  "repository": "https://gitlab.com/buildroot.org/buildroot.git",
+  "commit": "67449130e9fdd71a38ca26539dddfa8c882b1977"
+}

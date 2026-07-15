@@ -1,0 +1,25 @@
+[Unit]
+Description=Vial Protocol Daemon (viald)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/viald/README.md
+After=hidloom-usb-gadget.service hidloom-touch-panel-profile.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m viald.viald
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+Restart=on-failure
+RestartSec=2s
+
+ExecStartPre=/bin/rm -f /tmp/viald_events.sock
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=viald
+Environment=LOG_LEVEL=INFO
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+
+[Install]
+WantedBy=multi-user.target

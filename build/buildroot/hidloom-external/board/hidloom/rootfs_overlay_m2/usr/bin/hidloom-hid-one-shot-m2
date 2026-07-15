@@ -1,0 +1,29 @@
+#!/bin/sh
+# M2-only delayed one-shot Keyboard a tap. Never include this in M1 or M3.
+
+set -eu
+
+DEVICE="${HIDLOOM_M2_HID_DEVICE:-/dev/hidg0}"
+DELAY_SEC="${HIDLOOM_M2_DELAY_SEC:-10}"
+MARKER_FILE="${HIDLOOM_BOOT_MARKER_FILE:-/tmp/hidloom-boot-markers.log}"
+
+marker() {
+    uptime="$(cut -d ' ' -f 1 /proc/uptime 2>/dev/null || printf '?')"
+    mkdir -p "$(dirname "$MARKER_FILE")" 2>/dev/null || true
+    printf '%s %s\n' "$uptime" "$1" >> "$MARKER_FILE" 2>/dev/null || true
+}
+
+marker "m2_wait_start"
+echo "M2 one-shot Keyboard a tap in ${DELAY_SEC}s"
+sleep "$DELAY_SEC"
+
+if [ ! -c "$DEVICE" ]; then
+    marker "m2_hid_missing"
+    echo "M2 HID device missing: $DEVICE" >&2
+    exit 1
+fi
+
+marker "m2_tap_start"
+/usr/bin/hidloom-hid-key-tap-m1 "$DEVICE" 04 0.08
+marker "m2_tap_done"
+echo "M2 one-shot Keyboard a tap complete"

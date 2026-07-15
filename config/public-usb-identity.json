@@ -1,0 +1,95 @@
+{
+  "schema": "hidloom.public-usb-identity.v5",
+  "active_runtime_profile": "development_compatibility",
+  "public_release_profile": "public_formal",
+  "assignment": {
+    "registry": "pid.codes",
+    "registry_repository": "https://github.com/pidcodes/pidcodes.github.com",
+    "status": "candidate-unassigned",
+    "vid": "1209",
+    "pid": "484C",
+    "activate_only_after_pid_codes_merge": true,
+    "recheck_availability_before_request": true,
+    "availability_evidence": {
+      "checked_date": "2026-07-14",
+      "upstream_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
+      "origin_head_ref": "refs/remotes/origin/master",
+      "remote_head_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
+      "checkout_clean": true,
+      "head_matches_origin_head": true,
+      "origin_head_matches_remote_head": true,
+      "candidate_path_absent": true,
+      "owner_path_absent": true
+    },
+    "allocation_evidence": null
+  },
+  "vial_detection": {
+    "serial_magic": "vial:f64c2b3c",
+    "match_policy": "substring",
+    "checked_date": "2026-07-14",
+    "upstream_commit": "aef8222a2d0429a183b2ed692d5f9efcfd383f08",
+    "upstream_source": "https://github.com/vial-kb/vial-gui/blob/aef8222a2d0429a183b2ed692d5f9efcfd383f08/src/main/python/util.py"
+  },
+  "source_bindings": {
+    "usb_config": "config/default/config.json",
+    "ble_gatt_identity": "daemon/btd/gatt_hid.py",
+    "systemd_identity_environment": {
+      "path": "/etc/hidloom/usb-identity.env",
+      "units": [
+        "system/systemd/hidloom-usb-gadget.service",
+        "system/systemd/btd.service"
+      ]
+    },
+    "vial_definitions": [
+      "config/default/vial.json",
+      "config/boards/ver0.1/conf/vial.json",
+      "config/boards/ver1.0/conf/vial.json"
+    ]
+  },
+  "profiles": {
+    "development_compatibility": {
+      "status": "active-private-compatibility",
+      "public_release_allowed": false,
+      "usb": {
+        "vid": "1D6B",
+        "pid": "0105",
+        "manufacturer": "__HOSTNAME__",
+        "product_name": "__HOSTNAME__",
+        "serial_number": "vial:f64c2b3c",
+        "hid_country_code": 0
+      },
+      "vial": {
+        "name": "CQA02303v5 Keyboard",
+        "uid": 4850729948911185980,
+        "uid_policy": "preserve-layout-identity"
+      }
+    },
+    "public_formal": {
+      "status": "blocked-until-pid-codes-merge",
+      "public_release_allowed": false,
+      "usb": {
+        "vid": "1209",
+        "pid": "484C",
+        "manufacturer": "HIDloom",
+        "product_name": "HIDloom Keyboard",
+        "serial_number": "vial:f64c2b3c:hidloom",
+        "hid_country_code": 0
+      },
+      "vial": {
+        "name": "HIDloom Keyboard (cqa02303v5)",
+        "uid": 4850729948911185980,
+        "uid_policy": "preserve-layout-identity"
+      }
+    }
+  },
+  "owner": {
+    "description": "Open-source keyboard hardware and software projects."
+  },
+  "device": {
+    "title": "HIDloom Keyboard",
+    "license": "GPL-3.0-or-later",
+    "site": "https://github.com/cqa02303/hidloom",
+    "source": "https://github.com/cqa02303/hidloom",
+    "description": "Open-source Raspberry Pi keyboard appliance software and hardware for the cqa02303v5 device profile."
+  }
+}

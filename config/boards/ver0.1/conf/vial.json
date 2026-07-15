@@ -1,0 +1,555 @@
+{
+  "name": "CQA02303v5 Keyboard",
+  "version": 1,
+  "uid": 4850729948911185980,
+  "lighting": "vialrgb",
+  "vial": {
+    "unlockKeys": [
+      [
+        0,
+        1
+      ],
+      [
+        6,
+        9
+      ]
+    ]
+  },
+  "matrix": {
+    "rows": 10,
+    "cols": 10
+  },
+  "customKeycodes": [
+    {
+      "name": "KC_SH0",
+      "title": "Shell shortcut 0",
+      "shortName": "SH0"
+    },
+    {
+      "name": "KC_SH1",
+      "title": "Shell shortcut 1",
+      "shortName": "SH1"
+    },
+    {
+      "name": "KC_SH2",
+      "title": "Shell shortcut 2",
+      "shortName": "SH2"
+    },
+    {
+      "name": "KC_SH3",
+      "title": "Shell shortcut 3",
+      "shortName": "SH3"
+    },
+    {
+      "name": "KC_SH4",
+      "title": "Shell shortcut 4",
+      "shortName": "SH4"
+    },
+    {
+      "name": "KC_SH5",
+      "title": "Shell shortcut 5",
+      "shortName": "SH5"
+    },
+    {
+      "name": "KC_SH6",
+      "title": "Shell shortcut 6",
+      "shortName": "SH6"
+    },
+    {
+      "name": "KC_SH7",
+      "title": "Shell shortcut 7",
+      "shortName": "SH7"
+    },
+    {
+      "name": "KC_SH8",
+      "title": "Shell shortcut 8",
+      "shortName": "SH8"
+    },
+    {
+      "name": "KC_SH9",
+      "title": "Shell shortcut 9",
+      "shortName": "SH9"
+    },
+    {
+      "name": "KC_SH10",
+      "title": "Shell shortcut 10",
+      "shortName": "SH10"
+    },
+    {
+      "name": "KC_CONNAUTO",
+      "title": "Connection auto mode",
+      "shortName": "ConnAuto"
+    },
+    {
+      "name": "KC_CONSOLE",
+      "title": "Console mode",
+      "shortName": "Console"
+    },
+    {
+      "name": "KC_USB",
+      "title": "USB output",
+      "shortName": "USB"
+    },
+    {
+      "name": "BT_STATUS",
+      "title": "Bluetooth status",
+      "shortName": "BT Stat"
+    },
+    {
+      "name": "BT_POWER_ON",
+      "title": "Bluetooth power on",
+      "shortName": "BT On"
+    },
+    {
+      "name": "BT_POWER_OFF",
+      "title": "Bluetooth power off",
+      "shortName": "BT Off"
+    },
+    {
+      "name": "BT_POWER_TOGGLE",
+      "title": "Bluetooth power toggle",
+      "shortName": "BT Pwr"
+    },
+    {
+      "name": "BT_PAIRING_ON",
+      "title": "Bluetooth pairing on",
+      "shortName": "Pair On"
+    },
+    {
+      "name": "BT_PAIRING_OFF",
+      "title": "Bluetooth pairing off",
+      "shortName": "Pair Off"
+    },
+    {
+      "name": "BT_PAIRING_TOGGLE",
+      "title": "Bluetooth pairing toggle",
+      "shortName": "BT Pair"
+    },
+    {
+      "name": "BT_DISCONNECT",
+      "title": "Bluetooth disconnect",
+      "shortName": "BT Disc"
+    },
+    {
+      "name": "BT_FORGET_DEVICE",
+      "title": "Bluetooth forget device",
+      "shortName": "BT Forget"
+    },
+    {
+      "name": "OSL(0)",
+      "title": "One shot layer 0",
+      "shortName": "OSL0"
+    },
+    {
+      "name": "OSL(1)",
+      "title": "One shot layer 1",
+      "shortName": "OSL1"
+    },
+    {
+      "name": "OSL(2)",
+      "title": "One shot layer 2",
+      "shortName": "OSL2"
+    },
+    {
+      "name": "OSL(3)",
+      "title": "One shot layer 3",
+      "shortName": "OSL3"
+    },
+    {
+      "name": "OSL(4)",
+      "title": "One shot layer 4",
+      "shortName": "OSL4"
+    },
+    {
+      "name": "OSL(5)",
+      "title": "One shot layer 5",
+      "shortName": "OSL5"
+    },
+    {
+      "name": "OSL(6)",
+      "title": "One shot layer 6",
+      "shortName": "OSL6"
+    },
+    {
+      "name": "OSL(7)",
+      "title": "One shot layer 7",
+      "shortName": "OSL7"
+    },
+    {
+      "name": "OSL(8)",
+      "title": "One shot layer 8",
+      "shortName": "OSL8"
+    },
+    {
+      "name": "OSL(9)",
+      "title": "One shot layer 9",
+      "shortName": "OSL9"
+    },
+    {
+      "name": "OSL(10)",
+      "title": "One shot layer 10",
+      "shortName": "OSL10"
+    },
+    {
+      "name": "OSL(11)",
+      "title": "One shot layer 11",
+      "shortName": "OSL11"
+    },
+    {
+      "name": "OSL(12)",
+      "title": "One shot layer 12",
+      "shortName": "OSL12"
+    },
+    {
+      "name": "OSL(13)",
+      "title": "One shot layer 13",
+      "shortName": "OSL13"
+    },
+    {
+      "name": "OSL(14)",
+      "title": "One shot layer 14",
+      "shortName": "OSL14"
+    },
+    {
+      "name": "OSL(15)",
+      "title": "One shot layer 15",
+      "shortName": "OSL15"
+    },
+    {
+      "name": "OSL(16)",
+      "title": "One shot layer 16",
+      "shortName": "OSL16"
+    },
+    {
+      "name": "OSL(17)",
+      "title": "One shot layer 17",
+      "shortName": "OSL17"
+    },
+    {
+      "name": "OSL(18)",
+      "title": "One shot layer 18",
+      "shortName": "OSL18"
+    },
+    {
+      "name": "OSL(19)",
+      "title": "One shot layer 19",
+      "shortName": "OSL19"
+    },
+    {
+      "name": "OSL(20)",
+      "title": "One shot layer 20",
+      "shortName": "OSL20"
+    },
+    {
+      "name": "OSL(21)",
+      "title": "One shot layer 21",
+      "shortName": "OSL21"
+    },
+    {
+      "name": "OSL(22)",
+      "title": "One shot layer 22",
+      "shortName": "OSL22"
+    },
+    {
+      "name": "OSL(23)",
+      "title": "One shot layer 23",
+      "shortName": "OSL23"
+    },
+    {
+      "name": "OSL(24)",
+      "title": "One shot layer 24",
+      "shortName": "OSL24"
+    },
+    {
+      "name": "OSL(25)",
+      "title": "One shot layer 25",
+      "shortName": "OSL25"
+    },
+    {
+      "name": "OSL(26)",
+      "title": "One shot layer 26",
+      "shortName": "OSL26"
+    },
+    {
+      "name": "OSL(27)",
+      "title": "One shot layer 27",
+      "shortName": "OSL27"
+    },
+    {
+      "name": "OSL(28)",
+      "title": "One shot layer 28",
+      "shortName": "OSL28"
+    },
+    {
+      "name": "OSL(29)",
+      "title": "One shot layer 29",
+      "shortName": "OSL29"
+    },
+    {
+      "name": "OSL(30)",
+      "title": "One shot layer 30",
+      "shortName": "OSL30"
+    },
+    {
+      "name": "OSL(31)",
+      "title": "One shot layer 31",
+      "shortName": "OSL31"
+    },
+    {
+      "name": "LT(2,KC_A)",
+      "title": "Layer tap 2 / A",
+      "shortName": "LT2 A"
+    },
+    {
+      "name": "MT(KC_LSFT,KC_A)",
+      "title": "Mod tap left shift / A",
+      "shortName": "SFT A"
+    },
+    {
+      "name": "TT(2)",
+      "title": "Tap toggle layer 2",
+      "shortName": "TT2"
+    },
+    {
+      "name": "TD(TD0)",
+      "title": "Tap dance 0",
+      "shortName": "TD0"
+    },
+    {
+      "name": "KC_SHUTDOWN",
+      "title": "Shutdown",
+      "shortName": "Shutdown"
+    },
+    {
+      "name": "KC_BT",
+      "title": "Bluetooth output",
+      "shortName": "BT Out"
+    },
+    {
+      "name": "CAPS_WORD",
+      "title": "Caps Word",
+      "shortName": "CapsW"
+    },
+    {
+      "name": "REPEAT_KEY",
+      "title": "Repeat Key",
+      "shortName": "Repeat"
+    },
+    {
+      "name": "ALT_REPEAT_KEY",
+      "title": "Alternate Repeat Key",
+      "shortName": "AltRep"
+    }
+  ],
+  "layouts": {
+    "keymap": [
+      [
+        {
+          "y": 0.5
+        },
+        "6,0",
+        {
+          "x": 1.0
+        },
+        "8,0",
+        "8,1",
+        "9,1",
+        "9,0",
+        {
+          "x": 0.5
+        },
+        "6,2",
+        "6,3",
+        "7,3",
+        "7,2",
+        {
+          "x": 0.5
+        },
+        "8,2",
+        "8,3",
+        "9,3",
+        "9,2"
+      ],
+      [
+        {
+          "y": 0.25
+        },
+        "0,1",
+        "0,2",
+        "0,3",
+        "0,4",
+        "0,5",
+        "0,6",
+        "0,7",
+        "0,8",
+        "0,9",
+        "6,4",
+        "6,5",
+        "6,7",
+        "6,8",
+        {
+          "w": 2.0
+        },
+        "6,9"
+      ],
+      [
+        {
+          "w": 1.5
+        },
+        "1,0",
+        "1,2",
+        "1,3",
+        "1,4",
+        "1,5",
+        "1,6",
+        "1,7",
+        "1,8",
+        "1,9",
+        "7,4",
+        "7,5",
+        "7,6",
+        "7,8",
+        {
+          "w": 1.5
+        },
+        "7,9"
+      ],
+      [
+        {
+          "w": 1.75
+        },
+        "2,0",
+        "2,1",
+        "2,3",
+        "2,4",
+        "2,5",
+        "2,6",
+        "2,7",
+        "2,8",
+        "2,9",
+        "8,4",
+        "8,5",
+        "8,6",
+        {
+          "w": 2.25
+        },
+        "8,7"
+      ],
+      [
+        {
+          "w": 2.25
+        },
+        "3,0",
+        "3,1",
+        "3,2",
+        "3,4",
+        "3,5",
+        "3,6",
+        "3,7",
+        "3,8",
+        "3,9",
+        "9,4",
+        "9,5",
+        {
+          "w": 1.75
+        },
+        "8,9",
+        {
+          "h": 2.0
+        },
+        "4,1"
+      ],
+      [
+        "4,0",
+        {
+          "x": 1.25
+        },
+        "4,2",
+        {
+          "x": 0.25,
+          "w": 1.25
+        },
+        "4,3",
+        "4,6",
+        {
+          "h": 2.0
+        },
+        "4,7",
+        {
+          "h": 2.0
+        },
+        "4,9",
+        "5,4",
+        {
+          "w": 1.25
+        },
+        "4,5",
+        {
+          "x": 1.75
+        },
+        "4,8"
+      ],
+      [
+        {
+          "x": 10.75,
+          "y": -0.5
+        },
+        "5,9",
+        {
+          "x": 1.0
+        },
+        "9,8"
+      ],
+      [
+        {
+          "x": 3.0,
+          "y": -0.5,
+          "w": 1.25
+        },
+        "5,2",
+        "5,3",
+        {
+          "x": 3.0
+        },
+        "5,6",
+        {
+          "w": 1.25
+        },
+        "5,7",
+        {
+          "x": 1.25
+        },
+        "5,8"
+      ],
+      [
+        {
+          "x": 1.0,
+          "y": -0.5
+        },
+        "0,0"
+      ],
+      [
+        "1,1",
+        {
+          "x": 1.0
+        },
+        "2,2",
+        {
+          "x": 0.25
+        },
+        "0,0\n\n\n\n\n\n\n\n\ne",
+        "0,1\n\n\n\n\n\n\n\n\ne"
+      ],
+      [
+        {
+          "x": 1.0
+        },
+        "3,3",
+        {
+          "x": 1.75
+        },
+        "7,0"
+      ]
+    ]
+  }
+}

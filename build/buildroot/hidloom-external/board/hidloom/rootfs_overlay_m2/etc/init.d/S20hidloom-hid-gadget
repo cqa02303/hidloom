@@ -1,0 +1,18 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        HIDLOOM_M1_PRODUCT="CQA02303v5 M2 One-shot Keyboard" /usr/bin/hidloom-hid-gadget-m1 start
+        ;;
+    stop)
+        /usr/bin/hidloom-hid-gadget-m1 stop
+        ;;
+    restart)
+        /usr/bin/hidloom-hid-gadget-m1 stop
+        HIDLOOM_M1_PRODUCT="CQA02303v5 M2 One-shot Keyboard" /usr/bin/hidloom-hid-gadget-m1 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}" >&2
+        exit 1
+        ;;
+esac

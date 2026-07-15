@@ -1,0 +1,49 @@
+[Unit]
+Description=Keyboard Logic Daemon (logicd)
+Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/logicd/README.md
+DefaultDependencies=no
+After=local-fs.target systemd-journald.socket
+Before=basic.target multi-user.target
+Wants=dev-hidg0.device
+
+[Service]
+Type=simple
+# config.json を明示的に渡す場合は ExecStart の末尾に絶対パスを追加する
+# ExecStart=/usr/bin/python3 -S -m logicd.logicd /mnt/p3/config.json
+ExecStart=/usr/bin/python3 -S -m logicd.logicd
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+User=root
+Group=root
+
+# /dev/hidg0 の書き込み権限が必要なため root で動作させることを推奨。
+# 代替として /dev/hidg0 のグループを変更し専用ユーザーを使用できる:
+#   User=nobody
+#   Group=hidg
+#   SupplementaryGroups=dialout
+
+Restart=on-failure
+RestartSec=2s
+
+# 起動前に本デーモンが作成するソケットファイルを削除する
+ExecStartPre=/bin/rm -f /tmp/matrix_events.sock /tmp/ctrl_events.sock /tmp/ledd_events.sock /tmp/key_events.sock
+
+# クリーンシャットダウン時に null レポートを送信する (logicd 内で処理済み)
+TimeoutStopSec=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=logicd
+Environment=LOG_SYSLOG=1
+Environment=LOG_LEVEL=INFO
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+Environment=HIDLOOM_REPO_ROOT=@HIDLOOM_REPO_ROOT@
+Environment=LOGICD_OUTPUTS=auto
+Environment=LOGICD_AUTO_BT_FALLBACK=1
+Environment=LOGICD_USBD_HID_REPORT_BROKER=1
+
+# SIGHUP でコンフィグをリロードする
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=sysinit.target

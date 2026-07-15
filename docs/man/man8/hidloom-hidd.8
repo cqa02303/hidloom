@@ -1,0 +1,28 @@
+.TH HIDLOOM-HIDD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+hidloom-hidd \- native USB HID report broker
+.SH SYNOPSIS
+.B hidloom-hidd
+[\fB--frames\fR \fIN\fR]
+.SH DESCRIPTION
+.B hidloom-hidd
+receives canonical HID report frames from a local socket and writes keyboard,
+mouse, consumer, and US-sub keyboard reports to the configured USB gadget
+endpoints.
+.SH OPTIONS
+.TP
+.B --frames N
+Process a bounded number of frames, mainly for tests.
+.TP
+.B -h, --help
+Show command help.
+.SH ENVIRONMENT
+\fBUSBD_HID_REPORT_SOCKET\fR, \fBUSBD_HID_REPORT_PATH\fR,
+\fBUSBD_US_SUB_HID_REPORT_PATH\fR, and timing variables control broker paths
+and retry behavior.
+.SH SEE ALSO
+.BR hidloom-outputd (8),
+.BR usbd (8)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

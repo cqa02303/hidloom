@@ -1,0 +1,34 @@
+.TH HIDLOOM-KEYTEXT 1 "@HIDLOOM_VERSION@" "HIDloom" "User Commands"
+.SH NAME
+hidloom-keytext \- send ASCII text as key tap events
+.SH SYNOPSIS
+.B hidloom-keytext
+[\fB--socket\fR \fIPATH\fR] [\fB--hold-us\fR \fIN\fR] [\fB--gap-us\fR \fIN\fR]
+\fITEXT\fR [\fITEXT\fR...]
+.SH DESCRIPTION
+.B hidloom-keytext
+maps supported ASCII characters to keyboard HID tap events and sends them to
+logicd. It is a small scripting helper, not a full text input method.
+.SH OPTIONS
+.TP
+.B --socket PATH
+Unix socket path. The default is the logicd key event socket.
+.TP
+.B --hold-us N
+Hold duration for each tap.
+.TP
+.B --gap-us N
+Gap between taps.
+.TP
+.B -h, --help
+Show command help.
+.SH ESCAPES
+Supported escapes include \fB\\n\fR, \fB\\r\fR, \fB\\t\fR, \fB\\\\\fR,
+\fB\\"\fR, and \fB\\xNN\fR.
+.SH SEE ALSO
+.BR hidloom-key (1),
+.BR hidloom-ctrl (1),
+.BR logicd (8)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

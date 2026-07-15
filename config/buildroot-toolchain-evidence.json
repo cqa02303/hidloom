@@ -1,0 +1,50 @@
+{
+  "schema": "hidloom.buildroot-toolchain-evidence.v2",
+  "package": "toolchain-external-bootlin",
+  "version": "2025.08-1",
+  "archive": "armv7-eabihf--glibc--stable-2025.08-1.tar.xz",
+  "archive_sha256": "97d6fbaf19832002f3d6aa8fd31b2d29c1dc7b0752f4ae8ed35860fd33c1f9b4",
+  "license_summary": "GPL-3.0-with-GCC-exception; GPL-2.0-or-later; LGPL-2.1-or-later; BSD-3-Clause; MIT; GPL-3.0-or-later; LGPL-2.0-or-later; LGPL-3.0-or-later",
+  "official_evidence": {
+    "release_page": "https://toolchains.bootlin.com/releases_armv7-eabihf.html",
+    "readme": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/readmes/armv7-eabihf--glibc--stable-2025.08-1.txt",
+    "readme_sha256": "cddfc934582650b5a2f9a222debe6ff7b5dfcbf64943e4d486d147873600504e",
+    "summary": "https://toolchains.bootlin.com/downloads/releases/toolchains/armv7-eabihf/summaries/armv7-eabihf--glibc--stable-2025.08-1.csv",
+    "summary_sha256": "a38d7c0484d9d51a5d8d7272b3320d957c89bd8e13ffdffd29a8d2b032f96c66",
+    "sources": "https://toolchains.bootlin.com/downloads/releases/sources/",
+    "licenses": "https://toolchains.bootlin.com/downloads/releases/licenses/"
+  },
+  "builder_source": {
+    "repository": "https://github.com/bootlin/buildroot-toolchains.git",
+    "ref": "refs/tags/toolchains.bootlin.com-2025.08.1",
+    "commit": "83947c7bb6158072bc2f52b58e90891cd3dc04a2"
+  },
+  "target_components": [
+    {
+      "name": "gcc-final",
+      "version": "14.3.0",
+      "license": "GPL-3.0-with-GCC-exception",
+      "license_files": ["COPYING.RUNTIME"]
+    },
+    {
+      "name": "glibc",
+      "version": "2.41-70-g1502c248d58cb99a203731707987a4342926e830",
+      "license": "GPL-2.0-or-later (programs), LGPL-2.1-or-later, BSD-3-Clause, MIT (library)",
+      "license_files": ["COPYING", "COPYING.LIB", "LICENSES"]
+    },
+    {
+      "name": "linux-headers",
+      "version": "5.4.296",
+      "license": "GPL-2.0-only",
+      "license_files": []
+    },
+    {
+      "name": "gdb",
+      "version": "15.2",
+      "license": "GPL-2.0-or-later, LGPL-2.0-or-later, GPL-3.0-or-later, LGPL-3.0-or-later",
+      "license_files": ["COPYING", "COPYING.LIB", "COPYING3", "COPYING3.LIB"]
+    }
+  ],
+  "review": "complete",
+  "binary_release_requirement": "Bundle the verified Bootlin README, summary, component source archives, and license texts with the Buildroot compliance material."
+}

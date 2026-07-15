@@ -1,0 +1,1 @@
+pi 1001 pi 1001 $5$hidloomm6$E544iRmfDdnA5yk7y2r97myRckfbFeUmbai8M3Mx.K. /home/pi /bin/sh wheel Console User

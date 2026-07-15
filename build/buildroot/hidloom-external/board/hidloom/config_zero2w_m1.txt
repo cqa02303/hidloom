@@ -1,0 +1,6 @@
+# HIDLOOM Buildroot M1 firmware config.
+# This intentionally keeps the boot side small: serial console for recovery,
+# and dwc2 forced into peripheral mode for the USB HID gadget experiment.
+kernel=zImage
+enable_uart=1
+dtoverlay=dwc2,dr_mode=peripheral

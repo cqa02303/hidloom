@@ -1,0 +1,6 @@
+#!/bin/sh
+case "$1" in
+    start) /usr/bin/hidloom-hid-gadget-m4 start ;;
+    stop) /usr/bin/hidloom-hid-gadget-m4 stop ;;
+    restart) /usr/bin/hidloom-hid-gadget-m4 restart ;;
+esac

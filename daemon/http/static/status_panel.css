@@ -1,0 +1,100 @@
+/* System status panel extensions. */
+
+.bt-host-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 28px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f7f9fb;
+}
+
+.bt-host-panel[hidden] {
+  display: none !important;
+}
+
+.bt-host-panel-title {
+  color: #5b6673;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.bt-host-list {
+  display: inline-flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  color: #5b6673;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bt-host {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 260px;
+  padding: 3px 7px;
+  border: 1px solid #c9d0d8;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #43505c;
+}
+
+.bt-host.connected {
+  border-color: #8fb3d8;
+  background: #dceeff;
+  color: #1665aa;
+}
+
+.bt-host.paired {
+  border-color: #a8e6c0;
+  background: #ecfbf2;
+  color: #1a7a3a;
+}
+
+.bt-host.error {
+  border-color: #f5b7b1;
+  background: #fde8e8;
+  color: #c0392b;
+}
+
+.bt-host-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bt-host-state {
+  color: inherit;
+  opacity: 0.72;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.bt-host-last-connected {
+  color: inherit;
+  opacity: 0.62;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.bt-host-rename {
+  flex: 0 0 auto;
+  min-height: 20px;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.bt-host-rename:disabled {
+  cursor: default;
+  opacity: 0.45;
+}

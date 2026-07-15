@@ -1,0 +1,14 @@
+{
+  "display": {
+    "fps": 2,
+    "system_poll_interval_sec": 1.0,
+    "wifi_poll_interval_sec": 5.0,
+    "wifi_connected_poll_interval_sec": 30.0,
+    "service_status_poll_interval_sec": 30.0
+  },
+  "analog_stick": {
+    "enabled": false,
+    "poll_interval": 0.05,
+    "idle_poll_interval": 0.15
+  }
+}

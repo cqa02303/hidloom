@@ -1,0 +1,14 @@
+kernel=zImage
+arm_64bit=0
+boot_delay=0
+disable_splash=1
+enable_uart=0
+hdmi_force_hotplug=1
+hdmi_ignore_edid=0xa5000080
+hdmi_group=2
+hdmi_mode=82
+disable_overscan=1
+framebuffer_width=1920
+framebuffer_height=1080
+dtoverlay=dwc2,dr_mode=peripheral
+dtparam=i2c_arm=on

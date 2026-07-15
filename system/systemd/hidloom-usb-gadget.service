@@ -1,0 +1,21 @@
+[Unit]
+Description=HIDloom USB HID Keyboard Gadget
+DefaultDependencies=no
+After=tmp.mount systemd-remount-fs.service systemd-modules-load.service
+Before=getty.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=-/etc/hidloom/usb-identity.env
+Environment=HIDLOOM_USB_GADGET_START_DELAY_SEC=0
+Environment=HIDLOOM_USB_GADGET_SETUP_BACKEND=native
+ExecStartPre=/bin/sh -c 'sleep "${HIDLOOM_USB_GADGET_START_DELAY_SEC:-1}"'
+ExecStartPre=/bin/sh -c 'modprobe libcomposite'
+ExecStartPre=/bin/sh -c 'mountpoint -q /sys/kernel/config || mount -t configfs configfs /sys/kernel/config'
+ExecStart=@HIDLOOM_REPO_ROOT@/setup_usb_gadget.sh
+ExecStop=/bin/bash -c 'echo "" > /sys/kernel/config/usb_gadget/cqa02303v5/UDC 2>/dev/null || true'
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=sysinit.target

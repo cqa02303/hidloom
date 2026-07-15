@@ -1,0 +1,13 @@
+[Unit]
+Description=HIDloom Bluetooth rfkill unblock
+DefaultDependencies=no
+After=systemd-rfkill.service
+Before=bluetooth.service btd.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'for i in $(seq 1 120); do /usr/sbin/rfkill unblock bluetooth && exit 0; sleep 0.5; done; exit 0'
+
+[Install]
+WantedBy=multi-user.target

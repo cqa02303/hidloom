@@ -1,0 +1,116 @@
+{
+  "schema": "hidloom.public-assets.v1",
+  "policy": {
+    "default_license": "GPL-3.0-or-later",
+    "license_file": "LICENSE",
+    "unregistered_assets": "block",
+    "notes": "Every public binary, media, CAD, and KiCad design asset must appear in exactly one record."
+  },
+  "records": [
+    {
+      "id": "keyboard-layout-images",
+      "category": "hardware-documentation",
+      "provenance": "project-authored",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "CQA02303v5.png",
+        "CQA02303v5_switchLayouts9x10.png"
+      ],
+      "evidence": {
+        "type": "git-first-add",
+        "commit": "47785eff4db93ba371c6733b0efc63f0168cb094"
+      }
+    },
+    {
+      "id": "keyboard-case-cad",
+      "category": "mechanical-design",
+      "provenance": "project-authored",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "case/CQA02303v5_BottomCase.f3d",
+        "case/CQA02303v5_Plate.f3d"
+      ],
+      "evidence": {
+        "type": "git-first-add",
+        "commit": "53becd30b5ae975e687469bea48fab190e10c102"
+      }
+    },
+    {
+      "id": "hidloom-web-icons",
+      "category": "web-branding",
+      "provenance": "deterministically-generated",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "daemon/http/static/android-chrome-192x192.png",
+        "daemon/http/static/android-chrome-512x512.png",
+        "daemon/http/static/apple-touch-icon.png",
+        "daemon/http/static/favicon-32x32.png",
+        "daemon/http/static/favicon.ico",
+        "daemon/http/static/hidloom-mark.svg"
+      ],
+      "evidence": {
+        "type": "reproducible-generator",
+        "generator": "tools/generate_hidloom_icons.py",
+        "test": "script/test_hidloom_icon_assets.py"
+      }
+    },
+    {
+      "id": "system-overview-diagram",
+      "category": "architecture-documentation",
+      "provenance": "project-authored",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "docs/architecture/system-overview.svg"
+      ],
+      "evidence": {
+        "type": "git-first-add",
+        "commit": "129ac3cd211f61d62ee8373103124e8a855a6f23"
+      }
+    },
+    {
+      "id": "keyboard-kicad-designs",
+      "category": "electrical-design",
+      "provenance": "project-authored",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb",
+        "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
+        "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch",
+        "kicad/cqa02303v5rpi-01/keymap.kicad_sch",
+        "kicad/cqa02303v5rpi-01/led.kicad_sch",
+        "kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch",
+        "kicad/cqa02303v5rpi-01/other.kicad_sch",
+        "kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",
+        "kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro",
+        "kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch",
+        "kicad/cqa02303v5rpi/keymap.kicad_sch",
+        "kicad/cqa02303v5rpi/led.kicad_sch",
+        "kicad/cqa02303v5rpi/mouse_sch.kicad_sch",
+        "kicad/cqa02303v5rpi/other.kicad_sch"
+      ],
+      "evidence": {
+        "type": "git-first-add",
+        "commit": "47785eff4db93ba371c6733b0efc63f0168cb094"
+      },
+      "upstream_material": {
+        "description": "KiCad library symbols and footprints referenced while authoring the designs; the KiCad exception covers design outputs and generated files.",
+        "license": "CC-BY-SA-4.0 with KiCad Libraries License Exception",
+        "references": [
+          "https://www.kicad.org/libraries/license/",
+          "https://gitlab.com/kicad/libraries/kicad-footprints/-/raw/master/LICENSE.md",
+          "https://gitlab.com/kicad/libraries/kicad-symbols/-/raw/master/LICENSE.md"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,1520 @@
+{
+  "analysis_info": {
+    "populated_switches": 86,
+    "total_switches_found": 86,
+    "row_labels": 10,
+    "col_labels": 20
+  },
+  "switches": {
+    "SW42": {
+      "reference": "SW42",
+      "sch_position": [
+        223.52,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "1a33c46a-543f-498d-be72-5ae36d20e365",
+      "source": "sw_push"
+    },
+    "SW66": {
+      "reference": "SW66",
+      "sch_position": [
+        121.92,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "bd9e4116-a47a-4eeb-95eb-4bcaa3bf6340",
+      "source": "sw_push"
+    },
+    "SW30": {
+      "reference": "SW30",
+      "sch_position": [
+        121.92,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "811efbb2-e89b-4f88-8fb8-2cdea587c150",
+      "source": "sw_push"
+    },
+    "SW80": {
+      "reference": "SW80",
+      "sch_position": [
+        248.92,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "5939b6f1-9ae3-44a6-838d-3fb40753ceec",
+      "source": "sw_push"
+    },
+    "SW63": {
+      "reference": "SW63",
+      "sch_position": [
+        299.72,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "d00adbe7-5bee-4a31-9e3a-384a93420b4a",
+      "source": "sw_push"
+    },
+    "SW26": {
+      "reference": "SW26",
+      "sch_position": [
+        274.32,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "dc92d9f4-36ea-4792-b363-a09809c16868",
+      "source": "sw_push"
+    },
+    "SW83": {
+      "reference": "SW83",
+      "sch_position": [
+        96.52,
+        266.7
+      ],
+      "estimated_matrix_pos": [
+        9,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "09969ba7-1840-4fef-93a7-d97f035c6513",
+      "source": "sw_push"
+    },
+    "SW53": {
+      "reference": "SW53",
+      "sch_position": [
+        274.32,
+        165.1
+      ],
+      "estimated_matrix_pos": [
+        5,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "514de3f9-e4a1-4005-98a1-3e22dd60d1eb",
+      "source": "sw_push"
+    },
+    "SW18": {
+      "reference": "SW18",
+      "sch_position": [
+        299.72,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "81f03031-5882-4112-aaa7-15b1e983b251",
+      "source": "sw_push"
+    },
+    "SW36": {
+      "reference": "SW36",
+      "sch_position": [
+        299.72,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "7364ecf6-e89d-406e-b621-0c3b8886ebfe",
+      "source": "sw_push"
+    },
+    "SW11": {
+      "reference": "SW11",
+      "sch_position": [
+        121.92,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "1f6858da-3163-4154-aea6-e4c4f9e156b0",
+      "source": "sw_push"
+    },
+    "SW86": {
+      "reference": "SW86",
+      "sch_position": [
+        172.72,
+        266.7
+      ],
+      "estimated_matrix_pos": [
+        9,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "e3011d3d-b787-4c36-b9cc-63d87717d9e9",
+      "source": "sw_push"
+    },
+    "SW78": {
+      "reference": "SW78",
+      "sch_position": [
+        198.12,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "d5958a6f-bce7-4656-b37f-dbeb215a77e0",
+      "source": "sw_push"
+    },
+    "SW21": {
+      "reference": "SW21",
+      "sch_position": [
+        147.32,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "b484910f-94f3-4910-a50d-7b88026b23a2",
+      "source": "sw_push"
+    },
+    "SW6": {
+      "reference": "SW6",
+      "sch_position": [
+        223.52,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "b7ca274c-9702-45a6-b599-2ed87880249c",
+      "source": "sw_push"
+    },
+    "SW55": {
+      "reference": "SW55",
+      "sch_position": [
+        71.12,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "fd7c90b5-c41c-407d-9722-c956dfa587ab",
+      "source": "sw_push"
+    },
+    "SW22": {
+      "reference": "SW22",
+      "sch_position": [
+        172.72,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "365a2f95-371c-4e1a-8432-34a6b51a28ae",
+      "source": "sw_push"
+    },
+    "SW87": {
+      "reference": "SW87",
+      "sch_position": [
+        198.12,
+        266.7
+      ],
+      "estimated_matrix_pos": [
+        9,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "dd0aaf0d-8c02-44b4-9b7d-67cfeb112933",
+      "source": "sw_push"
+    },
+    "SW90": {
+      "reference": "SW90",
+      "sch_position": [
+        274.32,
+        266.7
+      ],
+      "estimated_matrix_pos": [
+        9,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "b22ad015-26c5-403f-b9df-986908bf267b",
+      "source": "sw_push"
+    },
+    "SW69": {
+      "reference": "SW69",
+      "sch_position": [
+        198.12,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "98f2cb4b-2187-410a-aaa4-b150b77b617b",
+      "source": "sw_push"
+    },
+    "SW9": {
+      "reference": "SW9",
+      "sch_position": [
+        299.72,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "178519cf-793a-437f-b0c7-80d6c27e4e9b",
+      "source": "sw_push"
+    },
+    "SW5": {
+      "reference": "SW5",
+      "sch_position": [
+        198.12,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "d1cb1725-081f-4b21-b1f4-abae842a29da",
+      "source": "sw_push"
+    },
+    "SW13": {
+      "reference": "SW13",
+      "sch_position": [
+        172.72,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "9a3064d7-b2cc-4511-8505-b8ab5017f6af",
+      "source": "sw_push"
+    },
+    "SW4": {
+      "reference": "SW4",
+      "sch_position": [
+        172.72,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "35fd467b-9e87-4a1b-82fb-9b319d6c9a8d",
+      "source": "sw_push"
+    },
+    "SW58": {
+      "reference": "SW58",
+      "sch_position": [
+        147.32,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "5a140983-6a49-4897-9745-259e643f76fe",
+      "source": "sw_push"
+    },
+    "SW10": {
+      "reference": "SW10",
+      "sch_position": [
+        71.12,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "b15eb743-8961-49bf-a24d-16dedc83d391",
+      "source": "sw_push"
+    },
+    "SW57": {
+      "reference": "SW57",
+      "sch_position": [
+        121.92,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "4d2ad409-2837-4d2c-8b28-5061ca68e35e",
+      "source": "sw_push"
+    },
+    "SW81": {
+      "reference": "SW81",
+      "sch_position": [
+        299.72,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "b88556a5-cd72-453f-9c9f-6515f643c5c6",
+      "source": "sw_push"
+    },
+    "SW35": {
+      "reference": "SW35",
+      "sch_position": [
+        274.32,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "72a3e556-c2ed-41d6-8a6f-52729a4a6811",
+      "source": "sw_push"
+    },
+    "SW3": {
+      "reference": "SW3",
+      "sch_position": [
+        147.32,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "2581e700-e4e0-4a92-bd4e-6bc10d7c5c16",
+      "source": "sw_push"
+    },
+    "SW64": {
+      "reference": "SW64",
+      "sch_position": [
+        71.12,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "14af2b6c-9d5f-4492-919d-401e6e9ce207",
+      "source": "sw_push"
+    },
+    "SW60": {
+      "reference": "SW60",
+      "sch_position": [
+        198.12,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "7e543486-34e4-4f1d-a3b0-bbca52a1b7ef",
+      "source": "sw_push"
+    },
+    "SW77": {
+      "reference": "SW77",
+      "sch_position": [
+        172.72,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "a8e3ab57-2c48-48ef-89a0-9e71a95f191f",
+      "source": "sw_push"
+    },
+    "SW17": {
+      "reference": "SW17",
+      "sch_position": [
+        274.32,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "6b4b9fda-ffe5-40da-82a0-3751f0e2ecfe",
+      "source": "sw_push"
+    },
+    "SW38": {
+      "reference": "SW38",
+      "sch_position": [
+        96.52,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "89c89997-a733-406e-93a6-0c6389eedbd2",
+      "source": "sw_push"
+    },
+    "SW39": {
+      "reference": "SW39",
+      "sch_position": [
+        121.92,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "46835a11-47a4-458c-bddb-4d327527e837",
+      "source": "sw_push"
+    },
+    "SW85": {
+      "reference": "SW85",
+      "sch_position": [
+        147.32,
+        266.7
+      ],
+      "estimated_matrix_pos": [
+        9,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "b0059214-ee5e-47bb-9185-cabd28e7f1a7",
+      "source": "sw_push"
+    },
+    "SW14": {
+      "reference": "SW14",
+      "sch_position": [
+        198.12,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "59f803fd-0f45-4c85-8680-e9280300260f",
+      "source": "sw_push"
+    },
+    "SW59": {
+      "reference": "SW59",
+      "sch_position": [
+        172.72,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "2e3113fa-599c-4cf1-8b74-c2e07e377ca4",
+      "source": "sw_push"
+    },
+    "SW51": {
+      "reference": "SW51",
+      "sch_position": [
+        223.52,
+        165.1
+      ],
+      "estimated_matrix_pos": [
+        5,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "9ad53618-b1e4-4159-b01f-8a0df6dde171",
+      "source": "sw_push"
+    },
+    "SW20": {
+      "reference": "SW20",
+      "sch_position": [
+        96.52,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "422c21c5-b301-4eef-82c3-90bb8a0ecbc2",
+      "source": "sw_push"
+    },
+    "SW70": {
+      "reference": "SW70",
+      "sch_position": [
+        223.52,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "76215cb5-af19-41c2-aabc-2e6bf05a21d9",
+      "source": "sw_push"
+    },
+    "SW62": {
+      "reference": "SW62",
+      "sch_position": [
+        274.32,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "0e1db032-ae86-468b-a72a-96a91ca50b9a",
+      "source": "sw_push"
+    },
+    "SW32": {
+      "reference": "SW32",
+      "sch_position": [
+        198.12,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "4dd7c98e-e6ae-46fe-b6cc-146c15b109eb",
+      "source": "sw_push"
+    },
+    "SW2": {
+      "reference": "SW2",
+      "sch_position": [
+        121.92,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "d5156a8a-0b22-41ba-abb8-0b957d8ff2d6",
+      "source": "sw_push"
+    },
+    "SW24": {
+      "reference": "SW24",
+      "sch_position": [
+        223.52,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "3e736e96-862c-4dda-869e-86329d50de82",
+      "source": "sw_push"
+    },
+    "SW74": {
+      "reference": "SW74",
+      "sch_position": [
+        96.52,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "fdc35856-597e-4c06-9786-9e1e8e6773dc",
+      "source": "sw_push"
+    },
+    "SW49": {
+      "reference": "SW49",
+      "sch_position": [
+        147.32,
+        165.1
+      ],
+      "estimated_matrix_pos": [
+        5,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "2e25b6b3-b237-499b-bf62-a37cc117c529",
+      "source": "sw_push"
+    },
+    "SW34": {
+      "reference": "SW34",
+      "sch_position": [
+        248.92,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "dab2a3c0-b8bf-448e-84fd-a5a9a28e47e0",
+      "source": "sw_push"
+    },
+    "SW27": {
+      "reference": "SW27",
+      "sch_position": [
+        299.72,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "05afb5d6-3689-456e-a1ee-85a5aba5016c",
+      "source": "sw_push"
+    },
+    "SW76": {
+      "reference": "SW76",
+      "sch_position": [
+        147.32,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "4f554c79-48ff-4e6b-9ad6-2e91333f5aff",
+      "source": "sw_push"
+    },
+    "SW19": {
+      "reference": "SW19",
+      "sch_position": [
+        71.12,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "844e3b5e-658c-479d-bfaf-2a98759ae657",
+      "source": "sw_push"
+    },
+    "SW31": {
+      "reference": "SW31",
+      "sch_position": [
+        172.72,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "accde871-d817-4055-80f6-e20a4debbdb3",
+      "source": "sw_push"
+    },
+    "SW67": {
+      "reference": "SW67",
+      "sch_position": [
+        147.32,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "5ba9d9f0-eb15-4a5a-b41c-67c432af7f96",
+      "source": "sw_push"
+    },
+    "SW44": {
+      "reference": "SW44",
+      "sch_position": [
+        274.32,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "9c2cc575-95ad-4cfe-9b4e-0a6c16959e72",
+      "source": "sw_push"
+    },
+    "SW29": {
+      "reference": "SW29",
+      "sch_position": [
+        96.52,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "a618c8a8-22ca-459a-ad47-199b8e3b0054",
+      "source": "sw_push"
+    },
+    "SW72": {
+      "reference": "SW72",
+      "sch_position": [
+        299.72,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "5a93f637-7901-4724-8e4d-7ef411a82d2d",
+      "source": "sw_push"
+    },
+    "SW28": {
+      "reference": "SW28",
+      "sch_position": [
+        71.12,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "7984ac69-f432-48d4-bf78-59dccf0a88a4",
+      "source": "sw_push"
+    },
+    "SW48": {
+      "reference": "SW48",
+      "sch_position": [
+        121.92,
+        165.1
+      ],
+      "estimated_matrix_pos": [
+        5,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "15a69a98-6820-49c2-94a5-bc6a43ff338a",
+      "source": "sw_push"
+    },
+    "SW33": {
+      "reference": "SW33",
+      "sch_position": [
+        223.52,
+        114.3
+      ],
+      "estimated_matrix_pos": [
+        3,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "b5a53f45-0f6b-424e-aae9-f616fba53293",
+      "source": "sw_push"
+    },
+    "SW68": {
+      "reference": "SW68",
+      "sch_position": [
+        172.72,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "5591c452-7fdb-4999-b61f-71a932ade880",
+      "source": "sw_push"
+    },
+    "SW1": {
+      "reference": "SW1",
+      "sch_position": [
+        96.52,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "4dc32527-8640-4740-9721-0df44ef84c3b",
+      "source": "sw_push"
+    },
+    "SW7": {
+      "reference": "SW7",
+      "sch_position": [
+        248.92,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "b4bf24b9-d98d-4afd-a278-761c912a4ee3",
+      "source": "sw_push"
+    },
+    "SW50": {
+      "reference": "SW50",
+      "sch_position": [
+        172.72,
+        165.1
+      ],
+      "estimated_matrix_pos": [
+        5,
+        4
+      ],
+      "is_populated": true,
+      "uuid": "bfe40ccd-b529-4ec6-83fe-b20c29e37857",
+      "source": "sw_push"
+    },
+    "SW45": {
+      "reference": "SW45",
+      "sch_position": [
+        299.72,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "27730961-47a0-4292-8c44-66d84f9ed278",
+      "source": "sw_push"
+    },
+    "SW8": {
+      "reference": "SW8",
+      "sch_position": [
+        274.32,
+        38.1
+      ],
+      "estimated_matrix_pos": [
+        0,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "fec241e4-073f-4789-80b0-e1d2353c26a0",
+      "source": "sw_push"
+    },
+    "SW25": {
+      "reference": "SW25",
+      "sch_position": [
+        248.92,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "eac7a224-cab7-4b96-9384-3fe9517ae5a2",
+      "source": "sw_push"
+    },
+    "SW82": {
+      "reference": "SW82",
+      "sch_position": [
+        71.12,
+        266.7
+      ],
+      "estimated_matrix_pos": [
+        9,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "aacbdf77-7eb9-4297-8cac-43d01d0fc446",
+      "source": "sw_push"
+    },
+    "SW43": {
+      "reference": "SW43",
+      "sch_position": [
+        248.92,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "2f8af144-11e1-4e45-94a2-9297db6ca5c9",
+      "source": "sw_push"
+    },
+    "SW75": {
+      "reference": "SW75",
+      "sch_position": [
+        121.92,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "4190c7dc-1ebc-4332-9456-0060af997d5a",
+      "source": "sw_push"
+    },
+    "SW61": {
+      "reference": "SW61",
+      "sch_position": [
+        248.92,
+        190.5
+      ],
+      "estimated_matrix_pos": [
+        6,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "f9726e74-0ccf-48b9-8fbb-5c2359eb8fbb",
+      "source": "sw_push"
+    },
+    "SW40": {
+      "reference": "SW40",
+      "sch_position": [
+        147.32,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "2c4c383e-6228-4456-8269-9fc24cf6ef09",
+      "source": "sw_push"
+    },
+    "SW16": {
+      "reference": "SW16",
+      "sch_position": [
+        248.92,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "39267483-fca1-403c-b3f6-69904d70dcc2",
+      "source": "sw_push"
+    },
+    "SW41": {
+      "reference": "SW41",
+      "sch_position": [
+        198.12,
+        139.7
+      ],
+      "estimated_matrix_pos": [
+        4,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "db82ae44-b711-40ad-8e39-9ee31ba52b9c",
+      "source": "sw_push"
+    },
+    "SW73": {
+      "reference": "SW73",
+      "sch_position": [
+        71.12,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "65ab4ddd-b50b-4381-a82e-65c9b44de3f0",
+      "source": "sw_push"
+    },
+    "SW23": {
+      "reference": "SW23",
+      "sch_position": [
+        198.12,
+        88.9
+      ],
+      "estimated_matrix_pos": [
+        2,
+        5
+      ],
+      "is_populated": true,
+      "uuid": "bd2030b5-fb9f-42f5-9800-e9f50c1e9469",
+      "source": "sw_push"
+    },
+    "SW79": {
+      "reference": "SW79",
+      "sch_position": [
+        223.52,
+        241.3
+      ],
+      "estimated_matrix_pos": [
+        8,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "a1062757-a395-4ccd-ae02-78c8811c3910",
+      "source": "sw_push"
+    },
+    "SW71": {
+      "reference": "SW71",
+      "sch_position": [
+        274.32,
+        215.9
+      ],
+      "estimated_matrix_pos": [
+        7,
+        8
+      ],
+      "is_populated": true,
+      "uuid": "a9f1e12d-26b0-4bca-b0eb-9bd66e57ae96",
+      "source": "sw_push"
+    },
+    "SW15": {
+      "reference": "SW15",
+      "sch_position": [
+        223.52,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        6
+      ],
+      "is_populated": true,
+      "uuid": "7df19849-5db6-492c-908c-287f02168715",
+      "source": "sw_push"
+    },
+    "SW84": {
+      "reference": "SW84",
+      "sch_position": [
+        121.92,
+        266.7
+      ],
+      "estimated_matrix_pos": [
+        9,
+        2
+      ],
+      "is_populated": true,
+      "uuid": "4ff751ce-63ac-4554-9982-60dee3ff44c7",
+      "source": "sw_push"
+    },
+    "SW54": {
+      "reference": "SW54",
+      "sch_position": [
+        299.72,
+        165.1
+      ],
+      "estimated_matrix_pos": [
+        5,
+        9
+      ],
+      "is_populated": true,
+      "uuid": "3fd7e0be-d789-4078-b488-b6ef88372154",
+      "source": "sw_push"
+    },
+    "SW52": {
+      "reference": "SW52",
+      "sch_position": [
+        248.92,
+        165.1
+      ],
+      "estimated_matrix_pos": [
+        5,
+        7
+      ],
+      "is_populated": true,
+      "uuid": "06f8a89c-5f6d-4276-8c9b-523f91694232",
+      "source": "sw_push"
+    },
+    "SW12": {
+      "reference": "SW12",
+      "sch_position": [
+        147.32,
+        63.5
+      ],
+      "estimated_matrix_pos": [
+        1,
+        3
+      ],
+      "is_populated": true,
+      "uuid": "1855a494-d4e2-466c-a6c6-c0f10973bcc8",
+      "source": "sw_push"
+    },
+    "JOY1": {
+      "reference": "JOY1",
+      "sch_position": [
+        78.74,
+        147.32
+      ],
+      "estimated_matrix_pos": [
+        4,
+        0
+      ],
+      "is_populated": true,
+      "uuid": "a5071242-37ed-402e-8426-f0d85a48c6f2",
+      "source": "joystick_click"
+    },
+    "SW91A": {
+      "reference": "SW91A",
+      "sch_position": [
+        104.14,
+        223.52
+      ],
+      "estimated_matrix_pos": [
+        7,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "44eb7d11-28e4-4a4c-858f-a3e9d9098146",
+      "source": "encoder_pulse"
+    },
+    "SW91B": {
+      "reference": "SW91B",
+      "sch_position": [
+        104.14,
+        198.12
+      ],
+      "estimated_matrix_pos": [
+        6,
+        1
+      ],
+      "is_populated": true,
+      "uuid": "6484651c-8dbb-431c-9f74-a973cc0c31b8",
+      "source": "encoder_pulse"
+    }
+  },
+  "labels": {
+    "COL1": {
+      "name": "COL1",
+      "sch_position": [
+        63.5,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "EC1SW2": {
+      "name": "EC1SW2",
+      "sch_position": [
+        78.74,
+        198.12
+      ],
+      "type": "global_label"
+    },
+    "EC1A": {
+      "name": "EC1A",
+      "sch_position": [
+        95.25,
+        358.14
+      ],
+      "type": "global_label"
+    },
+    "ROW3": {
+      "name": "ROW3",
+      "sch_position": [
+        50.8,
+        101.6
+      ],
+      "type": "global_label"
+    },
+    "COL9": {
+      "name": "COL9",
+      "sch_position": [
+        266.7,
+        26.521
+      ],
+      "type": "global_label"
+    },
+    "COL4": {
+      "name": "COL4",
+      "sch_position": [
+        139.7,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "COL5": {
+      "name": "COL5",
+      "sch_position": [
+        165.1,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "EC1B": {
+      "name": "EC1B",
+      "sch_position": [
+        95.25,
+        363.22
+      ],
+      "type": "global_label"
+    },
+    "ROW1": {
+      "name": "ROW1",
+      "sch_position": [
+        50.8,
+        50.8
+      ],
+      "type": "global_label"
+    },
+    "ROW10": {
+      "name": "ROW10",
+      "sch_position": [
+        50.7597,
+        279.4
+      ],
+      "type": "global_label"
+    },
+    "COL10": {
+      "name": "COL10",
+      "sch_position": [
+        292.1,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "ROW7": {
+      "name": "ROW7",
+      "sch_position": [
+        50.8,
+        203.2
+      ],
+      "type": "global_label"
+    },
+    "ROW9": {
+      "name": "ROW9",
+      "sch_position": [
+        50.8,
+        254.0
+      ],
+      "type": "global_label"
+    },
+    "ROW4": {
+      "name": "ROW4",
+      "sch_position": [
+        50.8,
+        127.0
+      ],
+      "type": "global_label"
+    },
+    "COL2": {
+      "name": "COL2",
+      "sch_position": [
+        88.9,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "ROW5": {
+      "name": "ROW5",
+      "sch_position": [
+        50.7597,
+        152.4
+      ],
+      "type": "global_label"
+    },
+    "JOY1": {
+      "name": "JOY1",
+      "sch_position": [
+        143.51,
+        322.58
+      ],
+      "type": "global_label"
+    },
+    "ROW6": {
+      "name": "ROW6",
+      "sch_position": [
+        50.8,
+        177.8
+      ],
+      "type": "global_label"
+    },
+    "COL6": {
+      "name": "COL6",
+      "sch_position": [
+        190.5,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "COL3": {
+      "name": "COL3",
+      "sch_position": [
+        114.3,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "ROW2": {
+      "name": "ROW2",
+      "sch_position": [
+        50.7597,
+        76.2
+      ],
+      "type": "global_label"
+    },
+    "COL7": {
+      "name": "COL7",
+      "sch_position": [
+        215.9,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "COL8": {
+      "name": "COL8",
+      "sch_position": [
+        241.3,
+        26.67
+      ],
+      "type": "global_label"
+    },
+    "ROW8": {
+      "name": "ROW8",
+      "sch_position": [
+        50.8,
+        228.6
+      ],
+      "type": "global_label"
+    },
+    "GNDA": {
+      "name": "GNDA",
+      "sch_position": [
+        165.1,
+        336.55
+      ],
+      "type": "hierarchical_label"
+    },
+    "col8": {
+      "name": "col8",
+      "sch_position": [
+        241.3,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "Ajoy1": {
+      "name": "Ajoy1",
+      "sch_position": [
+        143.51,
+        326.39
+      ],
+      "type": "hierarchical_label"
+    },
+    "col9": {
+      "name": "col9",
+      "sch_position": [
+        266.7,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "col7": {
+      "name": "col7",
+      "sch_position": [
+        215.9,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "col3": {
+      "name": "col3",
+      "sch_position": [
+        114.3,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "3V3": {
+      "name": "3V3",
+      "sch_position": [
+        132.08,
+        322.58
+      ],
+      "type": "hierarchical_label"
+    },
+    "col6": {
+      "name": "col6",
+      "sch_position": [
+        190.5,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "col1": {
+      "name": "col1",
+      "sch_position": [
+        63.5,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "Ajoy2": {
+      "name": "Ajoy2",
+      "sch_position": [
+        143.51,
+        334.01
+      ],
+      "type": "hierarchical_label"
+    },
+    "col10": {
+      "name": "col10",
+      "sch_position": [
+        292.1,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "col5": {
+      "name": "col5",
+      "sch_position": [
+        165.1,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "col4": {
+      "name": "col4",
+      "sch_position": [
+        139.7,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    },
+    "col2": {
+      "name": "col2",
+      "sch_position": [
+        88.9,
+        25.4
+      ],
+      "type": "hierarchical_label"
+    }
+  }
+}

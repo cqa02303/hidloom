@@ -1,0 +1,1 @@
+"""USB bridge daemon package."""

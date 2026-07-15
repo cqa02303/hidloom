@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) PYTHONPATH=/usr/share/hidloom/daemon:/usr/share/hidloom HIDLOOM_REPO_ROOT=/usr/share/hidloom start-stop-daemon -S -b -m -p /run/ledd.pid -x /usr/bin/python3 -- -m ledd.ledd;;
+ stop) start-stop-daemon -K -p /run/ledd.pid;;
+esac

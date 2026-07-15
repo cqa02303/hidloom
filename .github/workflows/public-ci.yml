@@ -1,0 +1,98 @@
+name: Public CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            fakeroot \
+            python3-aiohttp \
+            python3-dbus-next \
+            python3-numpy \
+            python3-pil \
+            python3-yaml \
+            rsync \
+            zstd
+      - name: Select Ubuntu system Python
+        run: |
+          echo "/usr/bin" >> "$GITHUB_PATH"
+          /usr/bin/python3 - <<'PY'
+          import aiohttp
+          import dbus_next
+          import numpy
+          from PIL import Image
+          import yaml
+          print("ok: public CI Python dependencies")
+          PY
+      - name: Cache Cargo registry
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-metadata-${{ hashFiles('tools/**/Cargo.lock') }}
+      - name: Cache pinned Buildroot source
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: build/artifacts/buildroot-upstream
+          key: buildroot-source-${{ hashFiles('config/buildroot-source.json') }}
+      - name: Fetch locked Rust dependencies
+        run: |
+          for manifest in tools/*/Cargo.toml; do
+            cargo fetch --locked --manifest-path "$manifest"
+          done
+      - name: Public bootstrap archive regression
+        run: python3 script/test_remote_fresh_install_tool.py
+      - name: Tracked source syntax
+        run: python3 script/test_source_syntax_hygiene.py
+      - name: Tracked development residue
+        run: python3 script/test_development_residue_hygiene.py
+      - name: Full regression suite
+        run: python3 script/test_validation_suite.py
+      - name: Locked Rust checks
+        run: |
+          for manifest in tools/*/Cargo.toml; do
+            cargo test --locked --manifest-path "$manifest"
+          done
+      - name: Diff hygiene
+        run: git diff --check
+
+  open-sync-pr:
+    needs: validate
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/sync/')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Open draft sync PR when absent
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if gh pr list --head "$BRANCH" --base main --json number --jq 'length' | grep -qx 0; then
+            gh pr create \
+              --head "$BRANCH" \
+              --base main \
+              --draft \
+              --title "Sync $BRANCH" \
+              --body "Automated clean export sync. Review source, readiness, licenses, and release artifacts before merging."
+          fi

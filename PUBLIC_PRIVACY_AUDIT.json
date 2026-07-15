@@ -1,0 +1,53 @@
+{
+  "schema": "hidloom.public-privacy-audit.v1",
+  "ready": true,
+  "summary": {
+    "files_scanned": 1187,
+    "media_files": 8,
+    "findings": 0,
+    "blockers": 0
+  },
+  "media": [
+    {
+      "path": "CQA02303v5.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "CQA02303v5_switchLayouts9x10.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "daemon/http/static/android-chrome-192x192.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "daemon/http/static/android-chrome-512x512.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "daemon/http/static/apple-touch-icon.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "daemon/http/static/favicon-32x32.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "daemon/http/static/hidloom-mark.svg",
+      "type": "svg",
+      "embedded_metadata": false
+    },
+    {
+      "path": "docs/architecture/system-overview.svg",
+      "type": "svg",
+      "embedded_metadata": false
+    }
+  ],
+  "findings": []
+}

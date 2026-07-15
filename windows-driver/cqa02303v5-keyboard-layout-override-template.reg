@@ -1,0 +1,43 @@
+Windows Registry Editor Version 5.00
+
+; CQA02303v5 Windows keyboard layout override template.
+;
+; Replace the two placeholder instance paths below with the current Windows HID
+; keyboard child instance paths before importing. The exact trailing instance
+; component changes when the USB serial, port, or enumeration state changes.
+;
+; Main keyboard:
+;   Device Manager -> Keyboards -> CQA02303v5 Japanese 106/109 USB Keyboard
+;   Expected hardware ID prefix:
+;     HID\VID_1D6B&PID_0105&MI_00&COL01
+;
+; Sub keyboard:
+;   Device Manager -> Keyboards -> CQA02303v5 US 101/102 Sub Keyboard
+;   Expected hardware ID prefix:
+;     HID\VID_1D6B&PID_0105&MI_02
+;
+; Values:
+;   KeyboardTypeOverride    = 7
+;   KeyboardSubtypeOverride = 2  ; Japanese 106/109
+;   KeyboardSubtypeOverride = 0  ; US 101/102
+;
+; The custom INF route is preferred for normal setup. This template is kept as
+; a reminder of the registry values used during manual experiments.
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\HID\VID_1D6B&PID_0105&MI_00&Col01\<MAIN_INSTANCE_ID>]
+"KeyboardTypeOverride"=dword:00000007
+"KeyboardSubtypeOverride"=dword:00000002
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\HID\VID_1D6B&PID_0105&MI_02\<SUB_INSTANCE_ID>]
+"KeyboardTypeOverride"=dword:00000007
+"KeyboardSubtypeOverride"=dword:00000000
+
+; To clear the manual override, import an edited copy with these values instead:
+;
+; [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\HID\VID_1D6B&PID_0105&MI_00&Col01\<MAIN_INSTANCE_ID>]
+; "KeyboardTypeOverride"=-
+; "KeyboardSubtypeOverride"=-
+;
+; [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\HID\VID_1D6B&PID_0105&MI_02\<SUB_INSTANCE_ID>]
+; "KeyboardTypeOverride"=-
+; "KeyboardSubtypeOverride"=-

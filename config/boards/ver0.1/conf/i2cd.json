@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "oled": {
+    "driver": "sh1107",
+    "i2c_port": 1,
+    "address": "0x3C",
+    "width": 64,
+    "height": 128,
+    "rotate": 0
+  },
+  "display": {
+    "fps": 10,
+    "font_size": 11,
+    "font_path": null
+  },
+  "ipc": {
+    "socket_path": "/tmp/matrix_events.sock",
+    "i2c_socket": "/tmp/i2c_events.sock",
+    "ctrl_socket": "/tmp/ctrl_events.sock",
+    "direct_frame_status": "/tmp/ledd_direct_frame_status.json"
+  },
+  "analog_stick": {
+    "enabled": true,
+    "i2c_port": 1,
+    "address": "0x48",
+    "stick": 0,
+    "poll_interval": 0.02,
+    "idle_poll_interval": 0.08,
+    "idle_after_sec": 0.5,
+    "deadzone": 12,
+    "auto_center_on_start": true,
+    "auto_center_duration": 2.0,
+    "x": {
+      "channel": 1,
+      "center": 1.5042,
+      "low": 0.4046,
+      "high": 2.6999
+    },
+    "y": {
+      "channel": 0,
+      "center": 1.5569,
+      "low": 0.3764,
+      "high": 2.6895,
+      "invert": true
+    }
+  }
+}

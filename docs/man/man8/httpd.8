@@ -1,0 +1,23 @@
+.TH HTTPD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+httpd \- HIDloom Web UI and local API daemon
+.SH SYNOPSIS
+.B python3 daemon/http/httpd.py
+.SH DESCRIPTION
+.B httpd
+serves the HTTPS Web UI and local API used for keymap, lighting, interaction,
+script, and status operations.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH ENVIRONMENT
+Common variables include \fBHTTPD_HOST\fR, \fBHTTPD_PORT\fR,
+\fBHTTPD_PRIVATE_ONLY\fR, \fBHTTPD_ALLOWED_NETS\fR, \fBMATRIX_EVENTS_SOCK\fR,
+and \fBCTRL_EVENTS_SOCK\fR.
+.SH SEE ALSO
+.BR logicd (8),
+.BR hidloom-ctrl (1)
+.br
+HTTP/Web UI documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

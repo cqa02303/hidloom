@@ -1,0 +1,195 @@
+# OLED icon bitmaps for connection and daemon status rows.
+#
+# Edit only the 0/1 rows when tuning the tiny OLED icons by eye.
+# Each icon must have exactly 8 rows.  Width is taken from the row length.
+# 1 = lit pixel, 0 = off pixel.
+#
+# http://domainatnifty.private.coocan.jp/icon-editor/
+#
+
+# bt: Bluetooth output / Bluetooth status icon
+bt:
+001000
+001100
+101010
+011100
+101010
+001100
+001000
+000000
+
+# usb: USB gadget output icon
+usb:
+0110000
+0000000
+1111000
+1001000
+1001000
+1001010
+0110010
+0001100
+
+# pi: Raspberry Pi / local uinput output icon
+pi:
+11000
+10100
+11000
+10010
+00000
+00010
+00000
+00000
+
+# auto: Automatic output selection icon
+auto:
+0110000
+1010101
+1110101
+1010111
+0000000
+1110111
+0100101
+0100111
+
+# wifi0: Wi-Fi available but not connected
+wifi0:
+000000
+001000
+001000
+001000
+000000
+001000
+000000
+000000
+
+# wifi3: Connected Wi-Fi icon shown on the OLED Ready screen
+wifi3:
+000000
+111110
+000000
+011100
+000000
+001000
+000000
+000000
+
+# mtx: matrixd daemon status icon
+mtx:
+10000001
+11000011
+10100101
+10011001
+10000001
+00000000
+00000000
+00000000
+
+# core: logicd-core daemon status icon
+core:
+00111100
+01000010
+10011001
+10011001
+01000010
+00111100
+00000000
+00000000
+
+# cmp: logicd-companion daemon status icon
+cmp:
+01111100
+10000010
+10000000
+10000000
+10000010
+01111100
+00000000
+00000000
+
+# lgc: legacy combined logicd daemon status icon
+lgc:
+10000000
+10000000
+10000000
+10000000
+10000000
+11111110
+00000000
+00000000
+
+# led: ledd daemon status icon
+led:
+00111100
+00111100
+01111110
+00011000
+00100100
+01000010
+00000000
+00000000
+
+# out: outputd daemon status icon
+out:
+01111100
+10000010
+10111010
+10100010
+10000010
+01111100
+00000000
+00000000
+
+# uid: uidd daemon status icon
+uid:
+10000010
+10000010
+10000010
+10000010
+10000010
+01111100
+00000000
+00000000
+
+# btd: btd daemon status icon
+btd:
+00011000
+01011010
+00111100
+00011000
+00111100
+01011010
+00000000
+00000000
+
+# web: httpd daemon status icon
+web:
+00111100
+01011010
+10111101
+10100101
+10111101
+01011010
+00000000
+00000000
+
+# hid: HID broker daemon status icon (native hidloom-hidd or legacy usbd)
+hid:
+01111100
+11111110
+11011000
+11011000
+01111110
+00000110
+00000000
+00000000
+
+# vial: viald daemon status icon
+vial:
+00111100
+01100110
+11000011
+11000011
+01100110
+00111100
+00000000
+00000000

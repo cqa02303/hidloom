@@ -1,0 +1,19 @@
+[Unit]
+Description=HIDloom SPI mouse sensor daemon
+After=multi-user.target
+
+[Service]
+Type=simple
+WorkingDirectory=@HIDLOOM_REPO_ROOT@
+Environment=PYTHONPATH=@HIDLOOM_REPO_ROOT@/daemon:@HIDLOOM_REPO_ROOT@
+Environment=PYTHONUNBUFFERED=1
+# Default is disabled so boards without an SPI mouse sensor do not open SPI or sockets.
+Environment=SPID_ENABLED=false
+Environment=SPID_BACKEND=none
+Environment=SPID_EVENTS_SOCK=/tmp/spi_events.sock
+ExecStart=/usr/bin/python3 -m spid.spid
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

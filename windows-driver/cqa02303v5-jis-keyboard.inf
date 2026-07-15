@@ -1,0 +1,55 @@
+; Experimental Windows INF for CQA02303v5 JIS keyboard binding.
+; This package intentionally reuses the in-box keyboard.inf HID 106/109 install
+; section so the experiment stays as close as possible to Windows' built-in
+; Japanese keyboard handling.
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Keyboard
+ClassGuid={4D36E96B-E325-11CE-BFC1-08002BE10318}
+Provider=%ProviderName%
+DriverVer=06/12/2026,0.0.2.0
+CatalogFile=cqa02303v5-jis-keyboard.cat
+
+[Manufacturer]
+%ManufacturerName%=CQA02303v5,NTamd64
+
+[CQA02303v5.NTamd64]
+%CQA02303v5JisKeyboard.DeviceDesc%=CQA02303v5_HID_106_Keyboard_Inst, HID\VID_1D6B&PID_0105&MI_00&COL01
+%CQA02303v5JisKeyboard.DeviceDesc%=CQA02303v5_HID_106_Keyboard_Inst, HID\VID_1D6B&PID_0105&MI_00
+%CQA02303v5UsSubKeyboard.DeviceDesc%=CQA02303v5_HID_101_Keyboard_Inst, HID\VID_1D6B&PID_0105&MI_02
+
+[CQA02303v5_HID_106_Keyboard_Inst.NT]
+Include=keyboard.inf
+Needs=HID_106_Keyboard_Inst.NT
+
+[CQA02303v5_HID_106_Keyboard_Inst.NT.HW]
+Include=keyboard.inf
+Needs=HID_106_Keyboard_Inst.NT.HW
+
+[CQA02303v5_HID_106_Keyboard_Inst.NT.Services]
+Include=keyboard.inf
+Needs=HID_106_Keyboard_Inst.NT.Services
+
+[CQA02303v5_HID_101_Keyboard_Inst.NT]
+Include=keyboard.inf
+Needs=HID_Keyboard_Inst.NT
+
+[CQA02303v5_HID_101_Keyboard_Inst.NT.HW]
+Include=keyboard.inf
+Needs=HID_Keyboard_Inst.NT.HW
+AddReg=CQA02303v5_HID_101_Keyboard_Inst.AddReg.NT.HW
+
+[CQA02303v5_HID_101_Keyboard_Inst.AddReg.NT.HW]
+HKR,,"KeyboardTypeOverride",0x00010001,7
+HKR,,"KeyboardSubtypeOverride",0x00010001,0
+
+[CQA02303v5_HID_101_Keyboard_Inst.NT.Services]
+Include=keyboard.inf
+Needs=HID_Keyboard_Inst.NT.Services
+
+[Strings]
+ProviderName="CQA02303v5 Project"
+ManufacturerName="CQA02303v5 Project"
+CQA02303v5JisKeyboard.DeviceDesc="CQA02303v5 Japanese 106/109 USB Keyboard"
+CQA02303v5UsSubKeyboard.DeviceDesc="CQA02303v5 US 101/102 Sub Keyboard"

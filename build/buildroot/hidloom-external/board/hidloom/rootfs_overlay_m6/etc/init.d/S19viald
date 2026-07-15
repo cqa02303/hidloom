@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+ start) rm -f /tmp/viald_events.sock; PYTHONPATH=/usr/share/hidloom/daemon:/usr/share/hidloom HIDLOOM_REPO_ROOT=/usr/share/hidloom HIDLOOM_RUNTIME_DIR=/mnt/p3 VIALD_JSON_PATH=/mnt/p3/vial.json VIALD_LAYER_COUNT=3 VIALD_SAVE_ON_SET=1 start-stop-daemon -S -b -m -p /run/viald.pid -x /usr/bin/python3 -- -m viald.viald;;
+ stop) start-stop-daemon -K -p /run/viald.pid;;
+esac

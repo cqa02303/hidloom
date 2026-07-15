@@ -1,0 +1,2 @@
+#!/bin/sh
+case "$1" in start) modprobe i2c-bcm2835 2>/dev/null || true; modprobe i2c-dev 2>/dev/null || true;; esac

@@ -1,0 +1,51 @@
+{
+  "version": "1.0",
+  "matrix": {
+    "rows": 10,
+    "cols": 10,
+    "row_gpios": [
+      13,
+      26,
+      6,
+      5,
+      4,
+      25,
+      24,
+      22,
+      23,
+      27
+    ],
+    "col_gpios": [
+      13,
+      26,
+      6,
+      5,
+      4,
+      25,
+      24,
+      22,
+      23,
+      27
+    ],
+    "row_drive": "output_low",
+    "col_pull": "pull_up",
+    "key_active": "low",
+    "skip_same_index": true,
+    "gpio_enabled": true
+  },
+  "scan": {
+    "interval_us": 1000,
+    "idle_interval_us": 2000,
+    "deep_idle_interval_us": 4000,
+    "idle_after_ms": 100,
+    "deep_idle_after_ms": 500,
+    "debounce_mode": "time",
+    "debounce_ms": 5,
+    "settle_us": 20,
+    "post_row_settle_us": 2
+  },
+  "ipc": {
+    "socket_path": "/tmp/matrix_events.sock",
+    "tap_socket_path": "none"
+  }
+}

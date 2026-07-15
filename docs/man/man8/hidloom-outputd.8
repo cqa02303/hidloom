@@ -1,0 +1,24 @@
+.TH HIDLOOM-OUTPUTD 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+hidloom-outputd \- native HID output router
+.SH SYNOPSIS
+.B hidloom-outputd
+[\fB--frames\fR \fIN\fR]
+.SH DESCRIPTION
+.B hidloom-outputd
+routes canonical HID reports from logicd-core to the active output owner. It
+keeps output switching out of the hot matrix scan path.
+.SH OPTIONS
+.TP
+.B --frames N
+Process a bounded number of frames, mainly for tests.
+.TP
+.B -h, --help
+Show command help.
+.SH SEE ALSO
+.BR hidloom-hidd (8),
+.BR hidloom-uidd (8),
+.BR hidloom-logicd-core (8)
+.br
+Project documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs

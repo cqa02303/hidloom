@@ -1,0 +1,22 @@
+.TH HIDLOOM-LOGICD-CORE 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+hidloom-logicd-core \- native active input-path logic core
+.SH SYNOPSIS
+.B hidloom-logicd-core
+\fB--serve\fR [\fB--packets\fR \fIN\fR]
+.br
+.B hidloom-logicd-core
+\fB--check-config\fR|\fB--replay\fR \fIFILE\fR|\fB--ctrl-release-all\fR|\fB--mark-stopped\fR
+.SH DESCRIPTION
+.B hidloom-logicd-core
+is the Rust native owner for the active matrix input path. The Python logicd
+companion remains responsible for heavier control-plane and integration work.
+.SH OPTIONS
+Use \fB--help\fR for the complete option list.
+.SH SEE ALSO
+.BR logicd (8),
+.BR matrixd (8),
+.BR hidloom-outputd (8)
+.br
+Native-core documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/ops

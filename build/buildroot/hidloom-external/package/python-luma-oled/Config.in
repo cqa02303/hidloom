@@ -1,0 +1,5 @@
+config BR2_PACKAGE_PYTHON_LUMA_OLED
+	bool "python-luma-oled"
+	select BR2_PACKAGE_PYTHON_LUMA_CORE
+	help
+	  OLED display drivers used by the M6 I2C status display.

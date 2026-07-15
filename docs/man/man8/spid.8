@@ -1,0 +1,18 @@
+.TH SPID 8 "@HIDLOOM_VERSION@" "HIDloom" "System Administration"
+.SH NAME
+spid \- SPI pointing sensor daemon
+.SH SYNOPSIS
+.B python3 -m spid.spid
+.SH DESCRIPTION
+.B spid
+reads SPI pointing sensor data and forwards motion events to logicd when the
+pointing-input path is enabled.
+.SH OPTIONS
+.TP
+.B -h, --help
+Show command help.
+.SH SEE ALSO
+.BR logicd (8)
+.br
+Daemon documentation:
+https://github.com/cqa02303/hidloom/tree/@HIDLOOM_GIT_SHA@/docs/daemon
