@@ -455,6 +455,15 @@
 - regression check: local repository fixtureでclone/verify contractを維持し、clean private/public snapshotでは検証済みcacheを使ってBuildroot configureとcanonical suiteを完走する。公開CIのonline fetchは別途初回Actionsで確認する。
 - evidence: 2026-07-15、GitLab hostname解決失敗を直接prepareで確認し、local checkout `67449130e9fdd71a38ca26539dddfa8c882b1977`、canonical origin、tracked diff 0を照合後にvalidationへ使用した。
 
+## Public CI runner lacks the cross-build Rust target
+
+- symptom: clean public `main`のcanonical suiteが終盤の`test_cross_build_host_check_tool.py`で停止し、`missing: rust target aarch64-unknown-linux-musl`を出す。それ以前のsource、privacy、runtime、native build回帰はpassする。
+- likely cause: development hostにはcross-build targetが導入済みだが、fresh GitHub-hosted runnerの初期toolchainへ同targetがあると仮定し、Public CIが明示的にinstallしていない。
+- detect: failed Actions logで`rustup target list --installed`相当のhost-check出力を確認し、workflow内の`rustup target add aarch64-unknown-linux-musl`がcanonical suiteより前に一度だけ実行されるか検査する。
+- recovery: Public CIへcross-build targetの明示導入stepを追加して再実行する。host-checkをskipしたり、test期待値をmissing許容へ弱めたり、開発hostだけの状態でpass扱いにしない。
+- regression check: `script/test_public_ci_workflow.py`でtarget導入commandの一意性とcanonical suiteより前の順序を固定し、standalone public branchの`Public CI / validate`をpassさせる。
+- evidence: 2026-07-15、public初回commit `f2b99c4b3be50ba40b6acac52b6062e2d356115b`のActions run `29389956649`で再現した。runnerは`rustup`、`cargo`、`rust-lld`を持っていたがtargetだけがなく、canonical suite 218 entrypoint中のhost-checkで停止した。
+
 ## Public bootstrap regression misclassifies linked Git worktrees
 
 - symptom: `script/test_public_repository_bootstrap.py`をlinked worktreeで実行すると、private sourceからclean exportを作らずworktree rootをpublic exportとしてbootstrap planへ渡し、`PUBLIC_EXPORT_REPORT.json`欠落等で停止する。
