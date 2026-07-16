@@ -8,7 +8,7 @@
   },
   "published_release_tags": [],
   "summary": {
-    "files_scanned": 1181,
+    "files_scanned": 1182,
     "repository_references": 122,
     "public_repository_references": 43,
     "findings": 0,
@@ -623,7 +623,7 @@
     },
     {
       "path": "script/test_public_export.py",
-      "line": 569,
+      "line": 570,
       "slug": "cqa02303/hidloom",
       "url": "github.com/cqa02303/hidloom"
     },
@@ -641,7 +641,7 @@
     },
     {
       "path": "script/test_release_bundle_tools.py",
-      "line": 445,
+      "line": 588,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },

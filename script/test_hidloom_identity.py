@@ -15,6 +15,7 @@ import hidloom_paths
 DISPLAY_NAME_PATHS = (
     "README.md",
     "FRESH_INSTALL.md",
+    "INSTALL.md",
     "RELEASE_CHECKLIST.md",
     "docs/README.md",
     "docs/architecture/specification.md",

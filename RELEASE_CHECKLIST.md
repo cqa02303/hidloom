@@ -4,6 +4,8 @@ HIDloom の source、Raspberry Pi OS split package、Buildroot M6、public relea
 revision から作るための checklist です。該当しない section は release notes に
 `not applicable` と理由を記録します。
 
+利用者向けの 2 方式と asset 契約は [INSTALL.md](INSTALL.md) を基準にします。
+
 ## 1. Source Revision
 
 - [ ] 変更目的と scope が説明できる
@@ -65,9 +67,10 @@ git status --short
 
 - [ ] `hidloom-core` と device profile を同じ source revision から作成
 - [ ] core/profile の version と architecture が一致
-- [ ] `.sha256` が portable filename で pass
+- [ ] public bundle の `SHA256SUMS` が core/profile の両方を検証
 - [ ] core/profile を同じ apt transaction で install する release notes になっている
 - [ ] `hidloom-profile <profile> --apply --backup --restart` を明記
+- [ ] Release notes が Raspberry Pi OS package と Buildroot M6 image の選択肢を明記
 
 標準キーボード:
 

@@ -36,6 +36,7 @@
     "CQA02303v5_switchLayouts9x10.png",
     "FRESH_INSTALL.md",
     "GETKEYMAP.md",
+    "INSTALL.md",
     "LICENSE",
     "Makefile",
     "README.md",
@@ -289,6 +290,7 @@
       "path_globs": [
         "docs/**",
         "CONTRIBUTING.md",
+        "INSTALL.md",
         "LICENSE",
         "SECURITY.md",
         "build/buildroot/hidloom-external/package/hidloom-m3-router/src/COPYING",

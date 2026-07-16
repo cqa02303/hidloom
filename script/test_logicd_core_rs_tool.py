@@ -25,6 +25,7 @@ BROKER_CAPTURE = ROOT / "tools" / "usbd_hid_report_capture.py"
 PARITY_COMPARE = ROOT / "tools" / "logicd_core_parity_compare.py"
 PYTHON_REPLAY = ROOT / "tools" / "logicd_python_matrix_replay.py"
 PARITY_SUITE = ROOT / "tools" / "logicd_core_parity_suite.py"
+ASYNC_IO_TIMEOUT_SECONDS = 10.0
 
 
 def build_tool() -> None:
@@ -85,8 +86,8 @@ def core_env(tmp: Path, keymap: dict) -> dict[str, str]:
 
 
 def wait_for_path(path: Path) -> None:
-    deadline = time.time() + 2.0
-    while time.time() < deadline:
+    deadline = time.monotonic() + ASYNC_IO_TIMEOUT_SECONDS
+    while time.monotonic() < deadline:
         if path.exists():
             return
         time.sleep(0.01)
@@ -94,9 +95,9 @@ def wait_for_path(path: Path) -> None:
 
 
 def wait_for_json(path: Path) -> dict:
-    deadline = time.time() + 2.0
+    deadline = time.monotonic() + ASYNC_IO_TIMEOUT_SECONDS
     last_error: Exception | None = None
-    while time.time() < deadline:
+    while time.monotonic() < deadline:
         try:
             return json.loads(path.read_text(encoding="utf-8"))
         except (FileNotFoundError, json.JSONDecodeError) as exc:
@@ -106,9 +107,9 @@ def wait_for_json(path: Path) -> dict:
 
 
 def wait_for_socket(path: Path) -> None:
-    deadline = time.time() + 2.0
+    deadline = time.monotonic() + ASYNC_IO_TIMEOUT_SECONDS
     last_error: Exception | None = None
-    while time.time() < deadline:
+    while time.monotonic() < deadline:
         if path.exists():
             try:
                 with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
@@ -121,17 +122,39 @@ def wait_for_socket(path: Path) -> None:
     raise AssertionError(f"socket did not become connectable: {path} last_error={last_error}")
 
 
-def ctrl_request(sock_path: Path, payload: dict) -> dict:
+def ctrl_request(
+    sock_path: Path,
+    payload: dict,
+    *,
+    timeout: float = ASYNC_IO_TIMEOUT_SECONDS,
+) -> dict:
+    if timeout <= 0:
+        raise ValueError("ctrl request timeout must be positive")
+    started = time.monotonic()
+    deadline = started + timeout
+    data = b""
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
-        client.settimeout(2.0)
-        client.connect(str(sock_path))
-        client.sendall((json.dumps(payload) + "\n").encode())
-        data = b""
-        while not data.endswith(b"\n"):
-            chunk = client.recv(4096)
-            if not chunk:
-                break
-            data += chunk
+        try:
+            client.settimeout(timeout)
+            client.connect(str(sock_path))
+            client.sendall((json.dumps(payload) + "\n").encode())
+            while not data.endswith(b"\n"):
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("ctrl request deadline expired")
+                client.settimeout(remaining)
+                chunk = client.recv(4096)
+                if not chunk:
+                    break
+                data += chunk
+        except TimeoutError as exc:
+            elapsed = time.monotonic() - started
+            request = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+            raise AssertionError(
+                "logicd-core ctrl request timed out "
+                f"after {elapsed:.3f}s socket={sock_path} "
+                f"request={request} received={data.hex()}"
+            ) from exc
     return json.loads(data.decode()) if data else {}
 
 
@@ -543,8 +566,8 @@ def test_ctrl_status_release_all_and_set_output() -> None:
                 matrix.settimeout(2.0)
                 matrix.connect(str(matrix_socket))
                 matrix.sendall(b"P00\n")
-                deadline = time.time() + 2.0
-                while time.time() < deadline:
+                deadline = time.monotonic() + ASYNC_IO_TIMEOUT_SECONDS
+                while time.monotonic() < deadline:
                     status = ctrl_request(ctrl_socket, {"t": "status"})
                     if status["state"]["pressed_matrix"] == 1:
                         break
@@ -561,6 +584,65 @@ def test_ctrl_status_release_all_and_set_output() -> None:
             proc.terminate()
             stdout, stderr = proc.communicate(timeout=3.0)
         assert stdout == ""
+        assert proc.returncode in (0, -15)
+
+
+def test_ctrl_status_burst_survives_backpressure() -> None:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+        matrix_socket = tmp / "matrix_events_shadow.sock"
+        ctrl_socket = tmp / "logicd_core_ctrl.sock"
+        status_path = tmp / "logicd-core-status.json"
+        env = core_env(tmp, flat_keymap([{"0,0": "KC_A"}]))
+        env.update(
+            {
+                "LOGICD_CORE_MATRIX_SOCKET": str(matrix_socket),
+                "LOGICD_CORE_CTRL_SOCKET": str(ctrl_socket),
+                "LOGICD_CORE_STATUS_PATH": str(status_path),
+                "LOGICD_CORE_HID_REPORT_SOCKET": str(tmp / "missing-broker.sock"),
+                "LOGICD_CORE_OUTPUT_ENABLED": "0",
+            }
+        )
+        proc = subprocess.Popen(
+            [str(BIN), "--serve"],
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        try:
+            wait_for_socket(ctrl_socket)
+            request_count = 256
+            request = (json.dumps({"t": "status"}) + "\n").encode()
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                client.settimeout(ASYNC_IO_TIMEOUT_SECONDS)
+                client.connect(str(ctrl_socket))
+                client.sendall(request * request_count)
+                time.sleep(0.05)
+                deadline = time.monotonic() + ASYNC_IO_TIMEOUT_SECONDS
+                data = bytearray()
+                response_count = 0
+                while response_count < request_count:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise AssertionError(
+                            "logicd-core ctrl burst response deadline expired "
+                            f"responses={response_count}/{request_count} bytes={len(data)}"
+                        )
+                    client.settimeout(remaining)
+                    chunk = client.recv(65536)
+                    if not chunk:
+                        break
+                    data.extend(chunk)
+                    response_count += chunk.count(b"\n")
+            responses = [json.loads(line) for line in data.splitlines() if line]
+            assert len(responses) == request_count
+            assert all(response["schema"] == "logicd-core.status.v1" for response in responses)
+        finally:
+            proc.terminate()
+            stdout, stderr = proc.communicate(timeout=ASYNC_IO_TIMEOUT_SECONDS)
+        assert stdout == ""
+        assert stderr == ""
         assert proc.returncode in (0, -15)
 
 
@@ -904,8 +986,8 @@ def test_ctrl_release_all_cli_matches_exec_stop_path() -> None:
                 matrix.settimeout(2.0)
                 matrix.connect(str(matrix_socket))
                 matrix.sendall(b"P00\n")
-            deadline = time.time() + 2.0
-            while time.time() < deadline:
+            deadline = time.monotonic() + ASYNC_IO_TIMEOUT_SECONDS
+            while time.monotonic() < deadline:
                 status = ctrl_request(ctrl_socket, {"t": "status"})
                 if status["state"]["pressed_matrix"] == 1:
                     break
@@ -918,7 +1000,7 @@ def test_ctrl_release_all_cli_matches_exec_stop_path() -> None:
                 text=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                timeout=2.0,
+                timeout=ASYNC_IO_TIMEOUT_SECONDS,
             )
             assert json.loads(result.stdout) == {"result": "ok", "released": True}
             assert result.stderr == ""
@@ -1341,6 +1423,7 @@ def main() -> None:
     test_split_keyboard_routes_zkhk_to_main_and_grave_to_sub_keyboard()
     test_shadow_serve_updates_status_without_broker_output()
     test_ctrl_status_release_all_and_set_output()
+    test_ctrl_status_burst_survives_backpressure()
     test_ctrl_matrix_delegate_all_routes_keys_to_companion()
     test_ctrl_key_event_merges_with_matrix_held_key()
     test_ctrl_key_event_release_all_clears_injected_state()

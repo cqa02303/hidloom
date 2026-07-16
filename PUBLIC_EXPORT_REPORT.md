@@ -1,16 +1,16 @@
 # HIDloom Public Export Report
 
-- Source base commit: `dff749a133e4aeb52a22e78efc420f8f39a748b6`
+- Source base commit: `16f052966cb91285fe2eed1cc3db1b8d1bf96b3f`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `b05d3ed7811020c80c5f8ac9d11eb2dd2c3a3756717ae6539e06b2674564858a`
-- Files: 1182
-- Tracked source paths: 1249
+- Selected source snapshot: `1ba7c1ed90d6e5a58ab2d1120d25a8a12949262fd5da863c3f974298ff695553`
+- Files: 1183
+- Tracked source paths: 1250
 - Private-only paths: 67
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1083
+- Warnings: 1084
 - Untriaged warnings: 0
 - Action-required warnings: 12
 
@@ -18,6 +18,7 @@
 
 - `warn` `credential_word` `.github/workflows/public-ci.yml:89` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
 - `warn` `credential_word` `CONTRIBUTING.md:38` `documentation_security_keyword` — `secret-bearing backup.`
+- `warn` `credential_word` `INSTALL.md:75` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
 - `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
 - `warn` `credential_word` `SECURITY.md:10` `documentation_security_keyword` — `Do not open a public issue for an unpatched vulnerability, credential, private key, or device-specific secret.`
 - `warn` `credential_word` `SECURITY.md:37` `documentation_security_keyword` — `The current experimental M6 Buildroot image creates the local console account `pi` with the initial password `pi`.`
@@ -61,11 +62,11 @@
 - `warn` `legacy_project_name` `config/public-assets.json:99` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
 - `warn` `credential_word` `config/public-export-deny-patterns.json:56` `implementation_security_keyword` — `"pattern": "(?i)\\b(?:password|passwd|secret|token|ssid|psk)\\b"`
 - `warn` `linux_foundation_vid` `config/public-export-deny-patterns.json:64` `scanner_definition` — `"pattern": "(?i)0x1d6b"`
-- `warn` `credential_word` `config/public-export.json:105` `implementation_security_keyword` — `"macro/examples/password.kml",`
-- `warn` `credential_word` `config/public-export.json:249` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:255` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:300` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:325` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:106` `implementation_security_keyword` — `"macro/examples/password.kml",`
+- `warn` `credential_word` `config/public-export.json:250` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:256` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:302` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:327` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:192` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:193` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
@@ -190,7 +191,7 @@
 - `warn` `credential_word` `docs/keycode/qmk-vial-keycode-support.md:130` `documentation_security_keyword` — `| QMK Macro | `QK_MACRO_*` 系 | 一部対応 | Vial Macro buffer を `settings.vial_macro_buffer` に保持し、`M0`-`M7` を `MACRO:VIAL0`-`MACRO:VIAL7` として実行する。text / tap / down / up / delay は実行用 token へ変換する |`
 - `warn` `credential_word` `docs/macro/compatibility-plan.md:40` `documentation_security_keyword` — `-> daemon/logicd/macro.py token runner`
 - `warn` `credential_word` `docs/macro/kml-qmk-macro-keycode-design.md:137` `documentation_security_keyword` — `- script / system / connectivity / power / arbitrary C 相当 token の rejection。`
-- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:528` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
+- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:531` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
 - `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:208` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`

@@ -7,7 +7,11 @@ RPI_01 ?= operator@<keyboard-ip>
 RPI_02 ?= pi@<keyboard-ip>
 BOOT_REPORT_REMOTE ?= $(if $(filter 01,$(DEVICE)),$(RPI_01),$(if $(filter 02,$(DEVICE)),$(RPI_02),$(error unknown DEVICE=$(DEVICE); use DEVICE=01 or DEVICE=02, or set BOOT_REPORT_REMOTE=user@host)))
 BOOT_REPORT_LABEL ?= hidloom-$(DEVICE)
-RELEASE_DEB_REMOTE_ARG = $(if $(RELEASE_DEB_REMOTE),--host "$(RELEASE_DEB_REMOTE)",--device "$(DEVICE)")
+RELEASE_DEB_DEFAULT_REMOTE = $(if $(filter 01,$(DEVICE)),$(RPI_01),$(if $(filter 02,$(DEVICE)),$(RPI_02),$(error unknown DEVICE=$(DEVICE); use DEVICE=01 or DEVICE=02, or set RELEASE_DEB_REMOTE=user@host)))
+RELEASE_DEB_REMOTE_ARG = --host "$(if $(RELEASE_DEB_REMOTE),$(RELEASE_DEB_REMOTE),$(RELEASE_DEB_DEFAULT_REMOTE))"
+RELEASE_REPOSITORY ?= cqa02303/hidloom
+RELEASE_PROFILE ?= keyboard-ver1
+RELEASE_PACKAGE_ARGS = --repository "$(RELEASE_REPOSITORY)" --profile "$(RELEASE_PROFILE)"
 
 .PHONY: repository-hygiene source-syntax-hygiene development-residue-hygiene generated-binary-hygiene workspace-debris-hygiene workspace-debris-clean workspace-debris-contract local-environment-hygiene local-environment-contract local-environment-migration-plan local-environment-migration-apply public-community-health generated-artifact-check public-export-check public-repository-create-check public-repository-create-plan public-repository-create-audit public-repository-bootstrap-check public-sync-plan public-sync-branch-check public-repository-policy-plan public-repository-policy-audit public-package-rebuild public-buildroot-configure public-buildroot-image public-release-bundle-check license-evidence buildroot-source-prepare buildroot-legal-info-plan buildroot-compliance-lock buildroot-compliance-bundle buildroot-compliance-verify
 PUBLIC_EXPORT_DIR ?= /tmp/hidloom-public-export
@@ -169,31 +173,31 @@ release-prerelease-publish:
 
 release-download-verify:
 	@if [ -z "$(RELEASE_TAG)" ]; then echo "set RELEASE_TAG=v0.0.<rev>+git<sha>"; exit 2; fi
-	tools/package/verify_github_release_assets.sh --tag "$(RELEASE_TAG)"
+	tools/package/verify_github_release_assets.sh --tag "$(RELEASE_TAG)" $(RELEASE_PACKAGE_ARGS)
 
 release-stable-check:
 	@if [ -z "$(RELEASE_TAG)" ]; then echo "set RELEASE_TAG=v0.0.<rev>+git<sha>"; exit 2; fi
-	tools/package/check_github_release_stable_ready.sh --tag "$(RELEASE_TAG)"
+	tools/package/check_github_release_stable_ready.sh --tag "$(RELEASE_TAG)" $(RELEASE_PACKAGE_ARGS)
 
 release-deb-download:
 	@if [ -z "$(RELEASE_TAG)" ]; then echo "set RELEASE_TAG=v0.0.<rev>+git<sha>"; exit 2; fi
-	tools/package/install_github_release_deb.sh --tag "$(RELEASE_TAG)"
+	tools/package/install_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_PACKAGE_ARGS)
 
 release-deb-dry-run:
 	@if [ -z "$(RELEASE_TAG)" ]; then echo "set RELEASE_TAG=v0.0.<rev>+git<sha>"; exit 2; fi
-	tools/package/install_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_DEB_REMOTE_ARG) --dry-run
+	tools/package/install_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_PACKAGE_ARGS) $(RELEASE_DEB_REMOTE_ARG) --dry-run
 
 release-deb-install:
 	@if [ -z "$(RELEASE_TAG)" ]; then echo "set RELEASE_TAG=v0.0.<rev>+git<sha>"; exit 2; fi
-	tools/package/install_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_DEB_REMOTE_ARG) --install
+	tools/package/install_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_PACKAGE_ARGS) $(RELEASE_DEB_REMOTE_ARG) --install
 
 release-deb-deploy-dry-run:
 	@if [ -z "$(RELEASE_TAG)" ]; then echo "set RELEASE_TAG=v0.0.<rev>+git<sha>"; exit 2; fi
-	tools/package/deploy_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_DEB_REMOTE_ARG) --dry-run
+	tools/package/deploy_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_PACKAGE_ARGS) $(RELEASE_DEB_REMOTE_ARG) --dry-run
 
 release-deb-deploy:
 	@if [ -z "$(RELEASE_TAG)" ]; then echo "set RELEASE_TAG=v0.0.<rev>+git<sha>"; exit 2; fi
-	tools/package/deploy_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_DEB_REMOTE_ARG) --install
+	tools/package/deploy_github_release_deb.sh --tag "$(RELEASE_TAG)" $(RELEASE_PACKAGE_ARGS) $(RELEASE_DEB_REMOTE_ARG) --install
 
 deb-package-dry-run-01:
 	tools/package/deploy_deb_package.sh --device 01 --dry-run --apt

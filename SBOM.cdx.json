@@ -2,12 +2,12 @@
   "$schema": "https://cyclonedx.org/schema/bom-1.7.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
-  "serialNumber": "urn:uuid:a02c0b57-7e5c-5b87-8c59-e7c202b4850d",
+  "serialNumber": "urn:uuid:50b460a4-a9e3-53f9-b30c-dbf9b9063197",
   "version": 1,
   "metadata": {
     "component": {
       "type": "application",
-      "bom-ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40dff749a133e4aeb52a22e78efc420f8f39a748b6",
+      "bom-ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%4016f052966cb91285fe2eed1cc3db1b8d1bf96b3f",
       "name": "HIDloom",
       "version": "0.1.0",
       "licenses": [
@@ -15,11 +15,11 @@
           "expression": "GPL-3.0-or-later"
         }
       ],
-      "purl": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40dff749a133e4aeb52a22e78efc420f8f39a748b6",
+      "purl": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%4016f052966cb91285fe2eed1cc3db1b8d1bf96b3f",
       "properties": [
         {
           "name": "hidloom:source-base-commit",
-          "value": "dff749a133e4aeb52a22e78efc420f8f39a748b6"
+          "value": "16f052966cb91285fe2eed1cc3db1b8d1bf96b3f"
         },
         {
           "name": "hidloom:source-mode",
@@ -27,7 +27,7 @@
         },
         {
           "name": "hidloom:source-snapshot-sha256",
-          "value": "b05d3ed7811020c80c5f8ac9d11eb2dd2c3a3756717ae6539e06b2674564858a"
+          "value": "1ba7c1ed90d6e5a58ab2d1120d25a8a12949262fd5da863c3f974298ff695553"
         },
         {
           "name": "hidloom:device-profiles",
@@ -1337,10 +1337,10 @@
     },
     {
       "type": "application",
-      "bom-ref": "third-party:github-actions:actions/cache:5.0.5",
+      "bom-ref": "third-party:github-actions:actions/cache:6.1.0",
       "group": "github-actions",
       "name": "actions/cache",
-      "version": "5.0.5",
+      "version": "6.1.0",
       "properties": [
         {
           "name": "hidloom:license-review",
@@ -1348,7 +1348,7 @@
         },
         {
           "name": "hidloom:inventory-source",
-          "value": "https://github.com/actions/cache/tree/27d5ce7f107fe9357f9df03efb73ab90386fccae"
+          "value": "https://github.com/actions/cache/tree/55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
         },
         {
           "name": "hidloom:distribution-scope",
@@ -1362,14 +1362,14 @@
           }
         }
       ],
-      "purl": "pkg:github/actions/cache@5.0.5"
+      "purl": "pkg:github/actions/cache@6.1.0"
     },
     {
       "type": "application",
-      "bom-ref": "third-party:github-actions:actions/checkout:6.0.2",
+      "bom-ref": "third-party:github-actions:actions/checkout:7.0.0",
       "group": "github-actions",
       "name": "actions/checkout",
-      "version": "6.0.2",
+      "version": "7.0.0",
       "properties": [
         {
           "name": "hidloom:license-review",
@@ -1377,7 +1377,7 @@
         },
         {
           "name": "hidloom:inventory-source",
-          "value": "https://github.com/actions/checkout/tree/de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          "value": "https://github.com/actions/checkout/tree/9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0"
         },
         {
           "name": "hidloom:distribution-scope",
@@ -1391,7 +1391,7 @@
           }
         }
       ],
-      "purl": "pkg:github/actions/checkout@6.0.2"
+      "purl": "pkg:github/actions/checkout@7.0.0"
     },
     {
       "type": "library",
@@ -1438,7 +1438,7 @@
   ],
   "dependencies": [
     {
-      "ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40dff749a133e4aeb52a22e78efc420f8f39a748b6",
+      "ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%4016f052966cb91285fe2eed1cc3db1b8d1bf96b3f",
       "dependsOn": [
         "third-party:buildroot:busybox:1.38.0",
         "third-party:buildroot:expat:2.8.1",
@@ -1492,8 +1492,8 @@
         "third-party:debian:rustc:distribution-selected",
         "third-party:debian:socat:distribution-selected",
         "third-party:debian:wireless-tools:distribution-selected",
-        "third-party:github-actions:actions/cache:5.0.5",
-        "third-party:github-actions:actions/checkout:6.0.2",
+        "third-party:github-actions:actions/cache:6.1.0",
+        "third-party:github-actions:actions/checkout:7.0.0",
         "third-party:pypi:luma.oled:unpinned",
         "third-party:pypi:rpi_ws281x:unpinned"
       ]
@@ -1707,11 +1707,11 @@
       "dependsOn": []
     },
     {
-      "ref": "third-party:github-actions:actions/cache:5.0.5",
+      "ref": "third-party:github-actions:actions/cache:6.1.0",
       "dependsOn": []
     },
     {
-      "ref": "third-party:github-actions:actions/checkout:6.0.2",
+      "ref": "third-party:github-actions:actions/checkout:7.0.0",
       "dependsOn": []
     },
     {

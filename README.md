@@ -15,6 +15,17 @@ HIDloomは、Linux SBCをprogrammable keyboard applianceとして動かすsoftwa
 - Support: [SUPPORT.md](SUPPORT.md)
 - Community conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
+## インストール方式を選ぶ
+
+公開 Release では、同じ source revision から作成した 2 方式を選べます。
+
+| 方式 | 適した用途 | 配布物 |
+|---|---|---|
+| Raspberry Pi OS + split package | 通常運用、開発、ネットワーク管理 | `hidloom-core` + device profile の `.deb` |
+| Buildroot M6 image | 高速起動する offline keyboard appliance | `hidloom-<version>-buildroot-m6.img.zst` |
+
+選択基準、Release asset、導入手順: [INSTALL.md](INSTALL.md)
+
 ## Keyboard Layout
 
 - [Keyboard Layout Editor - CQA02303v5](https://www.keyboard-layout-editor.com/##@@_y:0.5%3B&=Esc&_c=%23ffffff&a:7%3B&=wheel&_c=%23cccccc&a:4%3B&=F1&=F2&=F3&=F4&_x:0.5%3B&=F5&=F6&=F7&=F8&_x:0.5%3B&=F9&=F10&=F11&=F12%3B&@_y:0.25%3B&=~%0A%60&=!%0A1&=%2F@%0A2&=%23%0A3&=$%0A4&=%25%0A5&=%5E%0A6&=%2F&%0A7&=*%0A8&=(%0A9&=)%0A0&=%2F_%0A-&=+%0A%2F=&_w:2%3B&=BackSpace%3B&@_w:1.5%3B&=Tab&=Q&=W&=E&=R&=T&=Y&=U&=I&=O&=P&=%7B%0A%5B&=%7D%0A%5D&_w:1.5%3B&=%7C%0A%5C%3B&@_w:1.75%3B&=Caps%20Lock&=A&=S&=D&=F&=G&=H&=J&=K&=L&=%2F:%0A%2F%3B&=%22%0A'&_w:2.25%3B&=Enter%3B&@_w:2.25%3B&=Shift&=Z&=X&=C&=V&=B&=N&=M&=%3C%0A,&=%3E%0A.&=%3F%0A%2F%2F&_w:1.75%3B&=Shift&_c=%23bbbbbb&a:7&h:2%3B&=LCD%3B&@_c=%23879ff5&a:4%3B&=Win%0A%0A%0A%0A%0A%0A%0A%0A%0A4,0%0Astick&_x:1.25&c=%23cccccc%3B&=Delete&_x:0.25&w:1.25%3B&=Shift&=Ctrl&_a:7&h:2%3B&=&_a:4&h:2%3B&=Enter&=BS&_w:1.25%3B&=Shift&_x:1.75%3B&=%E2%86%91%3B&@_y:-0.5&x:10.75%3B&=%E2%86%90&_x:1%3B&=%E2%86%92%3B&@_y:-0.5&x:3&w:1.25%3B&=Alt&_c=%23dddddd%3B&=Fn&_x:3%3B&=Fn&_c=%23cccccc&w:1.25%3B&=Win&_x:1.25%3B&=%E2%86%93%3B&@_y:-0.5&x:1%3B&=UP%0A%0A%0A%0A%0A%0A%0A%0A%0A0,0%3B&@=LEFT%0A%0A%0A%0A%0A%0A%0A%0A%0A1,1&_x:1%3B&=RIGHT%0A%0A%0A%0A%0A%0A%0A%0A%0A2,2&_x:0.25%3B&=UP%0A%0A%0A%0A%0A%0A91B%3B&@_x:1%3B&=DOWN%0A%0A%0A%0A%0A%0A%0A%0A%0A3,3&_x:1.25%3B&=DOWN%0A%0A%0A%0A%0A%0A91A)
@@ -102,7 +113,9 @@ sudo hidloom-profile keyboard-ver1 --apply --backup --restart
 引数一覧は `./setup_fresh_rpi.sh --help` で確認できます。引数なしの checkout bootstrap は
 実機 native build と package 管理外 unit install を行う legacy/recovery path です。
 
-詳しい導入手順: [FRESH_INSTALL.md](FRESH_INSTALL.md)
+方式の選択: [INSTALL.md](INSTALL.md)
+
+詳しい Raspberry Pi OS 導入手順: [FRESH_INSTALL.md](FRESH_INSTALL.md)
 
 ## 実機への反映
 
@@ -182,7 +195,8 @@ USB gadget の割り当て:
 | 項目 | ドキュメント |
 |---|---|
 | 詳細ドキュメント目次 | [docs/README.md](docs/README.md) |
-| 導入 | [FRESH_INSTALL.md](FRESH_INSTALL.md) |
+| 導入方式の選択 | [INSTALL.md](INSTALL.md) |
+| Raspberry Pi OSへの導入 | [FRESH_INSTALL.md](FRESH_INSTALL.md) |
 | リリース確認 | [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) |
 | 全体仕様・構成 | [docs/architecture/README.md](docs/architecture/README.md) |
 | 方針・決定事項 | [docs/policy/README.md](docs/policy/README.md) |

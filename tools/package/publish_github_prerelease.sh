@@ -181,7 +181,8 @@ gh release create "$TAG" \
     --notes-file "$NOTES"
 
 if [ "$SKIP_DOWNLOAD_VERIFY" -eq 0 ]; then
-    "$SCRIPT_DIR/verify_github_release_assets.sh" --tag "$TAG"
+    current_repository=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+    "$SCRIPT_DIR/verify_github_release_assets.sh" --tag "$TAG" --repository "$current_repository"
 fi
 
 echo "created GitHub prerelease: $TAG"

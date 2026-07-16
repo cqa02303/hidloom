@@ -2,6 +2,8 @@
 set -eu
 
 TAG=
+REPOSITORY=${HIDLOOM_RELEASE_REPOSITORY:-cqa02303/hidloom}
+PROFILE=${HIDLOOM_RELEASE_PROFILE:-keyboard-ver1}
 NOTES_FILE=
 SKIP_ASSET_VERIFY=0
 
@@ -14,6 +16,9 @@ candidate. This is a read-only gate to run before removing the prerelease flag.
 
 Options:
   --tag TAG              GitHub Release tag to check
+  --repository OWNER/REPO
+                         release repository; default cqa02303/hidloom
+  --profile PROFILE      device profile; default keyboard-ver1
   --notes-file PATH      check this release note text instead of gh release view
   --skip-asset-verify    do not run verify_github_release_assets.sh
   -h, --help             show this help
@@ -24,6 +29,14 @@ while [ "$#" -gt 0 ]; do
     case "$1" in
         --tag)
             TAG=${2:?missing --tag value}
+            shift 2
+            ;;
+        --repository)
+            REPOSITORY=${2:?missing --repository value}
+            shift 2
+            ;;
+        --profile)
+            PROFILE=${2:?missing --profile value}
             shift 2
             ;;
         --notes-file)
@@ -71,7 +84,7 @@ trap cleanup EXIT INT TERM
 if [ -z "$NOTES_FILE" ]; then
     require_cmd gh
     NOTES_FILE="$TMP_DIR/release-note.md"
-    gh release view "$TAG" --json body --jq .body > "$NOTES_FILE"
+    gh release view "$TAG" --repo "$REPOSITORY" --json body --jq .body > "$NOTES_FILE"
 fi
 
 if [ ! -f "$NOTES_FILE" ]; then
@@ -101,11 +114,12 @@ require_line 'failed units: (0|passed|ok)' "missing failed units 0/passed/ok"
 require_line 'rollback: (confirmed|passed|ok)' "missing rollback confirmed/passed/ok"
 
 if [ "$SKIP_ASSET_VERIFY" -eq 0 ]; then
-    "$(dirname "$0")/verify_github_release_assets.sh" --tag "$TAG"
+    "$(dirname "$0")/verify_github_release_assets.sh" --tag "$TAG" --repository "$REPOSITORY" --profile "$PROFILE"
 fi
 
 cat <<EOF
 stable release readiness ok
 tag: $TAG
+repository: $REPOSITORY
 notes: $NOTES_FILE
 EOF

@@ -581,8 +581,8 @@ def main() -> None:
         original_workflow = workflow.read_text(encoding="utf-8")
         workflow.write_text(
             original_workflow.replace(
-                "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2",
-                "actions/checkout@v6",
+                "actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0",
+                "actions/checkout@v7",
                 1,
             ),
             encoding="utf-8",

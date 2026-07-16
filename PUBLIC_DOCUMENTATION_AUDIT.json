@@ -2,7 +2,7 @@
   "schema": "hidloom.public-documentation-audit.v2",
   "ready": true,
   "summary": {
-    "files_scanned": 237,
+    "files_scanned": 238,
     "public_docs": 187,
     "reachable_public_docs": 187,
     "omitted_private_links": 113,
@@ -13,7 +13,7 @@
   "omitted_private_links": [
     {
       "path": "FRESH_INSTALL.md",
-      "line": 184,
+      "line": 187,
       "target_type": "file"
     },
     {
@@ -33,21 +33,6 @@
     },
     {
       "path": "docs/README.md",
-      "line": 11,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 12,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 13,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
       "line": 14,
       "target_type": "file"
     },
@@ -63,17 +48,17 @@
     },
     {
       "path": "docs/README.md",
-      "line": 35,
+      "line": 17,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
-      "line": 36,
+      "line": 18,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
-      "line": 37,
+      "line": 19,
       "target_type": "file"
     },
     {
@@ -83,27 +68,42 @@
     },
     {
       "path": "docs/README.md",
-      "line": 67,
+      "line": 39,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
-      "line": 69,
-      "target_type": "directory"
+      "line": 40,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 41,
+      "target_type": "file"
     },
     {
       "path": "docs/README.md",
       "line": 70,
-      "target_type": "directory"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 71,
-      "target_type": "directory"
+      "target_type": "file"
     },
     {
       "path": "docs/README.md",
       "line": 72,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 73,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 74,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 75,
       "target_type": "directory"
     },
     {
@@ -403,7 +403,7 @@
     },
     {
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 25,
+      "line": 28,
       "target_type": "file"
     },
     {
@@ -592,18 +592,6 @@
     },
     {
       "path": "docs/README.md",
-      "line": 11
-    },
-    {
-      "path": "docs/README.md",
-      "line": 12
-    },
-    {
-      "path": "docs/README.md",
-      "line": 13
-    },
-    {
-      "path": "docs/README.md",
       "line": 14
     },
     {
@@ -616,15 +604,15 @@
     },
     {
       "path": "docs/README.md",
-      "line": 35
+      "line": 17
     },
     {
       "path": "docs/README.md",
-      "line": 36
+      "line": 18
     },
     {
       "path": "docs/README.md",
-      "line": 37
+      "line": 19
     },
     {
       "path": "docs/README.md",
@@ -632,11 +620,15 @@
     },
     {
       "path": "docs/README.md",
-      "line": 67
+      "line": 39
     },
     {
       "path": "docs/README.md",
-      "line": 69
+      "line": 40
+    },
+    {
+      "path": "docs/README.md",
+      "line": 41
     },
     {
       "path": "docs/README.md",
@@ -644,11 +636,19 @@
     },
     {
       "path": "docs/README.md",
-      "line": 71
+      "line": 72
     },
     {
       "path": "docs/README.md",
-      "line": 72
+      "line": 73
+    },
+    {
+      "path": "docs/README.md",
+      "line": 74
+    },
+    {
+      "path": "docs/README.md",
+      "line": 75
     },
     {
       "path": "docs/architecture/system-overview.md",
@@ -788,7 +788,7 @@
     },
     {
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 25
+      "line": 28
     },
     {
       "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",

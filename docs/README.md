@@ -3,11 +3,14 @@
 HIDloom の詳細ドキュメント置き場です。
 トップ README は概要と導入、`docs/` は現在地、仕様、設計、実機確認、調査メモを扱います。
 
+導入方式の選択は [../INSTALL.md](../INSTALL.md) を参照してください。
+
 ## まず見る入口
 
 | 目的 | ファイル |
 |---|---|
 | プロジェクト概要と導入 | [../README.md](../README.md) |
+| Raspberry Pi OS package / Buildroot image の選択 | [../INSTALL.md](../INSTALL.md) |
 | 実機失敗パターンの検出、復旧、回帰確認 | [ops/failure-patterns.md](ops/failure-patterns.md) |
 | release bundle / Debian package の build、deploy、verify、rollback | [ops/release-packaging-runbook.md](ops/release-packaging-runbook.md) |
 | daemon ごとの詳細仕様、実装時に守る条件、移植時 checklist | [daemon/specs/README.md](daemon/specs/README.md) |
