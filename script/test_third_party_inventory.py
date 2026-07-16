@@ -63,16 +63,16 @@ def main() -> None:
         )
         assert any(
             item["name"] == "actions/checkout"
-            and item["version"] == "6.0.2"
-            and item["commit_sha"] == "de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+            and item["version"] == "7.0.0"
+            and item["commit_sha"] == "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0"
             and item["license"] == "MIT"
             and item["distribution_scope"] == "ci-action-reference"
             for item in inventory["components"]
         )
         assert any(
             item["name"] == "actions/cache"
-            and item["version"] == "5.0.5"
-            and item["commit_sha"] == "27d5ce7f107fe9357f9df03efb73ab90386fccae"
+            and item["version"] == "6.1.0"
+            and item["commit_sha"] == "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
             and item["license"] == "MIT"
             and item["distribution_scope"] == "ci-action-reference"
             for item in inventory["components"]

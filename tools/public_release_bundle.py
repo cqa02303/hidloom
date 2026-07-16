@@ -161,6 +161,17 @@ def write_notes(path: Path, manifest: dict[str, Any]) -> None:
     smoke = manifest["hardware_smoke"]
     seconds = smoke.get("usable_keyboard_seconds")
     timing = "not recorded" if seconds is None else f"{seconds:.3f} seconds"
+    core_package = next(
+        item["path"] for item in manifest["assets"] if item["role"] == "raspberry-pi-os-core-package"
+    )
+    profile_package = next(
+        item["path"]
+        for item in manifest["assets"]
+        if item["role"] == "raspberry-pi-os-keyboard-profile-package"
+    )
+    buildroot_image = next(
+        item["path"] for item in manifest["assets"] if item["role"] == "buildroot-m6-zstd-image"
+    )
     path.write_text(
         "\n".join(
             [
@@ -170,6 +181,19 @@ def write_notes(path: Path, manifest: dict[str, Any]) -> None:
                 f"- Buildroot commit: `{manifest['buildroot']['commit']}`",
                 f"- Hardware smoke: `{smoke['status']}` on `{smoke['device']}`",
                 f"- Usable keyboard timing: {timing}",
+                "",
+                "## Choose an Installation Method",
+                "",
+                "- Raspberry Pi OS package: use this for normal development, updates, and network management.",
+                f"  Install `{core_package}` and `{profile_package}` in the same apt transaction.",
+                "- Buildroot M6 image: use this for the fastest offline appliance startup.",
+                f"  Write `{buildroot_image}` to a dedicated microSD after decompressing it.",
+                "- Verify all downloaded assets with `sha256sum -c SHA256SUMS`.",
+                "",
+                "```sh",
+                f"sudo apt-get install -y ./{core_package} ./{profile_package}",
+                "sudo hidloom-profile keyboard-ver1 --apply --backup --restart",
+                "```",
                 "",
                 "## Appliance Boundary",
                 "",
@@ -404,6 +428,11 @@ def verify(directory: Path, require_hardware_pass: bool) -> None:
         raise SystemExit("SHA256SUMS does not cover the complete release directory")
     notes = (directory / "RELEASE_NOTES.md").read_text(encoding="utf-8")
     for phrase in (
+        "Raspberry Pi OS package",
+        "Buildroot M6 image",
+        "same apt transaction",
+        "sha256sum -c SHA256SUMS",
+        "hidloom-profile keyboard-ver1 --apply --backup --restart",
         "offline keyboard appliance",
         "corresponding-source compliance archive",
         "Wi-Fi and httpd are not included",

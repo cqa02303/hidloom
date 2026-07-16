@@ -150,6 +150,17 @@ def main() -> None:
             "buildroot-compliance-source",
             "compliance",
         }
+        notes = (release / "RELEASE_NOTES.md").read_text(encoding="utf-8")
+        for phrase in (
+            "Choose an Installation Method",
+            "Raspberry Pi OS package",
+            "Buildroot M6 image",
+            "same apt transaction",
+            "sha256sum -c SHA256SUMS",
+            f"sudo apt-get install -y ./{core.name} ./{profile.name}",
+            "sudo hidloom-profile keyboard-ver1 --apply --backup --restart",
+        ):
+            assert phrase in notes, phrase
         source_archive = next(release.glob("*-source.tar.zst"))
         archive_files = subprocess.check_output(
             ["tar", "--zstd", "-tf", str(source_archive)], text=True

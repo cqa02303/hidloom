@@ -1,7 +1,7 @@
 # HIDloom Public Privacy Audit
 
 - Ready: `true`
-- Files scanned: 1187
+- Files scanned: 1188
 - Media files: 8
 - Blockers: 0
 

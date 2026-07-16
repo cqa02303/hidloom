@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "dff749a133e4aeb52a22e78efc420f8f39a748b6",
-    "base_tree": "f8a5bbc033369a93671d56a69a102a33d13c9c96",
-    "base_revision_count": 1923,
-    "selected_path_count": 1182,
-    "selected_snapshot_sha256": "b05d3ed7811020c80c5f8ac9d11eb2dd2c3a3756717ae6539e06b2674564858a"
+    "base_commit": "16f052966cb91285fe2eed1cc3db1b8d1bf96b3f",
+    "base_tree": "faf1e1ae7461c50b9edc0e0bb3f04957c4b08d39",
+    "base_revision_count": 1931,
+    "selected_path_count": 1183,
+    "selected_snapshot_sha256": "1ba7c1ed90d6e5a58ab2d1120d25a8a12949262fd5da863c3f974298ff695553"
   },
   "files": [
     {
@@ -72,7 +72,7 @@
       "kind": "file",
       "mode": 420,
       "size": 3284,
-      "sha256": "6836bfde259ea29d7a3e7cf87faa93cac883f719fa953762d6fc33a556d5f4dc"
+      "sha256": "8344536c7b692de0a66898ae176f87207004b457a8ab0469eda7903a28bcc526"
     },
     {
       "path": ".gitignore",
@@ -127,8 +127,8 @@
       "path": "FRESH_INSTALL.md",
       "kind": "file",
       "mode": 420,
-      "size": 8064,
-      "sha256": "e7610c887ab32199729020cbf6f4f28f840b7dabf41a10d898afdb0e62376dd4"
+      "size": 8187,
+      "sha256": "f76e3528de8ff83073af426bef6eebd40fadee890a380a52d563fffe439030bb"
     },
     {
       "path": "GETKEYMAP.md",
@@ -136,6 +136,13 @@
       "mode": 420,
       "size": 2600,
       "sha256": "2416097495922de0bbc94e3945863002b314d9015d9bc1fb4f1d66693db29289"
+    },
+    {
+      "path": "INSTALL.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 3435,
+      "sha256": "5c86f163381b088075782e2b41281e45e8cd97d4865eb487f68ca74021741d83"
     },
     {
       "path": "LICENSE",
@@ -148,8 +155,8 @@
       "path": "Makefile",
       "kind": "file",
       "mode": 420,
-      "size": 12154,
-      "sha256": "a4253617ff0df626e75b099182360c3e6ae8ec71722fe5a71969ab3533138002"
+      "size": 12700,
+      "sha256": "1dfb60183499fba38737c7347dbbe931964f6592a88b65515b65a1051b6bee84"
     },
     {
       "path": "PUBLIC_ASSET_PROVENANCE.json",
@@ -170,77 +177,77 @@
       "kind": "file",
       "mode": 420,
       "size": 18473,
-      "sha256": "acb06e425c942d0d4d2aab487497685452d3f1a38180d10f73e8c426de451f10"
+      "sha256": "685fbe0e5a97394bf1d318940ab4950a86a228ec8155ecfc38ec1cc33e529cb9"
     },
     {
       "path": "PUBLIC_DOCUMENTATION_AUDIT.md",
       "kind": "file",
       "mode": 420,
       "size": 12627,
-      "sha256": "02d7483a450d3f4fe4c7bd6c169cf61a081951285398d0ca3d73f19c20b2cfd3"
+      "sha256": "9f89dac9e556ce85d04ca96888efb9311666d66c09919ca662c6e553b264ad0f"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.json",
       "kind": "file",
       "mode": 420,
-      "size": 383306,
-      "sha256": "87edf5e4a1eee49c444eee20218bbd2674aef2cf8eb5c2f7b8177377c3a52190"
+      "size": 383694,
+      "sha256": "27e178fbdd4666419e1ff96ed450fdc004bbc191c63763f2c95723fbdde27e87"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
-      "size": 158041,
-      "sha256": "4601348d56bf213f0b2bdad12c9297b4d52c3c66a77cb8b4922bf44144e9669c"
+      "size": 158203,
+      "sha256": "f787082bd5a849a518fee26698e8ee5860fd16047da1bedc3f5a6f80270fd479"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
       "kind": "file",
       "mode": 420,
       "size": 1201,
-      "sha256": "d363280f7c46539dcb6efb6a9f3ebb7721b55f017880677e6c01fc634ec73f8e"
+      "sha256": "58ce1c20c091c8159b3c70746c1ab393dd885409622413bf75aac7ec2a6a9682"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.md",
       "kind": "file",
       "mode": 420,
       "size": 496,
-      "sha256": "5f6b500a41c6b41b943499a458d40224ce8009f45a6fa70e5b14795a9f96b12e"
+      "sha256": "df5133d043b185ea8af8a588abf66410ca0d19406f9d3c701aa9541b65341c09"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.json",
       "kind": "file",
       "mode": 420,
       "size": 20892,
-      "sha256": "a57c876f7ee8a7e431884b0eb50a8f6fddc09986d509d0cc50d5067d7ac91d4f"
+      "sha256": "d893f44bb6876bef860237029978134e1df4bf301dc5a7b73e1b9e7761d2c3b2"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.md",
       "kind": "file",
       "mode": 420,
       "size": 266,
-      "sha256": "14d60c99a0547c6f9cf6797546643e54181c34832fd019f9996a159484ba1ffe"
+      "sha256": "029ba19636f317f775b210b177d96b729ec53a318bac45775a787a31f9f52958"
     },
     {
       "path": "README.md",
       "kind": "file",
       "mode": 420,
-      "size": 12139,
-      "sha256": "8b01e7e477f92aa5c2f6e2b14e9bc6f51d03b30b15b9f010e568f0da445a4278"
+      "size": 12778,
+      "sha256": "4875647d852315e049388e688757759eb78fe33cd0b318952a2490926b6c5889"
     },
     {
       "path": "RELEASE_CHECKLIST.md",
       "kind": "file",
       "mode": 420,
-      "size": 9645,
-      "sha256": "3cf254052bc09ba4d892679b6c15d6aab22ac55c8201f95fec3fb645347aa1e4"
+      "size": 9862,
+      "sha256": "9670213b68eb3b7d68884ed9cdf45e5a845e8ed0347a4327acae3129a525947d"
     },
     {
       "path": "SBOM.cdx.json",
       "kind": "file",
       "mode": 420,
       "size": 46590,
-      "sha256": "6ee916db647de222abe2e0f2578f8f218d534319c23ac8bf0b973cbe1b225e65"
+      "sha256": "517964af6c92226bad390b01d47354af8fc17afd75806d918470eae6b77d6309"
     },
     {
       "path": "SECURITY.md",
@@ -268,7 +275,7 @@
       "kind": "file",
       "mode": 420,
       "size": 6689,
-      "sha256": "12b0cb9b2a64c17826e9a594cd69cd3a58aa646e04764766c347738cb9452105"
+      "sha256": "019bc76ff6eb9ff113375ff420079f09e1432289c5a416d2c818fdf1df57410d"
     },
     {
       "path": "USB_GADGET_SETUP.md",
@@ -1143,7 +1150,7 @@
       "kind": "file",
       "mode": 420,
       "size": 830,
-      "sha256": "f8009f37ed57a292f816e6770f97cfb1014dd8f8bee63f687714336507373aea"
+      "sha256": "f4fccd356b1040eb4d1230ac57de7ba973c90debe66bec49e3ce168edcc667b4"
     },
     {
       "path": "config/profiles/README.md",
@@ -1247,8 +1254,8 @@
       "path": "config/public-export.json",
       "kind": "file",
       "mode": 420,
-      "size": 11415,
-      "sha256": "2b8d03128820d7479878ce78e8557e8abb5b230f30b4127c5c912321aa7a829b"
+      "size": 11455,
+      "sha256": "c67b15c0835168291ff79a6eb419c37826c45d9444461df84c8b86eca0f13d02"
     },
     {
       "path": "config/public-repository-policy.json",
@@ -2934,8 +2941,8 @@
       "path": "docs/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 4019,
-      "sha256": "8b859a0c0c204228e612890447ba54c6d6e88d7c266ade1252199448920ad13d"
+      "size": 4196,
+      "sha256": "3bb847f7ebda97dc1e8b2f05be824f9e34417f2d5b60c217114ee4e444d3fe7c"
     },
     {
       "path": "docs/architecture/README.md",
@@ -4159,8 +4166,8 @@
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
       "kind": "file",
       "mode": 420,
-      "size": 37728,
-      "sha256": "a219fe291f47c0c92f69c1db337d855fb120fdae968f819fef8c54169ca76e3c"
+      "size": 37867,
+      "sha256": "530c4ef741ff899520fe220bab5cac1c4e6f3f304f1cfbfb1f2c2b923c546036"
     },
     {
       "path": "docs/ops/buildroot-m6-legal-summary.json",
@@ -4180,8 +4187,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 92357,
-      "sha256": "6c4cb294f9384d1a34e7aaa2fbd3187e96fd0f7dd5f6af21e8a8bda9f1b14365"
+      "size": 96505,
+      "sha256": "c3be6f5c237fc7fac443c45e7ce1a24a4619b4c80a52ad0aa09124943415e9a2"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -4285,8 +4292,8 @@
       "path": "docs/ops/release-packaging-runbook.md",
       "kind": "file",
       "mode": 420,
-      "size": 26550,
-      "sha256": "ff3d6b4aeca1e50360f659123d16b4ae2953988814059ba4c70e5d7fc1d4c891"
+      "size": 27206,
+      "sha256": "e661206e9112fde45cfb411fe430097d66d35bc34ec5893f07a519cb772268fd"
     },
     {
       "path": "docs/ops/repository-hygiene-policy.md",
@@ -4314,7 +4321,7 @@
       "kind": "file",
       "mode": 420,
       "size": 20619,
-      "sha256": "4a22612d4ec92cfc72ac58471b5ce1757d8a3d280af72e8b593a190e24adcc5a"
+      "sha256": "fc6d44db44bf0725b5cb908ab1e474ae3664ed9f7dd2e08b4d63d278abd51951"
     },
     {
       "path": "docs/ops/usb-gadget-fast-path-policy.md",
@@ -5146,8 +5153,8 @@
       "path": "script/test_fresh_install_docs.py",
       "kind": "file",
       "mode": 420,
-      "size": 8441,
-      "sha256": "9ca15804ea3374c8a98e22a19a49e6b99a818e2d5612ad139f256708fad50cc3"
+      "size": 9042,
+      "sha256": "ef0556fd8bd4ddbe5d294b8cc0d5bf1b990cb8807b6c316a24e6e55ed5ab46be"
     },
     {
       "path": "script/test_generated_binary_hygiene.py",
@@ -5195,8 +5202,8 @@
       "path": "script/test_hidloom_identity.py",
       "kind": "file",
       "mode": 493,
-      "size": 1961,
-      "sha256": "e64a456afb3a41699c1fe1bca0bcec1a54a3f6d7116031e70b9d4bf02c26e042"
+      "size": 1979,
+      "sha256": "0f49f939b44f015e24e8357733484f7ab05174478f4a0aab0a7faa694d964fde"
     },
     {
       "path": "script/test_hidloom_name_audit.py",
@@ -5874,8 +5881,8 @@
       "path": "script/test_logicd_core_rs_tool.py",
       "kind": "file",
       "mode": 420,
-      "size": 52434,
-      "sha256": "315eddb3e705c2410bf576bae1e82afa3a2b89606a8470ab90e299a196ccab1e"
+      "size": 56171,
+      "sha256": "4873e32665cd373034c51778aa8ac02827027d054848ead67d80f959048ed261"
     },
     {
       "path": "script/test_logicd_ctrl_spid.py",
@@ -6469,8 +6476,8 @@
       "path": "script/test_public_export.py",
       "kind": "file",
       "mode": 493,
-      "size": 34615,
-      "sha256": "fcfc1164565a04b4ede3b4cd904000bbcc241b707da9c3a31b5b7ad0d6732fd0"
+      "size": 34668,
+      "sha256": "3fa23546fb928c0d4fe177a292ac108d68a49486daca360b8a460db4fbe82a55"
     },
     {
       "path": "script/test_public_export_bundle.py",
@@ -6497,15 +6504,15 @@
       "path": "script/test_public_release_bundle.py",
       "kind": "file",
       "mode": 493,
-      "size": 9799,
-      "sha256": "61a39f3b2444c7c1c68c706f616ba37e3f7ceb2c983bd85b13c248525292964a"
+      "size": 10293,
+      "sha256": "8035c99a1a00817244d06c5ca5fc0db2f47ee4057407db745f7ddd6c39b58674"
     },
     {
       "path": "script/test_public_release_readiness.py",
       "kind": "file",
       "mode": 420,
       "size": 27212,
-      "sha256": "8b2c90bb14ebc724a7fd964848edcc3888c43de0b34ece2edd9d27779ad9884f"
+      "sha256": "b7e047685bd9d582cf40117535690cedf5fb4b787807799973b8145807910ca8"
     },
     {
       "path": "script/test_public_repository_bootstrap.py",
@@ -6526,7 +6533,7 @@
       "kind": "file",
       "mode": 420,
       "size": 13152,
-      "sha256": "032ec2b10b62348b7e8d61d8a45de680a427c11e11e01b9a6addaf4bb6ab451a"
+      "sha256": "e8840ce17e05179b0314307336ea84e15790587130ec5e4a5a7335d11a31d55d"
     },
     {
       "path": "script/test_public_source_archive.py",
@@ -6588,8 +6595,8 @@
       "path": "script/test_release_bundle_tools.py",
       "kind": "file",
       "mode": 420,
-      "size": 28899,
-      "sha256": "3903d7d7dddc1a57481852317e7ce2a8992dc9526da50b9dcc8a063667f562ec"
+      "size": 34347,
+      "sha256": "c7f4280b736b465e6801be0a7eb0be49be97ceeaf73b937cd27ad5a64c7ee8bf"
     },
     {
       "path": "script/test_remote_boot_baseline_collect_tool.py",
@@ -6806,7 +6813,7 @@
       "kind": "file",
       "mode": 420,
       "size": 3233,
-      "sha256": "6dda45543cf3473b095fc17bb5b0d8fdc67a916af9dc23f9579d0a1e033511ef"
+      "sha256": "3e700067cb2eb5826ad4d55ec40073ad4faa0b210789631c32a12edd2bf48e6c"
     },
     {
       "path": "script/test_tools_readme.py",
@@ -7617,8 +7624,8 @@
       "path": "tools/hidloom_logicd_core/src/main.rs",
       "kind": "file",
       "mode": 420,
-      "size": 84751,
-      "sha256": "390b9d2d5b5267b11363db6a5b6220f66279c46c8e0bf2776dc3a49906e09bac"
+      "size": 87854,
+      "sha256": "a27819d903f40010897ca8085867ea242e9db11cc08d3a5e09a222da11f82930"
     },
     {
       "path": "tools/hidloom_name_audit.py",
@@ -7960,8 +7967,8 @@
       "path": "tools/package/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 20820,
-      "sha256": "0637fbfa3e9d7e7da6531585a12c6763cc9ec9e8395074dce81707526a5f6dfb"
+      "size": 21526,
+      "sha256": "9a7ed5fb7e0a04ec8acf364ab03fb04ba68266ffe0ce6d0deb3164c4c5299b34"
     },
     {
       "path": "tools/package/apply_release_bundle.sh",
@@ -7995,8 +8002,8 @@
       "path": "tools/package/check_github_release_stable_ready.sh",
       "kind": "file",
       "mode": 493,
-      "size": 2874,
-      "sha256": "588aeebd88867b2b72849522bfe1053c4a978430f14d7acd643d971d8213a40d"
+      "size": 3452,
+      "sha256": "67e9c05e2284c925da4334a0d8fd2680b90484b1722240b9ae489a203cd4e1d0"
     },
     {
       "path": "tools/package/deploy_deb_package.sh",
@@ -8023,8 +8030,8 @@
       "path": "tools/package/deploy_github_release_deb.sh",
       "kind": "file",
       "mode": 493,
-      "size": 3289,
-      "sha256": "a7ee736ef20d0fc2a1cc453a7179838b7d4ef041dd9cf9bc957292e1caf98485"
+      "size": 3942,
+      "sha256": "c90efe92c459ce36820110912bfc6f7e0218846e060329bd192fadc40d7c5ad8"
     },
     {
       "path": "tools/package/deploy_release_bundle.sh",
@@ -8044,15 +8051,15 @@
       "path": "tools/package/install_github_release_deb.sh",
       "kind": "file",
       "mode": 493,
-      "size": 5183,
-      "sha256": "a1e1575548c90392addb4d2db6b8686d25b4845ef80d7582202b780b48aa8b13"
+      "size": 11811,
+      "sha256": "eb82066fcfcd56a8aa2a9af30d6ef670461928259d1fab2312067ed6a7083196"
     },
     {
       "path": "tools/package/publish_github_prerelease.sh",
       "kind": "file",
       "mode": 493,
-      "size": 4615,
-      "sha256": "42af0a31ff52bdf540e101d92ba492ba2046ca3277a43b91091feda89d57dd57"
+      "size": 4730,
+      "sha256": "23994cf6db90399c85f599e3b725265e20b823f737ce256b2f1b9606e2060dec"
     },
     {
       "path": "tools/package/release_candidate_check.sh",
@@ -8079,8 +8086,8 @@
       "path": "tools/package/verify_github_release_assets.sh",
       "kind": "file",
       "mode": 493,
-      "size": 2838,
-      "sha256": "e4e21f5c73169d43e45f8d6d99ab414e0b3d672bd89b023d709488ec885298a3"
+      "size": 968,
+      "sha256": "a7a467b1b54a1e51f35f959ba164657e054f61c02700a69d43ec461f901cffac"
     },
     {
       "path": "tools/perf_baseline.py",
@@ -8163,15 +8170,15 @@
       "path": "tools/public_release_bundle.py",
       "kind": "file",
       "mode": 493,
-      "size": 19184,
-      "sha256": "17cf5cfcd738a9c6755df6eb020d12977cf62e9b468003e3328daf999a672aae"
+      "size": 20616,
+      "sha256": "44712fe5d980cd6942b2ffa71c61391d86af6e0ea629c22a8bd9f79cfa0b8b94"
     },
     {
       "path": "tools/public_release_readiness.py",
       "kind": "file",
       "mode": 420,
-      "size": 19546,
-      "sha256": "7a1d56d60e050181cf569088dcc77ce33c3203a2cbf95f3898170bff4057c06b"
+      "size": 19568,
+      "sha256": "07caf6a5584d23885401f215a773622749ece5a8ade96c40ca216e9b233c539e"
     },
     {
       "path": "tools/public_repository_bootstrap.py",

@@ -399,6 +399,7 @@ def main() -> None:
         assert "exported" in result.stdout
         assert (destination / ".env.example").exists()
         assert (destination / "README.md").exists()
+        assert (destination / "INSTALL.md").exists()
         assert (destination / "AUTHORS.md").exists()
         assert (destination / "THIRD_PARTY_NOTICES.md").exists()
         assert (destination / "PUBLIC_EXPORT_MANIFEST.json").exists()

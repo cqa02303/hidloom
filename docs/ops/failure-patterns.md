@@ -147,7 +147,7 @@
 - likely cause: Marketplace例をそのまま貼る、Dependabot候補のworkflowだけを更新する、またはprivate workflowをpublic CIと別policyで管理する。
 - recovery: 公式release tagのcommitとlicenseを確認し、全workflow参照とaction lockを同時更新する。公開CIで使うactionはthird-party inventoryとSBOMも再生成する。
 - regression check: private treeとstandalone public cloneで`script/test_github_workflow_security.py`、`script/test_third_party_inventory.py`、`script/test_public_release_readiness.py`を実行し、mutable action fixtureがreadinessで拒否されることを確認する。
-- evidence: 2026-07-14、4 workflows / 5 jobs / 8 action usesをUbuntu 24.04、timeout付き、3 reviewed action SHAsへ固定し、公開SBOMへ2 CI action dependenciesを追加した。
+- evidence: 2026-07-14、4 workflows / 5 jobs / 8 action usesをUbuntu 24.04、timeout付き、3 reviewed action SHAsへ固定し、公開SBOMへ2 CI action dependenciesを追加した。2026-07-15、private Dependabot PR #50 / #51がworkflowだけを`actions/checkout` 7.0.0 / `actions/cache` 6.1.0へ更新して同じgateで停止したため、公式tag SHA確認後にworkflow、lock、inventory、SBOM contract、policy fixtureをcommit `84173f90283b`で単一更新した。private run `29457857985`、`29457857977`、`29457857993`はsuccessし、重複PRはcloseされた。
 
 ## GitHub artifact upload drops public dotfiles and executable modes
 
@@ -598,3 +598,21 @@
 - recovery: required contextを実check run名`validate`へ修正してpolicyを再適用する。status checkを無効化したりadmin bypassでmergeしたりしない。
 - regression check: `script/test_public_repository_policy.py`で期待contextを`validate`へ固定し、`script/test_public_ci_workflow.py`で同名job IDがworkflowに存在することを検査する。
 - evidence: 2026-07-15、PR #8のhead `0372d1570a1e0c2032862876eaa9feb96fd854e4`には`validate` successが2件あったが、適用済みpolicyは`Public CI / validate`を要求してPRを`BLOCKED`にした。
+
+## Nonblocking logicd-core control response is truncated
+
+- symptom: GitHub Actionsの`Public CI`が`Full regression suite`で停止し、`script/test_logicd_core_rs_tool.py`のcontrol socketがJSON途中までを受信した後、改行を待ってtimeoutする。同じruntime sourceでもprocess schedulingによりpassする場合がある。
+- likely cause: accepted control streamをnonblockingにしたまま`writeln!`で大きなstatus JSONを一度だけ書き、partial writeまたは`WouldBlock`を無視していた。clientが同時に読み進めない環境では応答後半が永久に失われる。
+- detect: control timeoutへ受信済みbyteを含め、hexを復号してJSON prefixがあり末尾改行がないことを確認する。process exitやRust panicがなく、受信長が完全なstatus responseより短ければtimeout延長ではなくserver write pathを疑う。
+- recovery: responseをclient別queueへ積み、nonblocking writeのpartial byte数だけqueueを進める。`WouldBlock`では保持して次のpollで再送し、read half-close後もpending responseをflushしてからclientを除去する。mutation commandを無条件retryしない。
+- regression check: Rust unit testで1245-byte partial writeの直後に`WouldBlock`を返し、次回flushで4097 bytesが完全一致することを確認する。Python integrationではstatus request 256件を読み始めずに溜め、全responseが改行付きで復号できることを確認してからcanonical validationとGitHub Actionsを通す。
+- evidence: 2026-07-15、private run `29412512202`、`29414487191`、`29415647440`、`29418520277`が2秒timeoutで失敗した。test deadlineを10秒へ延長したrun `29450659981`も失敗したが、診断には完全なstatusより短い1245 bytesの有効JSON prefixが残り、末尾改行がなかったためserver partial writeを特定した。exact pre-fix binaryは256-response backpressure回帰でtimeoutし、queue実装は同回帰25回、Rust 20 tests、canonical 218 entrypointsをpassした。
+
+## Public split package release is rejected as multiple deb assets
+
+- symptom: public Releaseに`hidloom-core`とdevice profileの2個の`.deb`が正しく存在しても、download helperが`expected exactly one .deb asset`で停止し、fresh Raspberry Pi OSへ標準package経路で導入できない。
+- likely cause: legacy single package用の「`.deb` 1個 + `.deb.sha256` 1個」契約を、split packageとBuildroot imageをまとめるpublic Releaseでも使い続けている。
+- detect: Release asset一覧に`hidloom-core_*_arm64.deb`、`hidloom-profile-<profile>_*_arm64.deb`、`SHA256SUMS`がある状態で`tools/package/install_github_release_deb.sh --tag <tag>`を実行し、asset数だけで拒否されるか確認する。
+- recovery: profileを明示してcore/profileだけを選択し、`SHA256SUMS`、package名、arm64 architecture、同一version、profileのexact core dependencyを検証する。remoteでは2個を同じapt/dpkg transactionへ渡し、install後に`hidloom-profile <profile> --apply --backup --restart`を実行する。legacy releaseだけを単一package fallbackへ残す。
+- regression check: `script/test_release_bundle_tools.py`でfake GitHub Releaseと実Debian fixtureを作り、2 assetのdownload/checksum/metadata、同一apt transaction、profile適用を確認する。`script/test_public_release_bundle.py`でRelease notesがRaspberry Pi OS packageとBuildroot M6 imageの両方を案内することも固定する。
+- evidence: 2026-07-16、`keyboard-ver1`のcore/profile fixtureでdownload-onlyとremote install commandをpassした。GitHub Release、Raspberry Pi、Buildroot runtimeは変更していない。

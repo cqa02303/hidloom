@@ -2,7 +2,9 @@
 """Regression checks for cross-build host release bundle tooling."""
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -28,10 +30,13 @@ ROLLBACK = PACKAGE_DIR / "rollback_release_bundle.sh"
 DEPLOY_ROLLBACK = PACKAGE_DIR / "deploy_release_rollback.sh"
 
 
-def run_command(command: list[str], *, cwd: Path = ROOT) -> subprocess.CompletedProcess[str]:
+def run_command(
+    command: list[str], *, cwd: Path = ROOT, env: dict[str, str] | None = None
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         command,
         cwd=cwd,
+        env=env,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -43,6 +48,29 @@ def write_executable(path: Path, magic: bytes = b"\x7fELFtest\n") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(magic)
     path.chmod(0o755)
+
+
+def make_deb(path: Path, package: str, version: str, *, depends: str | None = None) -> None:
+    root = path.parent / f"root-{package}"
+    control = root / "DEBIAN" / "control"
+    payload = root / "usr" / "share" / package / "fixture.txt"
+    control.parent.mkdir(parents=True)
+    payload.parent.mkdir(parents=True)
+    fields = [
+        f"Package: {package}",
+        f"Version: {version}",
+        "Section: utils",
+        "Priority: optional",
+        "Architecture: arm64",
+        "Maintainer: HIDloom contributors",
+        "Description: HIDloom release helper fixture",
+    ]
+    if depends:
+        fields.insert(5, f"Depends: {depends}")
+    control.write_text("\n".join(fields) + "\n", encoding="utf-8")
+    payload.write_text("fixture\n", encoding="utf-8")
+    built = run_command(["dpkg-deb", "--build", str(root), str(path)])
+    assert built.returncode == 0, built.stdout + built.stderr
 
 
 def main() -> None:
@@ -128,10 +156,11 @@ def main() -> None:
     assert "tools/package/publish_github_prerelease.sh" in make_dry.stdout
     assert "tools/package/publish_github_prerelease.sh --execute" in make_dry.stdout
     assert "tools/package/verify_github_release_assets.sh --tag" in make_dry.stdout
+    assert '--repository "cqa02303/hidloom" --profile "keyboard-ver1"' in make_dry.stdout
     assert "tools/package/check_github_release_stable_ready.sh --tag" in make_dry.stdout
     assert "tools/package/install_github_release_deb.sh --tag" in make_dry.stdout
-    assert '--device "02" --dry-run' in make_dry.stdout
-    assert '--device "02" --install' in make_dry.stdout
+    assert '--host "pi@<keyboard-ip>" --dry-run' in make_dry.stdout
+    assert '--host "pi@<keyboard-ip>" --install' in make_dry.stdout
     assert "tools/package/deploy_github_release_deb.sh --tag" in make_dry.stdout
     assert "tools/package/deploy_deb_package.sh --device 02 --dry-run --apt" in make_dry.stdout
     assert "tools/package/deploy_deb_package.sh --device 01 --dry-run --apt" in make_dry.stdout
@@ -317,28 +346,33 @@ def main() -> None:
     assert "publish requires a clean git worktree" in publish_text
 
     verify_github_text = VERIFY_GITHUB_RELEASE_ASSETS.read_text(encoding="utf-8")
-    assert "Download a GitHub Release .deb and .deb.sha256" in verify_github_text
-    assert "gh release download" in verify_github_text
-    assert "sha256 file is not portable" in verify_github_text
-    assert "sha256sum -c" in verify_github_text
+    assert "Raspberry Pi OS split package assets" in verify_github_text
+    assert "install_github_release_deb.sh" in verify_github_text
+    assert "--repository OWNER/REPO" in verify_github_text
 
     stable_check_text = CHECK_GITHUB_RELEASE_STABLE_READY.read_text(encoding="utf-8")
     assert "Read a GitHub Release note" in stable_check_text
     assert "prerelease flag" in stable_check_text
+    assert "--repository OWNER/REPO" in stable_check_text
+    assert '--repository "$REPOSITORY" --profile "$PROFILE"' in stable_check_text
     assert "not tested|skipped|known risk|prerelease candidate|No route to host" in stable_check_text
     assert "<keyboard-host> install" in stable_check_text
     assert "failed units" in stable_check_text
     assert "verify_github_release_assets.sh" in stable_check_text
 
     install_release_text = INSTALL_GITHUB_RELEASE_DEB.read_text(encoding="utf-8")
-    assert "Download a GitHub Release .deb" in install_release_text
+    assert "Download the HIDloom Raspberry Pi OS package set" in install_release_text
     assert "Without --dry-run or --install" in install_release_text
     assert "gh release download" in install_release_text
+    assert "SHA256SUMS" in install_release_text
     assert "sha256 file is not portable" in install_release_text
+    assert "hidloom-core (= $CORE_VERSION)" in install_release_text
+    assert "core/profile package version mismatch" in install_release_text
     assert "sudo dpkg --dry-run -i" in install_release_text
     assert "sudo dpkg -i" in install_release_text
     assert "sudo apt-get -s install" in install_release_text
     assert "sudo apt-get install -y" in install_release_text
+    assert "sudo hidloom-profile '$PROFILE' --apply --backup --restart" in install_release_text
     assert "--apt" in install_release_text
     assert "remote install requires --device or --host" in install_release_text
 
@@ -348,7 +382,7 @@ def main() -> None:
     assert "--apt" in deploy_deb_text
 
     deploy_release_text = DEPLOY_GITHUB_RELEASE_DEB.read_text(encoding="utf-8")
-    assert "Download and verify a GitHub Release .deb" in deploy_release_text
+    assert "Download and verify a GitHub Release split package set" in deploy_release_text
     assert "requires exactly one of --dry-run or --install" in deploy_release_text
     assert "install_github_release_deb.sh" in deploy_release_text
     assert "--dry-run --apt" in deploy_release_text
@@ -358,6 +392,115 @@ def main() -> None:
     assert "--no-smoke" in deploy_release_text
     assert "release deb deploy dry-run complete" in deploy_release_text
     assert "release deb deploy complete" in deploy_release_text
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+        assets = tmp / "assets"
+        fake_bin = tmp / "bin"
+        assets.mkdir()
+        fake_bin.mkdir()
+        version = "0.1.0+gitfixture"
+        core_name = f"hidloom-core_{version}_arm64.deb"
+        profile_name = f"hidloom-profile-keyboard-ver1_{version}_arm64.deb"
+        make_deb(assets / core_name, "hidloom-core", version)
+        make_deb(
+            assets / profile_name,
+            "hidloom-profile-keyboard-ver1",
+            version,
+            depends=f"hidloom-core (= {version})",
+        )
+        checksums = "".join(
+            f"{hashlib.sha256((assets / name).read_bytes()).hexdigest()}  {name}\n"
+            for name in (core_name, profile_name)
+        )
+        (assets / "SHA256SUMS").write_text(checksums, encoding="utf-8")
+
+        fake_gh = fake_bin / "gh"
+        fake_gh.write_text(
+            """#!/usr/bin/env python3
+import os
+from pathlib import Path
+import shutil
+import sys
+
+arguments = sys.argv[1:]
+assets = Path(os.environ["FAKE_RELEASE_ASSETS"])
+if arguments[:2] == ["release", "view"]:
+    for path in sorted(assets.iterdir()):
+        print(path.name)
+elif arguments[:2] == ["release", "download"]:
+    pattern = arguments[arguments.index("--pattern") + 1]
+    destination = Path(arguments[arguments.index("--dir") + 1])
+    shutil.copy2(assets / pattern, destination / pattern)
+else:
+    raise SystemExit(f"unexpected gh command: {arguments}")
+""",
+            encoding="utf-8",
+        )
+        fake_gh.chmod(0o755)
+        for command_name, log_name in (("scp", "FAKE_SCP_LOG"), ("ssh", "FAKE_SSH_LOG")):
+            command = fake_bin / command_name
+            command.write_text(
+                f"#!/bin/sh\nprintf '%s\\n' \"$@\" > \"${{{log_name}}}\"\n",
+                encoding="utf-8",
+            )
+            command.chmod(0o755)
+
+        env = os.environ.copy()
+        env["PATH"] = f"{fake_bin}:{env['PATH']}"
+        env["FAKE_RELEASE_ASSETS"] = str(assets)
+        env["FAKE_SCP_LOG"] = str(tmp / "scp.log")
+        env["FAKE_SSH_LOG"] = str(tmp / "ssh.log")
+
+        download = tmp / "download"
+        verified = run_command(
+            [
+                str(INSTALL_GITHUB_RELEASE_DEB),
+                "--repository",
+                "cqa02303/hidloom",
+                "--tag",
+                "v0.1.0",
+                "--profile",
+                "keyboard-ver1",
+                "--dir",
+                str(download),
+            ],
+            env=env,
+        )
+        assert verified.returncode == 0, verified.stdout + verified.stderr
+        assert "mode: split" in verified.stdout
+        assert f"{core_name}: OK" in verified.stdout
+        assert f"{profile_name}: OK" in verified.stdout
+        assert (download / core_name).is_file()
+        assert (download / profile_name).is_file()
+
+        remote_download = tmp / "remote-download"
+        installed = run_command(
+            [
+                str(INSTALL_GITHUB_RELEASE_DEB),
+                "--repository",
+                "cqa02303/hidloom",
+                "--tag",
+                "v0.1.0",
+                "--profile",
+                "keyboard-ver1",
+                "--dir",
+                str(remote_download),
+                "--host",
+                "pi@example.invalid",
+                "--install",
+                "--apt",
+            ],
+            env=env,
+        )
+        assert installed.returncode == 0, installed.stdout + installed.stderr
+        scp_log = (tmp / "scp.log").read_text(encoding="utf-8")
+        ssh_log = (tmp / "ssh.log").read_text(encoding="utf-8")
+        assert core_name in scp_log
+        assert profile_name in scp_log
+        assert "pi@example.invalid:/tmp/" in scp_log
+        assert f"sudo apt-get install -y '/tmp/{core_name}' '/tmp/{profile_name}'" in ssh_log
+        assert "sudo hidloom-profile 'keyboard-ver1' --apply --backup --restart" in ssh_log
 
     switch_text = SWITCH_DEB_UNITS.read_text(encoding="utf-8")
     assert "will-backup-remove" in switch_text

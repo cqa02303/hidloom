@@ -3,7 +3,7 @@ use serde_json::{Value, json};
 use std::collections::{HashMap, HashSet};
 use std::env;
 use std::fs::{self, OpenOptions};
-use std::io::{BufRead, BufReader, ErrorKind, Read, Write};
+use std::io::{self, BufRead, BufReader, ErrorKind, Read, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::{UnixDatagram, UnixListener, UnixStream};
 use std::path::{Path, PathBuf};
@@ -32,6 +32,24 @@ struct Config {
     preview_log_path: Option<PathBuf>,
     idle_poll_interval: Duration,
     exit_after_packets: Option<u64>,
+}
+
+struct StreamClient {
+    stream: UnixStream,
+    input: Vec<u8>,
+    output: Vec<u8>,
+    read_closed: bool,
+}
+
+impl StreamClient {
+    fn new(stream: UnixStream) -> Self {
+        Self {
+            stream,
+            input: Vec::new(),
+            output: Vec::new(),
+            read_closed: false,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -1527,12 +1545,32 @@ fn handle_ctrl_line(
     }
 }
 
-fn accept_pending(listener: &UnixListener, clients: &mut Vec<(UnixStream, Vec<u8>)>, label: &str) {
+fn flush_pending<W: Write>(writer: &mut W, pending: &mut Vec<u8>) -> io::Result<bool> {
+    while !pending.is_empty() {
+        match writer.write(pending) {
+            Ok(0) => {
+                return Err(io::Error::new(
+                    ErrorKind::WriteZero,
+                    "control response write returned zero",
+                ));
+            }
+            Ok(written) => {
+                pending.drain(..written);
+            }
+            Err(err) if err.kind() == ErrorKind::Interrupted => continue,
+            Err(err) if err.kind() == ErrorKind::WouldBlock => return Ok(false),
+            Err(err) => return Err(err),
+        }
+    }
+    Ok(true)
+}
+
+fn accept_pending(listener: &UnixListener, clients: &mut Vec<StreamClient>, label: &str) {
     loop {
         match listener.accept() {
             Ok((stream, _addr)) => {
                 let _ = stream.set_nonblocking(true);
-                clients.push((stream, Vec::new()));
+                clients.push(StreamClient::new(stream));
             }
             Err(err) if err.kind() == ErrorKind::WouldBlock => break,
             Err(err) => {
@@ -1571,8 +1609,8 @@ fn serve(mut config: Config) -> Result<(), String> {
     write_status(&core, &config, false, "");
 
     let mut processed = 0u64;
-    let mut matrix_clients: Vec<(UnixStream, Vec<u8>)> = Vec::new();
-    let mut ctrl_clients: Vec<(UnixStream, Vec<u8>)> = Vec::new();
+    let mut matrix_clients: Vec<StreamClient> = Vec::new();
+    let mut ctrl_clients: Vec<StreamClient> = Vec::new();
     let mut should_exit = false;
     while !should_exit {
         accept_pending(&matrix_listener, &mut matrix_clients, "matrix");
@@ -1583,15 +1621,15 @@ fn serve(mut config: Config) -> Result<(), String> {
             let mut remove = false;
             let mut buf = [0u8; 256];
             loop {
-                match matrix_clients[index].0.read(&mut buf) {
+                match matrix_clients[index].stream.read(&mut buf) {
                     Ok(0) => {
                         remove = true;
                         break;
                     }
                     Ok(n) => {
-                        matrix_clients[index].1.extend_from_slice(&buf[..n]);
-                        while matrix_clients[index].1.len() >= 4 {
-                            let packet: Vec<u8> = matrix_clients[index].1.drain(..4).collect();
+                        matrix_clients[index].input.extend_from_slice(&buf[..n]);
+                        while matrix_clients[index].input.len() >= 4 {
+                            let packet: Vec<u8> = matrix_clients[index].input.drain(..4).collect();
                             let event = match parse_matrix_packet(&packet) {
                                 Ok(event) => event,
                                 Err(err) => {
@@ -1665,21 +1703,21 @@ fn serve(mut config: Config) -> Result<(), String> {
         while ctrl_index < ctrl_clients.len() {
             let mut remove = false;
             let mut buf = [0u8; 256];
-            loop {
-                match ctrl_clients[ctrl_index].0.read(&mut buf) {
+            while !ctrl_clients[ctrl_index].read_closed {
+                match ctrl_clients[ctrl_index].stream.read(&mut buf) {
                     Ok(0) => {
-                        remove = true;
+                        ctrl_clients[ctrl_index].read_closed = true;
                         break;
                     }
                     Ok(n) => {
-                        ctrl_clients[ctrl_index].1.extend_from_slice(&buf[..n]);
+                        ctrl_clients[ctrl_index].input.extend_from_slice(&buf[..n]);
                         while let Some(pos) = ctrl_clients[ctrl_index]
-                            .1
+                            .input
                             .iter()
                             .position(|byte| *byte == b'\n')
                         {
                             let mut line: Vec<u8> =
-                                ctrl_clients[ctrl_index].1.drain(..=pos).collect();
+                                ctrl_clients[ctrl_index].input.drain(..=pos).collect();
                             if line.ends_with(b"\n") {
                                 line.pop();
                             }
@@ -1690,7 +1728,9 @@ fn serve(mut config: Config) -> Result<(), String> {
                                 &broker,
                                 &mut last_broker_error,
                             );
-                            let _ = writeln!(ctrl_clients[ctrl_index].0, "{response}");
+                            let mut encoded = response.to_string().into_bytes();
+                            encoded.push(b'\n');
+                            ctrl_clients[ctrl_index].output.extend_from_slice(&encoded);
                             write_status(
                                 &core,
                                 &config,
@@ -1706,6 +1746,22 @@ fn serve(mut config: Config) -> Result<(), String> {
                         break;
                     }
                 }
+            }
+            if !remove && !ctrl_clients[ctrl_index].output.is_empty() {
+                let flush_result = {
+                    let client = &mut ctrl_clients[ctrl_index];
+                    flush_pending(&mut client.stream, &mut client.output)
+                };
+                if let Err(err) = flush_result {
+                    eprintln!("warning: failed to write ctrl response: {err}");
+                    remove = true;
+                }
+            }
+            if !remove
+                && ctrl_clients[ctrl_index].read_closed
+                && ctrl_clients[ctrl_index].output.is_empty()
+            {
+                remove = true;
             }
             if remove {
                 let _ = ctrl_clients.remove(ctrl_index);
@@ -1936,6 +1992,28 @@ fn main() {
 mod tests {
     use super::*;
 
+    struct SequencedWriter {
+        output: Vec<u8>,
+        calls: usize,
+    }
+
+    impl Write for SequencedWriter {
+        fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+            self.calls += 1;
+            if self.calls == 2 {
+                return Err(io::Error::from(ErrorKind::WouldBlock));
+            }
+            let limit = if self.calls == 1 { 1245 } else { 257 };
+            let written = buf.len().min(limit);
+            self.output.extend_from_slice(&buf[..written]);
+            Ok(written)
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+
     fn test_core(layers: Vec<HashMap<String, String>>) -> Core {
         let mut keycodes = HashMap::new();
         keycodes.insert("KC_A".to_string(), 4);
@@ -1985,6 +2063,23 @@ mod tests {
 
     fn event(press: bool, row: u8, col: u8) -> MatrixEvent {
         MatrixEvent { press, row, col }
+    }
+
+    #[test]
+    fn ctrl_response_flush_survives_partial_write_and_would_block() {
+        let expected = vec![b'x'; 4097];
+        let mut pending = expected.clone();
+        let mut writer = SequencedWriter {
+            output: Vec::new(),
+            calls: 0,
+        };
+
+        assert!(!flush_pending(&mut writer, &mut pending).unwrap());
+        assert_eq!(writer.output.len(), 1245);
+        assert_eq!(pending.len(), expected.len() - 1245);
+        assert!(flush_pending(&mut writer, &mut pending).unwrap());
+        assert!(pending.is_empty());
+        assert_eq!(writer.output, expected);
     }
 
     #[test]

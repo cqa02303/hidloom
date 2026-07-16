@@ -231,16 +231,16 @@ release note draft の存在を確認してから、tag 作成、`git push origi
 `.deb` の version suffix が現在の `HEAD` short sha と一致しない場合は止まるため、
 commit 後は必ず `make release-candidate-check` を再実行してから publish plan を確認します。
 
-公開済み release を後から再確認する場合は、GitHub Releases から別 directory へ asset を
-download して `.sha256` が portable かを確認します。
+公開済み public bundle を後から再確認する場合は、GitHub Releases から別 directory へ
+core/profile assetと`SHA256SUMS`をdownloadして整合を確認します。
 
 ```bash
 make release-download-verify RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha>
 ```
 
-`release-download-verify` は tag、release、実機を変更せず、`.deb` と `.deb.sha256` を
-download して、checksum file が absolute path を含まないことと `sha256sum -c` が通ることを
-確認します。
+`release-download-verify` はtag、release、実機を変更せず、core/profileと`SHA256SUMS`を
+downloadしてportable checksum、package名、arm64 architecture、同一version、profileの
+exact core dependencyを確認します。legacy single package releaseでは`.deb.sha256`へfallbackします。
 
 ## GitHub Release から別環境へ install する手順
 
@@ -250,14 +250,15 @@ stable release を別環境へ入れる時は、まず download と checksum ver
 make release-deb-download RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha>
 ```
 
-標準 profile の実機へ低レベル手順で入れる場合は、同じ release asset を使って remote `dpkg` dry-run します。
+標準 profile の実機へ低レベル手順で入れる場合は、同じ Release のcore/profile assetを使い、
+同じremote `dpkg` transactionでdry-runします。
 
 ```bash
 make release-deb-dry-run RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=01
 make release-deb-dry-run RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=02
 ```
 
-dry-run が通ってから低レベルの `dpkg -i` install をします。
+dry-run が通ってから同じtransactionの`dpkg -i` installとprofile適用をします。
 
 ```bash
 make release-deb-install RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=01
@@ -265,9 +266,11 @@ make release-deb-install RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=02
 ```
 
 この入口は `tools/package/install_github_release_deb.sh` を呼び、GitHub Release の
-`.deb` と `.deb.sha256` を download し、portable sha256 を検証してから remote へ copy します。
+`hidloom-core`、`hidloom-profile-keyboard-ver1`、`SHA256SUMS`をdownloadし、checksum、
+package名、arm64 architecture、version、exact dependencyを検証してからremoteへcopyします。
 `release-deb-download` は実機を変更しません。`release-deb-dry-run` は remote へ copy して
-`sudo dpkg --dry-run -i` まで、`release-deb-install` は `sudo dpkg -i` まで進めます。
+両packageの`sudo dpkg --dry-run -i`まで、`release-deb-install`は両packageの
+`sudo dpkg -i`と`hidloom-profile keyboard-ver1 --apply --backup --restart`まで進めます。
 この分割手順は dependency install を行わないため、fresh OS では通常、下の標準 flow を使います。
 
 install 後は、package unit restart と smoke を明示的に実行します。
@@ -309,6 +312,11 @@ explicit remote を渡します。
 make release-deb-deploy-dry-run RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> RELEASE_DEB_REMOTE=pi@192.168.0.x
 make release-deb-deploy RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> RELEASE_DEB_REMOTE=pi@192.168.0.x
 ```
+
+公開releaseの既定は`RELEASE_REPOSITORY=cqa02303/hidloom`と
+`RELEASE_PROFILE=keyboard-ver1`です。別repository/profileを検証する場合だけoverrideします。
+scriptの`--device`を直接使う場合は`HIDLOOM_RPI_01` / `HIDLOOM_RPI_02`を設定し、
+fresh OSや公開利用者には`--host USER@HOST`を使います。
 
 release note には最低限、次を書きます。
 

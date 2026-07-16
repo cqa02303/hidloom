@@ -300,6 +300,7 @@ def evaluate(
     required_files = (
         ".env.example",
         "README.md",
+        "INSTALL.md",
         "AUTHORS.md",
         "LICENSE",
         "SECURITY.md",

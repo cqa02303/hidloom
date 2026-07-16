@@ -4,19 +4,19 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "dff749a133e4aeb52a22e78efc420f8f39a748b6",
-    "base_tree": "f8a5bbc033369a93671d56a69a102a33d13c9c96",
-    "base_revision_count": 1923,
-    "selected_path_count": 1182,
-    "selected_snapshot_sha256": "b05d3ed7811020c80c5f8ac9d11eb2dd2c3a3756717ae6539e06b2674564858a"
+    "base_commit": "16f052966cb91285fe2eed1cc3db1b8d1bf96b3f",
+    "base_tree": "faf1e1ae7461c50b9edc0e0bb3f04957c4b08d39",
+    "base_revision_count": 1931,
+    "selected_path_count": 1183,
+    "selected_snapshot_sha256": "1ba7c1ed90d6e5a58ab2d1120d25a8a12949262fd5da863c3f974298ff695553"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1182,
+  "file_count": 1183,
   "source_selection": {
-    "tracked_paths": 1249,
-    "public_source_paths": 1182,
+    "tracked_paths": 1250,
+    "public_source_paths": 1183,
     "private_only_paths": 67,
     "generated_output_paths": 0,
     "unclassified_paths": 0
@@ -24,7 +24,7 @@
   "finding_summary": {
     "warn:credential_word": {
       "implementation_security_keyword": 53,
-      "documentation_security_keyword": 69,
+      "documentation_security_keyword": 70,
       "security_implementation_keyword": 73,
       "test_fixture": 45
     },
@@ -59,6 +59,15 @@
       "path": "CONTRIBUTING.md",
       "line": 38,
       "excerpt": "secret-bearing backup.",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "INSTALL.md",
+      "line": 75,
+      "excerpt": "`pi` / `pi` です。長期利用前に password を変更してください。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
     },
@@ -453,7 +462,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 105,
+      "line": 106,
       "excerpt": "\"macro/examples/password.kml\",",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -462,7 +471,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 249,
+      "line": 250,
       "excerpt": "\"reason\": \"reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -471,7 +480,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 255,
+      "line": 256,
       "excerpt": "\"reason\": \"credential words are validation fixtures; concrete token patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -480,7 +489,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 300,
+      "line": 302,
       "excerpt": "\"reason\": \"security documentation names credential concepts; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -489,7 +498,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 325,
+      "line": 327,
       "excerpt": "\"reason\": \"reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -1614,7 +1623,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 528,
+      "line": 531,
       "excerpt": "M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"

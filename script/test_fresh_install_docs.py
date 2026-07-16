@@ -34,6 +34,7 @@ def main() -> None:
     setup = setup_path.read_text(encoding="utf-8")
     wrapper = (ROOT / "setup_fresh_rpi.sh").read_text(encoding="utf-8")
     guide = (ROOT / "FRESH_INSTALL.md").read_text(encoding="utf-8")
+    install = (ROOT / "INSTALL.md").read_text(encoding="utf-8")
     release = (ROOT / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
 
@@ -128,6 +129,21 @@ def main() -> None:
     assert "cd ~/hidloom/daemon/matrixd" not in readme
 
     for phrase in (
+        "Raspberry Pi OS + split package",
+        "Buildroot M6 image",
+        "hidloom-core_<version>_arm64.deb",
+        "hidloom-profile-keyboard-ver1_<version>_arm64.deb",
+        "hidloom-<version>-buildroot-m6.img.zst",
+        "SHA256SUMS",
+        "同じ apt",
+        "hidloom-profile keyboard-ver1 --apply --backup --restart",
+        "offline appliance",
+        "Wi-Fi、SSH、httpd を含まない",
+        "1920x1080",
+    ):
+        assert phrase in install, phrase
+
+    for phrase in (
         "python3 script/test_validation_suite.py",
         "tools/package/release_candidate_check.sh --split-profile keyboard-ver1",
         "hidloom-logicd-core",
@@ -157,6 +173,7 @@ def main() -> None:
     )
     for name, text in {
         "FRESH_INSTALL.md": guide,
+        "INSTALL.md": install,
         "RELEASE_CHECKLIST.md": release,
         "README.md": readme,
     }.items():

@@ -519,22 +519,22 @@
     {
       "ecosystem": "github-actions",
       "name": "actions/cache",
-      "version": "5.0.5",
+      "version": "6.1.0",
       "license": "MIT",
-      "source": "https://github.com/actions/cache/tree/27d5ce7f107fe9357f9df03efb73ab90386fccae",
+      "source": "https://github.com/actions/cache/tree/55cc8345863c7cc4c66a329aec7e433d2d1c52a9",
       "review": "not-redistributed",
       "distribution_scope": "ci-action-reference",
-      "commit_sha": "27d5ce7f107fe9357f9df03efb73ab90386fccae"
+      "commit_sha": "55cc8345863c7cc4c66a329aec7e433d2d1c52a9"
     },
     {
       "ecosystem": "github-actions",
       "name": "actions/checkout",
-      "version": "6.0.2",
+      "version": "7.0.0",
       "license": "MIT",
-      "source": "https://github.com/actions/checkout/tree/de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "source": "https://github.com/actions/checkout/tree/9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0",
       "review": "not-redistributed",
       "distribution_scope": "ci-action-reference",
-      "commit_sha": "de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+      "commit_sha": "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0"
     },
     {
       "ecosystem": "pypi",

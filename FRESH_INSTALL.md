@@ -4,6 +4,9 @@
 標準構成は、x86_64 build host で cross-build した `hidloom-core` と device profile の
 split Debian package です。Raspberry Pi 実機では project binary を build しません。
 
+Raspberry Pi OS package と Buildroot M6 image の選択基準は
+[INSTALL.md](INSTALL.md) を参照してください。
+
 Buildroot は別 microSD を使う offline appliance 実験です。Raspberry Pi OS の代替手順では
 ありません。Buildroot M6 は [buildroot-fast-boot-experiment.md](docs/ops/buildroot-fast-boot-experiment.md)
 を参照してください。
