@@ -63,7 +63,7 @@ ssh <device> 'sudo apt-get install -y \
   /tmp/hidloom-profile-keyboard-ver1_<version>_arm64.deb && \
   sudo hidloom-profile keyboard-ver1 --apply --backup --restart'
 tools/package/deploy_deb_unit_switch.sh --device 01 --restart
-tools/package/deploy_deb_verify.sh --device 01 --smoke
+tools/package/deploy_deb_verify.sh --device 01 --profile keyboard-ver1 --smoke
 ```
 
 legacy checkout へ展開する互換 mode の安全確認:
@@ -110,7 +110,7 @@ payload を `/usr/lib/hidloom` に展開し、package-managed unit の
 `/mnt/p3` 側を正とします。`/usr/lib/hidloom/config/default` や
 `/usr/lib/hidloom/config/profiles` は package が提供する default /
 fallback で、Vial / HTTP / script editor から保存される
-`/mnt/p3/keymap.json`、`/mnt/p3/led_state.json`、
+`/mnt/p3/keymap.json`、`/mnt/p3/led_state.json`、`/mnt/p3/oled_customization.json`、
 `/mnt/p3/bluetooth_hosts.json`、`/mnt/p3/script`、HTTP TLS key などは
 `/mnt/p3` に置きます。
 つまり `/usr/lib/hidloom` はアプリ本体と既定値、`/mnt/p3` は実機固有の
@@ -254,13 +254,18 @@ package-managed services を再起動します。
 package install / reboot 後の確認:
 
 ```bash
-tools/package/deploy_deb_verify.sh --device 02
-tools/package/deploy_deb_verify.sh --device 02 --smoke
+tools/package/deploy_deb_verify.sh --device 02 --profile keyboard-ver1
+tools/package/deploy_deb_verify.sh --device 02 --profile keyboard-ver1 --smoke
 make deb-verify-01
 make deb-verify-02
 make deb-verify-smoke-01
 make deb-verify-smoke-02
 ```
+
+verify helperは`hidloom-core`と`hidloom-profile-<profile>`がinstalled、arm64、同一version
+であることを検査します。`--smoke`は終了時と失敗時のどちらでもoutput targetを`auto`へ戻し、
+戻し後の`outputd-status.json`を表示します。SSHは既定10秒のconnect timeoutとkeepaliveを使い、
+必要な場合だけ`--connect-timeout <sec>`で変更します。
 
 build から smoke までまとめて実行:
 

@@ -129,6 +129,37 @@ def test_modifier_and_us_sub_keyboard_reports_share_diff_state() -> None:
     assert status["counters"]["us_sub_keyboard_reports"] == 3
 
 
+def test_login_sequence_preserves_pi_and_enter_events() -> None:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        events, status = run_uidd(
+            Path(tmpdir),
+            [
+                encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes.fromhex("0000130000000000")),
+                encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes(8)),
+                encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes.fromhex("00000c0000000000")),
+                encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes(8)),
+                encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes.fromhex("0000280000000000")),
+                encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes(8)),
+            ],
+        )
+    assert compact_events(events) == [
+        (1, 25, 1),
+        (0, 0, 0),
+        (1, 25, 0),
+        (0, 0, 0),
+        (1, 23, 1),
+        (0, 0, 0),
+        (1, 23, 0),
+        (0, 0, 0),
+        (1, 28, 1),
+        (0, 0, 0),
+        (1, 28, 0),
+        (0, 0, 0),
+    ]
+    assert status["counters"]["frames_received"] == 6
+    assert status["counters"]["key_events"] == 6
+
+
 def test_invalid_frame_is_counted_without_events() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         events, status = run_uidd(Path(tmpdir), [b"not-a-valid-frame"])
@@ -178,6 +209,7 @@ def main() -> None:
     build_tool()
     test_keyboard_report_diff_to_linux_events()
     test_modifier_and_us_sub_keyboard_reports_share_diff_state()
+    test_login_sequence_preserves_pi_and_enter_events()
     test_invalid_frame_is_counted_without_events()
     test_unsupported_frame_kind_is_counted_without_events()
     test_status_schema_and_paths_are_reported()

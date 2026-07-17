@@ -1,0 +1,394 @@
+#oled-panel {
+  min-height: min(680px, calc(100vh - 190px));
+}
+
+.oled-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px solid #d7dce3;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.oled-toolbar h2,
+.oled-card h3 {
+  margin: 0;
+}
+
+.oled-toolbar p,
+.oled-card p {
+  margin: 4px 0 0;
+  color: #66717d;
+  font-size: 12px;
+}
+
+.oled-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.oled-danger-btn {
+  color: #a22828;
+  border-color: #d8aaaa;
+}
+
+.oled-workspace {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) minmax(360px, 1fr) minmax(280px, 360px);
+  gap: 12px;
+  align-items: start;
+}
+
+.oled-card {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #d7dce3;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.oled-icon-browser {
+  grid-row: span 2;
+}
+
+.oled-ready-column {
+  display: grid;
+  gap: 12px;
+  align-self: start;
+}
+
+.oled-icon-list {
+  max-height: 620px;
+  margin-top: 10px;
+  padding-right: 4px;
+  overflow: auto;
+}
+
+.oled-icon-group + .oled-icon-group {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 2px solid #d7dce3;
+}
+
+.oled-icon-group-header {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.oled-icon-group-header strong {
+  color: #303840;
+  font-size: 12px;
+}
+
+.oled-icon-group-header small {
+  color: #73808d;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.oled-icon-group-list {
+  display: grid;
+  gap: 6px;
+}
+
+.oled-icon-choice {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 9px;
+  align-items: center;
+  min-height: 42px;
+  padding: 6px 8px;
+  border: 1px solid #c9d0d8;
+  border-radius: 6px;
+  background: #f7f9fb;
+  color: #303840;
+  text-align: left;
+  cursor: pointer;
+}
+
+.oled-icon-choice:hover,
+.oled-icon-choice.active {
+  border-color: #4f89bd;
+  background: #eaf4ff;
+  color: #125a94;
+}
+
+.oled-icon-choice canvas {
+  width: auto;
+  height: 32px;
+  max-width: 38px;
+  border: 1px solid #53606d;
+  background: #000;
+  image-rendering: pixelated;
+}
+
+.oled-icon-choice-text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.oled-icon-choice-text strong,
+.oled-icon-choice-text small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oled-icon-choice-text small {
+  color: #73808d;
+  font-size: 10px;
+}
+
+.oled-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.oled-card-header span {
+  color: #66717d;
+  font-size: 12px;
+}
+
+.oled-size-controls,
+.oled-tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+}
+
+.oled-size-controls label {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  color: #4e5863;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.oled-size-controls input {
+  width: 50px;
+  min-height: 30px;
+  padding: 3px 5px;
+  border: 1px solid #b9c3cf;
+  border-radius: 5px;
+}
+
+.oled-tool-row {
+  margin: 12px 0;
+  padding: 8px;
+  border-radius: 7px;
+  background: #edf1f5;
+}
+
+.oled-pointer-hint {
+  display: inline-block;
+  margin: 0 10px 6px 0;
+  color: #34404b;
+}
+
+.oled-tool {
+  min-height: 31px;
+  padding: 5px 9px;
+  border: 1px solid #b8c2cc;
+  border-radius: 5px;
+  background: #fff;
+  color: #34404b;
+  cursor: pointer;
+}
+
+.oled-tool:hover,
+.oled-tool.active {
+  border-color: #337bb7;
+  background: #dceeff;
+  color: #125a94;
+}
+
+.oled-editor-body {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(100px, 150px);
+  gap: 16px;
+  align-items: start;
+}
+
+.oled-pixel-grid {
+  --oled-grid-columns: 8;
+  display: grid;
+  grid-template-columns: repeat(var(--oled-grid-columns), minmax(24px, 1fr));
+  gap: 2px;
+  padding: 8px;
+  border: 2px solid #6f7c89;
+  border-radius: 6px;
+  background: #9ca7b1;
+  touch-action: none;
+  user-select: none;
+}
+
+.oled-pixel {
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid #68737e;
+  border-radius: 2px;
+  background: #0d1115;
+  cursor: crosshair;
+}
+
+.oled-pixel.on {
+  background: #f7fbff;
+  box-shadow: inset 0 0 0 1px #fff;
+}
+
+.oled-icon-previews {
+  display: grid;
+  gap: 12px;
+}
+
+.oled-icon-previews > div {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  color: #59636e;
+  font-size: 12px;
+}
+
+.oled-icon-previews canvas {
+  width: auto;
+  height: 96px;
+  max-width: 120px;
+  border: 1px solid #53606d;
+  background: #000;
+  image-rendering: pixelated;
+}
+
+.oled-layout-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.oled-layout-row {
+  display: grid;
+  grid-template-columns: 22px minmax(110px, 1fr) auto auto;
+  gap: 7px;
+  align-items: center;
+  padding: 7px;
+  border: 1px solid #d3dae2;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+.oled-layout-row strong,
+.oled-layout-row small {
+  display: block;
+}
+
+.oled-layout-row small {
+  margin-top: 2px;
+  color: #71808e;
+  font-size: 10px;
+}
+
+.oled-separator-check {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  color: #59636e;
+  font-size: 11px;
+}
+
+.oled-order-controls {
+  display: flex;
+  gap: 3px;
+}
+
+.oled-order-controls button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #b8c2cc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.oled-order-controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.oled-screen-preview-card {
+  justify-self: stretch;
+  text-align: center;
+}
+
+#oled-screen-preview {
+  width: 128px;
+  height: 256px;
+  margin-top: 10px;
+  border: 4px solid #202830;
+  border-radius: 6px;
+  background: #000;
+  image-rendering: pixelated;
+}
+
+#oled-source-label {
+  max-width: 220px;
+  overflow-wrap: anywhere;
+}
+
+#oled-status.error {
+  color: #b42318;
+}
+
+@media (max-width: 1050px) {
+  .oled-workspace {
+    grid-template-columns: minmax(130px, 180px) minmax(330px, 1fr);
+  }
+
+  .oled-ready-column {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 720px) {
+  .oled-toolbar,
+  .oled-card-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .oled-workspace,
+  .oled-editor-body {
+    grid-template-columns: 1fr;
+  }
+
+  .oled-icon-browser,
+  .oled-ready-column {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .oled-icon-group-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .oled-icon-list {
+    max-height: 260px;
+  }
+
+  .oled-pixel-grid {
+    grid-template-columns: repeat(var(--oled-grid-columns), minmax(20px, 1fr));
+  }
+}

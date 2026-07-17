@@ -15,6 +15,15 @@ from typing import Any
 _WIFI_STATUS_CACHE_TTL = 5.0
 _wifi_status_cache: tuple[float, dict[str, Any]] | None = None
 
+OUTPUT_MODE_ICONS: tuple[tuple[str, str], ...] = (
+    ("auto", "Automatic"),
+    ("usb", "USB HID"),
+    ("bt", "Bluetooth HID"),
+    ("pi", "Pi / uinput"),
+    ("wifi0", "Wi-Fi idle"),
+    ("wifi3", "Wi-Fi connected"),
+)
+
 
 def output_mode_icon_row(
     current_mode: str,
@@ -33,11 +42,15 @@ def output_mode_icon_row(
     if mode.startswith("auto:"):
         _, actual = mode.split(":", 1)
         row.append(("auto", True))
-        actual_icon = "usb" if usb_connected else mode_to_icon.get(actual.strip())
+        actual_icon = mode_to_icon.get(actual.strip())
+        if actual_icon is None and usb_connected:
+            actual_icon = "usb"
         if actual_icon:
             row.append((actual_icon, True))
     else:
-        icon = "usb" if usb_connected and mode != "bt" else mode_to_icon.get(mode)
+        icon = mode_to_icon.get(mode)
+        if icon is None and usb_connected:
+            icon = "usb"
         if icon:
             row.append((icon, True))
 

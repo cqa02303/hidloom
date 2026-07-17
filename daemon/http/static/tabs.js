@@ -1,7 +1,7 @@
 "use strict";
 
 const APP_TAB_KEY = "hidloom-active-app-tab";
-const APP_TABS = new Set(["keyboard", "keymap", "lighting", "scripts", "interaction", "settings"]);
+const APP_TABS = new Set(["keyboard", "keymap", "lighting", "oled", "scripts", "interaction", "settings"]);
 const INTERACTION_TAB_HASHES = new Set(["interaction-raw", "interaction-morse", "interaction-builders"]);
 let _activeAppTab = "keyboard";
 let _morseInspectorPanelScriptLoaded = false;
@@ -46,10 +46,11 @@ function setActiveTab(tab, options = {}) {
   const keyboardToolbar = document.getElementById("keyboard-tab-toolbar");
   const keymapToolbar = document.getElementById("keymap-tab-toolbar");
   const lightingPanel = document.getElementById("lighting-panel");
+  const oledPanel = document.getElementById("oled-panel");
   const scriptsPanel = document.getElementById("scripts-panel");
   const interactionPanel = document.getElementById("interaction-panel");
   const settingsPanel = document.getElementById("settings-panel");
-  const nonKeyboardTab = tab === "lighting" || tab === "scripts" || tab === "interaction" || tab === "settings";
+  const nonKeyboardTab = tab === "lighting" || tab === "oled" || tab === "scripts" || tab === "interaction" || tab === "settings";
   if (keyboardContainer) keyboardContainer.classList.toggle("tab-hidden", nonKeyboardTab);
   if (keyboardToolbar) keyboardToolbar.classList.toggle("tab-hidden", tab !== "keyboard");
   if (keymapToolbar) keymapToolbar.classList.toggle("tab-hidden", tab !== "keymap");
@@ -57,6 +58,12 @@ function setActiveTab(tab, options = {}) {
     lightingPanel.classList.toggle("tab-hidden", tab !== "lighting");
     if (tab === "lighting") {
       fetchLighting();
+    }
+  }
+  if (oledPanel) {
+    oledPanel.classList.toggle("tab-hidden", tab !== "oled");
+    if (tab === "oled" && fetchOnActivate && typeof fetchOledCustomization === "function") {
+      fetchOledCustomization();
     }
   }
   if (scriptsPanel) {

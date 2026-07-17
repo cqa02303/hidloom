@@ -18,7 +18,7 @@
     },
     {
       "path": "daemon/i2cd/README.md",
-      "line": 343,
+      "line": 352,
       "target_type": "file"
     },
     {
@@ -580,7 +580,7 @@
   "removed_private_navigation_lines": [
     {
       "path": "daemon/i2cd/README.md",
-      "line": 343
+      "line": 352
     },
     {
       "path": "daemon/logicd/README.md",

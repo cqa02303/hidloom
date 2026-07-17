@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 331 本程度あり、標準 canonical suite は 218 entrypoints を実行する。
+現在 `script/test_*.py` は 333 本程度あり、標準 canonical suite は 220 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints

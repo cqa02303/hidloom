@@ -218,7 +218,7 @@ def main() -> None:
     _require_all(
         wishlist,
         [
-            "更新日: 2026-07-10",
+            "更新日: 2026-07-17",
             "VIA app 互換入口",
             "HTTP analog stick calibration 2D map",
             "Bluetooth host local rename metadata first slice",

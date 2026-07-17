@@ -34,6 +34,8 @@ struct Config {
     mouse_report_hz: f64,
     keyboard_report_hz: f64,
     keyboard_dedup: bool,
+    keyboard_startup_release: bool,
+    keyboard_startup_release_retry_interval: Duration,
     keyboard_release_merge_window: Duration,
     raw_hid_bridge_enabled: bool,
     raw_hid_path: String,
@@ -49,6 +51,7 @@ struct Counters {
     frames_received: u64,
     keyboard_reports: u64,
     us_sub_keyboard_reports: u64,
+    startup_release_reports: u64,
     mouse_reports: u64,
     consumer_reports: u64,
     invalid_frames: u64,
@@ -232,6 +235,12 @@ fn load_config() -> Result<Config, String> {
         mouse_report_hz: env_f64("USBD_MOUSE_REPORT_HZ", 125.0, 1.0),
         keyboard_report_hz: env_f64("USBD_KEYBOARD_REPORT_HZ", 500.0, 1.0),
         keyboard_dedup: env_u32("USBD_KEYBOARD_REPORT_DEDUP", 1, 0, 1) != 0,
+        keyboard_startup_release: env_u32("USBD_KEYBOARD_STARTUP_RELEASE", 1, 0, 1) != 0,
+        keyboard_startup_release_retry_interval: duration_secs(env_f64(
+            "USBD_KEYBOARD_STARTUP_RELEASE_RETRY_SEC",
+            0.05,
+            0.001,
+        )),
         keyboard_release_merge_window: duration_secs(env_f64(
             "USBD_KEYBOARD_RELEASE_MERGE_WINDOW_SEC",
             0.016,
@@ -387,6 +396,27 @@ impl Endpoint {
         counters.write_errors += 1;
         counters.dropped_reports += 1;
         false
+    }
+
+    fn write_startup_release(&mut self, report: &[u8], cfg: &Config) {
+        loop {
+            match self.ensure_open().and_then(|_| {
+                self.file
+                    .as_mut()
+                    .expect("file must be open")
+                    .write_all(report)
+            }) {
+                Ok(()) => {
+                    self.last_error.clear();
+                    return;
+                }
+                Err(err) => {
+                    self.last_error = format!("startup release write: {err}");
+                    self.close();
+                    thread::sleep(cfg.keyboard_startup_release_retry_interval);
+                }
+            }
+        }
     }
 }
 
@@ -676,7 +706,7 @@ fn write_usb_report(
     cfg: &Config,
     endpoints: &mut Endpoints,
     counters: &mut Counters,
-) {
+) -> bool {
     if report.kind != KIND_KEYBOARD && report.kind != KIND_US_SUB_KEYBOARD {
         log_frame_event(
             cfg,
@@ -694,7 +724,7 @@ fn write_usb_report(
         EndpointId::Hidg2 => &mut endpoints.hidg2,
     };
     if !endpoint.write_report(&report.report, cfg, counters) {
-        return;
+        return false;
     }
     match report.kind {
         KIND_KEYBOARD => counters.keyboard_reports += 1,
@@ -702,6 +732,43 @@ fn write_usb_report(
         KIND_MOUSE => counters.mouse_reports += 1,
         KIND_CONSUMER => counters.consumer_reports += 1,
         _ => {}
+    }
+    true
+}
+
+fn send_startup_keyboard_releases(
+    cfg: &Config,
+    endpoints: &mut Endpoints,
+    counters: &mut Counters,
+) {
+    if !cfg.keyboard_startup_release {
+        return;
+    }
+    for kind in [KIND_KEYBOARD, KIND_US_SUB_KEYBOARD] {
+        let report = adapt_report(&HidRequest {
+            kind,
+            payload: vec![0; 8],
+        });
+        log_frame_event(
+            cfg,
+            "hidd_startup_keyboard_release",
+            &format!(
+                "\"endpoint\":\"{}\",\"report\":\"{}\"",
+                endpoint_name(report.endpoint),
+                hex(&report.report)
+            ),
+        );
+        let endpoint = match report.endpoint {
+            EndpointId::Hidg0 => &mut endpoints.hidg0,
+            EndpointId::Hidg2 => &mut endpoints.hidg2,
+        };
+        endpoint.write_startup_release(&report.report, cfg);
+        match report.kind {
+            KIND_KEYBOARD => counters.keyboard_reports += 1,
+            KIND_US_SUB_KEYBOARD => counters.us_sub_keyboard_reports += 1,
+            _ => unreachable!(),
+        }
+        counters.startup_release_reports += 1;
     }
 }
 
@@ -792,6 +859,7 @@ fn write_status(
             "    \"frames_received\":{},\n",
             "    \"keyboard_reports\":{},\n",
             "    \"us_sub_keyboard_reports\":{},\n",
+            "    \"startup_release_reports\":{},\n",
             "    \"mouse_reports\":{},\n",
             "    \"consumer_reports\":{},\n",
             "    \"invalid_frames\":{},\n",
@@ -830,6 +898,7 @@ fn write_status(
         counters.frames_received,
         counters.keyboard_reports,
         counters.us_sub_keyboard_reports,
+        counters.startup_release_reports,
         counters.mouse_reports,
         counters.consumer_reports,
         counters.invalid_frames,
@@ -996,6 +1065,8 @@ fn run() -> Result<(), String> {
     let mut hidg2_route = KeyboardRoute::new();
     let mut mouse = MouseScheduler::new();
     let mut processed_frames = 0u64;
+    write_status(&cfg, &endpoints, &counters, &raw_status);
+    send_startup_keyboard_releases(&cfg, &mut endpoints, &mut counters);
     write_status(&cfg, &endpoints, &counters, &raw_status);
 
     loop {

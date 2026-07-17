@@ -5,6 +5,9 @@ ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 OUT_DIR=${OUT_DIR:-"$ROOT/build/public-rebuild"}
 BUILDROOT_OUTPUT=${BUILDROOT_OUTPUT:-"$ROOT/build/artifacts/buildroot-m6-output"}
 BUILDROOT_DIR=${BUILDROOT_DIR:-"$ROOT/build/artifacts/buildroot-upstream"}
+BUILDROOT_WORK_DIR=$(dirname -- "$BUILDROOT_OUTPUT")
+M6_NATIVE_DIR=${HIDLOOM_M6_NATIVE_DIR:-"$BUILDROOT_WORK_DIR/buildroot-m4-native/bin"}
+BUILD_HOSTBIN=${HIDLOOM_BUILD_HOSTBIN:-"$BUILDROOT_WORK_DIR/buildroot-hostbin"}
 PROVENANCE=${PROVENANCE:-}
 PACKAGE=0
 BUILDROOT_MODE=
@@ -96,10 +99,12 @@ fi
 case "$BUILDROOT_MODE" in
     configure)
         BUILDROOT_DIR="$BUILDROOT_DIR" BUILDROOT_OUTPUT="$BUILDROOT_OUTPUT" \
+            HIDLOOM_M6_NATIVE_DIR="$M6_NATIVE_DIR" HIDLOOM_BUILD_HOSTBIN="$BUILD_HOSTBIN" \
             "$ROOT/tools/buildroot_m6_build.sh" --configure-only
         ;;
     image)
         BUILDROOT_DIR="$BUILDROOT_DIR" BUILDROOT_OUTPUT="$BUILDROOT_OUTPUT" \
+            HIDLOOM_M6_NATIVE_DIR="$M6_NATIVE_DIR" HIDLOOM_BUILD_HOSTBIN="$BUILD_HOSTBIN" \
             "$ROOT/tools/buildroot_m6_build.sh"
         ;;
 esac

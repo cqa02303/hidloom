@@ -55,7 +55,7 @@ python3 script/test_real_device_touch_panel_suite.py
 | `test_logicd_usbd_report_broker_backend.py` | logicd opt-in broker backend が canonical payload を usbd socket へ送ること |
 | `test_hidloom_hidd_tool.py` | native `hidloom-hidd` broker の frame 互換、endpoint mapping、live status 更新 |
 | `test_hidloom_uidd_tool.py` | native `hidloom-uidd` の keyboard report -> Linux EV_KEY 差分変換、unsupported frame、dry-run status schema |
-| `test_hidloom_outputd_tool.py` | native `hidloom-outputd` の usb/uinput/bt target forwarding、ctrl status、切替 / release_all 時 release frame |
+| `test_hidloom_outputd_tool.py` | native `hidloom-outputd` の usb/uinput/bt forwarding、切替時release、`outputd -> uidd`の`pi` / Enter往復 |
 | `test_native_outputd_ctrl.py` | logicd-companion の output switch が native `hidloom-outputd` ctrl target へ変換されること |
 | `test_hid_release_roll_analyzer.py` | hidd NDJSON から release flush 直後の next press 候補を抽出する helper |
 | `test_buildroot_m1_compare_tool.py` | Raspberry Pi OS baseline と Buildroot M1 marker 比較 helper |

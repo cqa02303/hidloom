@@ -25,10 +25,13 @@ from usbd.hid_report_broker import (  # noqa: E402
 
 TOOL_DIR = ROOT / "tools" / "hidloom_outputd"
 BIN = TOOL_DIR / "target" / "release" / "hidloom-outputd"
+UIDD_TOOL_DIR = ROOT / "tools" / "hidloom_uidd"
+UIDD_BIN = UIDD_TOOL_DIR / "target" / "release" / "hidloom-uidd"
 
 
 def build_tool() -> None:
     subprocess.run(["make", "-C", str(TOOL_DIR)], check=True)
+    subprocess.run(["make", "-C", str(UIDD_TOOL_DIR)], check=True)
 
 
 def wait_for_path(path: Path) -> None:
@@ -38,6 +41,20 @@ def wait_for_path(path: Path) -> None:
             return
         time.sleep(0.01)
     raise AssertionError(f"path did not appear: {path}")
+
+
+def wait_for_json(path: Path, predicate) -> dict:
+    deadline = time.time() + 2.0
+    while time.time() < deadline:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError):
+            time.sleep(0.01)
+            continue
+        if predicate(payload):
+            return payload
+        time.sleep(0.01)
+    raise AssertionError(f"JSON state did not converge: {path}")
 
 
 def bind_receiver(path: Path) -> socket.socket:
@@ -117,6 +134,26 @@ def run_outputd(tmp: Path, *, target: str = "usb", frames: int = 1) -> tuple[sub
     proc = subprocess.Popen([str(BIN), "--frames", str(frames)], env=env)
     wait_for_path(paths["report"])
     wait_for_path(paths["ctrl"])
+    return proc, paths
+
+
+def run_uidd(tmp: Path, *, frames: int) -> tuple[subprocess.Popen, dict[str, Path]]:
+    paths = {
+        "socket": tmp / "uidd_reports.sock",
+        "status": tmp / "uidd-status.json",
+        "events": tmp / "uidd-events.ndjson",
+    }
+    env = os.environ.copy()
+    env.update(
+        {
+            "UIDD_REPORT_SOCKET": str(paths["socket"]),
+            "UIDD_STATUS_PATH": str(paths["status"]),
+            "UIDD_EVENT_LOG_PATH": str(paths["events"]),
+            "UIDD_DRY_RUN": "1",
+        }
+    )
+    proc = subprocess.Popen([str(UIDD_BIN), "--frames", str(frames)], env=env)
+    wait_for_path(paths["socket"])
     return proc, paths
 
 
@@ -283,6 +320,76 @@ def test_ctrl_release_all_sends_null_reports_to_current_target() -> None:
     assert status["counters"]["frames_to_uinput"] == 1
 
 
+def test_console_switch_login_sequence_round_trip() -> None:
+    null_keyboard = encode_hid_report_request(KIND_KEYBOARD, bytes(8))
+    null_us_sub = encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes(8))
+    login_frames = [
+        encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes.fromhex(payload))
+        for payload in (
+            "0000130000000000",
+            "0000000000000000",
+            "00000c0000000000",
+            "0000000000000000",
+            "0000280000000000",
+            "0000000000000000",
+        )
+    ]
+    final_usb = encode_hid_report_request(KIND_KEYBOARD, bytes.fromhex("0000040000000000"))
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+        usb = bind_receiver(tmp / "usbd_hid_reports.sock")
+        uidd_proc, uidd_paths = run_uidd(tmp, frames=10)
+        outputd_proc, outputd_paths = run_outputd(tmp, target="usb", frames=7)
+
+        assert ctrl_request(
+            outputd_paths["ctrl"], {"t": "set_output_target", "target": "uinput"}
+        ) == {"result": "ok", "target": "uinput"}
+        assert recv_all(usb, 2) == [null_keyboard, null_us_sub]
+        for frame in login_frames:
+            send_frame(outputd_paths["report"], frame)
+        wait_for_json(
+            uidd_paths["status"],
+            lambda status: status["counters"]["frames_received"] >= 8,
+        )
+
+        assert ctrl_request(
+            outputd_paths["ctrl"], {"t": "set_output_target", "target": "usb"}
+        ) == {"result": "ok", "target": "usb"}
+        assert recv_all(usb, 2) == [null_keyboard, null_us_sub]
+        send_frame(outputd_paths["report"], final_usb)
+        assert recv_all(usb, 1) == [final_usb]
+
+        wait_proc(outputd_proc)
+        wait_proc(uidd_proc)
+        outputd_status = json.loads(outputd_paths["status"].read_text(encoding="utf-8"))
+        uidd_status = json.loads(uidd_paths["status"].read_text(encoding="utf-8"))
+        events = [
+            json.loads(line)
+            for line in uidd_paths["events"].read_text(encoding="utf-8").splitlines()
+        ]
+
+    assert outputd_status["target"] == "usb"
+    assert outputd_status["counters"]["frames_to_uinput"] == 6
+    assert outputd_status["counters"]["frames_to_usb"] == 1
+    assert outputd_status["counters"]["release_frames"] == 8
+    assert uidd_status["counters"]["frames_received"] == 10
+    assert uidd_status["counters"]["key_events"] == 6
+    assert [(event["type"], event["code"], event["value"]) for event in events] == [
+        (1, 25, 1),
+        (0, 0, 0),
+        (1, 25, 0),
+        (0, 0, 0),
+        (1, 23, 1),
+        (0, 0, 0),
+        (1, 23, 0),
+        (0, 0, 0),
+        (1, 28, 1),
+        (0, 0, 0),
+        (1, 28, 0),
+        (0, 0, 0),
+    ]
+
+
 def main() -> None:
     build_tool()
     test_usb_target_forwards_to_hidd_socket()
@@ -291,6 +398,7 @@ def main() -> None:
     test_ctrl_switch_sends_release_to_old_and_new_targets()
     test_ctrl_status_reports_schema_and_socket_paths()
     test_ctrl_release_all_sends_null_reports_to_current_target()
+    test_console_switch_login_sequence_round_trip()
     print("ok: hidloom-outputd native report router")
 
 

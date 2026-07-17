@@ -616,3 +616,149 @@
 - recovery: profileを明示してcore/profileだけを選択し、`SHA256SUMS`、package名、arm64 architecture、同一version、profileのexact core dependencyを検証する。remoteでは2個を同じapt/dpkg transactionへ渡し、install後に`hidloom-profile <profile> --apply --backup --restart`を実行する。legacy releaseだけを単一package fallbackへ残す。
 - regression check: `script/test_release_bundle_tools.py`でfake GitHub Releaseと実Debian fixtureを作り、2 assetのdownload/checksum/metadata、同一apt transaction、profile適用を確認する。`script/test_public_release_bundle.py`でRelease notesがRaspberry Pi OS packageとBuildroot M6 imageの両方を案内することも固定する。
 - evidence: 2026-07-16、`keyboard-ver1`のcore/profile fixtureでdownload-onlyとremote install commandをpassした。GitHub Release、Raspberry Pi、Buildroot runtimeは変更していない。
+
+## Bot-created sync PR requires first-time contributor approval
+
+- symptom: sync branchのpush `validate`とdraft PR作成はsuccessするが、直後の`pull_request` runがjob 0件、conclusion `action_required`で終了し、PRはCI未完了の`UNSTABLE`になる。
+- likely cause: public repositoryのfork PR approval policyが`first_time_contributors`で、`Public CI / open-sync-pr`が作成した最初のPRのactor `github-actions[bot]`にmerged contributionがない。source、workflow syntax、selected action allowlistの失敗ではない。
+- detect: PR authorが`github-actions[bot]`、headが同一repositoryの期待`sync/*` branch、run eventが`pull_request`、head SHAがpush済みcommitと一致、jobs APIが0件、push runの`validate`がsuccessであることをすべて確認する。jobまたはlogがある通常のCI failureと混同しない。
+- recovery: repository ownerがGitHub UIまたは`POST /repos/{owner}/{repo}/actions/runs/{run_id}/approve`で対象runだけを承認し、生成された`validate` jobをsuccessまで監視する。repository全体のapproval policy、branch protection、required check、Actions allowlistを弱めず、PRをadmin bypassでmergeしない。
+- regression check: runbookはbot初回PRの検出条件、単一run承認、pull-request `validate`再確認を要求する。実同期ではpush/pull_request両runのhead SHA一致、PR `MERGEABLE` / `CLEAN`、policy audit issue 0、public `main`不変を証跡化する。
+- evidence: 2026-07-16、draft PR #9のrun `29465864588`がactor `github-actions[bot]`、same-repository head `f1e08b0a432cf6c8add0db62bf017f256508a72b`、jobs 0件で`action_required`になった。owner approvalはHTTP 201で受理され、run `validate`は14m57sでsuccess、PRは`CLEAN`になった。push run `29465211535`もsuccessし、public `main`とapproval policyは変更していない。
+
+## Merge auto-delete removes the sync source branch
+
+- symptom: PRを正常にsquash mergeした直後、監査済みsource branch `sync/*`が404になり、merge済みPRのhead SHAだけがsource commitを参照する。
+- likely cause: canonical public repository policyが`delete_branch_on_merge=true`で、branch保持可否をmerge前に決めず既定の自動削除を受け入れた。merge source、tree、CIの失敗ではない。
+- detect: merge前後のrepository `delete_branch_on_merge`、PR head SHA、`git/ref/heads/<branch>`、public `main`、merge commit treeを比較する。main treeがPR head treeと一致し、branchだけが404ならauto-deleteと判断する。
+- recovery: 同名`sync/*`を直ちに再作成しない。branch作成pushはPublic CIと`open-sync-pr`を再起動し、差分のない重複PR作成を試みるためである。保持が必要ならmerge前に明示承認を得てauto-deleteを一時停止し、merge後にcanonical `true`へ戻してpolicy auditする。削除後の復元はPR head SHAを使う個別判断とし、自動化しない。
+- regression check: public sync runbookはmerge前のbranch保持決定、auto-delete一時停止時の承認・復元・audit、保持不要時の削除証跡を要求する。post-merge監査はmain/head tree一致、main CI success、open PR 0、policy issue 0を確認する。
+- evidence: 2026-07-16、PR #9をhead `f1e08b0a432cf6c8add0db62bf017f256508a72b`からsquash mergeし、public `main`は`b5f1933dda5741977ef93499a149b50c195e34e5`になった。両treeは`2d465b75e610692aa699a5cf4a7ee36bd6b2ce09`で一致し、main run `29468677881`もsuccessしたが、source branchはcanonical auto-deleteにより404になった。重複automationを避けるため復元していない。
+
+## pid.codes validator dependency failure is mistaken for application rejection
+
+- symptom: fresh pid.codes checkoutで`python3 -m test.validate_pids`を実行すると、申請pageを検査する前に`ModuleNotFoundError: No module named 'frontmatter'`で終了する。
+- likely cause: upstream validatorの`requirements.txt`を導入していないhost Pythonで直接実行した。front matter、owner、PID競合、licenseの不合格ではない。
+- detect: tracebackが`import frontmatter`で停止し、validator自身のerror一覧や`No errors found!`が出ていないことを確認する。生成前のfresh clone `HEAD=origin/HEAD=online remote HEAD`と候補path未使用も別に確認する。
+- recovery: disposable cloneと一時venvを使い、`python3 -m venv <temporary-venv>`、`pip install -r requirements.txt`、`python -m test.validate_pids`の順で再実行する。system Pythonへinstallせず、upstreamへのcommit / pushやruntime VID/PID適用は行わない。
+- regression check: HIDloom側の`script/test_pid_codes_application.py`と`script/test_public_usb_identity.py`に加え、生成した2 filesをdisposable upstream cloneへ置いた公式validatorと`git diff --check`をpassさせる。patchが空でないことと変更fileが2件だけであることも確認する。
+- evidence: 2026-07-16、公式commit `a454efc3291bba72162ac3878cdda0942dd8efa7`で初回実行は`frontmatter`不足により終了した。隔離venvへ`python-frontmatter==1.3.0`と`PyYAML==6.0.3`を導入した再実行は`No errors found!`、2 files / 15 insertionsのpatchは725 bytes / SHA-256 `76f255e3280497461eb0b0fbec260f35b5029447263a1c646c40888d892bc6c0`だった。
+
+## pid.codes owner directory text trips the retired-name audit
+
+- symptom: identity helperとpid.codes validatorはpassするが、GitHub Actionsのfull regression suiteが`test_hidloom_name_audit.py`で停止し、status文書のowner directory行だけをfindingにする。
+- likely cause: pid.codes directoryを末尾slashなしで記録し、repository owner文字列を含む旧software path検出へ一致させた。候補競合、license、runtime identity、hardware名の不一致ではない。
+- detect: `tools/hidloom_name_audit.py`のfindingを列挙し、該当行が公式directoryを示すか、retired software command / package / socketを示すかを区別する。GitHub Actionsでは`Public CI / validate`の`Full regression suite` logを確認する。
+- recovery: 公式directoryを`1209/484C/`と`org/cqa02303/`のようにslash終端で記録する。retired-name patternやactive source audit対象を緩めず、owner aliasや互換software名を追加しない。
+- regression check: `script/test_hidloom_name_audit.py`、`script/test_current_status_doc.py`、docs gate、隔離snapshotの`script/test_validation_suite.py`をpassさせる。public exportでも同じactive source auditを維持する。
+- evidence: 2026-07-16、private commit `cf89c4e37405`のPublic CI run `29490175164`はstatus文書1行だけを検出して停止した。slash終端へ正規化後、focused auditとCI同等full validation suiteはpassした。
+
+## Split package dry-run misses a hard-cut file owner
+
+- symptom: core/profileを同じ`apt-get -s install`で確認すると成功するが、actual installのcore unpackが`trying to overwrite`で停止し、新profileだけがunpacked状態になる。
+- likely cause: pre-hard-cut packageがcanonical unit/profile pathを所有しているが、新package metadataには意図的にretired package名の`Conflicts` / `Replaces`を残していない。apt simulationは異名package間のfile ownership collisionを展開前に検出しない。
+- detect: install前に`dpkg-query -S /lib/systemd/system/btd.service /usr/share/hidloom/profiles/<profile>/profile.json`を実行し、ownerが`hidloom`、`hidloom-core`、対象`hidloom-profile-<profile>`以外なら停止する。失敗後は`dpkg-query -W -f='${db:Status-Abbrev} ${binary:Package} ${Version}\n'`と`dpkg --audit`でpartial stateを確認する。
+- recovery: unpackedだけの新profileを除去し、`dpkg --audit`、failed units 0、旧runtime activeを確認する。旧core/profile `.deb`とsystemd unitをbackupした上で、旧2 packageの明示removeと新core/profileのinstallを同じapt transactionで実行し、`hidloom-profile <profile> --apply --backup --restart`を通す。
+- regression check: release installerのownership preflight、split verifierのinstalled/arm64/same-version検査、native owner live smoke、authenticated HTTPS `/api/status`の`hid_broker.broker_ready=true`、output target `auto`、reboot後failed units 0を確認する。
+- evidence: 2026-07-16、`<keyboard-host>`への`0.0.1936+git6b2a88e2`初回split installで再現した。partial profileを除去して旧runtimeを維持し、rollback `.deb`を保存後、hard-cut transactionで新core/profileを導入した。service 11件active、`NRestarts=0`、HID/native-owner smoke pass、output target `auto`まで復旧した。
+
+## Host PC restart looks like device power instability
+
+- symptom: package installとcontrolled reboot後のhealthはpassするが、数分後にSSHが`No route to host`またはtimeoutとなり、復帰後の`/proc/sys/kernel/random/boot_id`が変わる。次bootでjournalがunclean/corruptとして退避され、boot filesystemのdirty bitが自動除去される。
+- likely cause: USB接続先または給電元PCのOS update/restartは、Pi側ではclean shutdownを伴わない電源断またはUSB電源resetに見える。systemd watchdog、package maintainer script、電源・cable・microSD不良を疑う前に、試験時間帯のhost OS restart履歴と給電経路を確認する。
+- detect: 各remote操作前後でboot IDと`uptime -s`を記録し、`journalctl --list-boots`、`journalctl -b -1 -e`、current bootの`unclean|corrupt|dirty bit`、watchdog値、failed units、package stateを採取する。同時にoperatorへhost update/restartとUSB給電の有無を確認し、SSH断だけをWi-Fi不良やpackage不良と決めつけない。
+- recovery: host update完了まで追加rebootとwrite負荷を止め、到達できるwindowで`dpkg --audit`、failed units、output targetを確認して`auto`へ戻す。host安定後に同一boot IDで10分以上のread-only soakをやり直す。host restartがなかった場合だけ5V給電、cable、LED電流、microSD/board faultへ調査を広げる。
+- regression check: host安定後の10分以上のread-only soak、split verifier、必要なら1回だけのlive smoke、output `auto`、failed units 0を確認する。Windows host Raw HID/VialとOLED/LED/stickはhost update完了後に物理確認する。
+- evidence: 2026-07-16、`<keyboard-host>`の`0.0.1937+git8ab81f9e`試験中にboot IDが複数回変化したが、利用者から接続先Windows PCのupdate再起動が同時間帯に複数回走ったと報告された。PC安定後は2026-07-16T11:48:34Zから12:00:10Zまで11分36秒、60/60回reachable、boot ID `102f8804-0aa6-4f3e-96bf-78857819d581`不変でpassし、終了時もfailed units 0、package `ii`、output `auto`だった。
+
+## Reused Buildroot PYC_ONLY target loses importable modules
+
+- symptom: cached M6 outputから`sdcard.img`は生成されるが、artifact verifierが`luma/*/__init__.pyc`欠落で停止する。部分再配置後はQEMU import smokeが`encodings.aliases`欠落またはhostの`~/.local`にあるPillowを読んで失敗する。
+- likely cause: `BR2_PACKAGE_PYTHON3_PYC_ONLY=y`のfinalized targetを再利用した際、source `.py`は既に削除されている一方、古いpackage stampにより欠落bytecodeがtargetへ再配置されない。smokeがhost user siteを許すと、target欠落をhost packageで誤補完する。
+- detect: `tools/buildroot_m6_verify.py`、`tools/buildroot_m6_import_smoke.py`、`tools/buildroot_m6_runtime_smoke.py`を必ず連続実行し、targetの`encodings`、Pillow、CBOR2、luma、WS281x、SMBus2 bytecodeを確認する。QEMU tracebackにhost home pathが含まれた場合も失敗とする。
+- recovery: `tools/buildroot_m6_build.sh`を再実行する。wrapperは必要bytecode欠落時だけPython本体とM6依存packageのBuildroot `*-reinstall`を行い、その後imageと3 smokeを再生成する。手作業でimageへfileを追加しない。
+- regression check: static asset testでcache repair package集合、`PYTHONNOUSERSITE=1`、`PYTHONHOME`除去を固定し、実cached outputでartifact verify、target-only ARM import、JIS/US routing、companion初期化をpassさせる。
+- evidence: 2026-07-16、clean public export `cae3f14e4029`のcached M6再生成でluma bytecode、標準`encodings`、Pillow sourceの順に欠落を検出した。必要package再配置とhost user-site隔離後、source `947a9e4d3c1b`のimage SHA-256 `fa10d3df3857325b37c8a93bed2b01b931a608b601ea60ce4fe02276db660608`で3 smokeとpublic build provenanceをpassした。
+
+## M6 rebuild leaves unlisted Cargo output in the public export
+
+- symptom: M6 image、provenance、binary compliance verificationはpassするが、同じpublic exportで実行したrelease readinessだけが`no_unlisted_files=false`となり、4 Rust crateの`target/`と`buildroot-hostbin/install`を列挙する。
+- likely cause: native ARM buildがCargo既定のcrate-local `target/`を使用し、Buildroot host wrapperもsource root基準の`build/artifacts`へ作られる。image不良、manifest改ざん、private情報混入ではなく、build後source treeと事前生成manifestの境界違反である。
+- detect: `tools/public_build_rehearsal.sh --buildroot-image`後、同じexportで`tools/public_release_readiness.py --require-binary-distribution`を実行し、`unlisted_files`が0か確認する。image checksumとbinary readinessだけでsource publication readinessを代用しない。
+- recovery: disposable export内の生成済みcrate-local `target/`とhost wrapperだけを除去し、manifest掲載sourceを変更せずreadinessを再実行する。恒久経路では`BUILDROOT_OUTPUT`をexport外へ置き、native `CARGO_TARGET_DIR`、binary directory、host wrapperをその外部work directoryへ集約する。
+- regression check: static Buildroot asset testで外部`CARGO_TARGET_DIR`と`HIDLOOM_BUILD_HOSTBIN` forwardingを固定する。clean export、外部Buildroot output、image/provenance生成、release readinessの順で`unlisted_files=[]`、source/binary両readyを確認する。
+- evidence: 2026-07-16、source `947a9e4d3c1b`のM6候補で初回readinessはimage/compliance passのままgenerated pathを列挙してexit 2になった。disposable生成物だけを除去した再評価はblocker 0、unexpected required 0、unlisted 0、source/binary両readyでpassした。
+
+## M6 Raw HID exists but Vial client does not list the keyboard
+
+- symptom: M6は約6秒でkeyboard入力可能となり、JIS key、OLED、LEDも動作するが、Windows Vial clientのdevice listにkeyboardが出ない。
+- likely cause: M6がM4 gadget overlayを継承し、Raw HID `usage_page=0xFF60` / `usage=0x61`と`/dev/hidg1` bridgeは持つ一方、USB serialを過去のstage marker `m4-native-split`へ固定していた。Vial GUIの通常検出はserialに`vial:f64c2b3c` magicを要求するためprotocolへ到達する前に除外される。
+- detect: image targetのgadget script、Windows `hid.enumerate()`のMI_01 serial、Raw HID usage page/usageを確認する。`/dev/hidg1`や`viald` socketの存在だけでVial検出可能と判断しない。
+- recovery: development compatibility profileではUSB serialを`vial:f64c2b3c`へ戻し、gadgetを再列挙する。未割当のpublic VID/PIDやformal suffixへ変更せず、現在の`1d6b:0105`を維持する。
+- regression check: Buildroot asset testとM6 artifact verifierでserial magic包含とstage marker不在を固定する。Windows host smokeもMI_01だけでなくserial magicを検査し、Vial clientで接続、keymap read/write、再起動保持、cable再接続を確認する。
+- evidence: 2026-07-16、source `947a9e4d3c1b`のM6実機でUSB約6秒、JIS変換/無変換、OLED、LEDはpassしたがVial認識はfailした。生成imageのgadget scriptが`m4-native-split`を設定していることを確認し、Vial protocol/bridgeより前のenumeration filter不一致と特定した。
+- fixed candidate: source `8b9cad2eb781`から再生成したimage SHA-256 `2e52208455eea17ca033d8c373b9d81ca30625f3d2752e61403837b6014503aa`はVial serial magicを含むartifact gate、ARM import、split route、companion、provenance、source/binary readinessをpassした。Windows Vial clientでも認識、keymap read/write、再起動後保持、USB再接続、LED effect変更をpassし、初回failを解消した。
+
+## M6 console login fails when two gettys share tty1
+
+- symptom: `KC_CONSOLE`でWindowsへのHID入力は停止し、HDMI login promptへusername `pi`も届くが、passwordの一部がechoされたように見え、`Login incorrect`になる。起動画面で`Welcome to Buildroot`と`buildroot login:`が二重に表示される。OLEDがUSB表示のままなのは別の表示ロジック不具合である。
+- cause: Buildroot generic gettyのportが既定`console`のままで、Raspberry Pi post-buildがHDMI用`tty1` gettyも追加していた。kernel cmdlineは`console=tty1`なので`/dev/console`と`/dev/tty1`は同じterminalを指し、2個のBusyBox gettyがusername/passwordを競合してreadした。prompt前typeaheadは最初の候補だったが、重複gettyで説明できる。
+- detect: 最終rootfsの`/etc/inittab`からcommentでない`/sbin/getty`行を列挙する。M6は`tty1::respawn:/sbin/getty ... tty1 ...`の1行だけが正常。`console::...getty`と`tty1::...getty`の2行があるimageは不合格とする。credential hash、wheel/sudoers、uinput `p` / `i` / Enterも別gateで確認する。
+- recovery: `hidloom_m6_defconfig`で`BR2_TARGET_GENERIC_GETTY_PORT="tty1"`を固定し、M6 post-buildで過去のactive getty行を除去してcanonical `tty1` 1行を再生成する。これによりclean buildだけでなく、旧target treeを使う増分buildもsingle gettyへ収束させる。重複gettyを含む`b757ff4a0e6f`以前のM6 candidateは使用せず、single-getty verifierをpassした再生成imageへ書き換える。
+- regression check: `tools/buildroot_m6_verify.py`でactive gettyが`tty1` 1個だけか強制する。`script/test_hidloom_outputd_tool.py`と`tools/buildroot_m6_runtime_smoke.py`でnative/ARMの`USB -> uinput -> pi/Enter -> USB`往復とrelease frameをpassさせる。実機ではpromptが1組だけであること、`pi` / `pi`、`sudo -v`、`sudo id -u=0`、OLED Pi/USB復帰を確認する。
+- evidence: 2026-07-16のsource `8b9cad2eb781`および`b757ff4a0e6f` imageの最終rootfsにactive gettyが`console` / `tty1`の2行あることを確認した。同imageのcredential hashは`pi`と一致し、隔離ARM BusyBox loginは認証後まで到達、native/ARM uinput往復はLinux key 25 / 23 / 28のpress/releaseをpassしたため、入力データではなくterminal owner競合と特定した。
+- fixed candidate: source `f4a5690b06f0`から再生成したimage SHA-256 `5ec1342a0d5d6e8705419998f4298a8782fe2dcf713955f864fe053c14ea17ff`は、旧target treeを使った増分buildでもfinal rootfsをcanonical `tty1` getty 1行へ収束させた。artifact/import、credential/sudo、JIS/US split、native/ARM uinput往復、companion、provenance、source/binary readinessはpassし、実機のprompt/login/sudo/USB復帰は翌日確認待ちである。
+
+## M6 first enumeration briefly leaves Ctrl active
+
+- symptom: M6起動直後、物理Ctrlを押していないのにWindowsでCtrlがactiveに見えることがあり、USB cableの抜き差しで解消する。
+- likely cause: `hidloom-hidd`はUSB gadget bind後にendpointをopenするが、最初のinput frameより前にnull keyboard reportを送っていなかった。hostが同一identityの一時的なpressed stateを保持した場合、次の通常reportまたは再enumerationまで解除が保証されない。過去M4のReport ID `0x01`誤解釈なら再接続後も恒常的に再発するため、今回の一過性症状とは区別する。
+- detect: exact imageのgadget scriptでmain `hidg0`がReport ID `0x01`付き9-byte descriptor、US sub `hidg2`がReport IDなし8-byte descriptorであることを先に確認する。正常な修正版では`/run/hidloom/hidd-status.json`の`counters.startup_release_reports`が`2`になる。mainがReport IDなし8 byteなら旧M4型descriptor mismatch、descriptor正常でcounterが0ならstartup release不足として扱う。
+- recovery: 現行imageではUSBを再接続してmodifierを解除する。恒久対応imageでは`hidloom-hidd`起動時にmainへ`01` + 8 zero bytes、US subへ8 zero bytesをinput処理前に送り、endpoint未準備時は成功まで再試行する。
+- regression check: `script/test_hidloom_hidd_tool.py`でendpoint別startup reportを確認し、ARMv7 binaryを`tools/buildroot_m6_runtime_smoke.py`のQEMU smokeで実行する。`tools/buildroot_m6_verify.py`はmain 9-byte/Report ID `0x01`、sub 8-byte/no Report ID、startup-release対応binaryを必須化する。実機はキーに触れずcold boot/USB接続を3回行い、Ctrl非activeを確認する。
+- evidence: 2026-07-16、single-getty f4 imageで1回観測した。exact imageのdescriptorとARM binary hashはsource buildと一致し、旧M1 descriptor混入は否定した。native、遅延endpoint fixture、ARM startup null-report回帰、canonical full validation suiteは追加後にpassした。source `4f3c40736a79`からclean cross-buildしたstartup-release image SHA-256 `ab8523d47002e8c8999c7153dcfcf920f7ce9a069110c1a163806634b09af4f0`もdescriptor gate、ARM startup release、split route、uinput往復、provenance、source/binary readinessをpassした。後続remote hardeningではendpoint準備前にqueueしたCtrl inputよりzero reportが先行すること、final rootfsのARM binary/scriptがtargetとbyte一致すること、rootfs SHA-256 `f603f43292f4e90fc035e2b98f743cb15e386586435a869462d12b59b54abdf3`がraw image第2partitionへ同一payloadとして埋め込まれていること、破損fixtureが不一致になることもpassし、物理cold boot 3回だけが確認待ちである。
+
+## OLED pixel click remains in drag-paint state
+
+- symptom: HTTP OLED editorで1 pixelを左clickしてbuttonを離した後、別pixelへcursorを移動するだけで点灯が続く。grid外をclickすると停止する。
+- likely cause: 通常描画でも`renderOledPixelGrid()`が全cellを置換し、`pointerdown`対象DOMをevent sequence途中で削除していた。browserがそのpointerの`pointerup`をwindowへ届けない場合、`painting=true`が残り、後続`pointerover`をdragと誤認する。
+- detect: click/release後、mouse buttonを押さずに別pixelへ移動して変化するか確認する。開発側では通常描画pathにgrid全体の再生成がないこと、`pointerover.buttons`とpaint button maskを照合することを確認する。
+- recovery: 現行UIではgrid外をclickするかpageを再読込してstale painting stateを解除する。恒久修正版では通常描画をcell単位更新へ変更し、pointerup/cancel、window blur、document非表示で状態を解除する。
+- regression check: `python3 script/test_oled_pointer_editing.py`のNode VMで`buttons=0`のpointeroverが描画0回かつpainting解除、左/右button dragだけが各1回描画になることを確認する。`script/test_oled_customization.py`でbutton guard、capture-phase release、cell単位更新を固定し、実browserで左/右click、drag、grid外releaseを確認する。
+- evidence: 2026-07-17、`<keyboard-host>`のpackage `0.0.1965+git4e2096c1`で利用者が再現した。source調査で通常click直後のgrid全置換とrelease guard不足を確認し、修正後のNode VM、JavaScript構文、HTTP UI/OLED customization回帰はpassした。source `121d7d6b`のpackage `0.0.1967+git121d7d6b`へ更新後、標準live smoke、service/API、配信中JS guard、runtime保持をpassし、利用者の実browserでも意図しない連続描画の解消、icon編集、保存、再起動後保持を確認した。
+
+## Promoted OLED daemon icons exceed the fixed row gap
+
+- symptom: HTTP editorで調整したdaemon iconをpackage既定へ移すとOLED icon testは通るが、daemon status描画testでactive badgeの下端が固定14px領域を越える。
+- likely cause: 旧iconは有効pixelが最大6行で固定`row_gap=7`に収まっていたが、新iconは7行を使う。bitmap schemaの8x8制約や横幅では検出できず、2段目が1段目または次のReady項目へ重なる。
+- detect: `_draw_daemon_status_row`を実bitmapで描画し、各active rectangle下端が返却した消費領域内か確認する。bitmap validationだけで合格にしない。
+- recovery: iconの最下段を削って見た目を変えず、各daemon rowのtrimmed vertical bounds最大高に1px gapを加えて次行位置と返却高を計算する。
+- regression check: `script/test_i2cd_output_mode_label.py`で実iconから期待row heightを算出し、badge下端が次項目開始位置より前か確認する。`script/test_i2cd_oled_icons.py`、customization、Buildroot asset gateも通す。
+- evidence: 2026-07-17、`<keyboard-host>`の保存icon 17件をsource既定へ昇格した際に検出した。11件の変更を維持したままdynamic row heightへ変更し、全17 iconのruntime一致とReady既定順不変、関連OLED回帰をpassした。
+
+## Profile restart returns before control sockets are ready
+
+- symptom: split package更新後の`hidloom-profile keyboard-ver1 --apply --backup --restart`は成功するが、直後の`hidloom-ctrl output auto`が`connect /tmp/ctrl_events.sock: No such file or directory`で失敗する。数秒後は同じcommandが成功する。
+- likely cause: `systemctl restart`はserviceのactive到達で戻るが、Python companionとoutput daemonがUnix socketをbindする処理はその後に完了する。package不良、profile copy失敗、永続設定破損ではない。
+- detect: package/profile applyのexit codeを分けて記録し、`systemctl is-active logicd-companion hidloom-outputd`と`test -S /tmp/ctrl_events.sock` / `test -S /tmp/hidloom_output_ctrl.sock`を確認する。socket未生成だけなら起動競合として扱い、直ちにpackage rollbackしない。
+- recovery: 両socketがsocket nodeとして現れるまで最大15秒pollし、その後`hidloom-ctrl output auto`を再実行して`/run/hidloom/outputd-status.json`の`target=auto`を確認する。timeout時はservice journal、failed units、profile markerを採取してからrollbackを判断する。
+- regression check: `keyboard-ver1.services.ready_sockets`に両pathを保持し、`script/test_apply_device_profile.py`で実Unix socketの即時pass、missing socket timeout、dry-runの`wait-socket`表示を確認する。実機package更新後はprofile applyの直後に追加sleepなしで`hidloom-ctrl output auto`が成功することを確認する。
+- evidence: 2026-07-17、`<keyboard-host>`を`0.0.1973+git757d0871`へ更新した際に1回再現した。package installとprofile file反映は成功し、socket生成後の再実行、主要service、HID/native smoke、HTTPS status、output `auto`はすべてpassした。
+
+## Adding a test leaves the exact inventory counts stale
+
+- symptom: Public CIのfull regressionが終盤の`script/test_test_inventory_doc.py`だけで停止し、`script/test_*.py`本数またはcanonical entrypoint数のassertionが失敗する。同じsourceのrepository hygieneとpublic export artifact checkはpassする。
+- likely cause: 新しい`script/test_*.py`を追加してcanonical suiteへ登録した際、`docs/ops/test-script-inventory.md`先頭の棚卸し数値を同じcommitで更新していない。機能test、export、workflow runnerの失敗ではない。
+- detect: `find script -maxdepth 1 -name 'test_*.py'`相当の実数と`script/test_validation_suite.py`のliteral `TESTS`件数を文書の数値と比較し、`python3 script/test_test_inventory_doc.py`をlocalで再現する。log中の意図したnegative-path warningは末尾のtracebackと区別する。
+- recovery: 棚卸し文書の2数値を現行実数へ更新し、inventory test、docs link/current status、clean snapshotのcanonical suiteを順に通す。testやworkflowを無効化してgreenにしない。
+- regression check: 新しいtest fileまたはsuite entrypointを追加するcommitでは`script/test_test_inventory_doc.py`をfocused gateに含める。public sync前はprivate Public CI、public export artifact check、repository hygieneの全結果を確認する。
+- evidence: 2026-07-17、source `b429bf30`、`4b95957f`、`7ebbf19d`、`2291056f`のPublic CI 4 runがすべて332対333 testsの同一assertionで失敗した。isolated clean snapshotで332→333、219→220へ更新するとinventory gateはpassした。
+
+## OLED layout fixture keeps an obsolete absolute coordinate
+
+- symptom: test inventory修正後のcanonical full regressionが`script/test_i2cd_direct_frame_fps.py`で停止し、Ready画面のdaemon区切り線を旧座標`33/34`に要求する。
+- likely cause: 保存iconの既定昇格に合わせてdaemon rowを実bitmap高から算出する可変高さへ変更したが、FPS fixtureだけが区切り線とoutput badgeの絶対座標を固定していた。実描画は新しいicon高に合わせて後続項目を下へ移動しており、重なりやFPS欠落ではない。
+- detect: `python3 script/test_i2cd_direct_frame_fps.py`で再現し、FakeDrawのline、badge rectangle、Layer text位置を列挙する。区切り線がdaemon bitmapの算出高直後にあり、output badgeとLayerがその下ならstale fixtureとして扱う。
+- recovery: 特定icon版だけのpixel座標へ置換せず、`_daemon_status_icon_rows()`と各iconのvertical boundsから期待消費高を算出し、区切り線、output badge、Layerの相対順序を検証する。
+- regression check: `script/test_i2cd_direct_frame_fps.py`、`script/test_i2cd_output_mode_label.py`、`script/test_oled_customization.py`とcanonical suiteをpassさせる。icon既定値やReady行高を変える時は絶対座標fixtureを追加しない。
+- evidence: 2026-07-17、inventory件数修正後のprivate full regressionで検出した。実描画のdaemon区切り線は`35/36`、output badgeはその下、Layerはさらに下であり、可変高から期待位置を導くfixtureへ修正した。

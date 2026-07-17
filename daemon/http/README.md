@@ -11,6 +11,7 @@
 | キーマップ変更 | GUI から runtime keymap を変更し、`/mnt/p3/keymap.json` へ保存 |
 | `.vil` 入出力 | Vial GUI 互換の keymap JSON を export/import |
 | Lighting | VialRGB mode、HSV、speed、direct frame を操作 |
+| OLED | 1-bit icon編集、Ready画面の表示ON/OFF・行順・区切り線編集、browser preview、runtime override保存 |
 | Matrix Tester | 内部 matrix pressed state を表示 |
 | Scripts | `KC_SH0` から `KC_SH10` の runtime script を表示・編集 |
 | Status / Logs | HID、出力先、基板 profile、Bluetooth、btd、spid、各 daemon の状態と journald log を表示 |
@@ -29,13 +30,15 @@ flowchart LR
     matrix["logicd-core-rs\n/tmp/matrix_events.sock\nvirtual matrix injection"]
     ctrl["logicd-companion\n/tmp/ctrl_events.sock\nkeymap / lighting / matrix state / BT control"]
     status["system status\n/proc / systemctl / journalctl"]
-    files["runtime files\n/mnt/p3/keymap.json\n/mnt/p3/script/KC_SHn.sh"]
+    files["runtime files\n/mnt/p3/keymap.json\n/mnt/p3/oled_customization.json\n/mnt/p3/script/KC_SHn.sh"]
+    oled["i2cd\nOLED renderer\n/tmp/i2c_events.sock"]
 
     browser <--> httpd
     config --> httpd
     cert --> httpd
     httpd --> matrix
     httpd --> ctrl
+    httpd --> oled
     status --> httpd
     httpd <--> files
 ```
@@ -62,6 +65,7 @@ API の本体は機能別 module へ分割し、`httpd.py` には systemd から
 | `layout_controls.py` | `_layout_def` 由来の joystick / encoder / click metadata |
 | `keymap_api.py` | keymap active / remap / layer add-clear の HTTP handler 本体 |
 | `lighting_api.py` | Lighting / matrix tester HTTP handler 本体 |
+| `oled_api.py` | OLED customization取得・検証・atomic保存・reset・i2cd reload通知 |
 | `settings_api.py` | Settings API の HTTP Basic auth 更新 handler 本体 |
 | `scripts_api.py` | Script editor API、check-run / run 実行 handler 本体 |
 | `security_api.py` | private-network 制限、CSRF、Basic auth、TLS helper |
@@ -82,6 +86,7 @@ API の本体は機能別 module へ分割し、`httpd.py` には systemd から
 | `static/remap_panel.js` | keymap remap と `.vil` import/export |
 | `static/status_panel.js` | daemon status / log panel |
 | `static/lighting_panel.js` | Lighting / VialRGB UI |
+| `static/oled_panel.js` | JavaScript主体の1-bit icon / Ready layout editorとpreview |
 | `static/matrix_tester.js` | 内部 Matrix Tester |
 | `static/scripts_panel.js` | script viewer / editor |
 
@@ -102,6 +107,7 @@ API の本体は機能別 module へ分割し、`httpd.py` には systemd から
 | `HTTPD_BASIC_AUTH_FILE` | `/mnt/p3/http_basic_auth.json` または `config/default/http_basic_auth.local.json` | Settings で保存する認証 override |
 | `MATRIX_EVENTS_SOCK` | `/tmp/matrix_events.sock` | virtual matrix injection bridge to the current input owner |
 | `CTRL_EVENTS_SOCK` | `/tmp/ctrl_events.sock` | keymap / lighting / matrix state / Bluetooth control |
+| `HIDLOOM_OLED_CUSTOMIZATION_FILE` | `/mnt/p3/oled_customization.json` | OLED icon / Ready layout runtime override |
 
 Basic 認証の初期値は `config/default/config.json` の `settings.http_basic_auth` から読みます。未設定時の初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。Settings タブから password を変更した場合は `HTTPD_BASIC_AUTH_FILE` の小さな専用 JSON へ `password_hash` として保存し、`config/default/config.json` は書き換えません。
 
@@ -133,6 +139,8 @@ Basic 認証の初期値は `config/default/config.json` の `settings.http_basi
 | `/api/system/shutdown` | POST | OS shutdown を起動。UI では二段階確認を必須にする |
 | `/api/lighting/*` | GET/POST | VialRGB / Lighting 操作 |
 | `/api/lighting/lock-indicators` | GET/PUT | Host lock LED 表示設定 |
+| `/api/oled` | GET/PUT | OLED既定値・runtime override取得、icon/layout保存と反映 |
+| `/api/oled/reset` | POST | runtime override削除と既定表示への復帰 |
 | `/ws` | WS | key event WebSocket |
 
 すべての URL は HTTPS と Basic 認証が必要です。
@@ -154,6 +162,8 @@ Basic 認証の初期値は `config/default/config.json` の `settings.http_basi
 - `/api/system/shutdown` は認証・CSRF を通った POST だけを受け付ける。UI では `Shutdown` 押下で
   確認パネルを開き、`Shutdown now` の二回目操作でだけ実行する。既定 command は
   `sudo shutdown -h now` で、実行後は Raspberry Pi の物理電源投入が復帰経路になる。
+- `/api/oled`のPUTとresetは認証・private-network制限・CSRFを通し、package payloadではなく
+  `/mnt/p3/oled_customization.json`だけをatomic更新する。壊れたruntime fileは既定表示へfallbackする。
 - `/api/scripts/{KC_SHn}/check-run` と `/api/scripts/{KC_SHn}/run` は、認証済みユーザーが
   script を `httpd` 権限で実行するための強い操作。これは command injection ではなく機能だが、
   editor UI では実行前確認を必須にする。危険 metadata / 自動検出に該当する script は、
@@ -174,7 +184,7 @@ Basic 認証の初期値は `config/default/config.json` の `settings.http_basi
 | Text Send | Unicode / Send String の mode、host profile、runner readiness、named text validation count、blocking reasons |
 | Bluetooth | adapter、paired/trusted/connected device、pairing 状態 |
 | btd | BLE HID daemon の process、GATT backend、runtime status |
-| hidd / hid_broker | USB HID report broker socket、native `hidloom-hidd` owner、logicd opt-in env、`broker_ready` |
+| hidd / hid_broker | USB HID report broker socket、native `hidloom-hidd` owner、legacy brokerまたはnative outputd routeのopt-in env、`broker_ready` |
 | usbd | legacy USB HID broker compatibility payload。active owner が `hidloom-hidd` の場合も owner / readiness を反映する |
 | spid | SPI 入力 daemon の process 状態 |
 | ledd direct frame | VialRGB direct frame の状態 |

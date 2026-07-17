@@ -34,6 +34,8 @@ def main() -> None:
     if not python.exists():
         raise SystemExit(f"target Python missing: {python}")
     environment = os.environ.copy()
+    environment.pop("PYTHONHOME", None)
+    environment["PYTHONNOUSERSITE"] = "1"
     environment["PYTHONPATH"] = ":".join(
         (
             str(target / "usr/share/hidloom"),

@@ -8,6 +8,7 @@ BR2_GLOBAL_PATCH_DIR="board/raspberrypi/patches"
 BR2_DOWNLOAD_FORCE_CHECK_HASHES=y
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_HIDLOOM_PATH)/board/hidloom/rootfs_overlay $(BR2_EXTERNAL_HIDLOOM_PATH)/board/hidloom/rootfs_overlay_m3 $(BR2_EXTERNAL_HIDLOOM_PATH)/board/hidloom/rootfs_overlay_m4 $(BR2_EXTERNAL_HIDLOOM_PATH)/board/hidloom/rootfs_overlay_m6"
 BR2_ROOTFS_USERS_TABLES="$(BR2_EXTERNAL_HIDLOOM_PATH)/board/hidloom/users_m6.txt"
+BR2_TARGET_GENERIC_GETTY_PORT="tty1"
 BR2_ROOTFS_POST_BUILD_SCRIPT="board/raspberrypizero2w/post-build.sh $(BR2_EXTERNAL_HIDLOOM_PATH)/board/hidloom/post-build-m6.sh"
 BR2_ROOTFS_POST_IMAGE_SCRIPT="board/raspberrypizero2w/post-image.sh"
 BR2_LINUX_KERNEL=y

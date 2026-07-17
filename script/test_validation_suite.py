@@ -156,6 +156,8 @@ TESTS = [
     "script/test_http_script_module_split.py",
     "script/test_http_script_ui_assets.py",
     "script/test_http_ui_assets.py",
+    "script/test_oled_customization.py",
+    "script/test_oled_pointer_editing.py",
     "script/test_hidloom_icon_assets.py",
     "script/test_led_semantic_roles.py",
     "script/test_led_life_game_effect.py",

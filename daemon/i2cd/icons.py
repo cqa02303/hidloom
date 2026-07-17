@@ -9,6 +9,9 @@ from dataclasses import dataclass
 import logging
 from pathlib import Path
 
+from .oled_customization import icon_payload as serialize_icon_payload
+from .oled_customization import load_effective_document
+
 log = logging.getLogger(__name__)
 
 
@@ -89,14 +92,14 @@ def _file_mtime_ns(path: Path) -> int:
 def reload_icon_bitmaps(path: Path = BITMAP_FILE) -> None:
     """Reload editable OLED icon bitmaps from disk."""
 
-    global _ICON_BITMAPS, _ICON_BITMAPS_MTIME_NS, _ICON_BITMAPS_SOURCE
+    global _ICON_BITMAPS, _ICON_BITMAPS_MTIME_NS, _ICON_BITMAPS_SOURCE, _RUNTIME_ICON_SIGNATURE
 
     icons = _load_icon_bitmaps(path)
     _ICON_BITMAPS = icons
     _ICON_BITMAPS_MTIME_NS = _file_mtime_ns(path)
     _ICON_BITMAPS_SOURCE = path
-    CONNECTIVITY_ICONS.clear()
-    CONNECTIVITY_ICONS.update(icons)
+    _RUNTIME_ICON_SIGNATURE = None
+    _publish_icon_bitmaps(icons)
 
 
 def _refresh_icon_bitmaps_if_changed() -> None:
@@ -140,32 +143,62 @@ HIDD_ICON_8X8 = _ICON_BITMAPS["hid"]
 USBD_ICON_8X8 = HIDD_ICON_8X8
 VIALD_ICON_8X8 = _ICON_BITMAPS["vial"]
 
-CONNECTIVITY_ICONS = {
-    "bt": BT_ICON_8X8,
-    "usb": USB_ICON_8X8,
-    "pi": PI_ICON_8X8,
-    "auto": AUTO_ICON_8X8,
-    "wifi0": WIFI_LEVEL_0_8X8,
-    "wifi3": WIFI_LEVEL_3_8X8,
-    "mtx": MATRIXD_ICON_8X8,
-    "core": LOGICD_CORE_ICON_8X8,
-    "cmp": LOGICD_COMPANION_ICON_8X8,
-    "lgc": LOGICD_ICON_8X8,
-    "led": LEDD_ICON_8X8,
-    "out": OUTPUTD_ICON_8X8,
-    "uid": UIDD_ICON_8X8,
-    "btd": BTD_ICON_8X8,
-    "http": HTTPD_ICON_8X8,
-    "web": HTTPD_ICON_8X8,
-    "usbd": HIDD_ICON_8X8,
-    "hid": HIDD_ICON_8X8,
-    "vial": VIALD_ICON_8X8,
-}
+CONNECTIVITY_ICONS: dict[str, OledIcon] = {}
 OLED_ICONS = CONNECTIVITY_ICONS
+_RUNTIME_ICON_SIGNATURE: tuple | None = None
+
+
+def _publish_icon_bitmaps(icons: dict[str, OledIcon]) -> None:
+    published = dict(icons)
+    published["http"] = icons["web"]
+    published["usbd"] = icons["hid"]
+    CONNECTIVITY_ICONS.clear()
+    CONNECTIVITY_ICONS.update(published)
+
+
+def default_icon_payload() -> dict[str, dict]:
+    return serialize_icon_payload(_ICON_BITMAPS)
+
+
+def _refresh_runtime_icon_bitmaps() -> None:
+    global _RUNTIME_ICON_SIGNATURE
+
+    document, source, errors = load_effective_document(_ICON_BITMAPS)
+    signature = (
+        source,
+        tuple(errors),
+        tuple(
+            (name, icon["width"], icon["height"], tuple(icon["rows"]))
+            for name, icon in document["icons"].items()
+        ),
+    )
+    if signature == _RUNTIME_ICON_SIGNATURE:
+        return
+    effective: dict[str, OledIcon] = {}
+    for name, payload in document["icons"].items():
+        base = _ICON_BITMAPS[name]
+        rows = tuple(payload["rows"])
+        if base.width == payload["width"] and base.height == payload["height"] and base.rows == rows:
+            effective[name] = base
+        else:
+            effective[name] = OledIcon(
+                name=f"{name}-{payload['width']}x{payload['height']}",
+                width=payload["width"],
+                height=payload["height"],
+                rows=rows,
+            )
+    _publish_icon_bitmaps(effective)
+    _RUNTIME_ICON_SIGNATURE = signature
+    if errors:
+        log.warning("invalid OLED customization; using packaged icons: %s", "; ".join(errors))
+
+
+_publish_icon_bitmaps(_ICON_BITMAPS)
 
 
 def icon_bitmap(name: str) -> OledIcon:
     _refresh_icon_bitmaps_if_changed()
+    _refresh_runtime_icon_bitmaps()
     try:
         return CONNECTIVITY_ICONS[name]
     except KeyError as exc:

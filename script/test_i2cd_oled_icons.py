@@ -150,8 +150,8 @@ def main() -> None:
         reload_icon_bitmaps(bitmap_copy)
         assert icon_bitmap("bt").rows == original_bt_rows
 
-        changed_source = bitmap_source.replace("bt:\n001000", "bt:\n111111", 1)
-        changed_source = changed_source.replace("btd:\n00011000", "btd:\n11111111", 1)
+        changed_source = bitmap_source.replace(f"bt:\n{BT_ICON_8X8.rows[0]}", "bt:\n111111", 1)
+        changed_source = changed_source.replace(f"btd:\n{BTD_ICON_8X8.rows[0]}", "btd:\n11111111", 1)
         bitmap_copy.write_text(changed_source, encoding="utf-8")
         mtime = time.time() + 1.0
         os.utime(bitmap_copy, (mtime, mtime))

@@ -139,6 +139,6 @@ if [ "$RUN_SMOKE" -eq 1 ]; then
     verify_args="--smoke"
 fi
 # shellcheck disable=SC2086
-"$SCRIPT_DIR/deploy_deb_verify.sh" $REMOTE_ARG $verify_args
+"$SCRIPT_DIR/deploy_deb_verify.sh" $REMOTE_ARG --profile "$PROFILE" $verify_args
 echo
 echo "release deb deploy complete: $TAG"

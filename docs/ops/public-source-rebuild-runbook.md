@@ -101,6 +101,10 @@ BUILDROOT_OUTPUT=/srv/buildroot/hidloom-m6-output \
 tools/public_build_rehearsal.sh --buildroot-image
 ```
 
+`BUILDROOT_OUTPUT`をpublic export外へ置くと、native Rustの共有`CARGO_TARGET_DIR`とBuildroot用
+host wrapperも同じ外部work directoryへ配置される。image build後に同じexportでrelease readinessを
+評価する場合はこの分離を必須とし、manifest外の`tools/*/target`や`build/artifacts`を残さない。
+
 完成imageは`$BUILDROOT_OUTPUT/images/sdcard.img`です。Release用の名前、raw/zstd checksum、SBOM、
 対応sourceは公開前に同じprovenance recordへまとめます。
 

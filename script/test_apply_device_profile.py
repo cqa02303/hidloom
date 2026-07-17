@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import socket
 import subprocess
 import sys
 import tempfile
@@ -58,6 +59,30 @@ def main() -> None:
     assert "systemctl mask matrixd.service" in proc.stdout
     assert "systemctl restart hidloom-usb-gadget.service" in proc.stdout
 
+    with tempfile.TemporaryDirectory() as td:
+        keyboard_proc = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "keyboard-ver1",
+                "--profile-dir",
+                str(ROOT / "config" / "device-profiles"),
+                "--runtime-dir",
+                str(Path(td) / "runtime"),
+                "--dry-run",
+                "--backup",
+                "--restart",
+            ],
+            cwd=ROOT,
+            text=True,
+            encoding="utf-8",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+    assert "wait-socket /tmp/ctrl_events.sock" in keyboard_proc.stdout
+    assert "wait-socket /tmp/hidloom_output_ctrl.sock" in keyboard_proc.stdout
+
     module = load_module()
     content = module.render_dropin(
         "httpd.service",
@@ -85,6 +110,25 @@ def main() -> None:
     )
     assert 'Environment="LOGICD_MATRIX_ROWS=16"' in logicd
     assert 'Environment="LOGICD_MATRIX_COLS=16"' in logicd
+
+    with tempfile.TemporaryDirectory() as td:
+        socket_path = Path(td) / "ready.sock"
+        server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            server.bind(str(socket_path))
+            module.wait_for_sockets([socket_path], timeout_sec=0.1, poll_sec=0.01)
+        finally:
+            server.close()
+
+    with tempfile.TemporaryDirectory() as td:
+        missing = Path(td) / "missing.sock"
+        try:
+            module.wait_for_sockets([missing], timeout_sec=0.01, poll_sec=0.001)
+        except SystemExit as exc:
+            assert "service readiness timeout" in str(exc)
+            assert str(missing) in str(exc)
+        else:
+            raise AssertionError("missing readiness socket should time out")
 
     print("ok: device profile apply dry-run")
 

@@ -384,6 +384,35 @@ ssh "$REMOTE" "
         dpkg-deb --info \"\$package_path\"
     done
     echo
+    if [ '$MODE' = split ]; then
+        echo 'package ownership preflight:'
+        ownership_conflicts=
+        for ownership_path in \
+            /lib/systemd/system/btd.service \
+            /usr/share/hidloom/profiles/$PROFILE/profile.json
+        do
+            owner_line=\$(dpkg-query -S \"\$ownership_path\" 2>/dev/null | sed -n '1p' || true)
+            owner=\${owner_line%%:*}
+            case \"\$owner\" in
+                ''|hidloom|hidloom-core|hidloom-profile-$PROFILE)
+                    if [ -n \"\$owner\" ]; then
+                        echo \"ok-owner: \$ownership_path -> \$owner\"
+                    else
+                        echo \"unowned: \$ownership_path\"
+                    fi
+                    ;;
+                *)
+                    echo \"package ownership collision: \$owner owns \$ownership_path\" >&2
+                    ownership_conflicts=\"\$ownership_conflicts \$owner\"
+                    ;;
+            esac
+        done
+        if [ -n \"\$ownership_conflicts\" ]; then
+            echo 'remove the listed pre-hard-cut packages in the same apt transaction as the split install' >&2
+            exit 1
+        fi
+        echo
+    fi
     if [ '$INSTALL' -eq 1 ]; then
         if [ '$APT' -eq 1 ]; then
             echo 'apt install:'

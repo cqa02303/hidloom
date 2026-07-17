@@ -30,7 +30,7 @@ start_gadget() {
     printf '0x0100\n' > bcdDevice
     printf '0x0200\n' > bcdUSB
     mkdir -p strings/0x409
-    printf 'm4-native-split\n' > strings/0x409/serialnumber
+    printf 'vial:f64c2b3c\n' > strings/0x409/serialnumber
     printf 'hidloom\n' > strings/0x409/manufacturer
     printf 'CQA02303v5 M4 JP+US Keyboard\n' > strings/0x409/product
 
