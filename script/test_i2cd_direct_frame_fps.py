@@ -100,6 +100,7 @@ def test_fps_monitor() -> None:
 
 def test_ready_display_includes_fps_line() -> None:
     draw = FakeDraw()
+    daemon_status = {"matrixd": True, "logicd": True}
     old_canvas = i2cd.canvas
     old_hostname = i2cd._HOSTNAME
     try:
@@ -114,6 +115,7 @@ def test_ready_display_includes_fps_line() -> None:
             logicd_ok=True,
             current_mode="auto:gadget",
             fps_label="FPS:24.0",
+            daemon_status=daemon_status,
             system_status={"cpu_percent": 12, "cpu_temp": 52.0},
         )
     finally:
@@ -126,16 +128,31 @@ def test_ready_display_includes_fps_line() -> None:
     assert draw.points
     assert any(rect["kwargs"].get("fill") == "white" for rect in draw.rectangles)
     assert len(draw.lines) >= 4
-    assert [(1, 33), (62, 33)] in [line["args"][0] for line in draw.lines]
-    assert [(1, 34), (62, 34)] in [line["args"][0] for line in draw.lines]
+    node_separator_y = draw.lines[0]["args"][0][0][1]
+    daemon_start_y = node_separator_y + 4
+    daemon_height = sum(
+        max(
+            i2cd._icon_vertical_bounds(i2cd.icon_bitmap(icon_name))[1]
+            - i2cd._icon_vertical_bounds(i2cd.icon_bitmap(icon_name))[0]
+            for icon_name, _active in row
+        ) + 1
+        for row in i2cd._daemon_status_icon_rows(daemon_status)
+    )
+    daemon_separator_y = daemon_start_y + daemon_height
+    line_segments = [line["args"][0] for line in draw.lines]
+    assert [(1, daemon_separator_y), (62, daemon_separator_y)] in line_segments
+    assert [(1, daemon_separator_y + 1), (62, daemon_separator_y + 1)] in line_segments
     assert "  " in draw.texts[-1]
     white_rects = [rect for rect in draw.rectangles if rect["kwargs"].get("fill") == "white"]
-    white_tops = sorted(rect["args"][0][0][1] for rect in white_rects)
-    assert white_tops.count(18) >= 2
-    assert white_tops.count(36) == 2
-    daemon_bottom = max(rect["args"][0][1][1] for rect in white_rects if rect["args"][0][0][1] == 18)
+    daemon_rects = [rect for rect in white_rects if rect["args"][0][0][1] < daemon_separator_y]
+    output_rects = [rect for rect in white_rects if rect["args"][0][0][1] > daemon_separator_y]
+    assert daemon_rects
+    assert len(output_rects) == 2
+    daemon_bottom = max(rect["args"][0][1][1] for rect in daemon_rects)
+    output_bottom = max(rect["args"][0][1][1] for rect in output_rects)
+    assert daemon_bottom < daemon_separator_y
     layer_y = next(pos[1] for text, pos in draw.text_positions if text == "Layer: 0")
-    assert layer_y > daemon_bottom
+    assert layer_y > output_bottom
 
 
 def test_ready_display_hides_inactive_fps_line() -> None:

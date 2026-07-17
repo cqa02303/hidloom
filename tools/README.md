@@ -70,6 +70,10 @@ API hostは同じcanonical policyから固定し、これらを自動でvisibili
 `pid_codes_application.py`は申請用org/device pageをrepository外へ生成する。生成時はcanonical originへ作用するGit URL rewriteのない最新のcleanな
 canonical upstream checkoutを必須にし、`HEAD`、`origin/HEAD`、online remote `HEAD`、記録済みcommit/date/path evidenceが
 一致しなければ停止する。public repositoryのinitial sourceが参照可能になる前に申請PRを提出しない。
+生成後はdisposableなupstream cloneへ2 filesだけを配置し、system Pythonを変更せず一時venvで公式validatorを実行する。
+`python3 -m venv <temporary-venv>`、`<temporary-venv>/bin/pip install -r requirements.txt`、
+`<temporary-venv>/bin/python -m test.validate_pids`の順とし、`No errors found!`と`git diff --check`を申請前証跡にする。
+`ModuleNotFoundError: frontmatter`は申請内容の不合格ではなく、公式requirements未導入を示す。
 
 `public_export.py`は`config/public-export.json` schema v2を正本に、Git indexの全pathをpublic source、
 明示private-only、既定のgenerated outputへ完全分類する。allowlist外かつprivate-only patternにも一致しない

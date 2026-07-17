@@ -62,6 +62,12 @@ def main() -> None:
     assert i2cd._output_mode_icon_row("auto:gadget") == [("auto", True), ("usb", True)]
     assert i2cd._output_mode_icon_row("auto:bt") == [("auto", True), ("bt", True)]
     assert i2cd._output_mode_icon_row("auto:uinput") == [("auto", True), ("pi", True)]
+    assert i2cd._output_mode_icon_row("uinput", daemon_status={"hidd": True}) == [("pi", True)]
+    assert i2cd._output_mode_icon_row("auto:uinput", daemon_status={"hidd": True}) == [
+        ("auto", True),
+        ("pi", True),
+    ]
+    assert i2cd._output_mode_icon_row("debug", daemon_status={"hidd": True}) == [("usb", True)]
     assert i2cd._output_mode_icon_row("gadget", {"available": True, "powered": True, "connected": True}) == [
         ("usb", True),
         ("wifi3", True),
@@ -127,7 +133,15 @@ def main() -> None:
 
     draw = FakeDraw()
     height = i2cd._draw_daemon_status_row(draw, 0, 1, statuses)
-    assert height == 14
+    expected_height = sum(
+        max(
+            i2cd._icon_vertical_bounds(i2cd.icon_bitmap(icon_name))[1]
+            - i2cd._icon_vertical_bounds(i2cd.icon_bitmap(icon_name))[0]
+            for icon_name, _active in row
+        ) + 1
+        for row in daemon_rows
+    )
+    assert height == expected_height
     assert draw.texts == []
     assert draw.points
     assert any(rect["kwargs"].get("fill") == "white" for rect in draw.rectangles)
@@ -135,7 +149,7 @@ def main() -> None:
     assert any(fill == "white" for _pos, fill in draw.points)
     daemon_rects = [rect for rect in draw.rectangles if rect["kwargs"].get("fill") == "white"]
     assert len(daemon_rects) == 4
-    assert max(rect["args"][0][1][1] for rect in daemon_rects) <= 14
+    assert max(rect["args"][0][1][1] for rect in daemon_rects) < 1 + height
 
     source = (ROOT / "daemon" / "i2cd" / "i2cd.py").read_text(encoding="utf-8")
     connectivity = (ROOT / "daemon" / "i2cd" / "connectivity.py").read_text(encoding="utf-8")

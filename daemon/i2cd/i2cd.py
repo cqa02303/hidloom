@@ -44,7 +44,9 @@ from hidloom_paths import default_config_file
 
 from .ads1115 import ADS1115Reader, build_ctrl_event, normalize_stick, parse_analog_stick_config, read_stick_volts
 from .connectivity import output_mode_icon_row, wifi_status
-from .icons import draw_icon_pixels, icon_bitmap
+from .icons import default_icon_payload, draw_icon_pixels, icon_bitmap
+from .oled_customization import invalidate_cache as invalidate_oled_customization_cache
+from .oled_customization import load_effective_document
 from .status_display import daemon_status_active, daemon_status_icon_row
 
 # ---------------------------------------------------------------------------
@@ -434,48 +436,104 @@ def _draw_ready(device, font, layer: int, active: list[int],
     W, H = device.width, device.height
     if system_status is None:
         system_status = {}
-    cpu = int(system_status.get("cpu_percent", 0))
-    temp = float(system_status.get("cpu_temp", 0.0))
+    if daemon_status is None:
+        daemon_status = {"matrixd": matrixd_ok, "logicd": logicd_ok}
+    ready_items = _ready_layout_items()
 
     with canvas(device) as draw:
         draw.rectangle([(0, 0), (W-1, H-1)], outline="white", fill="black")
         y = 3
-        y += _draw_node_name(draw, font, 3, y, W - 6) + 2
-        draw.line([(1, y), (W-2, y)], fill="white")
-        y += 4
+        for item in ready_items:
+            if not item["enabled"]:
+                continue
+            y = _draw_ready_item(
+                draw,
+                font,
+                item["id"],
+                x=3,
+                y=y,
+                max_width=W - 6,
+                layer=layer,
+                active=active,
+                current_mode=current_mode,
+                fps_label=fps_label,
+                wifi=wifi,
+                daemon_status=daemon_status,
+                system_status=system_status,
+            )
+            if item["separator_after"]:
+                y = _draw_ready_separator(draw, item["id"], y, W)
 
-        if daemon_status is None:
-            daemon_status = {"matrixd": matrixd_ok, "logicd": logicd_ok}
-        y += _draw_daemon_status_row(draw, 3, y, daemon_status, max_width=W - 6)
-        draw.line([(1, y), (W-2, y)], fill="black")
-        y += 1
-        draw.line([(1, y), (W-2, y)], fill="white")
-        y += 3
 
-        _draw_output_mode(draw, font, 3, y, current_mode, wifi, daemon_status)
-        y += 10
+_OLED_CUSTOMIZATION_ERROR = ""
 
-        draw.line([(1, y), (W-2, y)], fill="white")
-        y += 3
 
-        draw.text((3, y), f"Layer: {layer}", font=font, fill="white")
-        y += 12
+def _ready_layout_items() -> list[dict]:
+    global _OLED_CUSTOMIZATION_ERROR
+    document, _source, errors = load_effective_document(default_icon_payload())
+    error = "; ".join(errors)
+    if error and error != _OLED_CUSTOMIZATION_ERROR:
+        log.warning("invalid OLED customization; using packaged layout: %s", error)
+    _OLED_CUSTOMIZATION_ERROR = error
+    return document["ready"]["items"]
 
+
+def _draw_ready_item(
+    draw,
+    font,
+    item_id: str,
+    *,
+    x: int,
+    y: int,
+    max_width: int,
+    layer: int,
+    active: list[int],
+    current_mode: str,
+    fps_label: str,
+    wifi: dict | None,
+    daemon_status: dict[str, bool],
+    system_status: dict,
+) -> int:
+    if item_id == "node_name":
+        return y + _draw_node_name(draw, font, x, y, max_width) + 2
+    if item_id == "daemon_status":
+        return y + _draw_daemon_status_row(draw, x, y, daemon_status, max_width=max_width)
+    if item_id == "output_mode":
+        _draw_output_mode(draw, font, x, y, current_mode, wifi, daemon_status)
+        return y + 10
+    if item_id == "layer":
+        draw.text((x, y), f"Layer: {layer}", font=font, fill="white")
+        return y + 12
+    if item_id == "active_layers":
         if len(active) > 1:
-            draw.text((3, y), f"[{','.join(str(l) for l in active)}]", font=font, fill="white")
-            y += 12
-
-        draw.text((3, y), f"CPU:{cpu} %", font=font, fill="white")
-        y += 12
-        draw.text((3, y), f"T:{temp:.0f} C", font=font, fill="white")
+            draw.text((x, y), f"[{','.join(str(value) for value in active)}]", font=font, fill="white")
+            return y + 12
+        return y
+    if item_id == "cpu":
+        draw.text((x, y), f"CPU:{int(system_status.get('cpu_percent', 0))} %", font=font, fill="white")
+        return y + 12
+    if item_id == "temperature":
+        draw.text((x, y), f"T:{float(system_status.get('cpu_temp', 0.0)):.0f} C", font=font, fill="white")
+        return y + 12
+    if item_id == "fps":
         if fps_label:
-            y += 12
-            draw.text((3, y), fps_label, font=font, fill="white")
-            y += 12
-        else:
-            y += 20
-        now_str = time.strftime("  %H:%M")
-        draw.text((3, y), now_str, font=font, fill="white")
+            draw.text((x, y), fps_label, font=font, fill="white")
+            return y + 12
+        return y
+    if item_id == "clock":
+        draw.text((x, y), time.strftime("  %H:%M"), font=font, fill="white")
+        return y + 12
+    return y
+
+
+def _draw_ready_separator(draw, item_id: str, y: int, width: int) -> int:
+    if item_id == "daemon_status":
+        draw.line([(1, y), (width - 2, y)], fill="black")
+        y += 1
+        draw.line([(1, y), (width - 2, y)], fill="white")
+        return y + 3
+    draw.line([(1, y), (width - 2, y)], fill="white")
+    return y + (4 if item_id == "node_name" else 3)
 
 
 def _output_mode_icon_row(
@@ -573,14 +631,17 @@ def _daemon_status_icon_rows(
 
 def _draw_daemon_status_row(draw, x: int, y: int, statuses: dict[str, bool], *, max_width: int = 58) -> int:
     row_y = y
-    row_gap = 7
     drawn_rows = _daemon_status_icon_rows(statuses, max_width=max_width)
     for row in drawn_rows:
         cursor = x
+        row_height = max(
+            _icon_vertical_bounds(icon_bitmap(icon_name))[1] - _icon_vertical_bounds(icon_bitmap(icon_name))[0]
+            for icon_name, _ok in row
+        )
         for icon_name, ok in row:
             cursor += _draw_icon_badge(draw, icon_name, cursor, row_y, active=ok, trim_vertical=True)
-        row_y += row_gap
-    return row_gap * len(drawn_rows)
+        row_y += row_height + 1
+    return row_y - y
 
 
 def _output_mode_display_label(mode: str) -> str:
@@ -1009,6 +1070,10 @@ async def _main() -> None:
                         )
                         daemon_status["logicd"] = logicd_ok
                         display_dirty = True
+                elif msg.get("t") == "oled_config_reload":
+                    invalidate_oled_customization_cache()
+                    display_dirty = True
+                    log.info("OLED customization reloaded")
                 elif msg.get("t") == "bt_pairing":
                     phase = str(msg.get("phase", "off")).lower()
                     digits = str(msg.get("digits", ""))

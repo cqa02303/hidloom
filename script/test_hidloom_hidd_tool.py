@@ -59,6 +59,7 @@ def run_hidd(tmp: Path, frames: list[bytes], *, extra_env: dict[str, str] | None
             "USBD_HID_WRITE_RETRY_INTERVAL_SEC": "0.001",
             "USBD_KEYBOARD_REPORT_HZ": "2000",
             "USBD_MOUSE_REPORT_HZ": "1000",
+            "USBD_KEYBOARD_STARTUP_RELEASE": "0",
         }
     )
     if extra_env:
@@ -106,6 +107,118 @@ def test_basic_report_mapping() -> None:
     assert status["counters"]["us_sub_keyboard_reports"] == 1
     assert status["counters"]["mouse_reports"] == 1
     assert status["counters"]["consumer_reports"] == 1
+
+
+def test_startup_release_uses_endpoint_specific_report_shapes() -> None:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        hidg0, hidg2, status = run_hidd(
+            Path(tmpdir),
+            [b"not-a-valid-frame"],
+            extra_env={"USBD_KEYBOARD_STARTUP_RELEASE": "1"},
+        )
+    assert hidg0 == bytes.fromhex("010000000000000000")
+    assert hidg2 == bytes.fromhex("0000000000000000")
+    assert status["counters"]["startup_release_reports"] == 2
+    assert status["counters"]["keyboard_reports"] == 1
+    assert status["counters"]["us_sub_keyboard_reports"] == 1
+
+
+def test_startup_release_waits_for_late_endpoints() -> None:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+        sock_path = tmp / "usbd_hid_reports.sock"
+        hidg0 = tmp / "hidg0"
+        hidg2 = tmp / "hidg2"
+        status = tmp / "hidd-status.json"
+        env = os.environ.copy()
+        env.update(
+            {
+                "USBD_HID_REPORT_SOCKET": str(sock_path),
+                "USBD_HID_REPORT_PATH": str(hidg0),
+                "USBD_US_SUB_HID_REPORT_PATH": str(hidg2),
+                "HIDD_STATUS_PATH": str(status),
+                "HIDD_RAW_HID_BRIDGE_ENABLED": "0",
+                "USBD_KEYBOARD_STARTUP_RELEASE": "1",
+                "USBD_KEYBOARD_STARTUP_RELEASE_RETRY_SEC": "0.001",
+            }
+        )
+        proc = subprocess.Popen([str(BIN), "--frames", "1"], env=env)
+        try:
+            wait_for_socket(sock_path)
+            time.sleep(0.02)
+            assert proc.poll() is None
+            hidg0.write_bytes(b"")
+            hidg2.write_bytes(b"")
+            sender = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+            try:
+                sender.sendto(b"not-a-valid-frame", str(sock_path))
+            finally:
+                sender.close()
+            proc.wait(timeout=3.0)
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
+        assert proc.returncode == 0
+        assert hidg0.read_bytes() == bytes.fromhex("010000000000000000")
+        assert hidg2.read_bytes() == bytes(8)
+        payload = json.loads(status.read_text(encoding="utf-8"))
+        assert payload["counters"]["startup_release_reports"] == 2
+
+
+def test_startup_release_precedes_input_queued_before_endpoints() -> None:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+        sock_path = tmp / "usbd_hid_reports.sock"
+        hidg0 = tmp / "hidg0"
+        hidg2 = tmp / "hidg2"
+        status = tmp / "hidd-status.json"
+        env = os.environ.copy()
+        env.update(
+            {
+                "USBD_HID_REPORT_SOCKET": str(sock_path),
+                "USBD_HID_REPORT_PATH": str(hidg0),
+                "USBD_US_SUB_HID_REPORT_PATH": str(hidg2),
+                "HIDD_STATUS_PATH": str(status),
+                "HIDD_RAW_HID_BRIDGE_ENABLED": "0",
+                "USBD_KEYBOARD_STARTUP_RELEASE": "1",
+                "USBD_KEYBOARD_STARTUP_RELEASE_RETRY_SEC": "0.001",
+                "USBD_KEYBOARD_REPORT_HZ": "2000",
+            }
+        )
+        proc = subprocess.Popen([str(BIN), "--frames", "1"], env=env)
+        try:
+            wait_for_socket(sock_path)
+            sender = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+            try:
+                sender.sendto(
+                    encode_hid_report_request(
+                        KIND_KEYBOARD,
+                        bytes.fromhex("0100000000000000"),
+                    ),
+                    str(sock_path),
+                )
+            finally:
+                sender.close()
+            time.sleep(0.02)
+            assert proc.poll() is None
+            hidg0.write_bytes(b"")
+            hidg2.write_bytes(b"")
+            proc.wait(timeout=3.0)
+        finally:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
+        assert proc.returncode == 0
+        assert hidg0.read_bytes() == (
+            bytes.fromhex("010000000000000000")
+            + bytes.fromhex("010100000000000000")
+        )
+        assert hidg2.read_bytes() == bytes(8)
+        payload = json.loads(status.read_text(encoding="utf-8"))
+        assert payload["counters"]["startup_release_reports"] == 2
+        assert payload["counters"]["frames_received"] == 1
+        assert payload["counters"]["write_errors"] == 0
 
 
 def test_keyboard_release_merge() -> None:
@@ -299,6 +412,9 @@ def test_keyboard_release_merge_default_window_is_roll_friendly() -> None:
 def main() -> None:
     build_tool()
     test_basic_report_mapping()
+    test_startup_release_uses_endpoint_specific_report_shapes()
+    test_startup_release_waits_for_late_endpoints()
+    test_startup_release_precedes_input_queued_before_endpoints()
     test_keyboard_release_merge()
     test_keyboard_release_overlap_preserves_release_before_next_state()
     test_keyboard_release_default_window_merges_fast_roll()

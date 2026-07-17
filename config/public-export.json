@@ -315,6 +315,7 @@
         "system/install/setup_fresh_rpi.sh",
         "tools/btd_bluez_pairing_window.py",
         "tools/buildroot_m1_compare.py",
+        "tools/buildroot_m6_verify.py",
         "tools/collect_license_evidence.py",
         "tools/development_residue_hygiene.py",
         "tools/generate_third_party_inventory.py",

@@ -28,6 +28,13 @@ find "$HIDLOOM_DIR" -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
 chmod 0440 "$TARGET_DIR/etc/sudoers.d/pi"
 rm -f "$TARGET_DIR/etc/init.d/S25hidloom-m3-router"
 
+if [ -f "$TARGET_DIR/etc/inittab" ]; then
+    sed -i '/^[^#].*\/sbin\/getty /d' "$TARGET_DIR/etc/inittab"
+    printf '%s\n' \
+        'tty1::respawn:/sbin/getty -L tty1 0 vt100 # HIDloom M6 HDMI console' \
+        >> "$TARGET_DIR/etc/inittab"
+fi
+
 install -d "$TARGET_DIR/mnt/p3"
 for name in config keymap vial; do
     install -m 0644 "$ROOT/config/default/$name.json" "$TARGET_DIR/mnt/p3/$name.json"

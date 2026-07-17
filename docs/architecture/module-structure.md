@@ -111,6 +111,7 @@
 | `daemon/http/keymap_api.py` | keymap active / remap / layer add-clear の HTTP handler 本体 |
 | `daemon/http/lighting_api.py` | Lighting / matrix tester HTTP handler 本体 |
 | `daemon/http/lighting_role_preview_api.py` | `POST /api/lighting/role-preview` の一時実LED preview / restore route と route registration |
+| `daemon/http/oled_api.py` | OLED customization schema適用、runtime file保存/reset、i2cd reload通知 |
 | `daemon/http/settings_api.py` | Settings API の HTTP Basic auth 更新 handler 本体 |
 | `daemon/http/scripts_api.py` | Script editor API の request validation、audit logging、HTTP response 組み立て |
 | `daemon/http/script_store.py` | `KC_SHn.sh` の探索、label、runtime script 書き込み・削除、path 設定 helper |
@@ -194,6 +195,7 @@ HTTP script editor の runtime script は `/mnt/p3/script` を優先するユー
 | --- | --- |
 | `daemon/i2cd/i2cd.py` | OLED 初期化、Ready / Boot / alert 描画、i2c_events socket、analog stick task 起動 |
 | `daemon/i2cd/icons.py` | OLED 8x8 1bit icon 定義と pixel draw helper |
+| `daemon/i2cd/oled_customization.py` | package既定値と`/mnt/p3` overrideのschema、validation、cache、atomic persistence |
 | `daemon/i2cd/connectivity.py` | OLED connectivity icon row 用の read-only status snapshot helper。Wi-Fi power control は行わない |
 | `daemon/i2cd/ads1115.py` | ADS1115 analog stick polling helper |
 

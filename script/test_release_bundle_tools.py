@@ -372,6 +372,10 @@ def main() -> None:
     assert "sudo dpkg -i" in install_release_text
     assert "sudo apt-get -s install" in install_release_text
     assert "sudo apt-get install -y" in install_release_text
+    assert "package ownership preflight:" in install_release_text
+    assert "package ownership collision:" in install_release_text
+    assert "/lib/systemd/system/btd.service" in install_release_text
+    assert "/usr/share/hidloom/profiles/$PROFILE/profile.json" in install_release_text
     assert "sudo hidloom-profile '$PROFILE' --apply --backup --restart" in install_release_text
     assert "--apt" in install_release_text
     assert "remote install requires --device or --host" in install_release_text
@@ -510,11 +514,21 @@ else:
     assert "rollback: copy" in switch_text
 
     verify_text = VERIFY_DEB.read_text(encoding="utf-8")
-    assert "dpkg-query -W hidloom" in verify_text
+    assert "--profile PROFILE" in verify_text
+    assert "--connect-timeout SEC" in verify_text
+    assert "ServerAliveCountMax=3" in verify_text
+    assert "dpkg-query -W -f=" in verify_text
+    assert "hidloom-core" in verify_text
+    assert "hidloom-profile-$PROFILE" in verify_text
+    assert "split package version mismatch" in verify_text
     assert "dirty_worktree_ignored" in verify_text
     assert "/tmp/matrix_tap_events.sock" in verify_text
     assert "NRestarts" in verify_text
     assert "logicd_core_native_owner_live_smoke.py --apply --json" in verify_text
+    assert "/usr/bin/hidloom-ctrl output auto" in verify_text
+
+    deploy_release_text = DEPLOY_GITHUB_RELEASE_DEB.read_text(encoding="utf-8")
+    assert 'deploy_deb_verify.sh" $REMOTE_ARG --profile "$PROFILE"' in deploy_release_text
 
     build_text = BUILD.read_text(encoding="utf-8")
     assert 'sha256sum "$(basename "$ARCHIVE")"' in build_text

@@ -1,0 +1,70 @@
+{
+  "schema": "hidloom.oled.layout.v1",
+  "ready": {
+    "items": [
+      {
+        "id": "node_name",
+        "label": "Node name",
+        "description": "Device hostname",
+        "enabled": true,
+        "separator_after": true
+      },
+      {
+        "id": "daemon_status",
+        "label": "Daemon status",
+        "description": "Service status icons",
+        "enabled": true,
+        "separator_after": true
+      },
+      {
+        "id": "output_mode",
+        "label": "Output mode",
+        "description": "USB / Bluetooth / Pi / Wi-Fi icons",
+        "enabled": true,
+        "separator_after": true
+      },
+      {
+        "id": "layer",
+        "label": "Layer",
+        "description": "Current layer",
+        "enabled": true,
+        "separator_after": false
+      },
+      {
+        "id": "active_layers",
+        "label": "Active layers",
+        "description": "Active layer list when more than one is active",
+        "enabled": true,
+        "separator_after": false
+      },
+      {
+        "id": "cpu",
+        "label": "CPU",
+        "description": "CPU usage",
+        "enabled": true,
+        "separator_after": false
+      },
+      {
+        "id": "temperature",
+        "label": "Temperature",
+        "description": "CPU temperature",
+        "enabled": true,
+        "separator_after": false
+      },
+      {
+        "id": "fps",
+        "label": "LED FPS",
+        "description": "Direct-frame LED frame rate",
+        "enabled": true,
+        "separator_after": false
+      },
+      {
+        "id": "clock",
+        "label": "Clock",
+        "description": "Local time",
+        "enabled": true,
+        "separator_after": false
+      }
+    ]
+  }
+}

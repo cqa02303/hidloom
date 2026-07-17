@@ -10,6 +10,8 @@
 ## Startup Contract
 
 - 起動直後に古い pressed state を host に見せない。
+- current split profileではinput frameを読む前に、`hidg0`へReport ID `0x01` + 8 zero bytes、`hidg2`へReport IDなし8 zero bytesを送る。
+- broker socketへ先にinputがqueueされても、両endpointのzero reportが成功するまでそのinputを処理しない。
 - endpoint が存在しない場合、panic ではなく明示的な error にする。
 - endpoint 準備前の report を送るか捨てるかを実装ごとに明示する。
 

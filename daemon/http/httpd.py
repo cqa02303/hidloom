@@ -62,6 +62,7 @@ from lighting_role_inspector import register_lighting_role_inspector_route
 from lighting_role_preview_api import register_lighting_role_preview_route
 from morse_feedback_api import register_morse_feedback_route
 from morse_inspector import register_morse_inspector_route
+from oled_api import oled_get_response, oled_put_response, oled_reset_response
 from text_send_safety_api import register_text_send_safety_route
 from touch_panel_flick_api import register_touch_panel_flick_route
 from settings_api import (
@@ -134,7 +135,7 @@ from vil_api import (
     vil_export_response,
     vil_import_response,
 )
-from hidloom_paths import default_config_dir, default_config_file
+from hidloom_paths import default_config_dir, default_config_file, runtime_file
 
 _STATIC_DIR = _HERE / "static"
 _CONF_DIR = default_config_dir(_REPO_ROOT)
@@ -145,6 +146,9 @@ KEY_LABELS_JSON = default_config_file("key_labels.json", _REPO_ROOT)
 KEYMAP_JSON = default_config_file("keymap.json", _REPO_ROOT)
 CONFIG_JSON = default_config_file("config.json", _REPO_ROOT)
 I2CD_JSON = default_config_file("i2cd.json", _REPO_ROOT)
+OLED_CUSTOMIZATION_JSON = Path(
+    os.environ.get("HIDLOOM_OLED_CUSTOMIZATION_FILE", str(runtime_file("oled_customization.json")))
+)
 DEFAULT_SCRIPT_DIR = script_store.DEFAULT_SCRIPT_DIR
 FALLBACK_SCRIPT_DIR = script_store.FALLBACK_SCRIPT_DIR
 
@@ -558,6 +562,25 @@ async def handle_settings_analog_stick_calibration(request: web.Request) -> web.
     return await settings_analog_stick_calibration_response(request, I2CD_JSON)
 
 
+async def handle_oled_get(request: web.Request) -> web.Response:
+    del request
+    return oled_get_response(OLED_CUSTOMIZATION_JSON, I2CD_JSON)
+
+
+async def handle_oled_put(request: web.Request) -> web.Response:
+    response = await oled_put_response(request, OLED_CUSTOMIZATION_JSON, I2CD_JSON)
+    if response.status < 400:
+        _audit_log(request, "oled_customization_update", result="ok")
+    return response
+
+
+async def handle_oled_reset(request: web.Request) -> web.Response:
+    response = await oled_reset_response(OLED_CUSTOMIZATION_JSON, I2CD_JSON)
+    if response.status < 400:
+        _audit_log(request, "oled_customization_reset", result="ok")
+    return response
+
+
 async def handle_lighting_get(request: web.Request) -> web.Response:
     return await lighting_get_response(_send_ctrl_command)
 
@@ -757,6 +780,9 @@ def create_app() -> web.Application:
     app.router.add_post("/api/settings/http-auth", handle_settings_http_auth)
     app.router.add_put("/api/settings/send-strings", handle_settings_send_strings)
     app.router.add_post("/api/settings/analog-stick/calibrate", handle_settings_analog_stick_calibration)
+    app.router.add_get("/api/oled", handle_oled_get)
+    app.router.add_put("/api/oled", handle_oled_put)
+    app.router.add_post("/api/oled/reset", handle_oled_reset)
     app.router.add_post("/api/system/shutdown", handle_system_shutdown)
     app.router.add_get("/api/logs", handle_logs)
     app.router.add_get("/api/interaction", handle_interaction_get)

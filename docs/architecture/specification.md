@@ -181,7 +181,11 @@ logicd から ledd / i2cd へ JSON line で状態を通知します。
 | `config/default/keyboard-layout.json` | HTTP UI の物理レイアウト |
 | `config/default/keycodes.json` | internal keycode table |
 | `config/default/i2cd.json` | OLED / i2cd 設定 |
+| `config/default/oled-layout.json` | OLED Ready画面の項目catalog、既定表示、既定順、区切り線 |
 | `config/default/ledd.json` | LED / ledd 設定 |
+
+OLED iconとReady画面layoutはpackage既定値を`daemon/i2cd/connectivity_icon_bitmaps.txt`とコード内catalogから生成し、
+利用者変更だけを`/mnt/p3/oled_customization.json`へ保存します。HTTP UIはpackage payloadを直接変更しません。
 
 HTTP Basic 認証の変更値は `config/default/config.json` へ直接書き戻さず、専用 override に保存します。
 `config/default/config.json` の初期 password は `__HOSTNAME__` を指定でき、その場合は

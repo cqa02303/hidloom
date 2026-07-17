@@ -1,16 +1,16 @@
 # HIDloom Public Export Report
 
-- Source base commit: `16f052966cb91285fe2eed1cc3db1b8d1bf96b3f`
+- Source base commit: `18ac7f09cc30a060dc65fc18fb59843fa32374e9`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `1ba7c1ed90d6e5a58ab2d1120d25a8a12949262fd5da863c3f974298ff695553`
-- Files: 1183
-- Tracked source paths: 1250
+- Selected source snapshot: `155e82daa737ce53128a64400cf34712cd2b43ada83eb44baee92cceb3839c75`
+- Files: 1190
+- Tracked source paths: 1257
 - Private-only paths: 67
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1084
+- Warnings: 1089
 - Untriaged warnings: 0
 - Action-required warnings: 12
 
@@ -66,17 +66,17 @@
 - `warn` `credential_word` `config/public-export.json:250` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
 - `warn` `credential_word` `config/public-export.json:256` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
 - `warn` `credential_word` `config/public-export.json:302` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:327` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:328` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:192` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:193` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:199` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:200` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
 - `warn` `linux_foundation_vid` `daemon/btd/gatt_hid.py:94` `pid_codes_migration_required` — `_env_u16("HIDLOOM_USB_VENDOR_ID", 0x1D6B),`
-- `warn` `credential_word` `daemon/http/README.md:19` `security_implementation_keyword` — `| Basic 認証 | 全ページ、API、WebSocket を Basic 認証で保護。Settings から password を変更可能 |`
-- `warn` `credential_word` `daemon/http/README.md:106` `security_implementation_keyword` — `Basic 認証の初期値は `config/default/config.json` の `settings.http_basic_auth` から読みます。未設定時の初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。Settings タブから password を変更した場合は `HTTPD_BASIC_AUTH_FILE` の小`
-- `warn` `credential_word` `daemon/http/README.md:132` `security_implementation_keyword` — `| `/api/settings/http-auth` | POST | Basic 認証 password 変更 |`
-- `warn` `credential_word` `daemon/http/README.md:150` `security_implementation_keyword` — `- POST / PUT / DELETE と `/ws` は CSRF token を要求する。`/` と API GET で`
+- `warn` `credential_word` `daemon/http/README.md:20` `security_implementation_keyword` — `| Basic 認証 | 全ページ、API、WebSocket を Basic 認証で保護。Settings から password を変更可能 |`
+- `warn` `credential_word` `daemon/http/README.md:112` `security_implementation_keyword` — `Basic 認証の初期値は `config/default/config.json` の `settings.http_basic_auth` から読みます。未設定時の初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。Settings タブから password を変更した場合は `HTTPD_BASIC_AUTH_FILE` の小`
+- `warn` `credential_word` `daemon/http/README.md:138` `security_implementation_keyword` — `| `/api/settings/http-auth` | POST | Basic 認証 password 変更 |`
+- `warn` `credential_word` `daemon/http/README.md:158` `security_implementation_keyword` — `- POST / PUT / DELETE と `/ws` は CSRF token を要求する。`/` と API GET で`
 - `warn` `credential_word` `daemon/http/auth_tls.py:31` `security_implementation_keyword` — `def hash_http_basic_auth_password(password: str, *, iterations: int = 200_000) -> str:`
 - `warn` `credential_word` `daemon/http/auth_tls.py:33` `security_implementation_keyword` — `digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), bytes.fromhex(salt), iterations)`
 - `warn` `credential_word` `daemon/http/auth_tls.py:37` `security_implementation_keyword` — `def verify_http_basic_auth_password(password: str, stored: str) -> bool:`
@@ -92,17 +92,17 @@
 - `warn` `credential_word` `daemon/http/auth_tls.py:84` `security_implementation_keyword` — `return username, password`
 - `warn` `credential_word` `daemon/http/auth_tls.py:89` `security_implementation_keyword` — `password: str,`
 - `warn` `credential_word` `daemon/http/auth_tls.py:97` `security_implementation_keyword` — `password_hash = hash_password(password)`
-- `warn` `private_ipv4` `daemon/http/httpd.py:226` `allowed_private_network_range` — `ipaddress.ip_network("10.0.0.0/8"),`
-- `warn` `private_ipv4` `daemon/http/httpd.py:227` `allowed_private_network_range` — `ipaddress.ip_network("172.16.0.0/12"),`
-- `warn` `private_ipv4` `daemon/http/httpd.py:228` `allowed_private_network_range` — `ipaddress.ip_network("192.168.0.0/16"),`
-- `warn` `credential_word` `daemon/http/httpd.py:271` `security_implementation_keyword` — `set_csrf_cookie(response, cookie_name=HTTPD_CSRF_COOKIE, token=HTTPD_CSRF_TOKEN)`
-- `warn` `credential_word` `daemon/http/httpd.py:294` `security_implementation_keyword` — `def _hash_http_basic_auth_password(password: str, *, iterations: int = 200_000) -> str:`
-- `warn` `credential_word` `daemon/http/httpd.py:295` `security_implementation_keyword` — `return hash_http_basic_auth_password(password, iterations=iterations)`
-- `warn` `credential_word` `daemon/http/httpd.py:298` `security_implementation_keyword` — `def _verify_http_basic_auth_password(password: str, stored: str) -> bool:`
-- `warn` `credential_word` `daemon/http/httpd.py:299` `security_implementation_keyword` — `return verify_http_basic_auth_password(password, stored)`
-- `warn` `credential_word` `daemon/http/httpd.py:313` `security_implementation_keyword` — `def _write_http_basic_auth_file(username: str, password: str) -> tuple[Path, str]:`
-- `warn` `credential_word` `daemon/http/httpd.py:316` `security_implementation_keyword` — `password,`
-- `warn` `credential_word` `daemon/http/httpd.py:359` `security_implementation_keyword` — `log.warning("Rejecting request with invalid CSRF token: method=%s path=%s", request.method, request.path)`
+- `warn` `private_ipv4` `daemon/http/httpd.py:230` `allowed_private_network_range` — `ipaddress.ip_network("10.0.0.0/8"),`
+- `warn` `private_ipv4` `daemon/http/httpd.py:231` `allowed_private_network_range` — `ipaddress.ip_network("172.16.0.0/12"),`
+- `warn` `private_ipv4` `daemon/http/httpd.py:232` `allowed_private_network_range` — `ipaddress.ip_network("192.168.0.0/16"),`
+- `warn` `credential_word` `daemon/http/httpd.py:275` `security_implementation_keyword` — `set_csrf_cookie(response, cookie_name=HTTPD_CSRF_COOKIE, token=HTTPD_CSRF_TOKEN)`
+- `warn` `credential_word` `daemon/http/httpd.py:298` `security_implementation_keyword` — `def _hash_http_basic_auth_password(password: str, *, iterations: int = 200_000) -> str:`
+- `warn` `credential_word` `daemon/http/httpd.py:299` `security_implementation_keyword` — `return hash_http_basic_auth_password(password, iterations=iterations)`
+- `warn` `credential_word` `daemon/http/httpd.py:302` `security_implementation_keyword` — `def _verify_http_basic_auth_password(password: str, stored: str) -> bool:`
+- `warn` `credential_word` `daemon/http/httpd.py:303` `security_implementation_keyword` — `return verify_http_basic_auth_password(password, stored)`
+- `warn` `credential_word` `daemon/http/httpd.py:317` `security_implementation_keyword` — `def _write_http_basic_auth_file(username: str, password: str) -> tuple[Path, str]:`
+- `warn` `credential_word` `daemon/http/httpd.py:320` `security_implementation_keyword` — `password,`
+- `warn` `credential_word` `daemon/http/httpd.py:363` `security_implementation_keyword` — `log.warning("Rejecting request with invalid CSRF token: method=%s path=%s", request.method, request.path)`
 - `warn` `credential_word` `daemon/http/security_middleware.py:47` `security_implementation_keyword` — `def csrf_token_valid(value: str | None, token: str) -> bool:`
 - `warn` `credential_word` `daemon/http/security_middleware.py:50` `security_implementation_keyword` — `return hmac.compare_digest(value, token)`
 - `warn` `credential_word` `daemon/http/security_middleware.py:63` `security_implementation_keyword` — `def set_csrf_cookie(response: web.StreamResponse, *, cookie_name: str, token: str) -> None:`
@@ -119,12 +119,12 @@
 - `warn` `credential_word` `daemon/http/static/csrf.js:23` `security_implementation_keyword` — `if (token) headers.set(HIDLOOM_CSRF_HEADER, token);`
 - `warn` `credential_word` `daemon/http/static/csrf.js:30` `security_implementation_keyword` — `const token = csrfToken();`
 - `warn` `credential_word` `daemon/http/static/csrf.js:31` `security_implementation_keyword` — `if (token) url.searchParams.set("csrf", token);`
-- `warn` `credential_word` `daemon/http/static/index.html:299` `security_implementation_keyword` — `<label for="settings-current-password">Current password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:300` `security_implementation_keyword` — `<input id="settings-current-password" type="password" autocomplete="current-password">`
-- `warn` `credential_word` `daemon/http/static/index.html:303` `security_implementation_keyword` — `<label for="settings-new-password">New password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:304` `security_implementation_keyword` — `<input id="settings-new-password" type="password" autocomplete="new-password">`
-- `warn` `credential_word` `daemon/http/static/index.html:307` `security_implementation_keyword` — `<label for="settings-confirm-password">Confirm password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:308` `security_implementation_keyword` — `<input id="settings-confirm-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:361` `security_implementation_keyword` — `<label for="settings-current-password">Current password</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:362` `security_implementation_keyword` — `<input id="settings-current-password" type="password" autocomplete="current-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:365` `security_implementation_keyword` — `<label for="settings-new-password">New password</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:366` `security_implementation_keyword` — `<input id="settings-new-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:369` `security_implementation_keyword` — `<label for="settings-confirm-password">Confirm password</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:370` `security_implementation_keyword` — `<input id="settings-confirm-password" type="password" autocomplete="new-password">`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:15` `security_implementation_keyword` — `for (const id of ["settings-current-password", "settings-new-password", "settings-confirm-password"]) {`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:518` `security_implementation_keyword` — `const currentPassword = settingsEl("settings-current-password")?.value || "";`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:519` `security_implementation_keyword` — `const newPassword = settingsEl("settings-new-password")?.value || "";`
@@ -133,8 +133,8 @@
 - `warn` `credential_word` `daemon/http/static/status_panel.js:105` `security_implementation_keyword` — `wifiEl.title = `Wi-Fi: interface=${wifi.interface || ""}, powered=${wifi.powered}, blocked=${wifi.blocked}, connected=${wifi.connected}, ssid=${wifi.ssid || ""}, ${mode}${errors}`;`
 - `warn` `credential_word` `daemon/http/wifi_status.py:40` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
 - `warn` `credential_word` `daemon/http/wifi_status.py:47` `security_implementation_keyword` — `"ssid": ssid,`
-- `warn` `credential_word` `daemon/i2cd/connectivity.py:91` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
-- `warn` `credential_word` `daemon/i2cd/connectivity.py:98` `security_implementation_keyword` — `"ssid": ssid,`
+- `warn` `credential_word` `daemon/i2cd/connectivity.py:104` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
+- `warn` `credential_word` `daemon/i2cd/connectivity.py:111` `security_implementation_keyword` — `"ssid": ssid,`
 - `warn` `credential_word` `daemon/logicd/generate_config.py:38` `security_implementation_keyword` — `# The lookup uses the LAST non-empty "\n"-separated token of the label.`
 - `warn` `credential_word` `daemon/logicd/generate_config.py:104` `security_implementation_keyword` — `# Fall back to last non-empty token (e.g. "~\n`" → "`")`
 - `warn` `credential_word` `daemon/logicd/input_events.py:708` `security_implementation_keyword` — `message = f"Wi-Fi ON\n{status.ssid or 'connected'}"`
@@ -165,14 +165,14 @@
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:4894` `implementation_security_keyword` — `parser.add_argument("--password", help="HTTP basic auth password for get_http_status_summary; defaults to hostname")`
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:5060` `implementation_security_keyword` — `if args.password is not None:`
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:5061` `implementation_security_keyword` — `tool_args["password"] = args.password`
-- `warn` `credential_word` `docs/architecture/module-structure.md:119` `documentation_security_keyword` — `| `daemon/http/auth_tls.py` | HTTP Basic auth、password hash / verify、auth override file、TLS cert/key path、SSL context |`
-- `warn` `credential_word` `docs/architecture/module-structure.md:120` `documentation_security_keyword` — `| `daemon/http/security_middleware.py` | private-network allowlist、CSRF token / cookie、audit log helper |`
-- `warn` `credential_word` `docs/architecture/specification.md:187` `documentation_security_keyword` — ``config/default/config.json` の初期 password は `__HOSTNAME__` を指定でき、その場合は`
-- `warn` `credential_word` `docs/architecture/specification.md:190` `documentation_security_keyword` — `password は平文ではなく `password_hash` として保存します。`
-- `warn` `credential_word` `docs/architecture/specification.md:247` `documentation_security_keyword` — `logicd macro token へ変換します。`
-- `warn` `credential_word` `docs/architecture/specification.md:279` `documentation_security_keyword` — ``httpd` は Basic 認証付きの HTTPS UI を提供します。初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。`
-- `warn` `credential_word` `docs/architecture/specification.md:297` `documentation_security_keyword` — `- Settings タブでの Basic 認証 password 変更`
-- `warn` `credential_word` `docs/architecture/specification.md:299` `documentation_security_keyword` — `Settings タブで password を変更すると、現在 password を確認したうえで専用 override`
+- `warn` `credential_word` `docs/architecture/module-structure.md:120` `documentation_security_keyword` — `| `daemon/http/auth_tls.py` | HTTP Basic auth、password hash / verify、auth override file、TLS cert/key path、SSL context |`
+- `warn` `credential_word` `docs/architecture/module-structure.md:121` `documentation_security_keyword` — `| `daemon/http/security_middleware.py` | private-network allowlist、CSRF token / cookie、audit log helper |`
+- `warn` `credential_word` `docs/architecture/specification.md:191` `documentation_security_keyword` — ``config/default/config.json` の初期 password は `__HOSTNAME__` を指定でき、その場合は`
+- `warn` `credential_word` `docs/architecture/specification.md:194` `documentation_security_keyword` — `password は平文ではなく `password_hash` として保存します。`
+- `warn` `credential_word` `docs/architecture/specification.md:251` `documentation_security_keyword` — `logicd macro token へ変換します。`
+- `warn` `credential_word` `docs/architecture/specification.md:283` `documentation_security_keyword` — ``httpd` は Basic 認証付きの HTTPS UI を提供します。初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。`
+- `warn` `credential_word` `docs/architecture/specification.md:301` `documentation_security_keyword` — `- Settings タブでの Basic 認証 password 変更`
+- `warn` `credential_word` `docs/architecture/specification.md:303` `documentation_security_keyword` — `Settings タブで password を変更すると、現在 password を確認したうえで専用 override`
 - `warn` `credential_word` `docs/bluetooth/host-rename-forget-design.md:157` `documentation_security_keyword` — `- CSRF token.`
 - `warn` `credential_word` `docs/bluetooth/multi-host-ui-design.md:113` `documentation_security_keyword` — `- password や pairing secret は log に出さない。`
 - `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-design.md:430` `documentation_security_keyword` — `| secret logging | payload log は default off。debug opt-in 時だけ許可。status は counts / state 中心 |`
@@ -191,7 +191,7 @@
 - `warn` `credential_word` `docs/keycode/qmk-vial-keycode-support.md:130` `documentation_security_keyword` — `| QMK Macro | `QK_MACRO_*` 系 | 一部対応 | Vial Macro buffer を `settings.vial_macro_buffer` に保持し、`M0`-`M7` を `MACRO:VIAL0`-`MACRO:VIAL7` として実行する。text / tap / down / up / delay は実行用 token へ変換する |`
 - `warn` `credential_word` `docs/macro/compatibility-plan.md:40` `documentation_security_keyword` — `-> daemon/logicd/macro.py token runner`
 - `warn` `credential_word` `docs/macro/kml-qmk-macro-keycode-design.md:137` `documentation_security_keyword` — `- script / system / connectivity / power / arbitrary C 相当 token の rejection。`
-- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:531` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
+- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:538` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
 - `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:208` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
@@ -1009,6 +1009,7 @@
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi/mouse_sch.kicad_sch:1372` `allowed_device_profile` — `(project "cqa02303v5rpi"`
 - `warn` `credential_word` `macro/README.md:65` `documentation_security_keyword` — `- `examples/password.kml` - パスワード入力デモ`
 - `warn` `credential_word` `script/start_touch_panel_browser.sh:234` `implementation_security_keyword` — `--password-store=basic \`
+- `warn` `credential_word` `script/test_buildroot_fast_boot_assets.py:293` `test_fixture` — `assert 'filesystem_file(debugfs, rootfs, "/etc/passwd")' in m6_verify_text`
 - `warn` `credential_word` `script/test_current_status_doc.py:263` `test_fixture` — `assert config["settings"]["http_basic_auth"]["password"] == "__HOSTNAME__"`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:128` `test_fixture` — `assert 'id="settings-current-password"' in index_html`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:129` `test_fixture` — `assert 'id="settings-new-password"' in index_html`
@@ -1069,10 +1070,14 @@
 - `warn` `credential_word` `system/install/setup_fresh_rpi.sh:327` `implementation_security_keyword` — `user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:11` `pid_codes_migration_required` — `VENDOR_ID="0x1d6b"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:37` `pid_codes_migration_required` — `sh("VENDOR_ID"; .device.vendor_id // "0x1d6b"),`
-- `warn` `credential_word` `tools/README.md:83` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
+- `warn` `credential_word` `tools/README.md:87` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:53` `implementation_security_keyword` — `token in line`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:54` `implementation_security_keyword` — `for token in (`
 - `warn` `credential_word` `tools/buildroot_m1_compare.py:71` `implementation_security_keyword` — `if any(token in line for token in ("hid", "usb", "cqa02303v5", "1d6b:0105")):`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:133` `implementation_security_keyword` — `filesystem_file(debugfs, rootfs, "/etc/passwd"),`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:135` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:138` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:148` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
 - `warn` `credential_word` `tools/collect_license_evidence.py:90` `implementation_security_keyword` — `if not any(token in relative.name.upper() for token in ("LICENSE", "COPYING", "NOTICE")):`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:122` `implementation_security_keyword` — `for token in tokens:`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:123` `implementation_security_keyword` — `if token.type != tokenize.COMMENT:`

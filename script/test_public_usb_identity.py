@@ -44,7 +44,7 @@ def main() -> None:
     )
     assert contract["schema"] == "hidloom.public-usb-identity.v5"
     assert contract["assignment"]["availability_evidence"] == {
-        "checked_date": "2026-07-15",
+        "checked_date": "2026-07-16",
         "upstream_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
         "origin_head_ref": "refs/remotes/origin/master",
         "remote_head_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",

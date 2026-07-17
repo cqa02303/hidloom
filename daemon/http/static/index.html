@@ -12,6 +12,7 @@
   <link rel="icon" type="image/png" sizes="512x512" href="/static/android-chrome-512x512.png">
   <link rel="stylesheet" href="/static/keyboard.css">
   <link rel="stylesheet" href="/static/lighting_panel.css">
+  <link rel="stylesheet" href="/static/oled_panel.css">
   <link rel="stylesheet" href="/static/interaction_panel.css">
 </head>
 <body>
@@ -77,6 +78,7 @@
     <button class="app-tab active" data-app-tab="keyboard" onclick="setActiveTab('keyboard')">キーボード</button>
     <button class="app-tab" data-app-tab="keymap" onclick="setActiveTab('keymap')">キーコード変更</button>
     <button class="app-tab" data-app-tab="lighting" onclick="setActiveTab('lighting')">LED Effect</button>
+    <button class="app-tab" data-app-tab="oled" onclick="setActiveTab('oled')">OLED</button>
     <button class="app-tab" data-app-tab="scripts" onclick="setActiveTab('scripts')">スクリプト</button>
     <button class="app-tab" data-app-tab="interaction" onclick="setActiveTab('interaction')">Interaction</button>
     <button class="app-tab" data-app-tab="settings" onclick="setActiveTab('settings')">Settings</button>
@@ -111,6 +113,66 @@
         <div class="lighting-field"><label for="lighting-saturation">Saturation <span id="lighting-saturation-value">–</span></label><div class="lighting-range-row"><input id="lighting-saturation" type="range" min="0" max="255" value="0"><input id="lighting-saturation-number" class="lighting-number" type="number" min="0" max="255" value="0"></div></div>
         <div class="lighting-field lighting-color-field"><label for="lighting-color">Color</label><div class="lighting-color-row"><input id="lighting-color" type="color" value="#ffffff" title="Color"><div id="lighting-color-presets" class="lighting-color-presets"></div></div></div>
         <div class="lighting-actions"><button class="lighting-btn" id="lighting-apply" type="button" onclick="applyLighting()">反映</button><button class="lighting-btn" type="button" onclick="resetSavedLighting()">リセット</button><button class="lighting-btn" type="button" onclick="fetchLighting()">再読込</button><span id="lighting-status" class="lighting-status">–</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="oled-panel" class="tab-hidden">
+    <div class="oled-toolbar">
+      <div>
+        <h2>OLED Editor</h2>
+        <p>1-bit iconとReady画面の表示順を編集します。保存内容はruntime overrideとして保持されます。</p>
+      </div>
+      <div class="oled-toolbar-actions">
+        <button class="lighting-btn" type="button" onclick="saveOledCustomization()">保存・反映</button>
+        <button class="lighting-btn" type="button" onclick="fetchOledCustomization()">再読込</button>
+        <button class="lighting-btn oled-danger-btn" type="button" onclick="resetOledCustomization()">既定値へ戻す</button>
+        <span id="oled-status" class="lighting-status">–</span>
+      </div>
+    </div>
+    <div class="oled-workspace">
+      <aside class="oled-card oled-icon-browser">
+        <h3>Icons</h3>
+        <div id="oled-icon-list" class="oled-icon-list" role="listbox" aria-label="OLED icons"></div>
+      </aside>
+      <div class="oled-card oled-icon-editor">
+        <div class="oled-card-header">
+          <div>
+            <h3 id="oled-icon-title">Icon</h3>
+            <span id="oled-icon-size-label">–</span>
+          </div>
+          <div class="oled-size-controls">
+            <label>幅 <input id="oled-icon-width" type="number" min="1" max="8" value="8"></label>
+            <label>高さ <input id="oled-icon-height" type="number" min="8" max="8" value="8" readonly></label>
+            <button class="lighting-btn" type="button" onclick="resizeOledIcon()">リサイズ</button>
+          </div>
+        </div>
+        <div class="oled-tool-row" role="toolbar" aria-label="Icon drawing tools">
+          <span class="oled-pointer-hint"><strong>左クリック</strong>: 点灯 / <strong>右クリック</strong>: 消去</span>
+          <button id="oled-tool-fill" class="oled-tool" type="button" aria-pressed="false" onclick="toggleOledFillMode()">塗りつぶし: OFF</button>
+          <button class="oled-tool" type="button" onclick="clearOledIcon()">全消去</button>
+          <button class="oled-tool" type="button" onclick="invertOledIcon()">反転</button>
+          <button class="oled-tool" type="button" onclick="resetCurrentOledIcon()">このiconを戻す</button>
+        </div>
+        <div class="oled-editor-body">
+          <div id="oled-pixel-grid" class="oled-pixel-grid" aria-label="OLED icon pixel grid"></div>
+          <div class="oled-icon-previews">
+            <div><span>通常</span><canvas id="oled-icon-preview" width="8" height="8"></canvas></div>
+            <div><span>反転badge</span><canvas id="oled-icon-preview-inverted" width="10" height="10"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <div class="oled-ready-column">
+        <aside class="oled-card oled-screen-preview-card">
+          <h3>Preview</h3>
+          <canvas id="oled-screen-preview" width="64" height="128" aria-label="OLED Ready screen preview"></canvas>
+          <p id="oled-source-label">–</p>
+        </aside>
+        <aside class="oled-card oled-layout-editor">
+          <h3>Ready画面</h3>
+          <p>表示、区切り線、上下順を変更できます。</p>
+          <div id="oled-layout-list" class="oled-layout-list"></div>
+        </aside>
       </div>
     </div>
   </section>
@@ -469,6 +531,7 @@
   <script src="/static/status_panel.js"></script>
   <script src="/static/lighting_panel.js"></script>
   <script src="/static/lighting_role_preview_controls.js"></script>
+  <script src="/static/oled_panel.js"></script>
   <script src="/static/settings_panel.js"></script>
   <script src="/static/matrix_tester.js"></script>
   <script src="/static/tabs.js"></script>

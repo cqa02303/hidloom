@@ -18,6 +18,7 @@ VENDOR_ID = 0x1D6B
 PRODUCT_ID = 0x0105
 RAW_HID_INTERFACE = 1
 REPORT_SIZE = 32
+VIAL_SERIAL_MAGIC = "vial:f64c2b3c"
 
 CMD_VIA_GET_PROTOCOL_VERSION = 0x01
 CMD_VIA_GET_LAYER_COUNT = 0x11
@@ -30,9 +31,17 @@ def packet(*values: int) -> bytes:
 
 
 def find_raw_hid() -> dict:
+    wrong_serials: list[str] = []
     for device in hid.enumerate(VENDOR_ID, PRODUCT_ID):
         if device.get("interface_number") == RAW_HID_INTERFACE:
-            return device
+            serial = str(device.get("serial_number") or "")
+            if VIAL_SERIAL_MAGIC in serial:
+                return device
+            wrong_serials.append(serial or "<empty>")
+    if wrong_serials:
+        raise SystemExit(
+            "raw HID interface MI_01 has no Vial serial magic: " + ", ".join(wrong_serials)
+        )
     raise SystemExit("raw HID interface MI_01 not found")
 
 

@@ -312,9 +312,30 @@ async def _assert_bluetooth_and_btd_status_helpers() -> None:
             assert usbd["broker_ready"] is True
             assert usbd["owner"] in {"hidloom-hidd", "usbd", "unknown"}
 
+            hidd_status_path = os.path.join(tmpdir, "hidd-status.json")
+            Path(hidd_status_path).write_text(
+                json.dumps({"process": True}),
+                encoding="utf-8",
+            )
+            native_route = hidd_status(
+                hidd_env={"USBD_HID_REPORT_SOCKET": socket_path},
+                logicd_env={
+                    "LOGICD_USBD_HID_REPORT_BROKER": "0",
+                    "LOGICD_NATIVE_OUTPUTD_CTRL": "1",
+                },
+                hidd_status_path=hidd_status_path,
+            )
+            assert native_route["owner"] == "hidloom-hidd"
+            assert native_route["logicd_broker_enabled_env"] == "0"
+            assert native_route["logicd_native_outputd_ctrl_env"] == "1"
+            assert native_route["broker_ready"] is True
+
     not_ready = usbd_status(
         usbd_env={"USBD_HID_REPORT_SOCKET_ENABLED": "1"},
-        logicd_env={"LOGICD_USBD_HID_REPORT_BROKER": "0"},
+        logicd_env={
+            "LOGICD_USBD_HID_REPORT_BROKER": "0",
+            "LOGICD_NATIVE_OUTPUTD_CTRL": "0",
+        },
     )
     assert not_ready["broker_ready"] is False
     native = hidd_status(

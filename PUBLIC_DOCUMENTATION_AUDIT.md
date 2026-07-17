@@ -19,7 +19,7 @@
 
 ## Removed private navigation
 
-- `daemon/i2cd/README.md:343` (private-only navigation removed)
+- `daemon/i2cd/README.md:352` (private-only navigation removed)
 - `daemon/logicd/README.md:131` (private-only navigation removed)
 - `daemon/matrixd/README.md:399` (private-only navigation removed)
 - `docs/README.md:14` (private-only navigation removed)
@@ -102,7 +102,7 @@
 ## Omitted private links
 
 - `FRESH_INSTALL.md:187` (file target omitted)
-- `daemon/i2cd/README.md:343` (file target omitted)
+- `daemon/i2cd/README.md:352` (file target omitted)
 - `daemon/logicd/README.md:131` (file target omitted)
 - `daemon/matrixd/README.md:399` (file target omitted)
 - `docs/README.md:14` (file target omitted)

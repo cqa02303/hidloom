@@ -34,6 +34,10 @@
     "disable": [
       "logicd.service",
       "hidloom-touch-panel-profile.service"
+    ],
+    "ready_sockets": [
+      "/tmp/ctrl_events.sock",
+      "/tmp/hidloom_output_ctrl.sock"
     ]
   }
 }

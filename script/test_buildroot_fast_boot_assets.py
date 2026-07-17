@@ -2,9 +2,13 @@
 """Static checks for Buildroot fast boot M1 assets."""
 from __future__ import annotations
 
+import hashlib
+import importlib.util
 import os
 from pathlib import Path
 import re
+import subprocess
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 BR = ROOT / "build" / "buildroot"
@@ -25,7 +29,68 @@ def assert_executable(path: Path) -> None:
     assert os.access(path, os.X_OK), f"{path.relative_to(ROOT)} should be executable"
 
 
+def assert_m6_post_build_normalizes_getty(post_build: Path) -> None:
+    with tempfile.TemporaryDirectory(prefix="hidloom-m6-post-build-") as directory:
+        temporary = Path(directory)
+        target = temporary / "target"
+        native = temporary / "native"
+        (target / "etc/sudoers.d").mkdir(parents=True)
+        native.mkdir()
+        (target / "etc/sudoers.d/pi").write_text("%wheel ALL=(ALL:ALL) ALL\n", encoding="utf-8")
+        inittab = target / "etc/inittab"
+        inittab.write_text(
+            "# /etc/inittab\n"
+            "#ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL\n"
+            "console::respawn:/sbin/getty -L console 0 vt100 # stale console\n"
+            "tty1::respawn:/sbin/getty -L tty1 0 vt100 # stale HDMI\n",
+            encoding="utf-8",
+        )
+        for binary in ("hidloom-hidd", "hidloom-logicd-core", "hidloom-outputd", "hidloom-uidd"):
+            path = native / binary
+            path.write_text("#!/bin/sh\n", encoding="utf-8")
+            path.chmod(0o755)
+        environment = os.environ.copy()
+        environment["HIDLOOM_M6_NATIVE_DIR"] = str(native)
+        for _iteration in range(2):
+            subprocess.run([str(post_build), str(target)], check=True, env=environment)
+            active = [
+                line
+                for line in inittab.read_text(encoding="utf-8").splitlines()
+                if line and not line.startswith("#") and "/sbin/getty " in line
+            ]
+            assert active == [
+                "tty1::respawn:/sbin/getty -L tty1 0 vt100 # HIDloom M6 HDMI console"
+            ]
+
+
+def assert_m6_embedded_partition_hash_guard() -> None:
+    verifier_path = ROOT / "tools" / "buildroot_m6_verify.py"
+    spec = importlib.util.spec_from_file_location("buildroot_m6_verify", verifier_path)
+    assert spec is not None and spec.loader is not None
+    verifier = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(verifier)
+    payload = b"hidloom-rootfs-payload"
+    image = bytearray(4 * 512)
+    image[510:512] = b"\x55\xaa"
+    entry_offset = 446 + 16
+    image[entry_offset + 8 : entry_offset + 12] = (2).to_bytes(4, "little")
+    image[entry_offset + 12 : entry_offset + 16] = (1).to_bytes(4, "little")
+    image[2 * 512 : 2 * 512 + len(payload)] = payload
+    with tempfile.TemporaryDirectory(prefix="hidloom-m6-mbr-") as directory:
+        path = Path(directory) / "sdcard.img"
+        path.write_bytes(image)
+        assert verifier.embedded_partition_sha256(path, 1, len(payload)) == hashlib.sha256(
+            payload
+        ).hexdigest()
+        image[2 * 512] ^= 0xFF
+        path.write_bytes(image)
+        assert verifier.embedded_partition_sha256(path, 1, len(payload)) != hashlib.sha256(
+            payload
+        ).hexdigest()
+
+
 def main() -> None:
+    assert_m6_embedded_partition_hash_guard()
     assert (BR / "README.md").exists()
     assert "name: HIDLOOM" in read(EXTERNAL / "external.desc")
     assert "package/hidloom-matrixd/Config.in" in read(EXTERNAL / "Config.in")
@@ -145,6 +210,19 @@ def main() -> None:
     assert "functions/hid.usb2" in m4_gadget_text
     assert "printf '8\\n' > report_length" in m4_gadget_text
     assert "ln -s functions/hid.usb2 configs/c.1/" in m4_gadget_text
+    assert "printf 'vial:f64c2b3c\\n' > strings/0x409/serialnumber" in m4_gadget_text
+    assert "m4-native-split" not in m4_gadget_text
+    hidd_source = read(ROOT / "tools" / "hidloom_hidd" / "src" / "main.rs")
+    assert 'env_u32("USBD_KEYBOARD_STARTUP_RELEASE", 1, 0, 1)' in hidd_source
+    assert '"USBD_KEYBOARD_STARTUP_RELEASE_RETRY_SEC"' in hidd_source
+    assert "hidd_startup_keyboard_release" in hidd_source
+    assert "send_startup_keyboard_releases(&cfg, &mut endpoints, &mut counters);" in hidd_source
+    assert 'b"USBD_KEYBOARD_STARTUP_RELEASE" not in hidd_binary' in read(
+        ROOT / "tools" / "buildroot_m6_verify.py"
+    )
+    assert "smoke_hidd_startup_release(qemu, target, temporary)" in read(
+        ROOT / "tools" / "buildroot_m6_runtime_smoke.py"
+    )
 
     m6_defconfig = read(EXTERNAL / "configs" / "hidloom_m6_defconfig")
     assert "rootfs_overlay_m6" in m6_defconfig
@@ -211,6 +289,19 @@ def main() -> None:
         assert marker in read(service)
     sudoers = M6_OVERLAY / "etc" / "sudoers.d" / "pi"
     assert "%wheel ALL=(ALL:ALL) ALL" in read(sudoers)
+    m6_verify_text = read(ROOT / "tools" / "buildroot_m6_verify.py")
+    assert 'filesystem_file(debugfs, rootfs, "/etc/passwd")' in m6_verify_text
+    assert 'filesystem_file(debugfs, rootfs, "/etc/shadow")' in m6_verify_text
+    assert 'filesystem_file(debugfs, rootfs, "/etc/group")' in m6_verify_text
+    assert 'filesystem_file(debugfs, rootfs, "/etc/inittab")' in m6_verify_text
+    assert 'filesystem_bytes(debugfs, rootfs, "/usr/bin/hidloom-hidd")' in m6_verify_text
+    assert 'filesystem_bytes(debugfs, rootfs, "/usr/bin/hidloom-hid-gadget-m4")' in m6_verify_text
+    assert "embedded_partition_sha256(image, 1, rootfs.stat().st_size)" in m6_verify_text
+    assert '"rootfs_partition_embedded": True' in m6_verify_text
+    assert '"console_getty": "tty1-single"' in m6_verify_text
+    assert 'BR2_TARGET_GENERIC_GETTY_PORT="tty1"' in read(
+        EXTERNAL / "configs" / "hidloom_m6_defconfig"
+    )
 
     post_build = BOARD / "post-build-m6.sh"
     m6_build = ROOT / "tools" / "buildroot_m6_build.sh"
@@ -225,28 +316,51 @@ def main() -> None:
     assert "daemon/http" not in post_build_text
     assert "daemon/btd" not in post_build_text
     assert 'chmod 0440 "$TARGET_DIR/etc/sudoers.d/pi"' in post_build_text
+    assert "HIDloom M6 HDMI console" in post_build_text
+    assert "'/^[^#].*\\/sbin\\/getty /d'" in post_build_text
+    assert_m6_post_build_normalizes_getty(post_build)
     assert '"$ROOT/hidloom_paths.py"' in post_build_text
     assert "logicd viald i2cd ledd usbd" in post_build_text
     assert 'rm -f "$TARGET_DIR/etc/init.d/S25hidloom-m3-router"' in post_build_text
     native_build = read(ROOT / "tools" / "buildroot_m4_native_build.sh")
     assert "hidloom_uidd" in native_build
     assert "cargo build --locked" in native_build
+    assert "HIDLOOM_M6_CARGO_TARGET_DIR" in native_build
+    assert 'export CARGO_TARGET_DIR' in native_build
+    assert '"$CARGO_TARGET_DIR/$TARGET/release/hidloom-hidd"' in native_build
+    rehearsal = read(ROOT / "tools" / "public_build_rehearsal.sh")
+    assert 'BUILDROOT_WORK_DIR=$(dirname -- "$BUILDROOT_OUTPUT")' in rehearsal
+    assert 'HIDLOOM_M6_NATIVE_DIR="$M6_NATIVE_DIR"' in rehearsal
+    assert 'HIDLOOM_BUILD_HOSTBIN="$BUILD_HOSTBIN"' in rehearsal
     m6_build_text = read(m6_build)
     assert "buildroot_m6_verify.py" in m6_build_text
     assert "buildroot_legal_info.py" in m6_build_text
+    assert "repair_python_target_cache" in m6_build_text
+    for package in ["python3", "python-cbor2", "python-pillow", "python-rpi-ws281x", "python-smbus2", "python-luma-core", "python-luma-oled"]:
+        assert f"{package}-reinstall" in m6_build_text
     assert "summarize_buildroot_legal_info.py" in read(ROOT / "tools" / "buildroot_legal_info.py")
     assert "buildroot_m6_import_smoke.py" in m6_build_text
     assert "buildroot_m6_runtime_smoke.py" in m6_build_text
     assert "--legal-info" in m6_build_text
     assert "EXPECTED_RELEASE_SHA256" in read(m6_verify)
+    assert 'target / "usr/share/hidloom/config/default/oled-layout.json"' in read(m6_verify)
+    assert 'target / "usr/share/hidloom/daemon/i2cd/connectivity_icon_bitmaps.txt"' in read(m6_verify)
+    assert 'target / "usr/share/hidloom/daemon/i2cd/oled_customization.py"' in read(m6_verify)
     assert "microsd-uart-off-hdmi-1080p" in read(m6_verify)
+    assert "vial_serial_magic" in read(m6_verify)
     assert "hidloom_paths.py" in read(m6_verify)
+    vial_host_smoke = read(ROOT / "script" / "test_vial_raw_hid_host.py")
+    assert 'VIAL_SERIAL_MAGIC = "vial:f64c2b3c"' in vial_host_smoke
+    assert "raw HID interface MI_01 has no Vial serial magic" in vial_host_smoke
     import_smoke_text = read(m6_import_smoke)
+    assert 'environment["PYTHONNOUSERSITE"] = "1"' in import_smoke_text
+    assert 'environment.pop("PYTHONHOME", None)' in import_smoke_text
     for module in ["hidloom_paths", "luma.core", "luma.oled", "viald.viald", "logicd.logicd", "logicd.config_runtime", "usbd.hid_report_broker", "i2cd.i2cd", "ledd.ledd"]:
         assert f'"{module}"' in import_smoke_text
     runtime_smoke_text = read(m6_runtime_smoke)
     assert "KC_RO" in runtime_smoke_text
     assert "KC_A" in runtime_smoke_text
+    assert "USB/uinput console login route round trip" in runtime_smoke_text
     assert "logicd companion remained active" in runtime_smoke_text
 
     luma_core = read(EXTERNAL / "package" / "python-luma-core" / "python-luma-core.mk")

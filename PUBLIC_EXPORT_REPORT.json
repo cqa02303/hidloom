@@ -4,29 +4,29 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "16f052966cb91285fe2eed1cc3db1b8d1bf96b3f",
-    "base_tree": "faf1e1ae7461c50b9edc0e0bb3f04957c4b08d39",
-    "base_revision_count": 1931,
-    "selected_path_count": 1183,
-    "selected_snapshot_sha256": "1ba7c1ed90d6e5a58ab2d1120d25a8a12949262fd5da863c3f974298ff695553"
+    "base_commit": "18ac7f09cc30a060dc65fc18fb59843fa32374e9",
+    "base_tree": "04baec81ce82f5b261fd40c936f28d181448d5b7",
+    "base_revision_count": 1978,
+    "selected_path_count": 1190,
+    "selected_snapshot_sha256": "155e82daa737ce53128a64400cf34712cd2b43ada83eb44baee92cceb3839c75"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1183,
+  "file_count": 1190,
   "source_selection": {
-    "tracked_paths": 1250,
-    "public_source_paths": 1183,
+    "tracked_paths": 1257,
+    "public_source_paths": 1190,
     "private_only_paths": 67,
     "generated_output_paths": 0,
     "unclassified_paths": 0
   },
   "finding_summary": {
     "warn:credential_word": {
-      "implementation_security_keyword": 53,
+      "implementation_security_keyword": 57,
       "documentation_security_keyword": 70,
       "security_implementation_keyword": 73,
-      "test_fixture": 45
+      "test_fixture": 46
     },
     "warn:linux_foundation_vid": {
       "migration_documentation": 2,
@@ -498,7 +498,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 327,
+      "line": 328,
       "excerpt": "\"reason\": \"reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -561,7 +561,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/README.md",
-      "line": 19,
+      "line": 20,
       "excerpt": "| Basic 認証 | 全ページ、API、WebSocket を Basic 認証で保護。Settings から password を変更可能 |",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -570,7 +570,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/README.md",
-      "line": 106,
+      "line": 112,
       "excerpt": "Basic 認証の初期値は `config/default/config.json` の `settings.http_basic_auth` から読みます。未設定時の初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。Settings タブから password を変更した場合は `HTTPD_BASIC_AUTH_FILE` の小",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -579,7 +579,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/README.md",
-      "line": 132,
+      "line": 138,
       "excerpt": "| `/api/settings/http-auth` | POST | Basic 認証 password 変更 |",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -588,7 +588,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/README.md",
-      "line": 150,
+      "line": 158,
       "excerpt": "- POST / PUT / DELETE と `/ws` は CSRF token を要求する。`/` と API GET で",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -732,7 +732,7 @@
       "severity": "warn",
       "pattern_id": "private_ipv4",
       "path": "daemon/http/httpd.py",
-      "line": 226,
+      "line": 230,
       "excerpt": "ipaddress.ip_network(\"10.0.0.0/8\"),",
       "disposition": "allowed_private_network_range",
       "reason": "RFC1918 CIDRs are intentional HTTP access-control ranges"
@@ -741,7 +741,7 @@
       "severity": "warn",
       "pattern_id": "private_ipv4",
       "path": "daemon/http/httpd.py",
-      "line": 227,
+      "line": 231,
       "excerpt": "ipaddress.ip_network(\"172.16.0.0/12\"),",
       "disposition": "allowed_private_network_range",
       "reason": "RFC1918 CIDRs are intentional HTTP access-control ranges"
@@ -750,7 +750,7 @@
       "severity": "warn",
       "pattern_id": "private_ipv4",
       "path": "daemon/http/httpd.py",
-      "line": 228,
+      "line": 232,
       "excerpt": "ipaddress.ip_network(\"192.168.0.0/16\"),",
       "disposition": "allowed_private_network_range",
       "reason": "RFC1918 CIDRs are intentional HTTP access-control ranges"
@@ -759,7 +759,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 271,
+      "line": 275,
       "excerpt": "set_csrf_cookie(response, cookie_name=HTTPD_CSRF_COOKIE, token=HTTPD_CSRF_TOKEN)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -768,7 +768,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 294,
+      "line": 298,
       "excerpt": "def _hash_http_basic_auth_password(password: str, *, iterations: int = 200_000) -> str:",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -777,7 +777,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 295,
+      "line": 299,
       "excerpt": "return hash_http_basic_auth_password(password, iterations=iterations)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -786,7 +786,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 298,
+      "line": 302,
       "excerpt": "def _verify_http_basic_auth_password(password: str, stored: str) -> bool:",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -795,7 +795,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 299,
+      "line": 303,
       "excerpt": "return verify_http_basic_auth_password(password, stored)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -804,7 +804,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 313,
+      "line": 317,
       "excerpt": "def _write_http_basic_auth_file(username: str, password: str) -> tuple[Path, str]:",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -813,7 +813,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 316,
+      "line": 320,
       "excerpt": "password,",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -822,7 +822,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 359,
+      "line": 363,
       "excerpt": "log.warning(\"Rejecting request with invalid CSRF token: method=%s path=%s\", request.method, request.path)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -975,7 +975,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 299,
+      "line": 361,
       "excerpt": "<label for=\"settings-current-password\">Current password</label>",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -984,7 +984,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 300,
+      "line": 362,
       "excerpt": "<input id=\"settings-current-password\" type=\"password\" autocomplete=\"current-password\">",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -993,7 +993,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 303,
+      "line": 365,
       "excerpt": "<label for=\"settings-new-password\">New password</label>",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1002,7 +1002,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 304,
+      "line": 366,
       "excerpt": "<input id=\"settings-new-password\" type=\"password\" autocomplete=\"new-password\">",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1011,7 +1011,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 307,
+      "line": 369,
       "excerpt": "<label for=\"settings-confirm-password\">Confirm password</label>",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1020,7 +1020,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 308,
+      "line": 370,
       "excerpt": "<input id=\"settings-confirm-password\" type=\"password\" autocomplete=\"new-password\">",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1101,7 +1101,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/i2cd/connectivity.py",
-      "line": 91,
+      "line": 104,
       "excerpt": "connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, \"\")",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1110,7 +1110,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/i2cd/connectivity.py",
-      "line": 98,
+      "line": 111,
       "excerpt": "\"ssid\": ssid,",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1389,7 +1389,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/module-structure.md",
-      "line": 119,
+      "line": 120,
       "excerpt": "| `daemon/http/auth_tls.py` | HTTP Basic auth、password hash / verify、auth override file、TLS cert/key path、SSL context |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1398,7 +1398,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/module-structure.md",
-      "line": 120,
+      "line": 121,
       "excerpt": "| `daemon/http/security_middleware.py` | private-network allowlist、CSRF token / cookie、audit log helper |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1407,7 +1407,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/specification.md",
-      "line": 187,
+      "line": 191,
       "excerpt": "`config/default/config.json` の初期 password は `__HOSTNAME__` を指定でき、その場合は",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1416,7 +1416,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/specification.md",
-      "line": 190,
+      "line": 194,
       "excerpt": "password は平文ではなく `password_hash` として保存します。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1425,7 +1425,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/specification.md",
-      "line": 247,
+      "line": 251,
       "excerpt": "logicd macro token へ変換します。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1434,7 +1434,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/specification.md",
-      "line": 279,
+      "line": 283,
       "excerpt": "`httpd` は Basic 認証付きの HTTPS UI を提供します。初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1443,7 +1443,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/specification.md",
-      "line": 297,
+      "line": 301,
       "excerpt": "- Settings タブでの Basic 認証 password 変更",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1452,7 +1452,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/specification.md",
-      "line": 299,
+      "line": 303,
       "excerpt": "Settings タブで password を変更すると、現在 password を確認したうえで専用 override",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1623,7 +1623,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 531,
+      "line": 538,
       "excerpt": "M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -8984,6 +8984,15 @@
     {
       "severity": "warn",
       "pattern_id": "credential_word",
+      "path": "script/test_buildroot_fast_boot_assets.py",
+      "line": 293,
+      "excerpt": "assert 'filesystem_file(debugfs, rootfs, \"/etc/passwd\")' in m6_verify_text",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
       "path": "script/test_current_status_doc.py",
       "line": 263,
       "excerpt": "assert config[\"settings\"][\"http_basic_auth\"][\"password\"] == \"__HOSTNAME__\"",
@@ -9525,7 +9534,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/README.md",
-      "line": 83,
+      "line": 87,
       "excerpt": "したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -9554,6 +9563,42 @@
       "path": "tools/buildroot_m1_compare.py",
       "line": 71,
       "excerpt": "if any(token in line for token in (\"hid\", \"usb\", \"cqa02303v5\", \"1d6b:0105\")):",
+      "disposition": "implementation_security_keyword",
+      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "tools/buildroot_m6_verify.py",
+      "line": 133,
+      "excerpt": "filesystem_file(debugfs, rootfs, \"/etc/passwd\"),",
+      "disposition": "implementation_security_keyword",
+      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "tools/buildroot_m6_verify.py",
+      "line": 135,
+      "excerpt": "f\"{rootfs}:/etc/passwd\",",
+      "disposition": "implementation_security_keyword",
+      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "tools/buildroot_m6_verify.py",
+      "line": 138,
+      "excerpt": "raise SystemExit(\"invalid M6 pi passwd entry\")",
+      "disposition": "implementation_security_keyword",
+      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "tools/buildroot_m6_verify.py",
+      "line": 148,
+      "excerpt": "raise SystemExit(\"M6 pi password hash does not match the SHA-256 users table\")",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
     },

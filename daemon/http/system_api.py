@@ -261,12 +261,18 @@ def usbd_status(
     usbd_enabled = _env_enabled(uenv, "USBD_HID_REPORT_SOCKET_ENABLED")
     hidd_process = check_process(_DAEMON_KEYWORDS["hidd"])
     legacy_usbd_process = check_process(_DAEMON_KEYWORDS["usbd"])
-    logicd_enabled = _env_enabled(lenv, "LOGICD_USBD_HID_REPORT_BROKER")
+    logicd_broker_enabled = _env_enabled(lenv, "LOGICD_USBD_HID_REPORT_BROKER")
+    native_outputd_enabled = _env_enabled(lenv, "LOGICD_NATIVE_OUTPUTD_CTRL")
+    logicd_route_enabled = logicd_broker_enabled or native_outputd_enabled
     socket_status = _socket_file_status(socket_path)
     hidd_status = _load_hidd_status(hidd_status_path)
     hidd_active = hidd_process or hidd_status.get("process") is True
     owner = "hidloom-hidd" if hidd_active else ("usbd" if legacy_usbd_process else "unknown")
-    broker_ready = bool(logicd_enabled and socket_status.get("is_socket") is True and (hidd_active or usbd_enabled))
+    broker_ready = bool(
+        logicd_route_enabled
+        and socket_status.get("is_socket") is True
+        and (hidd_active or usbd_enabled)
+    )
     return {
         "owner": owner,
         "process": hidd_process or legacy_usbd_process,
@@ -280,6 +286,7 @@ def usbd_status(
         "hidd_hid_report_socket_env": henv.get("USBD_HID_REPORT_SOCKET", ""),
         "hid_report_log_env": uenv.get("USBD_HID_REPORT_LOG", ""),
         "logicd_broker_enabled_env": lenv.get("LOGICD_USBD_HID_REPORT_BROKER", ""),
+        "logicd_native_outputd_ctrl_env": lenv.get("LOGICD_NATIVE_OUTPUTD_CTRL", ""),
         "logicd_hid_report_socket_env": lenv.get("LOGICD_USBD_HID_REPORT_SOCKET", ""),
         "logicd_hid_report_log_env": lenv.get("LOGICD_HID_REPORT_LOG", ""),
         "broker_ready": broker_ready,

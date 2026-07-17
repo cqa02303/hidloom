@@ -89,6 +89,10 @@ wrapperは4個のnative Rust binaryを`armv7-unknown-linux-musleabihf`へcross-b
 必要な`logicd` companion、`viald`、`i2cd`、`ledd`、設定だけをrootfsへstageする。Wi-Fi、HTTP、
 Bluetooth daemonはstageしない。設定だけを確認する場合は次を使う。
 
+既存output cacheを再利用する場合、Buildrootの`PYC_ONLY` finalization後に必要なPython bytecodeが
+欠落していれば、wrapperはPython本体とM6依存packageだけをtargetへ再配置してから再生成する。
+QEMU import smokeはhostの`PYTHONHOME`とuser siteを使用せず、target root内だけを検査する。
+
 ```bash
 tools/buildroot_m6_build.sh --configure-only
 ```

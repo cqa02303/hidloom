@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -22,6 +23,8 @@ INSTALLED_PROFILE_DIR = Path("/usr/share/hidloom/profiles")
 RUNTIME_DIR = Path(environment_value("RUNTIME_DIR", "/mnt/p3"))
 SYSTEMD_ETC_DIR = Path(environment_value("SYSTEMD_ETC_DIR", "/etc/systemd/system"))
 SCHEMA = "cqa02303v5.device-profile.v1"
+READY_SOCKET_TIMEOUT_SEC = 15.0
+READY_SOCKET_POLL_SEC = 0.1
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -171,6 +174,32 @@ def systemctl(args: list[str], *, dry_run: bool) -> None:
     subprocess.run(cmd, check=True)
 
 
+def wait_for_sockets(
+    paths: list[Path],
+    *,
+    timeout_sec: float = READY_SOCKET_TIMEOUT_SEC,
+    poll_sec: float = READY_SOCKET_POLL_SEC,
+) -> None:
+    deadline = time.monotonic() + timeout_sec
+    pending = list(paths)
+    while pending:
+        next_pending: list[Path] = []
+        for path in pending:
+            try:
+                if stat.S_ISSOCK(path.stat().st_mode):
+                    continue
+            except FileNotFoundError:
+                pass
+            next_pending.append(path)
+        pending = next_pending
+        if not pending:
+            return
+        if time.monotonic() >= deadline:
+            names = ", ".join(str(path) for path in pending)
+            raise SystemExit(f"service readiness timeout waiting for socket(s): {names}")
+        time.sleep(poll_sec)
+
+
 def warn_shadowed_units(units: list[str]) -> None:
     for unit in units:
         path = SYSTEMD_ETC_DIR / unit
@@ -233,6 +262,14 @@ def apply_profile(
     enable = list(services.get("enable", [])) if isinstance(services, dict) else []
     disable = list(services.get("disable", [])) if isinstance(services, dict) else []
     mask = list(services.get("mask", [])) if isinstance(services, dict) else []
+    ready_sockets = (
+        [Path(str(path)) for path in services.get("ready_sockets", [])]
+        if isinstance(services, dict)
+        else []
+    )
+    for path in ready_sockets:
+        if not path.is_absolute():
+            raise SystemExit(f"service ready socket must be absolute: {path}")
     warn_shadowed_units([*enable, *disable, *mask])
     systemctl(["daemon-reload"], dry_run=dry_run)
     if enable:
@@ -252,6 +289,12 @@ def apply_profile(
     final_stop = [*disable, *mask]
     if restart and final_stop:
         systemctl(["stop", *final_stop], dry_run=dry_run)
+    if restart and ready_sockets:
+        if dry_run:
+            for path in ready_sockets:
+                print(f"wait-socket {path}")
+        else:
+            wait_for_sockets(ready_sockets)
 
 
 def main() -> None:
