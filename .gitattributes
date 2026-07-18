@@ -2,4 +2,6 @@
 
 *.f3d binary
 *.ico binary
+*.jpg binary
+*.jpeg binary
 *.png binary

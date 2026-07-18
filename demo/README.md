@@ -54,5 +54,12 @@ such as `LED_VIDEO_VIALRGB_SPEED` can still override them.  This keeps the
 video as the base frame and overlays key-triggered multisplash without changing
 the saved lighting preset.
 
+If the local video or its OpenCV/NumPy dependencies are unavailable, `KC_SH2.sh`
+automatically starts the tracked procedural player in `tools/demo/play_led_pattern.py`.
+The fallback uses only the Python standard library and the packaged HIDloom
+direct-frame protocol, so a clean package installation still provides a visible
+LED demo. Press `KC_SH2` again to stop either player and restore the previous
+lighting state.
+
 Known source URLs live in `demo/prepare_led_video.py`.  Add new demo
 sources there instead of committing mp4 files.

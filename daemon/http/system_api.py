@@ -28,6 +28,7 @@ from system_process import (
 DEFAULT_BTD_SOCKET = "/tmp/btd_events.sock"
 DEFAULT_USBD_HID_REPORT_SOCKET = "/tmp/usbd_hid_reports.sock"
 DEFAULT_HIDD_STATUS_PATH = "/run/hidloom/hidd-status.json"
+DEFAULT_OUTPUTD_STATUS_PATH = "/run/hidloom/outputd-status.json"
 DEFAULT_BLUETOOTH_HOSTS_FILE = "/mnt/p3/bluetooth_hosts.json"
 DEFAULT_BOARD_PROFILE_FILE = "/mnt/p3/board_profile.json"
 DEFAULT_TOUCH_PANEL_PROFILE_FILE = "/mnt/p3/touch_panel_profile.json"
@@ -319,6 +320,45 @@ def _load_hidd_status(path_text: str) -> Dict[str, Any]:
     if not isinstance(payload, dict):
         return {"available": False, "path": path_text, "error": "status root must be object"}
     return {"available": True, "path": path_text, **payload}
+
+
+def outputd_status(path_text: str = DEFAULT_OUTPUTD_STATUS_PATH) -> Dict[str, Any]:
+    path = Path(path_text)
+    if not path.exists():
+        return {"available": False, "path": path_text}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {"available": False, "path": path_text, "error": str(exc)}
+    if not isinstance(payload, dict):
+        return {"available": False, "path": path_text, "error": "status root must be object"}
+    if payload.get("schema") != "hidloom.outputd.status.v1":
+        return {"available": False, "path": path_text, "error": "unexpected status schema"}
+    if payload.get("process") is not True:
+        return {"available": False, "path": path_text, "error": "output router is not ready"}
+    target = str(payload.get("target", "")).strip().lower()
+    if target not in {"auto", "usb", "gadget", "uinput", "console", "bt", "bluetooth"}:
+        return {"available": False, "path": path_text, "error": "unexpected output target"}
+    return {"available": True, "path": path_text, **payload, "target": target}
+
+
+def resolve_output_state(
+    runtime_mode: str,
+    output_target: str,
+    native_status: Dict[str, Any] | None,
+) -> tuple[str, str]:
+    if not native_status or native_status.get("available") is not True:
+        return runtime_mode, output_target
+    target = str(native_status.get("target", "")).strip().lower()
+    if target == "auto":
+        return "gadget", "auto"
+    if target in {"usb", "gadget"}:
+        return "gadget", "gadget"
+    if target in {"uinput", "console"}:
+        return "uinput", "uinput"
+    if target in {"bt", "bluetooth"}:
+        return "bt", "bt"
+    return runtime_mode, output_target
 
 
 async def query_btd_runtime_status(

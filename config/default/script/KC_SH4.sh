@@ -19,12 +19,12 @@ LOG_FILE="/tmp/vialrgb_preview.log"
 
 if pgrep -f 'preview_vialrgb_effects.py' >/dev/null 2>&1; then
     echo "KC_SH4: preview already running"
-    hidloom-notify alert "VialRGB preview は実行中です" 2 || true
+    hidloom-notify alert "VIAL PREVIEW BUSY" 2 || true
     exit 0
 fi
 
 echo "KC_SH4: starting full VialRGB effect preview; log=${LOG_FILE}"
-hidloom-notify alert "VialRGB preview を開始します" 2 || true
+hidloom-notify alert "VIAL PREVIEW START" 2 || true
 cd "${REPO_DIR}" || exit 1
 nohup /usr/bin/python3 script/preview_vialrgb_effects.py --seconds 5 --restore >"${LOG_FILE}" 2>&1 &
 exit 0

@@ -61,7 +61,7 @@ def main() -> None:
         assert payload["action_required_count"] == 12
         assert payload["pending_dispositions"] == ["pid_codes_migration_required"]
         assert payload["privacy_summary"]["blockers"] == 0
-        assert payload["privacy_summary"]["media_files"] == 8
+        assert payload["privacy_summary"]["media_files"] == 32
         assert payload["checks"]["asset_provenance_ready"] is True
         assert payload["checks"]["public_reference_audit_ready"] is True
         assert payload["checks"]["public_documentation_audit_ready"] is True
@@ -78,7 +78,7 @@ def main() -> None:
         else:
             assert payload["documentation_summary"]["omitted_private_links"] == 0
             assert payload["documentation_summary"]["removed_private_navigation_lines"] == 0
-        assert payload["asset_summary"]["assets"] == 25
+        assert payload["asset_summary"]["assets"] == 49
         assert payload["checks"]["third_party_redistributed_complete"] is True
         assert payload["checks"]["github_actions_supply_chain_ready"] is True
         assert payload["github_actions_issues"] == []

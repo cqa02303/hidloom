@@ -20,6 +20,8 @@
     "binary_path_globs": [
       "**/*.f3d",
       "**/*.ico",
+      "**/*.jpg",
+      "**/*.jpeg",
       "**/*.png"
     ],
     "empty_file_allow_globs": [

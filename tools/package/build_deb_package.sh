@@ -123,6 +123,13 @@ trap cleanup EXIT INT TERM
 
 tar -C "$TMP_DIR" --zstd -xf "$BUNDLE"
 
+for required in script/migrate_runtime_scripts.py config/default/script-migrations.json; do
+    if [ ! -f "$TMP_DIR/$required" ]; then
+        echo "bundle missing runtime script migration input: $required" >&2
+        exit 1
+    fi
+done
+
 MANIFEST="$TMP_DIR/build/package-manifest.json"
 if [ ! -f "$MANIFEST" ]; then
     echo "bundle manifest not found: build/package-manifest.json" >&2
@@ -251,19 +258,10 @@ HIDLOOM_RUNTIME_DIR="\${HIDLOOM_RUNTIME_DIR:-/mnt/p3}"
 
 if [ -d "\$HIDLOOM_APP_ROOT/config/default" ]; then
     install -d -m 0755 "\$HIDLOOM_RUNTIME_DIR" "\$HIDLOOM_RUNTIME_DIR/script"
-    if [ -d "\$HIDLOOM_APP_ROOT/config/default/script" ]; then
-        for src in "\$HIDLOOM_APP_ROOT"/config/default/script/*; do
-            [ -e "\$src" ] || continue
-            dest="\$HIDLOOM_RUNTIME_DIR/script/\$(basename "\$src")"
-            if [ ! -e "\$dest" ]; then
-                cp "\$src" "\$dest"
-                case "\$dest" in
-                    *.sh) chmod 0755 "\$dest" ;;
-                    *) chmod 0644 "\$dest" ;;
-                esac
-            fi
-        done
-    fi
+    /usr/bin/python3 "\$HIDLOOM_APP_ROOT/script/migrate_runtime_scripts.py" \
+        --defaults-dir "\$HIDLOOM_APP_ROOT/config/default/script" \
+        --manifest "\$HIDLOOM_APP_ROOT/config/default/script-migrations.json" \
+        --runtime-dir "\$HIDLOOM_RUNTIME_DIR/script"
 fi
 
 if command -v systemctl >/dev/null 2>&1; then

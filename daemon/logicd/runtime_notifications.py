@@ -1,6 +1,8 @@
 """Runtime notification fan-out for logicd."""
 from __future__ import annotations
 
+from oled_text import ascii_oled_text
+
 import logging
 import json
 from typing import Any
@@ -143,6 +145,7 @@ class LogicdNotifier:
             self.runtime.i2cd_writer = None
 
     def push_i2cd_alert(self, message: str, sec: float = 2.0, immediate: bool = False) -> None:
+        message = ascii_oled_text(message)
         if not write_json(
             self.runtime.i2cd_writer,
             {"t": "alert", "msg": message, "sec": sec, "immediate": immediate},

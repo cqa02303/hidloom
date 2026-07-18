@@ -107,6 +107,7 @@ def main() -> None:
         "connectivity",
         "daemon",
         "feature",
+        "gallery",
         "hardware",
         "hid",
         "input",

@@ -23,8 +23,10 @@ from system_api import (
     ledd_direct_frame_status,
     logicd_runtime_environment,
     output_status,
+    outputd_status,
     process_statuses,
     query_btd_runtime_status,
+    resolve_output_state,
     service_environment,
     spid_status,
     usbd_status,
@@ -140,6 +142,8 @@ async def status_response(
     btd_runtime = await query_btd_runtime_status(btd_socket or "/tmp/btd_events.sock")
     mode = str(logicd_data.get("mode", "")) if logicd_data is not None else ""
     output_target = str(logicd_data.get("output_target", "")) if logicd_data is not None else ""
+    native_output = outputd_status()
+    mode, output_target = resolve_output_state(mode, output_target, native_output)
     return web.json_response({
         "hid": hid_gadget_status(hid_device),
         "mode": mode,
@@ -155,6 +159,7 @@ async def status_response(
         "hid_broker": hidd_status(hidd_env=hidd_env, logicd_env=logicd_env),
         "usbd": usbd_status(usbd_env=usbd_env, hidd_env=hidd_env, logicd_env=logicd_env),
         "output": output_status(logicd_env, runtime_mode=mode, output_target=output_target),
+        "outputd": native_output,
         "spid": spid_status(),
         "ledd_direct_frame": ledd_direct_frame_status(),
     })

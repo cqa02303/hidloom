@@ -45,6 +45,7 @@ root に残す理由と新規文書の配置ルールは [policy/documentation-p
 | Bluetooth / BLE | [bluetooth/README.md](bluetooth/README.md) |
 | connectivity / host identity | [connectivity/README.md](connectivity/README.md) |
 | feature design | [feature/README.md](feature/README.md) |
+| image gallery | [gallery/README.md](gallery/README.md) |
 | hardware / board / matrix | [hardware/README.md](hardware/README.md) |
 | HID extension | [hid/README.md](hid/README.md) |
 | input / IME | [input/README.md](input/README.md) |

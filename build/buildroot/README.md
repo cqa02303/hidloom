@@ -89,6 +89,18 @@ wrapperは4個のnative Rust binaryを`armv7-unknown-linux-musleabihf`へcross-b
 必要な`logicd` companion、`viald`、`i2cd`、`ledd`、設定だけをrootfsへstageする。Wi-Fi、HTTP、
 Bluetooth daemonはstageしない。設定だけを確認する場合は次を使う。
 
+2026-07-18のRaspberry Pi OS package向けKC_SH修正は次のように判定する。
+
+| change | M6判断 | 理由 |
+| --- | --- | --- |
+| 既知の旧runtime script SHA-256 migration | 非搭載 | M6はpackage upgradeせずimmutable rootfsとseedをimageから再生成するため、既存`/mnt/p3/script`を移行するpostinst helperは不要 |
+| SH5 / SH6 / SH9 safe no-op default | 非搭載 | M6はKC_SH runtime scriptをstageせず、offline keyboard applianceの通常key pathへ影響しない |
+| SH2 procedural LED demo | 後送り | M6は`tools/demo`と`hidloom-notify` / `hidloom-ctrl` helperをstageしない。通常key path、Vial、OLED、LEDの合否には含めず、採用時はtool/helper stagingとARM direct-frame smokeを同時追加する |
+| SH3 network identity alert | 非搭載 | M6はWi-Fi非搭載のoffline applianceであり、network identity表示を追加しない |
+
+したがって、この変更だけではM6 imageを再生成しない。Raspberry Pi OSではSH2/SH3を提供し、M6では
+offline appliance境界を維持する。
+
 既存output cacheを再利用する場合、Buildrootの`PYC_ONLY` finalization後に必要なPython bytecodeが
 欠落していれば、wrapperはPython本体とM6依存packageだけをtargetへ再配置してから再生成する。
 QEMU import smokeはhostの`PYTHONHOME`とuser siteを使用せず、target root内だけを検査する。

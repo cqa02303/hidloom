@@ -124,24 +124,41 @@ def main() -> None:
 
     assert "sudo ./setup_fresh_rpi.sh --prepare-only" in readme
     assert "hidloom-profile keyboard-ver1 --apply --backup --restart" in readme
+    assert "Raspberry Pi OS Touch Panel" in readme
+    assert "touch-waveshare-8.8" in readme
     assert "引数なしの checkout bootstrap" in readme
     assert "Raspberry Pi 実機では build" in readme
     assert "cd ~/hidloom/daemon/matrixd" not in readme
 
     for phrase in (
-        "Raspberry Pi OS + split package",
+        "Raspberry Pi OS Keyboard",
         "Buildroot M6 image",
         "hidloom-core_<version>_arm64.deb",
         "hidloom-profile-keyboard-ver1_<version>_arm64.deb",
+        "hidloom-profile-touch-waveshare-8.8_<version>_arm64.deb",
         "hidloom-<version>-buildroot-m6.img.zst",
         "SHA256SUMS",
         "同じ apt",
         "hidloom-profile keyboard-ver1 --apply --backup --restart",
+        "Option A2: Raspberry Pi OS Touch Panel Package",
+        "HIDLOOM_KEEP_DESKTOP=1",
+        "--prepare-only --touch-panel-only",
+        "hidloom-profile touch-waveshare-8.8 --apply --backup --restart",
+        "/usr/lib/hidloom/script/start_touch_panel_browser.sh",
+        "/usr/lib/hidloom/tools/touch_kiosk_health_probe.py --require-ready",
+        "https://www.waveshare.com/8.8-dsi-touch-a.htm",
         "offline appliance",
         "Wi-Fi、SSH、httpd を含まない",
         "1920x1080",
     ):
         assert phrase in install, phrase
+
+    for phrase in (
+        "make DEVICE_PROFILE=touch-waveshare-8.8 profile-deb-package",
+        "HIDLOOM_KEEP_DESKTOP=1",
+        "hidloom-profile touch-waveshare-8.8 --apply --backup --restart",
+    ):
+        assert phrase in guide, phrase
 
     for phrase in (
         "python3 script/test_validation_suite.py",

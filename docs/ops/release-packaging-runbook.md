@@ -94,8 +94,10 @@ absolute path ではなく basename を記録する portable sha256 形式にし
 これらが欠けていれば dpkg / apt の段階で止め、service 起動後の import error まで進ませないためです。
 `rpi_ws281x` は無い場合も `ledd` が stub mode で起動できるため Depends には入れず、
 LED 実出力が必要な fresh setup では `setup_fresh_rpi.sh` の pip install で扱います。
-package `postinst` は `/mnt/p3` と `/mnt/p3/script` を作成し、欠けている default script だけを
-`/usr/lib/hidloom/config/default/script` から初期コピーします。既存 runtime script は上書きしません。
+package `postinst` は `/mnt/p3` と `/mnt/p3/script` を作成し、欠けている default script を
+`/usr/lib/hidloom/config/default/script` から初期コピーします。既存runtime scriptは原則保持し、
+`config/default/script-migrations.json`に完全一致する既知の旧defaultだけを隣接backup後に移行します。
+利用者編集またはsymlinkは自動置換しません。
 
 ## GitHub Releases で配布する時の考え方
 

@@ -80,29 +80,29 @@ PY
     return 1
 }
 
-# LED video demo が実行中の場合は終了する。direct backend は終了時に元の LED effect へ戻す。
-LED_VIDEO_PROC='tools/demo/play_led_video\.py'
-LED_VIDEO_WAS_RUNNING=0
-if pgrep -f "${LED_VIDEO_PROC}" > /dev/null 2>&1; then
-    echo "KC_SH1: killing play_led_video.py"
-    notify alert "LED video を停止します" 2
-    pkill -TERM -f "${LED_VIDEO_PROC}"
+# LED demo が実行中の場合は終了する。direct backend は終了時に元の LED effect へ戻す。
+LED_DEMO_PROC='tools/demo/play_led_(video|pattern)\.py'
+LED_DEMO_WAS_RUNNING=0
+if pgrep -f "${LED_DEMO_PROC}" > /dev/null 2>&1; then
+    echo "KC_SH1: killing LED demo player"
+    notify alert "LED DEMO STOP" 2
+    pkill -TERM -f "${LED_DEMO_PROC}"
     sleep 1
-    LED_VIDEO_WAS_RUNNING=1
+    LED_DEMO_WAS_RUNNING=1
 fi
-if [ "${LED_VIDEO_WAS_RUNNING}" -eq 1 ] || [ -f "${PREVIOUS_LED_STATE_FILE}" ]; then
-    restore_previous_led_state || notify warning "LED effect を戻せません" 3
+if [ "${LED_DEMO_WAS_RUNNING}" -eq 1 ] || [ -f "${PREVIOUS_LED_STATE_FILE}" ]; then
+    restore_previous_led_state || notify warning "LED RESTORE FAILED" 3
 fi
 
 # ledd サービスのトグル
 if systemctl is-active --quiet ledd; then
     echo "KC_SH1: ledd is running — stopping"
-    notify alert "ledd を停止します" 2
+    notify alert "LEDD STOP" 2
     systemctl stop ledd
     exit 0
 else
     echo "KC_SH1: ledd is stopped — starting"
-    notify alert "ledd を起動します" 2
+    notify alert "LEDD START" 2
     systemctl start ledd
     exit 0
 fi

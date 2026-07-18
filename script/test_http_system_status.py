@@ -23,6 +23,8 @@ from system_api import (  # noqa: E402
     logicd_runtime_environment,
     output_display_label,
     output_status,
+    outputd_status,
+    resolve_output_state,
     spid_status,
     usbd_status,
 )
@@ -448,6 +450,42 @@ def main() -> None:
         assert output["output_target_label"] == "auto"
         assert output["display_label"] == "AUTO BT"
 
+        with tempfile.TemporaryDirectory() as tmpdir:
+            outputd_path = Path(tmpdir) / "outputd-status.json"
+            outputd_path.write_text(json.dumps({
+                "schema": "hidloom.outputd.status.v1",
+                "process": True,
+                "target": "auto",
+            }), encoding="utf-8")
+            native_output = outputd_status(str(outputd_path))
+            assert native_output["available"] is True
+            assert resolve_output_state("uinput", "auto", native_output) == ("gadget", "auto")
+
+            outputd_path.write_text(json.dumps({
+                "schema": "hidloom.outputd.status.v1",
+                "process": True,
+                "target": "uinput",
+            }), encoding="utf-8")
+            native_output = outputd_status(str(outputd_path))
+            assert resolve_output_state("gadget", "auto", native_output) == ("uinput", "uinput")
+
+            outputd_path.write_text(json.dumps({
+                "schema": "wrong.schema",
+                "target": "auto",
+            }), encoding="utf-8")
+            native_output = outputd_status(str(outputd_path))
+            assert native_output["available"] is False
+            assert resolve_output_state("uinput", "auto", native_output) == ("uinput", "auto")
+
+            outputd_path.write_text(json.dumps({
+                "schema": "hidloom.outputd.status.v1",
+                "process": False,
+                "target": "auto",
+            }), encoding="utf-8")
+            native_output = outputd_status(str(outputd_path))
+            assert native_output["available"] is False
+            assert resolve_output_state("uinput", "auto", native_output) == ("uinput", "auto")
+
         interaction = status_api._normalized_interaction_status({
             "result": "ok",
             "schema": "interaction.runtime_status.v1",
@@ -703,6 +741,8 @@ def main() -> None:
     assert "def hidd_status" in system_api_py
     assert 'DEFAULT_USBD_HID_REPORT_SOCKET = "/tmp/usbd_hid_reports.sock"' in system_api_py
     assert 'DEFAULT_HIDD_STATUS_PATH = "/run/hidloom/hidd-status.json"' in system_api_py
+    assert 'DEFAULT_OUTPUTD_STATUS_PATH = "/run/hidloom/outputd-status.json"' in system_api_py
+    assert '"outputd": native_output,' in status_api_source
     assert '"hidd"' in (ROOT / "daemon" / "http" / "system_logs.py").read_text(encoding="utf-8")
     assert '"hidloom-hidd.service"' in (ROOT / "daemon" / "http" / "system_logs.py").read_text(encoding="utf-8")
     assert '"devices": devices' in system_api_py

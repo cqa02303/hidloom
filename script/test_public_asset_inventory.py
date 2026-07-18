@@ -26,15 +26,18 @@ def main() -> None:
     assert payload["schema"] == "hidloom.public-asset-provenance.v1"
     assert payload["ready"] is True
     assert payload["summary"] == {
-        "records": 5,
-        "assets": 25,
-        "declared": 25,
+        "records": 8,
+        "assets": 49,
+        "declared": 49,
         "missing_declarations": 0,
         "stale_declarations": 0,
         "invalid_records": 0,
     }
     icons = next(item for item in payload["records"] if item["id"] == "hidloom-web-icons")
     assert icons["evidence"]["generator"] == "tools/generate_hidloom_icons.py"
+    gallery = next(item for item in payload["records"] if item["id"] == "hidloom-webui-gallery")
+    assert gallery["provenance"] == "project-authored"
+    assert len(gallery["paths"]) == 14
     kicad = next(item for item in payload["records"] if item["id"] == "keyboard-kicad-designs")
     assert "KiCad Libraries License Exception" in kicad["upstream_material"]["license"]
 

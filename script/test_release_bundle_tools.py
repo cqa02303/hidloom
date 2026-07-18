@@ -559,7 +559,9 @@ else:
     assert 'HIDLOOM_RUNTIME_DIR="\\${HIDLOOM_RUNTIME_DIR:-/mnt/p3}"' in build_deb_text
     assert 'install -d -m 0755 "\\$HIDLOOM_RUNTIME_DIR" "\\$HIDLOOM_RUNTIME_DIR/script"' in build_deb_text
     assert 'config/default/script' in build_deb_text
-    assert 'if [ ! -e "\\$dest" ]; then' in build_deb_text
+    assert 'script/migrate_runtime_scripts.py' in build_deb_text
+    assert 'config/default/script-migrations.json' in build_deb_text
+    assert '--runtime-dir "\\$HIDLOOM_RUNTIME_DIR/script"' in build_deb_text
 
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp = Path(tmpdir)
@@ -584,6 +586,16 @@ else:
         }
         (root / "build").mkdir(parents=True)
         (root / "build" / "package-manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        migration_helper = root / "script" / "migrate_runtime_scripts.py"
+        migration_helper.parent.mkdir(parents=True)
+        migration_helper.write_text("#!/usr/bin/env python3\n", encoding="utf-8")
+        migration_helper.chmod(0o755)
+        migration_manifest = root / "config" / "default" / "script-migrations.json"
+        migration_manifest.parent.mkdir(parents=True)
+        migration_manifest.write_text(
+            '{"schema":"hidloom.runtime-script-migrations.v1","scripts":{}}\n',
+            encoding="utf-8",
+        )
         for section, name in (
             ("man1", "hidloom-key.1"),
             ("man1", "hidloom-ctrl.1"),
@@ -704,7 +716,9 @@ else:
         assert 'HIDLOOM_RUNTIME_DIR="${HIDLOOM_RUNTIME_DIR:-/mnt/p3}"' in postinst
         assert 'install -d -m 0755 "$HIDLOOM_RUNTIME_DIR" "$HIDLOOM_RUNTIME_DIR/script"' in postinst
         assert 'config/default/script' in postinst
-        assert 'if [ ! -e "$dest" ]; then' in postinst
+        assert 'script/migrate_runtime_scripts.py' in postinst
+        assert 'config/default/script-migrations.json' in postinst
+        assert '--runtime-dir "$HIDLOOM_RUNTIME_DIR/script"' in postinst
         contents = run_command(["dpkg-deb", "--contents", str(deb_path)])
         assert contents.returncode == 0, contents.stderr
         assert "./usr/lib/hidloom/bin/hidloom-hidd" in contents.stdout
@@ -722,6 +736,8 @@ else:
         assert "./lib/systemd/system/httpd.service" in contents.stdout
         assert "./lib/systemd/system/i2cd.service" in contents.stdout
         assert "./var/lib/hidloom/package-manifest.json" in contents.stdout
+        assert "./usr/lib/hidloom/script/migrate_runtime_scripts.py" in contents.stdout
+        assert "./usr/lib/hidloom/config/default/script-migrations.json" in contents.stdout
         assert "./usr/share/man/man1/hidloom-key.1.gz" in contents.stdout
         assert "./usr/share/man/man8/logicd.8.gz" in contents.stdout
         assert "/mnt/p3" not in contents.stdout

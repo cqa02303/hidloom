@@ -1,0 +1,57 @@
+{
+  "schema": "hidloom.runtime-script-migrations.v1",
+  "scripts": {
+    "KC_SH1.sh": {
+      "legacy_sha256": [
+        "9a6c1f2410483af5bbf355af08ce06aa609011e68a6b19db290aff5a27aa7011",
+        "fb8b88edc6994b0c83f00b0f760b2ba643c781aa7f53179af490df248b7a5153",
+        "14c0a10bc152e585c815912d218dc399c4ef6d949157b37fddc3e06569e93fd7",
+        "24b573595cd45acd98ad5725211389295467a402cf7264dc6a87c0f38e9f608a"
+      ]
+    },
+    "KC_SH2.sh": {
+      "legacy_sha256": [
+        "1052be3d24f8ad764dca1e99f31c07b3085c13fa1b1ca46735997d81360ce9e0",
+        "3f5ee303c54a38b587fe0fced49d0803649a0e0382c20e1821ce8e52470924ea",
+        "4f5990d421fc1eb405e42726bec70940de59376dacd10e0cbc56a6b0f2986da7",
+        "83691c0d0aa822aca55a019a164a9a37c50f6e311caf781d1d1612826e28334b"
+      ]
+    },
+    "KC_SH3.sh": {
+      "legacy_sha256": [
+        "62b87a8ae9b6ad73aba330b47819190ad9972f8b0f2d074f5276d951bc2e693b",
+        "2b33d0e78e7f66abc1c462a030595c9cc1ae34799e6e14bc200e9ecd98b9d1b4",
+        "5ae6eb2fb002f0422c45ed8d0bd0df2d2eb185be73a1bf3e2411d4e26c5af73d"
+      ]
+    },
+    "KC_SH4.sh": {
+      "legacy_sha256": [
+        "e79bc0a1cf1432cc23e74d56afbbcf4e384937827071359b5909e2279837c044",
+        "5363b20ab607aa4275cd1ad20a64d9eea3518471a89618808d85997d4db6ba94",
+        "fb80416bf74d721b81f6084d125ad1dbff7d30994a8084672c9e6a36fd519e09"
+      ]
+    },
+    "KC_SH7.sh": {
+      "legacy_sha256": [
+        "6b24316a45269da3954dc26ffb32e4a2f5dbc5044284e702edf84a628c344e6a",
+        "26f47ee93942f1a1480db19fae1a4f46d90553ef8f1a75e375ee0b3e1016f7ee",
+        "0ff29685a19954659d6dd87dda7bff9217d5d98570cbbacabf5d754c0f939340",
+        "a2d5b0ea5b86513a48d517d4309ab29c67da24cc8327fe5e88cffa8a83ba0bc0"
+      ]
+    },
+    "KC_SH8.sh": {
+      "legacy_sha256": [
+        "7b626418f07af530027258e2be84ddb706e46f338987518012d18db5de0979d4",
+        "1a82cc33d75305a3c337cd497d81a33d61eb09e7cd6771b9846d362ffe712499",
+        "f438d216fe35af31915a426a96710cb51b15ae9de7897a32dcfd03b7b8b28de4",
+        "146c16fa85f0ea2a674b8feb7407cf1aac0bc4a9fae91cad10301540c9c7c6eb"
+      ]
+    },
+    "KC_SH10.sh": {
+      "legacy_sha256": [
+        "b6c871648f55adf37df48bd37780385584ae043515f08ed479d4a7ba4f3bb3c4",
+        "f1a21a671e35005e5ce77a1dae1d6aae1249d52aa5c5ef84728d2d1a50602556"
+      ]
+    }
+  }
+}
