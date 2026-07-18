@@ -117,12 +117,15 @@ def validate(root: Path) -> dict[str, Any]:
         "activation_allowed": False,
         "availability_recheck_required": True,
         "recorded_availability_evidence": assignment.get("availability_evidence", {}),
+        "recorded_application_evidence": assignment.get("application_evidence", {}),
         "owner": owner,
         "device": device,
     }
 
 
-def check_upstream(plan: dict[str, Any], upstream: Path) -> dict[str, Any]:
+def check_canonical_upstream(
+    plan: dict[str, Any], upstream: Path
+) -> dict[str, Any]:
     if not upstream.is_dir():
         raise SystemExit(f"pid.codes upstream checkout not found: {upstream}")
     vid_page = upstream / "1209/index.md"
@@ -133,10 +136,6 @@ def check_upstream(plan: dict[str, Any], upstream: Path) -> dict[str, Any]:
         raise SystemExit(f"invalid pid.codes VID 1209 marker: {vid_page}")
     if not (upstream / "org").is_dir():
         raise SystemExit(f"pid.codes organisation directory not found: {upstream / 'org'}")
-    candidate = upstream / Path(plan["candidate"]["path"]).parent
-    if candidate.exists():
-        raise SystemExit(f"PID candidate is already present in upstream checkout: {candidate}")
-    owner = upstream / plan["owner_path"]
     commit_result = subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=upstream,
@@ -256,9 +255,20 @@ def check_upstream(plan: dict[str, Any], upstream: Path) -> dict[str, Any]:
         "checkout_clean": True,
         "head_matches_origin_head": True,
         "origin_head_matches_remote_head": True,
+    }
+
+
+def check_upstream(plan: dict[str, Any], upstream: Path) -> dict[str, Any]:
+    upstream_check = check_canonical_upstream(plan, upstream)
+    candidate = upstream / Path(plan["candidate"]["path"]).parent
+    if candidate.exists():
+        raise SystemExit(f"PID candidate is already present in upstream checkout: {candidate}")
+    owner = upstream / plan["owner_path"]
+    upstream_check.update({
         "candidate_path_absent": True,
         "owner_path_absent": not owner.exists(),
-    }
+    })
+    return upstream_check
 
 
 def validate_recorded_availability(

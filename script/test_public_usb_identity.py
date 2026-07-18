@@ -42,9 +42,9 @@ def main() -> None:
     contract = json.loads(
         (ROOT / "config/public-usb-identity.json").read_text(encoding="utf-8")
     )
-    assert contract["schema"] == "hidloom.public-usb-identity.v5"
+    assert contract["schema"] == "hidloom.public-usb-identity.v6"
     assert contract["assignment"]["availability_evidence"] == {
-        "checked_date": "2026-07-16",
+        "checked_date": "2026-07-18",
         "upstream_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
         "origin_head_ref": "refs/remotes/origin/master",
         "remote_head_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
@@ -53,6 +53,23 @@ def main() -> None:
         "origin_head_matches_remote_head": True,
         "candidate_path_absent": True,
         "owner_path_absent": True,
+    }
+    assert contract["assignment"]["application_evidence"] == {
+        "submitted_date": "2026-07-18",
+        "pull_request_number": 1246,
+        "pull_request_url": (
+            "https://github.com/pidcodes/pidcodes.github.com/pull/1246"
+        ),
+        "head_commit": "3b0358d721dfdaa66985b4aceebd1813cb6474a2",
+        "candidate_path": "1209/484C/index.md",
+        "owner_path": "org/cqa02303/index.md",
+        "changed_files": 2,
+        "insertions": 15,
+        "required_checks": ["HTML Proofer", "Python Validator"],
+        "patch_sha256": (
+            "76f255e3280497461eb0b0fbec260f35"
+            "b5029447263a1c646c40888d892bc6c0"
+        ),
     }
     plan = json.loads(run().stdout)
     assert plan["schema"] == "hidloom.public-usb-profile-plan.v2"
@@ -119,6 +136,26 @@ def main() -> None:
         assert (
             "availability-remote-head-commit-mismatch"
             in rejected_remote_evidence.stderr
+        )
+
+        copy_fixture(invalid_evidence_root)
+        invalid_evidence = json.loads(
+            invalid_evidence_path.read_text(encoding="utf-8")
+        )
+        invalid_evidence["assignment"]["application_evidence"][
+            "required_checks"
+        ] = ["Python Validator"]
+        invalid_evidence_path.write_text(
+            json.dumps(invalid_evidence, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        rejected_application_evidence = run(
+            root=invalid_evidence_root, check=False
+        )
+        assert rejected_application_evidence.returncode != 0
+        assert (
+            "application-required-checks-invalid"
+            in rejected_application_evidence.stderr
         )
 
         blocked_output = temporary_path / "blocked"
@@ -208,9 +245,29 @@ def main() -> None:
         contract["assignment"]["status"] = "assigned"
         contract["assignment"]["allocation_evidence"] = {
             "merged_date": "2026-07-15",
+            "merged_at": "2026-07-15T12:34:56Z",
             "upstream_commit": "1" * 40,
+            "origin_head_ref": "refs/remotes/origin/master",
+            "remote_head_commit": "1" * 40,
+            "checkout_clean": True,
+            "head_matches_origin_head": True,
+            "origin_head_matches_remote_head": True,
+            "pull_request_number": 1246,
+            "pull_request_url": (
+                "https://github.com/pidcodes/pidcodes.github.com/pull/1246"
+            ),
+            "pull_request_head": "3b0358d721dfdaa66985b4aceebd1813cb6474a2",
+            "merge_commit": "2" * 40,
+            "merge_commit_reachable": True,
+            "required_checks": {
+                "HTML Proofer": "SUCCESS",
+                "Python Validator": "SUCCESS",
+            },
             "candidate_path": "1209/484C/index.md",
             "candidate_path_present": True,
+            "owner_path": "org/cqa02303/index.md",
+            "owner_path_present": True,
+            "content_verified": True,
         }
         contract["profiles"]["public_formal"]["status"] = "assigned-ready"
         contract["profiles"]["public_formal"]["public_release_allowed"] = True

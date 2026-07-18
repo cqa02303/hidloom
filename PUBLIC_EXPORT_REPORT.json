@@ -4,19 +4,19 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "61bc7e68c41bbe038a92802638149013d56f18c6",
-    "base_tree": "b2ad5e0568bceb5b86b94d4b165a161efc1a52e6",
-    "base_revision_count": 2009,
-    "selected_path_count": 1229,
-    "selected_snapshot_sha256": "3b06745810106930b6c062734f79c32e615f9315957ccaab9a4bff9d09c9f01f"
+    "base_commit": "001a0d2e5dcb5bdaab1b86340ab773e7e932dbe8",
+    "base_tree": "e0eed736c691c12f66d5e83745f1ea8abd9e7a7d",
+    "base_revision_count": 2012,
+    "selected_path_count": 1231,
+    "selected_snapshot_sha256": "f96267da76fc58fc92053c5d6d492c31877b75bc0a39b636879e2b7e9fa519d5"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1229,
+  "file_count": 1231,
   "source_selection": {
-    "tracked_paths": 1296,
-    "public_source_paths": 1229,
+    "tracked_paths": 1298,
+    "public_source_paths": 1231,
     "private_only_paths": 67,
     "generated_output_paths": 0,
     "unclassified_paths": 0
@@ -9390,7 +9390,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_usb_identity.py",
-      "line": 269,
+      "line": 326,
       "excerpt": "contract[\"source_bindings\"][\"usb_config\"] = \"../../etc/passwd\"",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9570,7 +9570,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/README.md",
-      "line": 87,
+      "line": 93,
       "excerpt": "したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
