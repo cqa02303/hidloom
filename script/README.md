@@ -62,6 +62,7 @@ python3 script/test_real_device_touch_panel_suite.py
 | `test_buildroot_compliance_bundle.py` | M6 legal-info、固定Buildroot source、Bootlin component source/licenseの決定的bundleと改ざん拒否 |
 | `test_rust_lockfile_policy.py` | 全Rust実行crateのtracked lockfileとproduction buildの`--locked`強制 |
 | `test_pid_codes_application.py` | pid.codes候補の予約範囲、申請draft、再確認、公式merge前の適用禁止 |
+| `test_pid_codes_allocation.py` | pid.codes PR merge/check/content/到達性証跡と確認句付きallocation反映 |
 | `test_public_usb_identity.py` | private互換/public正式USB・Vial identityの分離、現行値照合、割当前bundle生成拒否 |
 | `test_public_export.py` | 全tracked pathのpublic/private/generated分類、生成物exact set、privacy/license/reference/docsを含む決定的clean export |
 | `test_vial_protocol.py` | Vial Raw HID protocol |

@@ -2,9 +2,9 @@
 
 - Ready: `true`
 - Expected repository: `https://github.com/cqa02303/hidloom`
-- Files scanned: 1204
-- Repository references: 122
-- Public repository references: 43
+- Files scanned: 1206
+- Repository references: 130
+- Public repository references: 45
 - Declared public release tags: 0
 - Blockers: 0
 

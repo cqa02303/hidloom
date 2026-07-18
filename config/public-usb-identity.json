@@ -1,5 +1,5 @@
 {
-  "schema": "hidloom.public-usb-identity.v5",
+  "schema": "hidloom.public-usb-identity.v6",
   "active_runtime_profile": "development_compatibility",
   "public_release_profile": "public_formal",
   "assignment": {
@@ -11,7 +11,7 @@
     "activate_only_after_pid_codes_merge": true,
     "recheck_availability_before_request": true,
     "availability_evidence": {
-      "checked_date": "2026-07-16",
+      "checked_date": "2026-07-18",
       "upstream_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
       "origin_head_ref": "refs/remotes/origin/master",
       "remote_head_commit": "a454efc3291bba72162ac3878cdda0942dd8efa7",
@@ -20,6 +20,21 @@
       "origin_head_matches_remote_head": true,
       "candidate_path_absent": true,
       "owner_path_absent": true
+    },
+    "application_evidence": {
+      "submitted_date": "2026-07-18",
+      "pull_request_number": 1246,
+      "pull_request_url": "https://github.com/pidcodes/pidcodes.github.com/pull/1246",
+      "head_commit": "3b0358d721dfdaa66985b4aceebd1813cb6474a2",
+      "candidate_path": "1209/484C/index.md",
+      "owner_path": "org/cqa02303/index.md",
+      "changed_files": 2,
+      "insertions": 15,
+      "required_checks": [
+        "HTML Proofer",
+        "Python Validator"
+      ],
+      "patch_sha256": "76f255e3280497461eb0b0fbec260f35b5029447263a1c646c40888d892bc6c0"
     },
     "allocation_evidence": null
   },

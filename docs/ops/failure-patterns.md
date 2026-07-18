@@ -387,9 +387,9 @@
 
 - symptom: pid.codes候補を選んだだけでruntime descriptor、Windows driver、Vial identityへ設定し、同時申請または申請却下時に別projectとVID/PIDが衝突する。
 - likely cause: 候補選定、stale/dirty checkoutやURL rewriteされたremoteでの空き確認、pull request merge、runtime移行を一つの「PID決定」として扱い、外部割当状態と確認元refをmetadataへ持たない。
-- detect: `config/public-usb-identity.json`の`status`と適用guardを確認し、最新の公式pid.codes checkoutに候補directoryがないことを`tools/pid_codes_application.py --upstream-checkout`で再確認する。checkoutのstatus、`HEAD`、`origin/HEAD`、online remote `HEAD`、記録済みcommit/dateも照合する。
-- recovery: 候補は`candidate-unassigned`へ戻し、現在の開発identityを維持する。cleanなfresh cloneで再確認してavailability evidenceを更新し、public source URLが参照可能になってから申請する。公式merge後だけpublic profile、descriptor、Windows driver、Vial UID/serial/product stringを同一migrationとして更新する。
-- regression check: `script/test_pid_codes_application.py`がVID 1209予約範囲、canonical repository/license、申請page、upstream未指定出力、Git URL rewrite、dirty checkout、local-only HEAD、remote照会失敗、stale remote-tracking HEAD、記録証跡不一致、既存candidate、`activation_allowed=false`を固定し、public readinessがidentity/version/copyright/PID metadata driftを拒否する。
+- detect: 申請前は`config/public-usb-identity.json`の`status`と適用guardを確認し、最新の公式pid.codes checkoutに候補directoryがないことを`tools/pid_codes_application.py --upstream-checkout`で再確認する。merge後はfresh公式cloneに対して`tools/pid_codes_allocation.py --upstream-checkout`を実行し、PR URL/head、required checks、`HEAD=origin/HEAD=online remote HEAD`、掲載2 files、merge commit到達性が揃うまで停止する。
+- recovery: 候補は`candidate-unassigned`へ戻し、現在の開発identityを維持する。cleanなfresh cloneで再確認してavailability evidenceを更新し、public source URLが参照可能になってから申請する。公式merge後もallocation helperのread-only planと完全一致確認句を経てformal profile readinessだけを更新し、active runtime、descriptor、Windows driverは別の実機migrationまで変更しない。
+- regression check: `script/test_pid_codes_application.py`が申請前のcanonical repository/license、checkout最新性、記録証跡、既存candidate、`activation_allowed=false`を固定する。`script/test_pid_codes_allocation.py`がopen PR、head/check欠落、掲載内容drift、merge commit非到達、確認句欠落を拒否し、成功fixtureでもactive runtimeを変更しない。public readinessはidentity/version/copyright/PID metadata driftを拒否する。
 - evidence: 2026-07-14、公式pid.codes `HEAD`=`origin/HEAD`=online remote `HEAD`、ref=`refs/remotes/origin/master`、commit `a454efc3291bba72162ac3878cdda0942dd8efa7`で`1209/484C`と`org/cqa02303/`が未使用であることを再確認した。同時にpublic repository URLは404で未作成と確認したため、申請bundleは生成検証までとしPR提出はinitial public source後に順序化した。2026-07-15にもfresh公式checkoutで同commit、両path未使用、申請用2 filesの再生成を確認した。
 
 ## Unlocked build hides a missing public Cargo lockfile
@@ -712,8 +712,8 @@
 - symptom: fresh pid.codes checkoutで`python3 -m test.validate_pids`を実行すると、申請pageを検査する前に`ModuleNotFoundError: No module named 'frontmatter'`で終了する。
 - likely cause: upstream validatorの`requirements.txt`を導入していないhost Pythonで直接実行した。front matter、owner、PID競合、licenseの不合格ではない。
 - detect: tracebackが`import frontmatter`で停止し、validator自身のerror一覧や`No errors found!`が出ていないことを確認する。生成前のfresh clone `HEAD=origin/HEAD=online remote HEAD`と候補path未使用も別に確認する。
-- recovery: disposable cloneと一時venvを使い、`python3 -m venv <temporary-venv>`、`pip install -r requirements.txt`、`python -m test.validate_pids`の順で再実行する。system Pythonへinstallせず、upstreamへのcommit / pushやruntime VID/PID適用は行わない。
-- regression check: HIDloom側の`script/test_pid_codes_application.py`と`script/test_public_usb_identity.py`に加え、生成した2 filesをdisposable upstream cloneへ置いた公式validatorと`git diff --check`をpassさせる。patchが空でないことと変更fileが2件だけであることも確認する。
+- recovery: disposable cloneと一時venvを使い、`python3 -m venv <temporary-venv>`、`pip install -r requirements.txt`、`python -m test.validate_pids`の順で再実行する。生成物が新規fileだけの場合、通常の`git diff`は未追跡fileを表示せずpatchを空にするため、対象2 pathsだけに`git add -N`を行ってからpatchを取得する。system Pythonへinstallせず、upstreamへのcommit / pushやruntime VID/PID適用は行わない。
+- regression check: HIDloom側の`script/test_pid_codes_application.py`と`script/test_public_usb_identity.py`に加え、生成した2 filesをdisposable upstream cloneへ置いた公式validatorと`git diff --check`をpassさせる。`git add -N`後のpatchが空でないこと、変更fileが2件、insertionsが15だけであることも確認する。
 - evidence: 2026-07-16、公式commit `a454efc3291bba72162ac3878cdda0942dd8efa7`で初回実行は`frontmatter`不足により終了した。隔離venvへ`python-frontmatter==1.3.0`と`PyYAML==6.0.3`を導入した再実行は`No errors found!`、2 files / 15 insertionsのpatchは725 bytes / SHA-256 `76f255e3280497461eb0b0fbec260f35b5029447263a1c646c40888d892bc6c0`だった。
 
 ## pid.codes owner directory text trips the retired-name audit

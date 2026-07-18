@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 335 本程度あり、標準 canonical suite は 223 entrypoints を実行する。
+現在 `script/test_*.py` は 336 本程度あり、標準 canonical suite は 224 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints
@@ -206,6 +206,8 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
   - 全Rust実行crateがtrackedかつnon-ignoredな`Cargo.lock`を持ち、CI、Makefile、package/cross-build wrapperのCargo build/test/fetchが`--locked`であることを確認する。
 - `script/test_pid_codes_application.py`
   - pid.codesの予約範囲外候補、canonical repository/license、申請用org/device page、clean upstreamと`origin/HEAD`・online remote `HEAD`一致、記録証跡一致、未確認出力拒否、公式merge前のruntime適用禁止を確認する。
+- `script/test_pid_codes_allocation.py`
+  - 記録済みpid.codes PRのmerge、head、required checks、公式checkoutの最新性、掲載page完全一致、merge commit到達性、確認句なしの適用拒否、active runtime非変更を確認する。
 - `script/test_buildroot_legal_summary.py`
   - M6 `legal-info`のexact package/source/license証跡を正規化し、source auditとbinary release gateを混同しないことを確認する。
 - `script/test_buildroot_compliance_bundle.py`

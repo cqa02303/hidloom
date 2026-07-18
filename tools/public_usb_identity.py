@@ -12,7 +12,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = Path("config/public-usb-identity.json")
-SCHEMA = "hidloom.public-usb-identity.v5"
+SCHEMA = "hidloom.public-usb-identity.v6"
 PROFILE_PLAN_SCHEMA = "hidloom.public-usb-profile-plan.v2"
 PROFILE_NAMES = {"development_compatibility", "public_formal"}
 IDENTITY_ENV_BUNDLE_NAME = "usb-identity.env"
@@ -23,7 +23,9 @@ IDENTITY_ENV_UNITS = [
 ]
 HEX_U16_RE = re.compile(r"[0-9A-Fa-f]{4}")
 COMMIT_RE = re.compile(r"[0-9a-f]{40}")
+SHA256_RE = re.compile(r"[0-9a-f]{64}")
 DATE_RE = re.compile(r"20\d{2}-\d{2}-\d{2}")
+TIMESTAMP_RE = re.compile(r"20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
 ORIGIN_HEAD_RE = re.compile(r"refs/remotes/origin/[A-Za-z0-9][A-Za-z0-9._/-]*")
 
 
@@ -152,12 +154,17 @@ def validate_systemd_identity_environment(
             issues.append(f"systemd-identity-environment-missing:{relative}")
 
 
-def validate_contract(root: Path) -> dict[str, Any]:
+def validate_contract(
+    root: Path, *, contract: dict[str, Any] | None = None
+) -> dict[str, Any]:
     issues: list[str] = []
-    try:
-        contract = load_json(root / CONTRACT_PATH)
-    except (OSError, json.JSONDecodeError, ValueError):
-        raise ContractError(["contract-unreadable"])
+    if contract is None:
+        try:
+            contract = load_json(root / CONTRACT_PATH)
+        except (OSError, json.JSONDecodeError, ValueError):
+            raise ContractError(["contract-unreadable"])
+    elif not isinstance(contract, dict):
+        raise ContractError(["contract-not-object"])
 
     if contract.get("schema") != SCHEMA:
         issues.append("unsupported-schema")
@@ -217,6 +224,37 @@ def validate_contract(root: Path) -> dict[str, Any]:
     if availability.get("owner_path_absent") is not True:
         issues.append("availability-owner-path-not-absent")
 
+    application = object_value(
+        assignment, "application_evidence", "application-evidence", issues
+    )
+    if not DATE_RE.fullmatch(str(application.get("submitted_date", ""))):
+        issues.append("application-date-invalid")
+    pull_request_number = application.get("pull_request_number")
+    if not isinstance(pull_request_number, int) or pull_request_number <= 0:
+        issues.append("application-pull-request-number-invalid")
+    expected_pull_request_url = (
+        "https://github.com/pidcodes/pidcodes.github.com/pull/"
+        f"{pull_request_number}"
+    )
+    if application.get("pull_request_url") != expected_pull_request_url:
+        issues.append("application-pull-request-url-invalid")
+    if not COMMIT_RE.fullmatch(str(application.get("head_commit", ""))):
+        issues.append("application-head-commit-invalid")
+    expected_candidate_path = f"{assignment_vid}/{assignment_pid}/index.md"
+    if application.get("candidate_path") != expected_candidate_path:
+        issues.append("application-candidate-path-mismatch")
+    if application.get("owner_path") != "org/cqa02303/index.md":
+        issues.append("application-owner-path-mismatch")
+    if application.get("changed_files") != 2:
+        issues.append("application-changed-files-invalid")
+    if application.get("insertions") != 15:
+        issues.append("application-insertions-invalid")
+    required_checks = application.get("required_checks")
+    if required_checks != ["HTML Proofer", "Python Validator"]:
+        issues.append("application-required-checks-invalid")
+    if not SHA256_RE.fullmatch(str(application.get("patch_sha256", ""))):
+        issues.append("application-patch-sha256-invalid")
+
     allocation = assignment.get("allocation_evidence")
     if assignment_status == "candidate-unassigned":
         if allocation is not None:
@@ -234,6 +272,57 @@ def validate_contract(root: Path) -> dict[str, Any]:
             expected_candidate_path = f"{assignment_vid}/{assignment_pid}/index.md"
             if allocation.get("candidate_path") != expected_candidate_path:
                 issues.append("allocation-candidate-path-mismatch")
+            if allocation.get("owner_path") != application.get("owner_path"):
+                issues.append("allocation-owner-path-mismatch")
+            if allocation.get("owner_path_present") is not True:
+                issues.append("allocation-owner-path-not-present")
+            if allocation.get("content_verified") is not True:
+                issues.append("allocation-content-not-verified")
+            if allocation.get("pull_request_number") != pull_request_number:
+                issues.append("allocation-pull-request-number-mismatch")
+            if allocation.get("pull_request_url") != application.get(
+                "pull_request_url"
+            ):
+                issues.append("allocation-pull-request-url-mismatch")
+            if allocation.get("pull_request_head") != application.get(
+                "head_commit"
+            ):
+                issues.append("allocation-pull-request-head-mismatch")
+            if not COMMIT_RE.fullmatch(str(allocation.get("merge_commit", ""))):
+                issues.append("allocation-merge-commit-invalid")
+            if not TIMESTAMP_RE.fullmatch(str(allocation.get("merged_at", ""))):
+                issues.append("allocation-merged-at-invalid")
+            if allocation.get("merge_commit_reachable") is not True:
+                issues.append("allocation-merge-commit-not-reachable")
+            expected_check_results = (
+                {check: "SUCCESS" for check in required_checks}
+                if isinstance(required_checks, list)
+                else {}
+            )
+            if allocation.get("required_checks") != expected_check_results:
+                issues.append("allocation-required-checks-invalid")
+            allocation_origin_head_ref = str(
+                allocation.get("origin_head_ref", "")
+            )
+            if (
+                not ORIGIN_HEAD_RE.fullmatch(allocation_origin_head_ref)
+                or ".." in allocation_origin_head_ref
+                or "//" in allocation_origin_head_ref
+            ):
+                issues.append("allocation-origin-head-ref-invalid")
+            if allocation.get("checkout_clean") is not True:
+                issues.append("allocation-checkout-not-clean")
+            if allocation.get("head_matches_origin_head") is not True:
+                issues.append("allocation-head-not-origin-head")
+            allocation_remote_head = str(
+                allocation.get("remote_head_commit", "")
+            )
+            if not COMMIT_RE.fullmatch(allocation_remote_head):
+                issues.append("allocation-remote-head-commit-invalid")
+            elif allocation_remote_head != allocation.get("upstream_commit"):
+                issues.append("allocation-remote-head-commit-mismatch")
+            if allocation.get("origin_head_matches_remote_head") is not True:
+                issues.append("allocation-origin-head-not-remote-head")
 
     detection = object_value(contract, "vial_detection", "vial-detection", issues)
     serial_magic = string_value(

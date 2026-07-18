@@ -1,11 +1,11 @@
 # HIDloom Public Export Report
 
-- Source base commit: `61bc7e68c41bbe038a92802638149013d56f18c6`
+- Source base commit: `001a0d2e5dcb5bdaab1b86340ab773e7e932dbe8`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `3b06745810106930b6c062734f79c32e615f9315957ccaab9a4bff9d09c9f01f`
-- Files: 1229
-- Tracked source paths: 1296
+- Selected source snapshot: `f96267da76fc58fc92053c5d6d492c31877b75bc0a39b636879e2b7e9fa519d5`
+- Files: 1231
+- Tracked source paths: 1298
 - Private-only paths: 67
 - Tracked generated outputs: 0
 - Unclassified paths: 0
@@ -1054,7 +1054,7 @@
 - `warn` `credential_word` `script/test_public_export.py:243` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_export.py:246` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
-- `warn` `credential_word` `script/test_public_usb_identity.py:269` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
+- `warn` `credential_word` `script/test_public_usb_identity.py:326` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
 - `warn` `credential_word` `script/test_text_send_safety.py:122` `test_fixture` — `assert not send_string_name_valid("../secret")`
 - `warn` `credential_word` `script/test_unicode_send_string_safety_design_doc.py:62` `test_fixture` — `assert "secret / password" in text`
 - `warn` `linux_foundation_vid` `script/test_usb_gadget_descriptor.py:49` `test_fixture` — `assert "`0x1d6b:0x0105`" in documentation`
@@ -1074,7 +1074,7 @@
 - `warn` `credential_word` `system/install/setup_fresh_rpi.sh:327` `implementation_security_keyword` — `user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:11` `pid_codes_migration_required` — `VENDOR_ID="0x1d6b"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:37` `pid_codes_migration_required` — `sh("VENDOR_ID"; .device.vendor_id // "0x1d6b"),`
-- `warn` `credential_word` `tools/README.md:87` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
+- `warn` `credential_word` `tools/README.md:93` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:53` `implementation_security_keyword` — `token in line`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:54` `implementation_security_keyword` — `for token in (`
 - `warn` `credential_word` `tools/buildroot_m1_compare.py:71` `implementation_security_keyword` — `if any(token in line for token in ("hid", "usb", "cqa02303v5", "1d6b:0105")):`

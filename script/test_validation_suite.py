@@ -16,6 +16,7 @@ from suite_runner import rerun_in_clean_snapshot, run_suite, test_environment  #
 TESTS = [
     "script/test_hidloom_identity.py",
     "script/test_pid_codes_application.py",
+    "script/test_pid_codes_allocation.py",
     "script/test_public_usb_identity.py",
     "script/test_hidloom_runtime_environment.py",
     "script/test_local_environment_hygiene.py",

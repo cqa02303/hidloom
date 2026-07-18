@@ -8,9 +8,9 @@
   },
   "published_release_tags": [],
   "summary": {
-    "files_scanned": 1204,
-    "repository_references": 122,
-    "public_repository_references": 43,
+    "files_scanned": 1206,
+    "repository_references": 130,
+    "public_repository_references": 45,
     "findings": 0,
     "blockers": 0
   },
@@ -245,19 +245,25 @@
     },
     {
       "path": "config/public-usb-identity.json",
-      "line": 31,
+      "line": 27,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "config/public-usb-identity.json",
+      "line": 46,
       "slug": "vial-kb/vial-gui",
       "url": "https://github.com/vial-kb/vial-gui"
     },
     {
       "path": "config/public-usb-identity.json",
-      "line": 91,
+      "line": 106,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "config/public-usb-identity.json",
-      "line": 92,
+      "line": 107,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -604,6 +610,30 @@
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
+      "path": "script/test_pid_codes_allocation.py",
+      "line": 17,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "script/test_pid_codes_allocation.py",
+      "line": 156,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_pid_codes_allocation.py",
+      "line": 157,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_pid_codes_allocation.py",
+      "line": 178,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com.git"
+    },
+    {
       "path": "script/test_pid_codes_application.py",
       "line": 74,
       "slug": "pidcodes/pidcodes.github.com",
@@ -623,7 +653,7 @@
     },
     {
       "path": "script/test_public_export.py",
-      "line": 581,
+      "line": 583,
       "slug": "cqa02303/hidloom",
       "url": "github.com/cqa02303/hidloom"
     },
@@ -638,6 +668,18 @@
       "line": 174,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_public_usb_identity.py",
+      "line": 61,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "script/test_public_usb_identity.py",
+      "line": 257,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
     {
       "path": "script/test_release_bundle_tools.py",
@@ -731,19 +773,25 @@
     },
     {
       "path": "tools/pid_codes_application.py",
-      "line": 158,
+      "line": 157,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "git@github.com:pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "tools/public_usb_identity.py",
-      "line": 174,
+      "line": 181,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
     {
       "path": "tools/public_usb_identity.py",
-      "line": 251,
+      "line": 236,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "tools/public_usb_identity.py",
+      "line": 340,
       "slug": "vial-kb/vial-gui",
       "url": "https://github.com/vial-kb/vial-gui"
     }

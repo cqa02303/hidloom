@@ -25,6 +25,7 @@ touch kiosk healthをbuild host上で検証します。
 - `generate_third_party_inventory.py`
 - `hidloom_name_audit.py`
 - `local_environment_hygiene.py`
+- `pid_codes_allocation.py`
 - `pid_codes_application.py`
 - `public_usb_identity.py`
 - `public_asset_inventory.py`
@@ -74,6 +75,11 @@ canonical upstream checkoutを必須にし、`HEAD`、`origin/HEAD`、online rem
 `python3 -m venv <temporary-venv>`、`<temporary-venv>/bin/pip install -r requirements.txt`、
 `<temporary-venv>/bin/python -m test.validate_pids`の順とし、`No errors found!`と`git diff --check`を申請前証跡にする。
 `ModuleNotFoundError: frontmatter`は申請内容の不合格ではなく、公式requirements未導入を示す。
+
+`pid_codes_allocation.py`は申請PRのmerge後だけ使用する。`gh pr view`で記録済みPR URL / head、merge時刻、merge commit、
+Python Validator / HTML Proofer successを確認し、cleanな公式checkoutの`HEAD=origin/HEAD=online remote HEAD`、merge commit到達性、
+tracked org/device pageの完全一致を同時に検査する。通常実行はread-only planで、`--apply`はplanが表示する完全一致の確認句を
+`--confirm`へ渡した場合だけallocation evidenceと`assigned-ready`状態をatomic更新する。active runtime profileは変更しない。
 
 `public_export.py`は`config/public-export.json` schema v2を正本に、Git indexの全pathをpublic source、
 明示private-only、既定のgenerated outputへ完全分類する。allowlist外かつprivate-only patternにも一致しない
