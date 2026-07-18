@@ -86,13 +86,30 @@ def main() -> None:
     assert '"save": False' in kc_sh2
     assert "LED_VIDEO_LOG:-/tmp/hidloom_led_video_demo.log" in kc_sh2
     assert 'command -v hidloom-notify' in kc_sh2
+    notify_lines = [line.strip() for line in kc_sh2.splitlines() if line.strip().startswith("notify ")]
+    assert notify_lines == [
+        'notify alert "LED DEMO STOP" 2',
+        'notify warning "LED PLAYER MISSING" 4',
+        'notify warning "DIRECT MODE FAILED" 3',
+        'notify alert "LED VIDEO START" 2',
+        'notify alert "LED PATTERN START" 2',
+    ]
+    assert all(line.isascii() for line in notify_lines)
+    assert 'notify warning "LED RESTORE FAILED" 3' in kc_sh2
     assert 'command -v hidloom-ctrl' in kc_sh2
     assert 'bin/hidloom-notify' not in kc_sh2
-    assert "exit 0" in kc_sh2.split('pkill -TERM -f "${LED_VIDEO_PROC}"', 1)[1].split("fi", 1)[0]
+    assert "play_led_(video|pattern)" in kc_sh1
+    assert "play_led_pattern.py" in kc_sh2
+    assert "LED_DEMO_PROC" in kc_sh1
+    assert "LED_DEMO_PROC" in kc_sh2
+    assert "video unavailable; starting procedural pattern" in kc_sh2
+    assert 'import cv2, numpy' in kc_sh2
+    assert 'if [ "${DEMO_KIND}" = "video" ]; then' in kc_sh2
+    assert "exit 0" in kc_sh2.split('pkill -TERM -f "${LED_DEMO_PROC}"', 1)[1].split("fi", 1)[0]
     assert "--backend direct" not in kc_sh2
     assert "python3 demo/prepare_led_video.py" in readme
     assert "python3 demo/prepare_led_video.py --input /path/to/source.mp4" in readme
-    assert "demo/prepare_led_video.py first" in kc_sh2
+    assert "外部動画がなければ依存なしの内蔵 pattern" in kc_sh2
     assert_local_input_does_not_require_ytdlp()
     print("ok: demo asset paths match KC_SH2")
 

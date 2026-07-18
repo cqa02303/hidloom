@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "daemon"))
 sys.path.insert(0, str(ROOT))
 
-from tools.demo import play_led_video  # noqa: E402
+from tools.demo import play_led_pattern, play_led_video  # noqa: E402
 from ledd.direct_frame import DirectFrameFormat, decode_direct_frame  # noqa: E402
 
 
@@ -89,7 +89,21 @@ def main() -> None:
         [0, 0, 0],
     ]
 
-    print("ok: LED video ledd-direct")
+    positions = [(0.0, 0.0), (0.5, 0.5), (1.0, 1.0)]
+    pattern = play_led_pattern.pattern_payload(positions, phase=0.25, max_brightness=64)
+    assert len(pattern) == 9
+    assert max(pattern) <= 64
+    pattern_packet = play_led_pattern.encode_direct_frame(
+        frame_id=7,
+        led_count=len(positions),
+        payload=pattern,
+        format=DirectFrameFormat.RGB,
+    )
+    decoded_pattern = decode_direct_frame(pattern_packet, expected_led_count=3)
+    assert decoded_pattern.frame_id == 7
+    assert decoded_pattern.payload == pattern
+
+    print("ok: LED video and procedural pattern ledd-direct")
 
 
 if __name__ == "__main__":

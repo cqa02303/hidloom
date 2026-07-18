@@ -4,8 +4,13 @@ HIDloomは、Linux SBCをprogrammable keyboard applianceとして動かすsoftwa
 
 ![CQA02303v5 Keyboard](CQA02303v5.png)
 
-- メインターゲット: Raspberry Pi Zero 2 W
+## まず見る
+
+- 導入方式を選ぶ: [INSTALL.md](INSTALL.md)
 - 詳細ドキュメント目次: [docs/README.md](docs/README.md)
+- 画像ギャラリー: [docs/gallery/README.md](docs/gallery/README.md)
+
+- メインターゲット: Raspberry Pi Zero 2 W
 - 開発・貢献手順: [CONTRIBUTING.md](CONTRIBUTING.md)
 - 公開sourceからの再現build: [docs/ops/public-source-rebuild-runbook.md](docs/ops/public-source-rebuild-runbook.md)
 - 公開文書とprivate運用資料の境界: [docs/ops/public-documentation-boundary.md](docs/ops/public-documentation-boundary.md)
@@ -17,11 +22,12 @@ HIDloomは、Linux SBCをprogrammable keyboard applianceとして動かすsoftwa
 
 ## インストール方式を選ぶ
 
-公開 Release では、同じ source revision から作成した 2 方式を選べます。
+公開 Release では、同じ source revision から作成した3つの構成を選べます。
 
 | 方式 | 適した用途 | 配布物 |
 |---|---|---|
-| Raspberry Pi OS + split package | 通常運用、開発、ネットワーク管理 | `hidloom-core` + device profile の `.deb` |
+| Raspberry Pi OS Keyboard | Raspberry Pi Zero 2 Wでの通常運用、開発、ネットワーク管理 | `hidloom-core` + `keyboard-ver1` profileの`.deb` |
+| Raspberry Pi OS Touch Panel | Raspberry Pi 4 + Waveshare 8.8inch DSI touch kiosk | `hidloom-core` + `touch-waveshare-8.8` profileの`.deb` |
 | Buildroot M6 image | 高速起動する offline keyboard appliance | `hidloom-<version>-buildroot-m6.img.zst` |
 
 選択基準、Release asset、導入手順: [INSTALL.md](INSTALL.md)

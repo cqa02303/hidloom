@@ -10,6 +10,7 @@
   },
   "display": {
     "fps": 10,
+    "output_status_poll_interval_sec": 0.5,
     "font_size": 11,
     "font_path": null
   },
@@ -17,7 +18,8 @@
     "socket_path": "/tmp/matrix_events.sock",
     "i2c_socket": "/tmp/i2c_events.sock",
     "ctrl_socket": "/tmp/ctrl_events.sock",
-    "direct_frame_status": "/tmp/ledd_direct_frame_status.json"
+    "direct_frame_status": "/tmp/ledd_direct_frame_status.json",
+    "outputd_status": "/run/hidloom/outputd-status.json"
   },
   "analog_stick": {
     "enabled": true,

@@ -87,6 +87,7 @@
 | `daemon/logicd/state.py` | `LogicdRuntime` mutable runtime state |
 | `daemon/logicd/keymap_store.py` | runtime keymap 保存 / 初期化 |
 | `daemon/logicd/text_send_safety.py` | Unicode / Send String action の read-only safety classification |
+| `daemon/oled_text.py` | ASCII-only OLEDへ渡すalert文字列の共通sanitizer。producerとi2cd最終受信境界の両方で使用する |
 
 現時点で `daemon/logicd/logicd.py` に残すもの:
 

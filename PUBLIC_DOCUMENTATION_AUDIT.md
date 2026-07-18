@@ -1,10 +1,10 @@
 # HIDloom Public Documentation Audit
 
 - Ready: `true`
-- Markdown files scanned: 238
-- Public docs: 187
-- Reachable public docs: 187
-- Private links converted to text: 113
+- Markdown files scanned: 243
+- Public docs: 192
+- Reachable public docs: 192
+- Private links converted to text: 114
 - Private-only navigation lines removed: 79
 - Broken links: 0
 - Orphaned documents: 0
@@ -19,7 +19,7 @@
 
 ## Removed private navigation
 
-- `daemon/i2cd/README.md:352` (private-only navigation removed)
+- `daemon/i2cd/README.md:355` (private-only navigation removed)
 - `daemon/logicd/README.md:131` (private-only navigation removed)
 - `daemon/matrixd/README.md:399` (private-only navigation removed)
 - `docs/README.md:14` (private-only navigation removed)
@@ -32,11 +32,11 @@
 - `docs/README.md:39` (private-only navigation removed)
 - `docs/README.md:40` (private-only navigation removed)
 - `docs/README.md:41` (private-only navigation removed)
-- `docs/README.md:70` (private-only navigation removed)
-- `docs/README.md:72` (private-only navigation removed)
+- `docs/README.md:71` (private-only navigation removed)
 - `docs/README.md:73` (private-only navigation removed)
 - `docs/README.md:74` (private-only navigation removed)
 - `docs/README.md:75` (private-only navigation removed)
+- `docs/README.md:76` (private-only navigation removed)
 - `docs/architecture/system-overview.md:33` (private-only navigation removed)
 - `docs/bluetooth/consumer-control-gatt-opt-in-design.md:97` (private-only navigation removed)
 - `docs/daemon/logicd-resolved-action-handler-split-design.md:27` (private-only navigation removed)
@@ -101,8 +101,8 @@
 
 ## Omitted private links
 
-- `FRESH_INSTALL.md:187` (file target omitted)
-- `daemon/i2cd/README.md:352` (file target omitted)
+- `FRESH_INSTALL.md:212` (file target omitted)
+- `daemon/i2cd/README.md:355` (file target omitted)
 - `daemon/logicd/README.md:131` (file target omitted)
 - `daemon/matrixd/README.md:399` (file target omitted)
 - `docs/README.md:14` (file target omitted)
@@ -115,11 +115,11 @@
 - `docs/README.md:39` (file target omitted)
 - `docs/README.md:40` (file target omitted)
 - `docs/README.md:41` (file target omitted)
-- `docs/README.md:70` (file target omitted)
-- `docs/README.md:72` (directory target omitted)
+- `docs/README.md:71` (file target omitted)
 - `docs/README.md:73` (directory target omitted)
 - `docs/README.md:74` (directory target omitted)
 - `docs/README.md:75` (directory target omitted)
+- `docs/README.md:76` (directory target omitted)
 - `docs/architecture/system-overview.md:33` (file target omitted)
 - `docs/bluetooth/consumer-control-gatt-opt-in-design.md:97` (file target omitted)
 - `docs/bluetooth/hid-backend-plan.md:9` (file target omitted)
@@ -212,5 +212,6 @@
 - `docs/policy/documentation-policy.md:15` (file target omitted)
 - `docs/policy/http-mcp-transport-design.md:12` (file target omitted)
 - `docs/policy/mcp-write-capable-tool-design.md:71` (file target omitted)
+- `docs/research/device-side-codex-keyboard-extension-possibilities.md:11` (file target omitted)
 - `docs/research/windows-split-keyboard-identity.md:7` (file target omitted)
 - `docs/research/windows-split-keyboard-identity.md:9` (file target omitted)

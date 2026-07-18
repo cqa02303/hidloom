@@ -7,8 +7,8 @@ i2cd.py — SH1107 OLED 表示デーモン
      レイヤー番号・HID出力モード・システム状態をリアルタイム表示
 
 HID出力モード表示:
-  - logicd から {"t":"mode","mode":"gadget"|"bt"|"uinput"|"auto:*"} メッセージで通知される
-  - 接続時に現在モードを即時受信（UDC state を直接参照しない）
+  - native outputd status を canonical state として定期同期する
+  - logicd の {"t":"mode","mode":"gadget"|"bt"|"uinput"|"auto:*"} 通知は fallback にする
 
 表示フォーマット (64×128, SH1107):
   ┌──────────────────────┐
@@ -41,9 +41,16 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from hidloom_paths import default_config_file
+from oled_text import ascii_oled_text
 
 from .ads1115 import ADS1115Reader, build_ctrl_event, normalize_stick, parse_analog_stick_config, read_stick_volts
-from .connectivity import output_mode_icon_row, wifi_status
+from .connectivity import (
+    effective_output_display_mode,
+    load_outputd_status,
+    output_mode_icon_row,
+    outputd_display_mode,
+    wifi_status,
+)
 from .icons import default_icon_payload, draw_icon_pixels, icon_bitmap
 from .oled_customization import invalidate_cache as invalidate_oled_customization_cache
 from .oled_customization import load_effective_document
@@ -938,6 +945,24 @@ async def _system_status_loop(
         except asyncio.TimeoutError:
             pass
 
+
+async def _outputd_status_loop(
+    snapshot_ref: dict[str, dict],
+    shutdown: asyncio.Event,
+    *,
+    status_path: str,
+    interval_sec: float = 0.5,
+) -> None:
+    """Refresh the canonical output router state outside the drawing path."""
+    interval_sec = max(0.1, min(10.0, float(interval_sec)))
+    max_age_sec = max(2.0, interval_sec * 4.0)
+    while not shutdown.is_set():
+        snapshot_ref["outputd"] = load_outputd_status(status_path, max_age_sec=max_age_sec)
+        try:
+            await asyncio.wait_for(shutdown.wait(), timeout=interval_sec)
+        except asyncio.TimeoutError:
+            pass
+
 # ---------------------------------------------------------------------------
 # メインループ
 # ---------------------------------------------------------------------------
@@ -963,6 +988,7 @@ async def _main() -> None:
 
     ledd_sock = (cfg.get("ipc") or {}).get("i2c_socket", "/tmp/i2c_events.sock")
     direct_frame_status_path = (cfg.get("ipc") or {}).get("direct_frame_status", _DEFAULT_DIRECT_FRAME_STATUS)
+    outputd_status_path = (cfg.get("ipc") or {}).get("outputd_status", "/run/hidloom/outputd-status.json")
     fps_monitor = _DirectFrameFpsMonitor(direct_frame_status_path)
     poll_sec = 2.0
     display_cfg = cfg.get("display") or {}
@@ -997,12 +1023,18 @@ async def _main() -> None:
     except (TypeError, ValueError):
         system_poll_interval_sec = 1.0
     system_poll_interval_sec = max(0.2, min(10.0, system_poll_interval_sec))
+    try:
+        output_status_poll_interval_sec = float(display_cfg.get("output_status_poll_interval_sec", 0.5))
+    except (TypeError, ValueError):
+        output_status_poll_interval_sec = 0.5
+    output_status_poll_interval_sec = max(0.1, min(10.0, output_status_poll_interval_sec))
 
     layer = 0
     active: list[int] = [0]
     current_mode: str = ""
+    display_mode: str = ""
     daemon_status: dict[str, bool] = {}
-    status_snapshots: dict[str, dict] = {"wifi": {}, "system": {}}
+    status_snapshots: dict[str, dict] = {"wifi": {}, "system": {}, "outputd": {}}
     last_refresh = 0.0
     display_dirty = True
     alert_msg: str = ""
@@ -1044,12 +1076,29 @@ async def _main() -> None:
             interval_sec=system_poll_interval_sec,
         )
     )
+    outputd_task = asyncio.create_task(
+        _outputd_status_loop(
+            status_snapshots,
+            _shutdown,
+            status_path=outputd_status_path,
+            interval_sec=output_status_poll_interval_sec,
+        )
+    )
 
     async with server:
         while not _shutdown.is_set():
             matrixd_ok = await _service_active("matrixd")
             logicd_ok = _i2c_client_count > 0
             daemon_status = _merge_busybox_daemon_status(daemon_status)
+            next_display_mode = effective_output_display_mode(
+                current_mode,
+                status_snapshots.get("outputd", {}),
+            )
+            if next_display_mode != display_mode:
+                display_mode = next_display_mode
+                source = "outputd" if outputd_display_mode(status_snapshots.get("outputd", {})) else "logicd"
+                log.info("OLED出力モード同期: %s (source=%s)", display_mode, source)
+                display_dirty = True
 
             try:
                 data = await asyncio.wait_for(_msg_queue.get(), timeout=0.05)
@@ -1091,7 +1140,10 @@ async def _main() -> None:
                     log.info("スクリプト終了受信: %s (exit_code=%d)", name, exit_code)
                     alert_queue.append((f"{name}\nexit: {exit_code}", 3.0, False))
                 elif msg.get("t") in ("alert", "warning"):
-                    incoming_alert = str(msg.get("msg", ""))
+                    raw_alert = str(msg.get("msg", ""))
+                    incoming_alert = ascii_oled_text(raw_alert)
+                    if incoming_alert != raw_alert:
+                        log.warning("OLED alert contained unsupported non-ASCII text; replaced before rendering")
                     duration = float(msg.get("sec", 5.0))
                     inverted = msg.get("t") == "warning" or str(msg.get("level", "")).lower() == "warning"
                     if _alert_is_immediate(msg):
@@ -1134,7 +1186,7 @@ async def _main() -> None:
                         active,
                         matrixd_ok,
                         logicd_ok,
-                        current_mode,
+                        display_mode,
                         fps_monitor.label(),
                         status_snapshots.get("wifi", {}),
                         daemon_status,
@@ -1157,6 +1209,11 @@ async def _main() -> None:
     system_task.cancel()
     try:
         await system_task
+    except asyncio.CancelledError:
+        pass
+    outputd_task.cancel()
+    try:
+        await outputd_task
     except asyncio.CancelledError:
         pass
 

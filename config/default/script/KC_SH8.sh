@@ -27,7 +27,7 @@ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="${OUT_DIR}/matrixd-diagnostics-KC_SH8-${STAMP}.md"
 
 mkdir -p "$OUT_DIR"
-hidloom-notify alert "matrixd診断を採取中" "$DURATION" 2>/dev/null || true
+hidloom-notify alert "MATRIX DIAG START" "$DURATION" 2>/dev/null || true
 
 python3 "$REPO_ROOT/tools/matrixd_diagnostics_snapshot.py" \
     --duration "$DURATION" \
@@ -37,10 +37,10 @@ code=$?
 
 if [ "$code" -eq 0 ]; then
     echo "KC_SH8: matrixd diagnostics saved: $OUT"
-    hidloom-notify alert "matrixd診断保存: $(basename "$OUT")" 5 2>/dev/null || true
+    hidloom-notify alert "MATRIX DIAG SAVED" 5 2>/dev/null || true
     exit 0
 fi
 
 echo "KC_SH8: matrixd diagnostics failed: exit=${code} output=${OUT}" >&2
-hidloom-notify warning "matrixd診断失敗: exit ${code}" 5 2>/dev/null || true
+hidloom-notify warning "MATRIX DIAG FAILED: ${code}" 5 2>/dev/null || true
 exit "$code"

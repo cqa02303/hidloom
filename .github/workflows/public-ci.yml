@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  release:
+    types:
+      - published
 
 permissions:
   contents: read
@@ -11,12 +14,31 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install pull request gate tools
+        run: sudo apt-get update && sudo apt-get install -y python3-yaml
+      - name: Select Ubuntu system Python
+        run: |
+          echo "/usr/bin" >> "$GITHUB_PATH"
+          /usr/bin/python3 -c 'import yaml; print("ok: public PR gate dependencies")'
+      - name: Required public pull request gate
+        run: python3 script/public_pr_gate.py
+      - name: Diff hygiene
+        run: git diff --check
+
+  extended:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'release' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - name: Install validation tools
+      - name: Install extended validation tools
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -38,7 +60,7 @@ jobs:
           import numpy
           from PIL import Image
           import yaml
-          print("ok: public CI Python dependencies")
+          print("ok: public extended CI Python dependencies")
           PY
       - name: Install cross-build Rust target
         run: rustup target add aarch64-unknown-linux-musl

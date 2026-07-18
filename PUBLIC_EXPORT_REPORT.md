@@ -1,24 +1,24 @@
 # HIDloom Public Export Report
 
-- Source base commit: `18ac7f09cc30a060dc65fc18fb59843fa32374e9`
+- Source base commit: `d5a632b87955a5a5068fc8ec95472b39d446624b`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `155e82daa737ce53128a64400cf34712cd2b43ada83eb44baee92cceb3839c75`
-- Files: 1190
-- Tracked source paths: 1257
+- Selected source snapshot: `538500627d756a9d856a7467cc10b07d2058d8d919c71442bc91b91ff55a47d2`
+- Files: 1229
+- Tracked source paths: 1296
 - Private-only paths: 67
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1089
+- Warnings: 1093
 - Untriaged warnings: 0
 - Action-required warnings: 12
 
 ## Findings
 
-- `warn` `credential_word` `.github/workflows/public-ci.yml:89` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
-- `warn` `credential_word` `CONTRIBUTING.md:38` `documentation_security_keyword` — `secret-bearing backup.`
-- `warn` `credential_word` `INSTALL.md:75` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
+- `warn` `credential_word` `.github/workflows/public-ci.yml:111` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
+- `warn` `credential_word` `CONTRIBUTING.md:57` `documentation_security_keyword` — `secret-bearing backup.`
+- `warn` `credential_word` `INSTALL.md:142` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
 - `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
 - `warn` `credential_word` `SECURITY.md:10` `documentation_security_keyword` — `Do not open a public issue for an unpatched vulnerability, credential, private key, or device-specific secret.`
 - `warn` `credential_word` `SECURITY.md:37` `documentation_security_keyword` — `The current experimental M6 Buildroot image creates the local console account `pi` with the initial password `pi`.`
@@ -39,27 +39,29 @@
 - `warn` `credential_word` `build/generators/mkvial.py:115` `implementation_security_keyword` — `ref = token if token.upper().startswith(("SW", "JOY")) else f"SW{token}"`
 - `warn` `linux_foundation_vid` `config/default/config.json:4` `pid_codes_migration_required` — `"vendor_id": "0x1d6b",`
 - `warn` `credential_word` `config/default/config.json:110` `implementation_security_keyword` — `"password": "__HOSTNAME__"`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:12` `implementation_security_keyword` — `# 接続中 Wi-Fi の SSID を取得（利用可能なコマンドを順に試す）`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:13` `implementation_security_keyword` — `SSID=""`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:15` `implementation_security_keyword` — `SSID=$(iwgetid -r 2>/dev/null)`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:17` `implementation_security_keyword` — `if [ -z "$SSID" ] && command -v nmcli >/dev/null 2>&1; then`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:18` `implementation_security_keyword` — `SSID=$(nmcli -t -f active,ssid dev wifi 2>/dev/null \`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:21` `implementation_security_keyword` — `[ -z "$SSID" ] && SSID="N/A"`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:30` `implementation_security_keyword` — `hidloom-notify alert "Node: ${NODE} SSID: ${SSID} IP: ${IP}" 7`
-- `warn` `legacy_project_name` `config/public-assets.json:86` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb",`
-- `warn` `legacy_project_name` `config/public-assets.json:87` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",`
-- `warn` `legacy_project_name` `config/public-assets.json:88` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:89` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/keymap.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:90` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/led.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:91` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:92` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:93` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",`
-- `warn` `legacy_project_name` `config/public-assets.json:94` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro",`
-- `warn` `legacy_project_name` `config/public-assets.json:95` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:96` `allowed_device_profile` — `"kicad/cqa02303v5rpi/keymap.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:97` `allowed_device_profile` — `"kicad/cqa02303v5rpi/led.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:98` `allowed_device_profile` — `"kicad/cqa02303v5rpi/mouse_sch.kicad_sch",`
-- `warn` `legacy_project_name` `config/public-assets.json:99` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:19` `implementation_security_keyword` — `# 接続中 Wi-Fi の SSID を取得（利用可能なコマンドを順に試す）`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:20` `implementation_security_keyword` — `SSID=""`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:22` `implementation_security_keyword` — `SSID=$(iwgetid -r 2>/dev/null)`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:24` `implementation_security_keyword` — `if [ -z "$SSID" ] && command -v nmcli >/dev/null 2>&1; then`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:25` `implementation_security_keyword` — `SSID=$(nmcli -t -f active,ssid dev wifi 2>/dev/null \`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:28` `implementation_security_keyword` — `[ -z "$SSID" ] && SSID="N/A"`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:29` `implementation_security_keyword` — `SSID=$(ascii_oled_text "$SSID")`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:30` `implementation_security_keyword` — `[ -z "$SSID" ] && SSID="N/A"`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:43` `implementation_security_keyword` — `hidloom-notify alert "Node: ${NODE} SSID: ${SSID} IP: ${IP}" 7`
+- `warn` `legacy_project_name` `config/public-assets.json:152` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb",`
+- `warn` `legacy_project_name` `config/public-assets.json:153` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",`
+- `warn` `legacy_project_name` `config/public-assets.json:154` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:155` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/keymap.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:156` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/led.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:157` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:158` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:159` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",`
+- `warn` `legacy_project_name` `config/public-assets.json:160` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro",`
+- `warn` `legacy_project_name` `config/public-assets.json:161` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:162` `allowed_device_profile` — `"kicad/cqa02303v5rpi/keymap.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:163` `allowed_device_profile` — `"kicad/cqa02303v5rpi/led.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:164` `allowed_device_profile` — `"kicad/cqa02303v5rpi/mouse_sch.kicad_sch",`
+- `warn` `legacy_project_name` `config/public-assets.json:165` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
 - `warn` `credential_word` `config/public-export-deny-patterns.json:56` `implementation_security_keyword` — `"pattern": "(?i)\\b(?:password|passwd|secret|token|ssid|psk)\\b"`
 - `warn` `linux_foundation_vid` `config/public-export-deny-patterns.json:64` `scanner_definition` — `"pattern": "(?i)0x1d6b"`
 - `warn` `credential_word` `config/public-export.json:106` `implementation_security_keyword` — `"macro/examples/password.kml",`
@@ -68,10 +70,10 @@
 - `warn` `credential_word` `config/public-export.json:302` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
 - `warn` `credential_word` `config/public-export.json:328` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:192` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:193` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:199` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:200` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:194` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:195` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:201` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:202` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
 - `warn` `linux_foundation_vid` `daemon/btd/gatt_hid.py:94` `pid_codes_migration_required` — `_env_u16("HIDLOOM_USB_VENDOR_ID", 0x1D6B),`
 - `warn` `credential_word` `daemon/http/README.md:20` `security_implementation_keyword` — `| Basic 認証 | 全ページ、API、WebSocket を Basic 認証で保護。Settings から password を変更可能 |`
 - `warn` `credential_word` `daemon/http/README.md:112` `security_implementation_keyword` — `Basic 認証の初期値は `config/default/config.json` の `settings.http_basic_auth` から読みます。未設定時の初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。Settings タブから password を変更した場合は `HTTPD_BASIC_AUTH_FILE` の小`
@@ -133,8 +135,8 @@
 - `warn` `credential_word` `daemon/http/static/status_panel.js:105` `security_implementation_keyword` — `wifiEl.title = `Wi-Fi: interface=${wifi.interface || ""}, powered=${wifi.powered}, blocked=${wifi.blocked}, connected=${wifi.connected}, ssid=${wifi.ssid || ""}, ${mode}${errors}`;`
 - `warn` `credential_word` `daemon/http/wifi_status.py:40` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
 - `warn` `credential_word` `daemon/http/wifi_status.py:47` `security_implementation_keyword` — `"ssid": ssid,`
-- `warn` `credential_word` `daemon/i2cd/connectivity.py:104` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
-- `warn` `credential_word` `daemon/i2cd/connectivity.py:111` `security_implementation_keyword` — `"ssid": ssid,`
+- `warn` `credential_word` `daemon/i2cd/connectivity.py:149` `security_implementation_keyword` — `connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, "")`
+- `warn` `credential_word` `daemon/i2cd/connectivity.py:156` `security_implementation_keyword` — `"ssid": ssid,`
 - `warn` `credential_word` `daemon/logicd/generate_config.py:38` `security_implementation_keyword` — `# The lookup uses the LAST non-empty "\n"-separated token of the label.`
 - `warn` `credential_word` `daemon/logicd/generate_config.py:104` `security_implementation_keyword` — `# Fall back to last non-empty token (e.g. "~\n`" → "`")`
 - `warn` `credential_word` `daemon/logicd/input_events.py:708` `security_implementation_keyword` — `message = f"Wi-Fi ON\n{status.ssid or 'connected'}"`
@@ -165,8 +167,8 @@
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:4894` `implementation_security_keyword` — `parser.add_argument("--password", help="HTTP basic auth password for get_http_status_summary; defaults to hostname")`
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:5060` `implementation_security_keyword` — `if args.password is not None:`
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:5061` `implementation_security_keyword` — `tool_args["password"] = args.password`
-- `warn` `credential_word` `docs/architecture/module-structure.md:120` `documentation_security_keyword` — `| `daemon/http/auth_tls.py` | HTTP Basic auth、password hash / verify、auth override file、TLS cert/key path、SSL context |`
-- `warn` `credential_word` `docs/architecture/module-structure.md:121` `documentation_security_keyword` — `| `daemon/http/security_middleware.py` | private-network allowlist、CSRF token / cookie、audit log helper |`
+- `warn` `credential_word` `docs/architecture/module-structure.md:121` `documentation_security_keyword` — `| `daemon/http/auth_tls.py` | HTTP Basic auth、password hash / verify、auth override file、TLS cert/key path、SSL context |`
+- `warn` `credential_word` `docs/architecture/module-structure.md:122` `documentation_security_keyword` — `| `daemon/http/security_middleware.py` | private-network allowlist、CSRF token / cookie、audit log helper |`
 - `warn` `credential_word` `docs/architecture/specification.md:191` `documentation_security_keyword` — ``config/default/config.json` の初期 password は `__HOSTNAME__` を指定でき、その場合は`
 - `warn` `credential_word` `docs/architecture/specification.md:194` `documentation_security_keyword` — `password は平文ではなく `password_hash` として保存します。`
 - `warn` `credential_word` `docs/architecture/specification.md:251` `documentation_security_keyword` — `logicd macro token へ変換します。`
@@ -194,9 +196,10 @@
 - `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:538` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
-- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:208` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:460` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:535` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:78` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
+- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:271` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:523` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:598` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
@@ -209,7 +212,7 @@
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:1169` `documentation_security_keyword` — `- HTTP transport を採用する場合の bearer token / OAuth 設計:`
 - `warn` `credential_word` `docs/ops/performance-tuning-plan.md:62` `documentation_security_keyword` — `Linux HID gadget の `/dev/hidgX` は、USB host の IN polling token を userspace callback として直接通知する interface ではない。`
 - `warn` `credential_word` `docs/ops/script-safety-metadata.md:52` `documentation_security_keyword` — `- 危険 script の通常 run が backend 経由になった場合、API 側でも確認 token なし実行を拒否する。`
-- `warn` `credential_word` `docs/ops/test-script-inventory.md:80` `documentation_security_keyword` — `- public repositoryのvisibility/main、feature/merge設定、secret scanning、private vulnerability reporting、Actions allowlist、`
+- `warn` `credential_word` `docs/ops/test-script-inventory.md:86` `documentation_security_keyword` — `- public repositoryのvisibility/main、feature/merge設定、secret scanning、private vulnerability reporting、Actions allowlist、`
 - `warn` `credential_word` `docs/policy/decisions-spec.md:130` `documentation_security_keyword` — `- HTTP UI に Settings タブを追加し、Basic 認証 password を変更できるようにする。`
 - `warn` `credential_word` `docs/policy/decisions-spec.md:132` `documentation_security_keyword` — `- `config/default/config.json` の `settings.http_basic_auth.password` は `__HOSTNAME__` を許可し、`
 - `warn` `credential_word` `docs/policy/decisions-spec.md:133` `documentation_security_keyword` — `fresh install の初期 password は node 名 (`hostname` の出力) とする。`
@@ -225,6 +228,7 @@
 - `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:92` `documentation_security_keyword` — `- Logs must redact `Authorization` and configured token env names.`
 - `warn` `credential_word` `docs/policy/http-mcp-transport-design.md:95` `documentation_security_keyword` — `audience, scopes, callback URL, token lifetime, and revocation path before implementation.`
 - `warn` `credential_word` `docs/policy/mcp-write-capable-tool-design.md:16` `documentation_security_keyword` — `- secret、Bluetooth address full value、長い log body、任意 diff hunk は返さない。`
+- `warn` `credential_word` `docs/research/device-side-codex-keyboard-extension-possibilities.md:128` `documentation_security_keyword` — `3. install / update / disable / uninstall、auth、`CODEX_HOME`、secret storage の運用が書ける。`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:1316` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:3146` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:4479` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
@@ -1010,11 +1014,11 @@
 - `warn` `credential_word` `macro/README.md:65` `documentation_security_keyword` — `- `examples/password.kml` - パスワード入力デモ`
 - `warn` `credential_word` `script/start_touch_panel_browser.sh:234` `implementation_security_keyword` — `--password-store=basic \`
 - `warn` `credential_word` `script/test_buildroot_fast_boot_assets.py:293` `test_fixture` — `assert 'filesystem_file(debugfs, rootfs, "/etc/passwd")' in m6_verify_text`
-- `warn` `credential_word` `script/test_current_status_doc.py:263` `test_fixture` — `assert config["settings"]["http_basic_auth"]["password"] == "__HOSTNAME__"`
+- `warn` `credential_word` `script/test_current_status_doc.py:264` `test_fixture` — `assert config["settings"]["http_basic_auth"]["password"] == "__HOSTNAME__"`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:128` `test_fixture` — `assert 'id="settings-current-password"' in index_html`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:129` `test_fixture` — `assert 'id="settings-new-password"' in index_html`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:130` `test_fixture` — `assert 'id="settings-confirm-password"' in index_html`
-- `warn` `credential_word` `script/test_http_script_store.py:37` `test_fixture` — `assert "SSID: ${SSID}" in default_sh3`
+- `warn` `credential_word` `script/test_http_script_store.py:50` `test_fixture` — `assert "SSID: ${SSID}" in default_sh3`
 - `warn` `private_ipv4` `script/test_http_security.py:21` `test_fixture` — `assert httpd._remote_ip_allowed("10.1.2.3")`
 - `warn` `private_ipv4` `script/test_http_security.py:22` `test_fixture` — `assert httpd._remote_ip_allowed("172.16.0.1")`
 - `warn` `private_ipv4` `script/test_http_security.py:23` `test_fixture` — `assert httpd._remote_ip_allowed("172.31.255.254")`
@@ -1046,9 +1050,9 @@
 - `warn` `credential_word` `script/test_logicd_wifi_manager.py:56` `test_fixture` — `assert status.ssid == "HomeAP"`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1371` `test_fixture` — `(root / "done" / "task-a.result.md").write_text("secret body should not return", encoding="utf-8")`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1383` `test_fixture` — `assert "secret body" not in encoded`
-- `warn` `credential_word` `script/test_public_export.py:234` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:237` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:240` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:240` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:243` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:246` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
 - `warn` `credential_word` `script/test_public_usb_identity.py:269` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
 - `warn` `credential_word` `script/test_text_send_safety.py:122` `test_fixture` — `assert not send_string_name_valid("../secret")`

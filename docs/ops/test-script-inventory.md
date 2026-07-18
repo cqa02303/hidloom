@@ -1,6 +1,6 @@
 # Test Script Inventory
 
-更新日: 2026-07-14
+更新日: 2026-07-18
 
 `script/test_*.py` と周辺手動ツールの棚卸し方針です。現時点ではテストが多いこと自体を
 安全側とみなし、削除より分類を優先します。
@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 333 本程度あり、標準 canonical suite は 220 entrypoints を実行する。
+現在 `script/test_*.py` は 335 本程度あり、標準 canonical suite は 223 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints
@@ -29,6 +29,10 @@
   - clean/dirtyを問わずtracked sourceだけの一時snapshotで実行する標準回帰セット。
   - hardware / daemon socket なしで通るものを中心にし、全childへbytecode抑止を固定してsource checkoutへ
     ignored cache/build outputを残さない。
+- `script/public_pr_gate.py`
+  - public PRで必須にするbounded validation。tracked sourceだけの一時snapshotでpublic export、privacy、license、
+    reference、repository hygieneと主要HID/Vial/USB/JIS/OLED smokeを実行する。
+  - canonical suiteのsubsetだけを列挙し、full suite、cross-build target、全Rust testは`extended` jobへ残す。
 - `script/test_validation_suite_isolation.py`
   - clean Git fixtureのcanonical childがignored build outputを作っても、元checkoutがbyte/状態ともcleanなままになることを固定する。
 - `script/test_development_suite.py`
@@ -65,8 +69,10 @@
 - `script/test_logicd_socket_env_overrides.py`
   - Python companion が `/tmp/matrix_events.sock` を bind しないための socket env override を固定する。
 - `script/test_public_ci_workflow.py`
-  - standalone public CI がUbuntu system Pythonと必要依存を選び、bootstrap archive回帰、canonical full validation、
-    locked Rust test、diff hygieneを実行する契約を固定する。
+  - standalone public CI がrequired `validate`、main/manual/release向け`extended`、sync PR作成を分離し、
+    bounded PR test集合がcanonical suiteのsubsetであることを固定する。
+  - `extended`だけがbootstrap archive回帰、canonical full validation、cross target、locked Rust testを実行し、
+    両validation jobがdiff hygieneを維持することを検査する。
 - `script/test_public_community_health.py`
   - issue form、security contact、pull request templateの安全なcontribution導線と、全public-selected pathが
     private export workflowのpush filterで覆われることを固定する。
@@ -131,6 +137,8 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
 - `script/test_morse_oled_alert.py`
 - `script/test_morse_led_feedback.py`
 - `script/test_i2cd_immediate_alert.py`
+- `script/test_oled_alert_ascii.py`
+  - default `KC_SHn` notification、Python側の固定alert文字列、logicd送信境界、i2cd受信境界がASCII-only OLEDへ非対応文字を渡さないことを確認する。
 - `script/test_morse_browser_smoke_tool.py`
 - `script/test_morse_interaction_config.py`
 - `script/test_interaction_physical_runtime.py`
@@ -270,6 +278,9 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
   - `config/device-profiles/*.json` の id、runtime/config file 参照、service policy、profile package 入力を固定する。
 - `script/test_apply_device_profile.py`
   - device profile apply の dry-run、backup、runtime file copy、drop-in、service policy plan を固定する。
+- `script/migrate_runtime_scripts.py`
+- `script/test_runtime_script_migration.py`
+  - package更新時に既知の旧defaultだけをbackup付きで移行し、利用者編集とsymlinkを保持する境界を固定する。
 - `script/test_power_shed_boot.py`
   - boot-time power shedding service、fresh install 登録、touch panel browser / USB gadget start delay の配線を固定する。
   - touch panel kiosk の blank/error tab repair について、DevTools opt-in、delay / attempts / interval、`about:blank` / `chrome-error://` 検出、`Page.navigate` 導線を固定する。
@@ -596,6 +607,7 @@ skip し、Python-owner rollback 中にだけ `--include-python-owner-smoke` で
 - `script/test_led_pattern_metrics_runtime.py`
 - `script/test_led_video_ledd_direct.py`
 - `script/test_demo_asset_paths.py`
+  - 外部videoがないpackageでも標準libraryだけのprocedural patternへfallbackするSH2経路を固定する。
 
 ## 次の棚卸し作業
 

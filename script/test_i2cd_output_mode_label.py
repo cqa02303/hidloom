@@ -159,6 +159,10 @@ def main() -> None:
     assert "_wifi_status_loop" in source
     assert "wifi_status(max_age_sec=0.0)" in source
     assert "status_snapshots.get(\"wifi\", {})" in source
+    assert "status_snapshots.get(\"outputd\", {})" in source
+    assert "effective_output_display_mode" in source
+    assert "_outputd_status_loop" in source
+    assert "outputd_task.cancel()" in source
     assert "_draw_daemon_status_row" in source
     assert "_draw_node_name" in source
     assert 'msg.get("t") == "daemon_status"' in source

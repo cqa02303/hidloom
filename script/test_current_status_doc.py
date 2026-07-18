@@ -218,7 +218,7 @@ def main() -> None:
     _require_all(
         wishlist,
         [
-            "更新日: 2026-07-17",
+            "更新日: 2026-07-18",
             "VIA app 互換入口",
             "HTTP analog stick calibration 2D map",
             "Bluetooth host local rename metadata first slice",
@@ -226,6 +226,7 @@ def main() -> None:
             "Unicode / Send String",
             "keycode action routing / output behavior inventory",
             "release packaging / package unit migration runbook",
+            "device-side-codex-keyboard-extension-possibilities.md",
         ],
     )
     _reject_all(

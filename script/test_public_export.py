@@ -216,7 +216,13 @@ def main() -> None:
         "executable_requires_shebang": True,
         "shell_requires_executable": True,
         "shell_path_globs": ["**/*.sh"],
-        "binary_path_globs": ["**/*.f3d", "**/*.ico", "**/*.png"],
+        "binary_path_globs": [
+            "**/*.f3d",
+            "**/*.ico",
+            "**/*.jpg",
+            "**/*.jpeg",
+            "**/*.png",
+        ],
         "empty_file_allow_globs": [
             "daemon/i2cd/__init__.py",
             "daemon/logicd/__init__.py",
@@ -268,9 +274,14 @@ def main() -> None:
         for item in manifest["warning_triage"]
     )
     validation_suite = (ROOT / "script/test_validation_suite.py").read_text(encoding="utf-8")
+    public_pr_gate = (ROOT / "script/public_pr_gate.py").read_text(encoding="utf-8")
+    suite_runner = (ROOT / "script/suite_runner.py").read_text(encoding="utf-8")
     assert "HIDLOOM_VALIDATION_SNAPSHOT" in validation_suite
-    assert '["git", "ls-files", "--others", "--exclude-standard", "-z"]' in validation_suite
-    assert '["git", "commit", "-qm", "Validation snapshot"]' in validation_suite
+    assert "HIDLOOM_PUBLIC_PR_GATE_SNAPSHOT" in public_pr_gate
+    assert "rerun_in_clean_snapshot" in validation_suite
+    assert "rerun_in_clean_snapshot" in public_pr_gate
+    assert '["git", "ls-files", "--others", "--exclude-standard", "-z"]' in suite_runner
+    assert '["git", "commit", "-qm", "Validation snapshot"]' in suite_runner
 
     with tempfile.TemporaryDirectory() as tmp:
         source = Path(tmp) / "source"
@@ -499,9 +510,9 @@ def main() -> None:
         assert len(sbom["components"]) == 56
         assert privacy["ready"] is True
         assert privacy["summary"]["blockers"] == 0
-        assert privacy["summary"]["media_files"] == 8
+        assert privacy["summary"]["media_files"] == 32
         assert assets["ready"] is True
-        assert assets["summary"]["assets"] == 25
+        assert assets["summary"]["assets"] == 49
         assert references["ready"] is True
         assert references["summary"]["blockers"] == 0
         assert references["public_repository"]["slug"] == "cqa02303/hidloom"

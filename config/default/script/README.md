@@ -41,7 +41,10 @@ Vial GUI の Macros タブは本プロジェクトでは未対応です。
 KC_SH0.sh  … KC_SH0 キーに対応（安全な no-op）
 KC_SH1.sh  … KC_SH1 キーに対応
    ︙
+KC_SH5.sh  … KC_SH5 キーに対応（未割当時は安全な no-op）
+KC_SH6.sh  … KC_SH6 キーに対応（未割当時は安全な no-op）
 KC_SH7.sh  … PTY Mirror M0（sessiond を user 権限で必要時起動して開始）
+KC_SH9.sh  … KC_SH9 キーに対応（未割当時は安全な no-op）
 KC_SH10.sh … KC_SH10 キーに対応（再起動）
 ```
 

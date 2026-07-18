@@ -48,6 +48,8 @@ def main() -> None:
         "",
         "*.f3d binary",
         "*.ico binary",
+        "*.jpg binary",
+        "*.jpeg binary",
         "*.png binary",
     ]
     config = json.loads(CONFIG.read_text(encoding="utf-8"))

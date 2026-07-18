@@ -50,6 +50,9 @@ def _assert_no_legend_alignment(layout: list, label: str) -> None:
 
 def main() -> None:
     keycodes = json.loads((ROOT / "config" / "default" / "keycodes.json").read_text(encoding="utf-8"))
+    touch_panel_hardware = (
+        ROOT / "docs" / "hardware" / "touch-panel-vial-layout-notes.md"
+    ).read_text(encoding="utf-8")
     setup = (ROOT / "system" / "install" / "setup_fresh_rpi.sh").read_text(encoding="utf-8")
     touch_panel_service = (
         ROOT / "system" / "systemd" / "hidloom-touch-panel-profile.service"
@@ -76,6 +79,10 @@ def main() -> None:
     assert "HIDLOOM_TOUCH_PANEL_COMMAND_PROBES" in selector_source
     assert "waveshare-8.8" in selector_source
     assert "osoyoo-4.3" in selector_source
+    assert "https://www.waveshare.com/8.8-dsi-touch-a.htm" in touch_panel_hardware
+    assert "touch-waveshare-8.8" in touch_panel_hardware
+    assert "480x1920" in touch_panel_hardware
+    assert "1920x480" in touch_panel_hardware
 
     original_env = os.environ.get("HIDLOOM_TOUCH_PANEL_COMMAND_PROBES")
     original_run = selector_module.subprocess.run

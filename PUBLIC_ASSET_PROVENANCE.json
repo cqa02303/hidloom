@@ -2,9 +2,9 @@
   "schema": "hidloom.public-asset-provenance.v1",
   "ready": true,
   "summary": {
-    "records": 5,
-    "assets": 25,
-    "declared": 25,
+    "records": 8,
+    "assets": 49,
+    "declared": 49,
     "missing_declarations": 0,
     "stale_declarations": 0,
     "invalid_records": 0
@@ -66,6 +66,72 @@
         "type": "reproducible-generator",
         "generator": "tools/generate_hidloom_icons.py",
         "test": "script/test_hidloom_icon_assets.py"
+      }
+    },
+    {
+      "id": "hidloom-webui-gallery",
+      "category": "software-documentation",
+      "provenance": "project-authored",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "docs/gallery/WebUI/01-keyboard-detailed-status.png",
+        "docs/gallery/WebUI/02-keyboard-compact-status.png",
+        "docs/gallery/WebUI/03-keymap-editor.png",
+        "docs/gallery/WebUI/04-keycode-picker.png",
+        "docs/gallery/WebUI/05-led-host-lock-settings.png",
+        "docs/gallery/WebUI/06-led-layer-overlay-colors.png",
+        "docs/gallery/WebUI/07-led-effect-settings.png",
+        "docs/gallery/WebUI/08-oled-editor.png",
+        "docs/gallery/WebUI/09-script-editor-placeholder.png",
+        "docs/gallery/WebUI/10-script-editor-ip-display.png",
+        "docs/gallery/WebUI/11-interaction-morse-editor.png",
+        "docs/gallery/WebUI/12-interaction-combo-tap-dance-editor.png",
+        "docs/gallery/WebUI/13-settings-auth-and-text-send.png",
+        "docs/gallery/WebUI/14-settings-analog-stick-calibration.png"
+      ],
+      "evidence": {
+        "type": "git-first-add",
+        "commit": "bb8c9c71d370701df1901b78a1497394adc101cd"
+      }
+    },
+    {
+      "id": "keyboard-hardware-photo-gallery",
+      "category": "hardware-documentation",
+      "provenance": "project-authored",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "docs/gallery/cqa02303v5/exhibition-keyboard-lineup.jpeg",
+        "docs/gallery/cqa02303v5/finished-keyboard-front-view.jpeg",
+        "docs/gallery/cqa02303v5/keyboard-oled-status-display-closeup.jpeg",
+        "docs/gallery/cqa02303v5/keyboard-pcb-switch-matrix.jpeg",
+        "docs/gallery/cqa02303v5/keyboard-pcb-with-rotary-encoder.jpeg",
+        "docs/gallery/cqa02303v5/keyboard-pcb-with-switches-and-raspberry-pi-zero.jpeg",
+        "docs/gallery/cqa02303v5/open-frame-keyboard-red-backlight.jpeg",
+        "docs/gallery/cqa02303v5/prototype-keyboard-and-layout-display.jpeg"
+      ],
+      "evidence": {
+        "type": "git-first-add",
+        "commit": "bb8c9c71d370701df1901b78a1497394adc101cd"
+      }
+    },
+    {
+      "id": "touch-panel-photo-gallery",
+      "category": "hardware-documentation",
+      "provenance": "project-authored",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "docs/gallery/touchpanel/osoyoo43dsi.jpeg",
+        "docs/gallery/touchpanel/waveshare88touch.jpeg"
+      ],
+      "evidence": {
+        "type": "git-first-add",
+        "commit": "bb8c9c71d370701df1901b78a1497394adc101cd"
       }
     },
     {

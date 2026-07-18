@@ -4,17 +4,14 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-import shutil
-import subprocess
 import sys
-import tempfile
 
 sys.dont_write_bytecode = True
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "script"))
 
-from suite_runner import run_suite, test_environment  # noqa: E402
+from suite_runner import rerun_in_clean_snapshot, run_suite, test_environment  # noqa: E402
 
 TESTS = [
     "script/test_hidloom_identity.py",
@@ -63,6 +60,7 @@ TESTS = [
     "script/test_logicd_daemon_status.py",
     "script/test_logicd_sessiond_client_autostart.py",
     "script/test_logicd_i2cd_mode_reconnect.py",
+    "script/test_i2cd_connectivity.py",
     "script/test_logicd_joystick.py",
     "script/test_logicd_mouse_aliases.py",
     "script/test_logicd_mouse_acceleration.py",
@@ -109,6 +107,7 @@ TESTS = [
     "script/test_ledd_direct_frame_fallback.py",
     "script/test_led_video_ledd_direct.py",
     "script/test_demo_asset_paths.py",
+    "script/test_runtime_script_migration.py",
     "script/test_usbd_hid_report_broker.py",
     "script/test_usbd_validation.py",
     "script/test_btd_protocol_doc.py",
@@ -234,6 +233,7 @@ TESTS = [
     "script/test_i2cd_device_fallback.py",
     "script/test_i2cd_warning_render.py",
     "script/test_i2cd_immediate_alert.py",
+    "script/test_oled_alert_ascii.py",
     "script/test_i2cd_ads1115.py",
     "script/test_i2cd_direct_frame_fps.py",
     "script/test_i2cd_output_mode_label.py",
@@ -241,60 +241,11 @@ TESTS = [
 
 
 def run_from_clean_snapshot() -> None:
-    if os.environ.get("HIDLOOM_VALIDATION_SNAPSHOT") == "1":
-        return
-    untracked = subprocess.run(
-        ["git", "ls-files", "--others", "--exclude-standard", "-z"],
-        cwd=ROOT,
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout
-    if untracked:
-        paths = [os.fsdecode(item) for item in untracked.split(b"\0") if item]
-        raise SystemExit(f"stage or remove untracked validation inputs: {paths}")
-    tracked = subprocess.run(
-        ["git", "ls-files", "-z"],
-        cwd=ROOT,
-        check=True,
-        stdout=subprocess.PIPE,
-    ).stdout
-    with tempfile.TemporaryDirectory(prefix="hidloom-validation-snapshot-") as temporary:
-        snapshot = Path(temporary) / "repo"
-        snapshot.mkdir()
-        for encoded in tracked.split(b"\0"):
-            if not encoded:
-                continue
-            relative = Path(os.fsdecode(encoded))
-            source = ROOT / relative
-            destination = snapshot / relative
-            if not source.exists() and not source.is_symlink():
-                raise SystemExit(f"tracked validation input is missing: {relative}")
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            if source.is_symlink():
-                destination.symlink_to(os.readlink(source))
-            else:
-                shutil.copy2(source, destination)
-        subprocess.run(["git", "init", "-q", "-b", "main"], cwd=snapshot, check=True)
-        subprocess.run(
-            ["git", "config", "user.name", "HIDloom Validation"], cwd=snapshot, check=True
-        )
-        subprocess.run(
-            ["git", "config", "user.email", "validation@example.invalid"],
-            cwd=snapshot,
-            check=True,
-        )
-        subprocess.run(["git", "add", "-f", "-A"], cwd=snapshot, check=True)
-        subprocess.run(
-            ["git", "commit", "-qm", "Validation snapshot"], cwd=snapshot, check=True
-        )
-        environment = os.environ.copy()
-        environment["HIDLOOM_VALIDATION_SNAPSHOT"] = "1"
-        completed = subprocess.run(
-            [sys.executable, "script/test_validation_suite.py"],
-            cwd=snapshot,
-            env=environment,
-        )
-        raise SystemExit(completed.returncode)
+    rerun_in_clean_snapshot(
+        ROOT,
+        "script/test_validation_suite.py",
+        "HIDLOOM_VALIDATION_SNAPSHOT",
+    )
 
 
 def main() -> None:

@@ -4,27 +4,27 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "18ac7f09cc30a060dc65fc18fb59843fa32374e9",
-    "base_tree": "04baec81ce82f5b261fd40c936f28d181448d5b7",
-    "base_revision_count": 1978,
-    "selected_path_count": 1190,
-    "selected_snapshot_sha256": "155e82daa737ce53128a64400cf34712cd2b43ada83eb44baee92cceb3839c75"
+    "base_commit": "d5a632b87955a5a5068fc8ec95472b39d446624b",
+    "base_tree": "5e728ab7f2be3038afcda5904da03d8cfad059e9",
+    "base_revision_count": 2008,
+    "selected_path_count": 1229,
+    "selected_snapshot_sha256": "538500627d756a9d856a7467cc10b07d2058d8d919c71442bc91b91ff55a47d2"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1190,
+  "file_count": 1229,
   "source_selection": {
-    "tracked_paths": 1257,
-    "public_source_paths": 1190,
+    "tracked_paths": 1296,
+    "public_source_paths": 1229,
     "private_only_paths": 67,
     "generated_output_paths": 0,
     "unclassified_paths": 0
   },
   "finding_summary": {
     "warn:credential_word": {
-      "implementation_security_keyword": 57,
-      "documentation_security_keyword": 70,
+      "implementation_security_keyword": 59,
+      "documentation_security_keyword": 72,
       "security_implementation_keyword": 73,
       "test_fixture": 46
     },
@@ -48,7 +48,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": ".github/workflows/public-ci.yml",
-      "line": 89,
+      "line": 111,
       "excerpt": "GH_TOKEN: ${{ github.token }}",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -57,7 +57,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "CONTRIBUTING.md",
-      "line": 38,
+      "line": 57,
       "excerpt": "secret-bearing backup.",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -66,7 +66,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "INSTALL.md",
-      "line": 75,
+      "line": 142,
       "excerpt": "`pi` / `pi` です。長期利用前に password を変更してください。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -255,7 +255,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
-      "line": 12,
+      "line": 19,
       "excerpt": "# 接続中 Wi-Fi の SSID を取得（利用可能なコマンドを順に試す）",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -264,7 +264,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
-      "line": 13,
+      "line": 20,
       "excerpt": "SSID=\"\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -273,7 +273,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
-      "line": 15,
+      "line": 22,
       "excerpt": "SSID=$(iwgetid -r 2>/dev/null)",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -282,7 +282,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
-      "line": 17,
+      "line": 24,
       "excerpt": "if [ -z \"$SSID\" ] && command -v nmcli >/dev/null 2>&1; then",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -291,7 +291,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
-      "line": 18,
+      "line": 25,
       "excerpt": "SSID=$(nmcli -t -f active,ssid dev wifi 2>/dev/null \\",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -300,7 +300,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
-      "line": 21,
+      "line": 28,
       "excerpt": "[ -z \"$SSID\" ] && SSID=\"N/A\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -309,7 +309,25 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
+      "line": 29,
+      "excerpt": "SSID=$(ascii_oled_text \"$SSID\")",
+      "disposition": "implementation_security_keyword",
+      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "config/default/script/KC_SH3.sh",
       "line": 30,
+      "excerpt": "[ -z \"$SSID\" ] && SSID=\"N/A\"",
+      "disposition": "implementation_security_keyword",
+      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "config/default/script/KC_SH3.sh",
+      "line": 43,
       "excerpt": "hidloom-notify alert \"Node: ${NODE} SSID: ${SSID} IP: ${IP}\" 7",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -318,7 +336,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 86,
+      "line": 152,
       "excerpt": "\"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -327,7 +345,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 87,
+      "line": 153,
       "excerpt": "\"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -336,7 +354,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 88,
+      "line": 154,
       "excerpt": "\"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -345,7 +363,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 89,
+      "line": 155,
       "excerpt": "\"kicad/cqa02303v5rpi-01/keymap.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -354,7 +372,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 90,
+      "line": 156,
       "excerpt": "\"kicad/cqa02303v5rpi-01/led.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -363,7 +381,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 91,
+      "line": 157,
       "excerpt": "\"kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -372,7 +390,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 92,
+      "line": 158,
       "excerpt": "\"kicad/cqa02303v5rpi-01/other.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -381,7 +399,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 93,
+      "line": 159,
       "excerpt": "\"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -390,7 +408,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 94,
+      "line": 160,
       "excerpt": "\"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pro\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -399,7 +417,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 95,
+      "line": 161,
       "excerpt": "\"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -408,7 +426,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 96,
+      "line": 162,
       "excerpt": "\"kicad/cqa02303v5rpi/keymap.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -417,7 +435,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 97,
+      "line": 163,
       "excerpt": "\"kicad/cqa02303v5rpi/led.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -426,7 +444,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 98,
+      "line": 164,
       "excerpt": "\"kicad/cqa02303v5rpi/mouse_sch.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -435,7 +453,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/public-assets.json",
-      "line": 99,
+      "line": 165,
       "excerpt": "\"kicad/cqa02303v5rpi/other.kicad_sch\"",
       "disposition": "allowed_device_profile",
       "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
@@ -516,7 +534,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 192,
+      "line": 194,
       "excerpt": "\"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json\",",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -525,7 +543,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 193,
+      "line": 195,
       "excerpt": "\"kicad/cqa02303v5rpi/fabrication-toolkit-options.json\"",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -534,7 +552,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 199,
+      "line": 201,
       "excerpt": "\"kicad/cqa02303v5rpi-01/other.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -543,7 +561,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 200,
+      "line": 202,
       "excerpt": "\"kicad/cqa02303v5rpi/other.kicad_sch\"",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -1101,7 +1119,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/i2cd/connectivity.py",
-      "line": 104,
+      "line": 149,
       "excerpt": "connected, ssid = _parse_nmcli_wifi_status(nmcli_out, interface) if nmcli_code == 0 else (None, \"\")",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1110,7 +1128,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/i2cd/connectivity.py",
-      "line": 111,
+      "line": 156,
       "excerpt": "\"ssid\": ssid,",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1389,7 +1407,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/module-structure.md",
-      "line": 120,
+      "line": 121,
       "excerpt": "| `daemon/http/auth_tls.py` | HTTP Basic auth、password hash / verify、auth override file、TLS cert/key path、SSL context |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1398,7 +1416,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/architecture/module-structure.md",
-      "line": 121,
+      "line": 122,
       "excerpt": "| `daemon/http/security_middleware.py` | private-network allowlist、CSRF token / cookie、audit log helper |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1648,9 +1666,18 @@
     },
     {
       "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "docs/ops/failure-patterns.md",
+      "line": 78,
+      "excerpt": "- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "docs/ops/failure-patterns.md",
-      "line": 208,
+      "line": 271,
       "excerpt": "- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
@@ -1659,7 +1686,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 460,
+      "line": 523,
       "excerpt": "- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1668,7 +1695,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 535,
+      "line": 598,
       "excerpt": "- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1785,7 +1812,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/test-script-inventory.md",
-      "line": 80,
+      "line": 86,
       "excerpt": "- public repositoryのvisibility/main、feature/merge設定、secret scanning、private vulnerability reporting、Actions allowlist、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1922,6 +1949,15 @@
       "path": "docs/policy/mcp-write-capable-tool-design.md",
       "line": 16,
       "excerpt": "- secret、Bluetooth address full value、長い log body、任意 diff hunk は返さない。",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "docs/research/device-side-codex-keyboard-extension-possibilities.md",
+      "line": 128,
+      "excerpt": "3. install / update / disable / uninstall、auth、`CODEX_HOME`、secret storage の運用が書ける。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
     },
@@ -8994,7 +9030,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_current_status_doc.py",
-      "line": 263,
+      "line": 264,
       "excerpt": "assert config[\"settings\"][\"http_basic_auth\"][\"password\"] == \"__HOSTNAME__\"",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9030,7 +9066,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_http_script_store.py",
-      "line": 37,
+      "line": 50,
       "excerpt": "assert \"SSID: ${SSID}\" in default_sh3",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9318,7 +9354,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 234,
+      "line": 240,
       "excerpt": "unknown.write_text(\"password\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9327,7 +9363,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 237,
+      "line": 243,
       "excerpt": "reviewed.write_text(\"password\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9336,7 +9372,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 240,
+      "line": 246,
       "excerpt": "reviewed_scanner.write_text(\"token\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
