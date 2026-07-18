@@ -16,27 +16,44 @@ import script_store  # noqa: E402
 
 
 def main() -> None:
-    default_sh0 = (ROOT / "config" / "default" / "script" / "KC_SH0.sh").read_text(encoding="utf-8")
-    default_sh1 = (ROOT / "config" / "default" / "script" / "KC_SH1.sh").read_text(encoding="utf-8")
-    default_sh2 = (ROOT / "config" / "default" / "script" / "KC_SH2.sh").read_text(encoding="utf-8")
-    default_sh3 = (ROOT / "config" / "default" / "script" / "KC_SH3.sh").read_text(encoding="utf-8")
-    default_sh4 = (ROOT / "config" / "default" / "script" / "KC_SH4.sh").read_text(encoding="utf-8")
-    default_sh7 = (ROOT / "config" / "default" / "script" / "KC_SH7.sh").read_text(encoding="utf-8")
-    default_sh8 = (ROOT / "config" / "default" / "script" / "KC_SH8.sh").read_text(encoding="utf-8")
-    default_sh10 = (ROOT / "config" / "default" / "script" / "KC_SH10.sh").read_text(encoding="utf-8")
-    readme = (ROOT / "config" / "default" / "script" / "README.md").read_text(encoding="utf-8")
+    default_dir = ROOT / "config" / "default" / "script"
+    expected_scripts = {f"KC_SH{number}.sh" for number in range(11)}
+    actual_scripts = {path.name for path in default_dir.glob("KC_SH*.sh")}
+    assert actual_scripts == expected_scripts
+    default_scripts = {
+        number: (default_dir / f"KC_SH{number}.sh").read_text(encoding="utf-8")
+        for number in range(11)
+    }
+    default_sh0 = default_scripts[0]
+    default_sh1 = default_scripts[1]
+    default_sh2 = default_scripts[2]
+    default_sh3 = default_scripts[3]
+    default_sh4 = default_scripts[4]
+    default_sh7 = default_scripts[7]
+    default_sh8 = default_scripts[8]
+    default_sh10 = default_scripts[10]
+    readme = (default_dir / "README.md").read_text(encoding="utf-8")
     assert "# @label 未割当" in default_sh0
     assert "systemctl reboot" not in default_sh0
     assert "command -v hidloom-notify" in default_sh1
-    assert 'notify alert "LED video を停止します"' in default_sh1
+    assert 'notify alert "LED DEMO STOP"' in default_sh1
     assert "command -v hidloom-notify" in default_sh2
     assert "bin/hidloom-notify" not in default_sh2
-    assert 'notify warning "LED video demo が見つかりません"' in default_sh2
+    assert 'notify alert "LED PATTERN START"' in default_sh2
+    assert all(
+        line.isascii()
+        for line in default_sh2.splitlines()
+        if "notify " in line and not line.lstrip().startswith("#")
+    )
     assert "python3 -" not in default_sh3
     assert "hidloom-notify alert \"Node:" in default_sh3
     assert "SSID: ${SSID}" in default_sh3
     assert "IP: ${IP}" in default_sh3
     assert "hidloom-notify alert" in default_sh4
+    for number in (5, 6, 9):
+        assert "# @label 未割当" in default_scripts[number]
+        assert f"KC_SH{number}: safe no-op" in default_scripts[number]
+        assert "systemctl" not in default_scripts[number]
     assert "/usr/lib/hidloom/tools/sessiond_ctl.py" in default_sh7
     assert "/home/pi/hidloom" not in default_sh7
     assert "# @label matrixd診断" in default_sh8

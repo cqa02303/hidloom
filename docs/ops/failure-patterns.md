@@ -35,6 +35,60 @@
 - regression check: `script/test_release_bundle_tools.py`と`tools/package/release_candidate_check.sh`で5 commandのtarget/symlink一致を検査し、実機ではdirect scriptと`tools/matrix_action_runtime.py KC_SH3 --row 9 --col 1`の両方でexit 0、OLED / notify side effectを確認する。
 - evidence: 2026-07-04 に `0.0.1766+git47a23ec` でhelper payload追加後、direct scriptとruntime matrix pathが復旧。2026-07-14にsplit core packageへ5個の`/usr/bin` entrypointとpackage fixture回帰を追加した。
 
+## Package upgrade preserves obsolete KC_SH defaults
+
+- symptom: package内の`config/default/script/KC_SH*.sh`は現行名なのに、matrix routeで実行される`/mnt/p3/script`だけが旧helper名、旧environment名、旧checkout相対pathを使い続ける。SH3はcommand not found / exit 127、SH2は存在しない`/mnt/demo`を参照してexit 1になる。
+- likely cause: package postinstが欠けたscriptだけをseedし、既存runtime scriptを由来や内容に関係なく永久保持する。hard rename前の未編集defaultと利用者編集を区別できず、安全側の保持が名称移行を取りこぼす。
+- detect: package defaultとruntimeのSHA-256を比較し、retired helper / environment / temporary-path prefixと`/mnt/demo`参照の有無、`journalctl -u logicd-companion`のscript stderr / exit codeを見る。既知の旧defaultは`config/default/script-migrations.json`のhashで判定し、package helperの存在だけで合格にしない。
+- recovery: 全runtime scriptを一括上書きしない。`config/default/script-migrations.json`へ既知の旧default SHA-256だけを登録し、`script/migrate_runtime_scripts.py`で隣接backup後に現行defaultへ置換する。未知hash、利用者編集、symlinkは保持する。
+- regression check: `script/test_runtime_script_migration.py`でlegacy/current/custom/symlink/dry-run/backup/idempotenceを固定し、package fixtureでpostinst配線を確認する。実機ではmigration dry-runの対象数、SH3 matrix route exit 0、SH2開始/停止とLED state復元、最終output `auto`を確認する。
+- evidence: 2026-07-18、`<keyboard-host>`のSH1/2/3/4/7/8/10が既知のhard-cut前hashと一致した。package `0.0.1984+git90b26500`で7本だけをbackup付き移行し、SH3 alert、SH2 procedural direct-frame fallback、標準live smoke、最終healthをpassした。
+
+## Pre-HIDloom split packages leave overlapping units and a retired kiosk autostart
+
+- symptom: 新名称のcore/profile packageを追加installしようとするとgeneric systemd unit fileが旧packageと競合する。またはpackage更新自体は成功しても、次回loginでtouch kioskが削除済みの旧app rootを実行して起動しない。
+- likely cause: hard rename前のsplit packageがgeneric `logicd.service` / `httpd.service` / `viald.service`などを所有し、user autostartも旧app rootと旧environment prefixを直接参照している。新packageは互換名を持たないため、通常upgradeではなく明示的なremove/install移行が必要になる。
+- detect: `dpkg-query -W "*core" "*profile*"`、旧/new `.deb`のfile list intersection、`systemctl list-unit-files`、`~/.config/autostart/*.desktop`の`Exec=`を確認する。APT simulationが旧2 package remove、新2 package installだけになることを必須にする。
+- recovery: 旧`.deb`、runtime profile、autostart、unit inventoryをbackupする。旧unit symlink/maskを整理し、旧core/profileのremoveと現行core/profileのinstallを同一APT transactionで行う。現行profileをapplyし、autostartを`/usr/lib/hidloom`と`HIDLOOM_*`だけへhard cutする。互換packageや旧path symlinkは追加しない。
+- regression check: reboot前後にsplit package verifier、profile service policy、retired package/unit不在、canonical autostart、kiosk `wsStatus=Ready`、HID live smoke、Vial protocol、touch suiteを確認する。reboot後はGoodix認識、最初のHTTP page loadとWebSocket接続をboot monotonicで記録する。
+- evidence: 2026-07-18、`<keyboard-host>`を旧split `0.0.1796+gitdfe0fc5d`から`hidloom-core` / `hidloom-profile-touch-waveshare-8.8` `0.0.1995+git687e822f`へ移行した。reboot後にcanonical autostart、touch UI ready `77.383s`、DOM touch-to-HID、全remote smoke、failed unit 0を確認した。
+
+## Declared KC_SH range has missing defaults
+
+- symptom: Vial、HTTP editor、keycode table、logicdが`KC_SH0`から`KC_SH10`を有効として表示する一方、特定番号だけruntime/default scriptがなく、押下時にscript not found / exit 127になる。
+- likely cause: keycode追加とdefault script追加の完全性を同じ回帰で検査せず、用途未決定の番号を「未割当file」ではなく「file欠落」で表現している。
+- detect: `config/default/keycodes.json`の`KC_SH0`から`KC_SH10`と`config/default/script/KC_SH*.sh`の集合を比較する。実機では`find /mnt/p3/script -maxdepth 1 -name 'KC_SH*.sh'`が11本であること、HTTP/runtime inventoryの全entryが`exists=true`であることを見る。
+- recovery: 用途未決定番号には明示的なsafe no-op defaultを置く。package postinstのruntime migrationで欠落fileだけをseedし、既存custom scriptは上書きしない。
+- regression check: `script/test_http_script_store.py`でdefault file集合を0から10の11本に固定し、`script/test_runtime_script_migration.py`でmissing defaultのseedとdry-run非変更を確認する。package候補では11本のmode 755 payloadを確認する。
+- evidence: 2026-07-18にSH5/6/9欠落を検出し、package `0.0.1987+gitd2dc1037`でsafe no-opをseedした。matrix action routeで3本ともexit 0、i2cd script-exit受信を確認した。
+
+## KC_SH2 video cold start appears to fall back or stop
+
+- symptom: SH2 matrix action helperが成功した直後にvideo processを確認しても見つからず、動画が使えない、または開始しなかったように見える。固定待機を終えた後でvideo processが遅れて起動し、試験processが残ることがある。
+- likely cause: matrix actionはshell actionの完了を待たず、Raspberry Pi Zero 2上の初回`import cv2, numpy`とvideo初期化に20秒前後かかる。launcher終了後6秒などの固定待機では、SH2が依存判定中の状態をfalse negativeにする。
+- detect: `logicd-companion` journalの`starting video ...`、`pgrep -af '[p]lay_led_video.py'`、`/tmp/ledd_direct_frame_status.json`の`direct_frame_active=true` / `accepted_frames>0`を期限付きで別々に待つ。procedural playerが起動した場合だけfallbackと判定する。
+- recovery: 遅れてvideo processが現れた場合はSH2をもう一度実行して停止し、開始前後のLED mode / speed / HSV一致、player消滅、output target `auto`を確認する。PIDだけをkillしてLED状態復元を省略しない。
+- regression check: SH2 video smokeはvideo processを最大60秒、direct-frame activeを追加15秒pollする。開始と停止の両matrix route、video log、LED状態完全復元、最終healthを合格条件にする。
+- evidence: 2026-07-18、`<keyboard-host>`で6秒固定待機がfalse negativeになり、その後videoが起動する挙動を再現した。poll方式ではvideo process 19秒、direct-frame active追加14秒でpassし、SH2停止後にmode 40 / HSV `183,163,160`へ復元した。
+
+## OLED script notification contains unsupported multibyte text
+
+- symptom: KC_SH script自体はexit 0でも、OLED alertの日本語などマルチバイト文字が欠落、文字化け、または判読不能になる。
+- likely cause: 実機OLED rendererの利用fontがASCII glyphだけを持つ一方、scriptの`hidloom-notify` messageにマルチバイト文字を渡している。shell、IPC、journalがUTF-8を保持できてもOLED表示能力とは別である。
+- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。
+- recovery: OLED向け固定messageを短いASCII表現へ変更する。動的messageはproducer側でASCII化し、最終的にi2cd受信境界でも非対応文字を`?`へ置換する。既知の未編集runtime script hashをmigration manifestへ追加してbackup付きで更新し、未知の利用者編集は上書きしない。
+- regression check: `script/test_oled_alert_ascii.py`で全default SH scriptのnotify行、Python alert固定文字列、logicd送信ガード、i2cd最終ガードを固定する。package payload、runtime migration、i2cd置換warning、script side effect、最終healthも確認する。
+- evidence: 2026-07-18、まずSH2の6 messageをASCII化したpackage `0.0.1992+git0a92ea2c`を`<keyboard-host>`へ導入し、開始/停止表示とLED復元をpassした。その後の全経路監査でSH1/4/8/10の固定日本語、SH3の動的SSID/hostname、logicdの動的alertを検出した。二重guardを含む`0.0.1994+gite469cecc`を導入し、意図的な`OLED 日本語`がi2cdで`OLED ???`へ置換されること、SH3とSH1のmatrix route、最終healthをpassした。
+
+## KC_SH background process watcher self-matches
+
+- symptom: SH4が実際には未起動でも`preview already running`を返す、またはroot所有previewが実行中なのにobserverが完了と誤判定する。
+- likely cause: `pgrep -f`を実行するobserver shellのcommand line自体に監視対象の完全なprocess名が含まれ、SH4側の重複起動判定がobserverを拾う。非root利用者の`kill -0 <root-pid>`はEPERMを返すため、存在確認にも使えない。
+- detect: `pgrep -af`の結果でPython playerではなくobserverの`bash -c`を拾っていないか確認する。PID ownerと`ps -p <pid>`の結果を併記する。
+- recovery: observer command内では監視patternを複数fragmentから実行時生成し、存在確認は`ps -p <pid> -o pid=`を使う。誤って残したobserver shellだけをPID指定で終了し、LED stateとplayer logを確認する。
+- regression check: SH4実機smokeはlauncher exit 0だけで合格にせず、全effect log末尾の`restored mode=...`、player消滅、開始前後のLED state一致を確認する。
+- evidence: 2026-07-18の全SH smokeで自己matchとEPERMを再現し、修正監視で49 effect完走、約216秒、mode 40復元を確認した。
+
 ## Touch kiosk about:blank with healthy tab URL
 
 - symptom: touch-panel 画面が白く、Chrome DevTools `/json/list` の target URL は正しく見えるが、実際の page context は `about:blank` で body が空。
@@ -131,14 +185,32 @@
 - regression check: standalone public cloneで`python3 script/test_validation_suite.py`と`python3 script/test_remote_fresh_install_tool.py`を完走し、privacy/reference/documentation auditもblocker 0を確認する。`script/test_public_ci_workflow.py`で公開CIにも同じfull suiteが残ることを検査する。
 - evidence: 2026-07-14、archive依存3 code tests、private/public混在docs tests、Morse archive link、IP/hostname fixture、`bin/README.md`欠落を修正し、1164-source-file exportのfull suiteがpassした。
 
-## Public CI drifts from the canonical validation suite
+## Public CI weights every pull request as a release build
 
-- symptom: private treeとstandalone public cloneのfull suiteはpassするが、公開CIが古い個別test一覧だけを実行し、新規regressionを検査しない。
-- detect: `.github/workflows/public-ci.yml`に`script/test_validation_suite.py`がない、runnerが浮動label、または必要なsystem Python dependency、bootstrap、locked Cargo test、diff hygieneのいずれかが欠落する。
-- likely cause: test追加時に手動列挙のworkflowを更新し忘れ、開発側のcanonical validation入口とCI側の入口が分岐する。
-- recovery: Ubuntu 24.04とapt依存を固定し、bootstrap archive確認後に`script/test_validation_suite.py`を一度だけ実行する。locked Rust testと`git diff --check`は独立gateとして維持する。
-- regression check: `script/test_public_ci_workflow.py`でworkflow契約を静的検査し、standalone public cloneでも同testとfull suiteを完走する。
-- evidence: 2026-07-14、公開CIの個別test列挙をcanonical full suiteへ置換し、1165-source-file exportの独立cloneでpassを確認した。
+- symptom: documentationや小さな修正を含む全PRでcanonical full suite、cross-build準備、全Rust testが走り、必須checkのfeedbackとActions消費がrelease相当になる。
+- detect: `.github/workflows/public-ci.yml`のrequired context `validate`が`script/test_validation_suite.py`、`rustup target add`、`cargo test`を直接実行しているか確認する。
+- likely cause: 個別test列挙のdriftを防ぐためfull suiteへ一本化した際、PR merge gateとmain/release confidence gateの目的を分離しなかった。
+- recovery: `validate`は`script/public_pr_gate.py`でpublic export、privacy/license/reference/hygieneと主要runtime smokeだけを実行する。canonical full suite、cross target、locked Rust testsは`extended`へ移し、main push、manual dispatch、Release publishに限定する。Buildroot imageと実機はrelease gateから移さない。
+- regression check: `script/test_public_ci_workflow.py`がrequired contextを`validate`だけに固定し、PR test集合がcanonical suiteのsubsetであること、full suite/Rustが`extended`にだけ存在すること、runner/timeout/action lockを検査する。standalone public cloneでは両入口をlocal実行できることも確認する。
+- evidence: 2026-07-14に個別列挙driftをfull suite一本化で解消した。2026-07-18に必須PR gateとextended gateを分離し、同じcanonical suiteをmain/release側に維持した。
+
+## GitHub Actions stops before a runner starts
+
+- symptom: 複数workflowが同時に数秒でfailureとなり、step logがなく、annotationがrecent account paymentsまたはspending limitを指す。
+- detect: `gh run view <run-id> --json jobs`でjobが開始していないこと、annotationがaccount billingを示すこと、同じcommitのclean local gateがpassすることを確認する。source failure、runner image、workflow syntax failureと混同しない。
+- likely cause: GitHub accountのActions課金またはspending設定がrunner割当より前にjobを拒否している。
+- recovery: required checkとworkflowを削除せず、通常mergeを保留する。ownerが特定PRを明示承認した例外だけ、clean snapshotのpublic PR gate、canonical full suite、全locked Rust tests、public export/readinessをlocal build hostでpassし、結果とrun URLを記録してadmin overrideする。課金状態の復旧後に失敗runを再実行する。
+- regression check: runbookとpublic CI contractにPR/extended/releaseの重みを固定し、billing failureをtest failureとしてsource workaroundしない。Releaseまたは広い公開告知はGitHub側greenを再確認するまで保留する。
+- evidence: 2026-07-18、private `main`のPublic CI、Public export artifact check、Repository hygieneがjob開始前に同じbilling annotationで停止した。clean snapshotの全canonical entrypointとRust 25 testsはpassしており、source failureではないと判定した。
+
+## Bounded public PR gate lacks Cargo metadata
+
+- symptom: required `validate`はrunnerを開始してhygiene testsを通過するが、`test_public_export.py`内のstandalone `test_third_party_inventory.py`が`generate_third_party_inventory.py`のnon-zero exitで停止する。開発hostではpassする。
+- detect: failed jobにcheckout、apt、Python選択のsuccess logがあり、`test_public_export.py`まで進んでいることを確認する。fresh `CARGO_HOME`で`cargo metadata --locked --offline`を再現し、crate metadata未取得ならbilling failureと分離する。
+- likely cause: PR gateからcompile/testを外す際、license/supply-chain inventoryがoffline Cargo metadataを必要とすることまで見落として`cargo fetch --locked`を削除した。開発hostのwarm Cargo cacheが欠落を隠した。
+- recovery: required jobでlockfile hashをkeyにCargo registry/git cacheを復元し、全`tools/*/Cargo.toml`へ`cargo fetch --locked`を実行してからbounded gateを起動する。cross target導入と`cargo test`は`extended`に残す。
+- regression check: `script/test_public_ci_workflow.py`がrequired job内のlocked fetchとPR gateより前の順序を固定し、`cargo test`/`rustup`がrequired jobへ戻らないことも検査する。fresh Cargo home相当のpublic Actions runをpassさせる。
+- evidence: 2026-07-18、public PR #11のpush run `29636330472`とpull-request run `29636344604`は双方ともrunner開始後に同じmissing Cargo metadata経路で失敗した。billing annotationはなく、source側のCI準備欠陥と判定した。
 
 ## Mutable GitHub Action reference bypasses dependency review
 
@@ -624,7 +696,7 @@
 - detect: PR authorが`github-actions[bot]`、headが同一repositoryの期待`sync/*` branch、run eventが`pull_request`、head SHAがpush済みcommitと一致、jobs APIが0件、push runの`validate`がsuccessであることをすべて確認する。jobまたはlogがある通常のCI failureと混同しない。
 - recovery: repository ownerがGitHub UIまたは`POST /repos/{owner}/{repo}/actions/runs/{run_id}/approve`で対象runだけを承認し、生成された`validate` jobをsuccessまで監視する。repository全体のapproval policy、branch protection、required check、Actions allowlistを弱めず、PRをadmin bypassでmergeしない。
 - regression check: runbookはbot初回PRの検出条件、単一run承認、pull-request `validate`再確認を要求する。実同期ではpush/pull_request両runのhead SHA一致、PR `MERGEABLE` / `CLEAN`、policy audit issue 0、public `main`不変を証跡化する。
-- evidence: 2026-07-16、draft PR #9のrun `29465864588`がactor `github-actions[bot]`、same-repository head `f1e08b0a432cf6c8add0db62bf017f256508a72b`、jobs 0件で`action_required`になった。owner approvalはHTTP 201で受理され、run `validate`は14m57sでsuccess、PRは`CLEAN`になった。push run `29465211535`もsuccessし、public `main`とapproval policyは変更していない。
+- evidence: 2026-07-16、draft PR #9のrun `29465864588`がactor `github-actions[bot]`、same-repository head `f1e08b0a432cf6c8add0db62bf017f256508a72b`、jobs 0件で`action_required`になった。owner approvalはHTTP 201で受理され、run `validate`は14m57sでsuccess、PRは`CLEAN`になった。2026-07-17のdraft PR #10でもrun `29588513355`が同条件で再発し、対象runだけの承認後に`validate`を15m20sでpassした。push run `29587418986`もsuccessし、いずれもpublic `main`とapproval policyは変更していない。
 
 ## Merge auto-delete removes the sync source branch
 
@@ -762,3 +834,12 @@
 - recovery: 特定icon版だけのpixel座標へ置換せず、`_daemon_status_icon_rows()`と各iconのvertical boundsから期待消費高を算出し、区切り線、output badge、Layerの相対順序を検証する。
 - regression check: `script/test_i2cd_direct_frame_fps.py`、`script/test_i2cd_output_mode_label.py`、`script/test_oled_customization.py`とcanonical suiteをpassさせる。icon既定値やReady行高を変える時は絶対座標fixtureを追加しない。
 - evidence: 2026-07-17、inventory件数修正後のprivate full regressionで検出した。実描画のdaemon区切り線は`35/36`、output badgeはその下、Layerはさらに下であり、可変高から期待位置を導くfixtureへ修正した。
+
+## Native output target changes but OLED or HTTP keeps the previous mode
+
+- symptom: keyboardはUSBへ正常出力され、`outputd-status.json`も`target=auto` / `frames_to_usb>0`なのに、OLED connectivity rowまたはHTTP System statusはPi/uinputを表示し続ける。Wi-Fi iconやkey inputは正常である。
+- cause: i2cdとHTTP statusがlogicdからの単発mode通知またはcontrol responseだけを保持していた。`hidloom-ctrl output auto`はnative outputd control socketを直接更新するため、logicd側stateへ新しいmode eventが戻らず、実出力と表示stateが分離した。
+- detect: `/run/hidloom/outputd-status.json`の`target`とframe counters、`journalctl -b -u i2cd.service`の最終`HIDモード変更`、authenticated `/api/status`の`output.runtime_mode` / `output.display_label`を比較する。outputdがauto/USBなのにi2cdまたはHTTPがuinputなら本patternであり、USB route failureやicon bitmap誤編集とは区別する。
+- recovery: 修正版i2cdでrecent outputd statusをcanonical stateとして同期し、status unavailable時だけlogicd通知へfallbackする。HTTP statusもschema/process/targetを検証したnative outputd statusからruntime modeとtargetを解決し、不正またはunavailable時だけlogicd値へfallbackする。
+- regression check: `script/test_i2cd_connectivity.py`でauto/USB/uinput/BT mapping、stale/invalid status fallback、明示uinput優先、configを検証し、`script/test_http_system_status.py`でnative autoがstale uinputを`AUTO USB`へ上書きすることとwrong-schema/process false fallbackを検証する。実機ではoutputd auto/USB counters、OLEDとHTTPの`auto USB Wi-Fi`、uinput切替後`Pi Wi-Fi`、auto復帰後`auto USB Wi-Fi`を確認する。
+- evidence: 2026-07-18、`<keyboard-host>` package `0.0.1974+git19c13255`でOLEDに再現した。outputdは`target=auto`、USB 726 frames、uinput/BT 0、error 0だったが、i2cd journal最終modeは`uinput`だった。i2cd修正版package `0.0.1980+git043975fc`では`auto -> uinput -> auto`のoutputd/i2cd同期をpassしたが、同時採取した`/api/status`が`runtime_mode=uinput` / `display_label=AUTO Pi`を返したためHTTP側の同型不具合も検出した。HTTP追補package `0.0.1981+git08f842d4`ではAPI `AUTO USB -> Pi -> AUTO USB`、outputd `auto -> uinput -> auto`、i2cd `uinput -> auto:gadget`を同時にpassし、最終output `auto`へ復旧した。利用者も実OLEDでauto/USB表示とuinput/Pi表示の往復を確認した。

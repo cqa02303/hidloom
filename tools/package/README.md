@@ -117,7 +117,10 @@ fallback で、Vial / HTTP / script editor から保存される
 mutable state です。
 package `postinst` は fresh OS へ直接 install した時の起動失敗を避けるため、
 `/mnt/p3` と `/mnt/p3/script` を作成し、`/usr/lib/hidloom/config/default/script`
-から欠けている script だけ初期コピーします。既存の runtime script は上書きしません。
+から欠けている script を初期コピーします。既存runtime scriptは原則上書きせず、
+`config/default/script-migrations.json`へSHA-256を登録した既知の旧defaultだけを
+隣接backup作成後に現行defaultへ移行します。HTTP script editor等で変更した内容や
+symlinkは一致しないため保持されます。
 
 安全確認:
 

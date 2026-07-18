@@ -13,7 +13,7 @@
 #   開発環境フォールバック:      config/default/script/KC_SH10.sh
 
 echo "KC_SH10: system reboot at $(date)"
-hidloom-notify warning "システムを再起動します" 2 || true
+hidloom-notify warning "SYSTEM REBOOT" 2 || true
 sleep 1
 systemctl reboot
 exit 0

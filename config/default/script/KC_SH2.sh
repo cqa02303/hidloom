@@ -1,6 +1,6 @@
 #!/bin/sh
-# @label LED video 再生
-# KC_SH2.sh — ledd direct-frame 経路で demo video を再生する
+# @label LED demo 再生
+# KC_SH2.sh — ledd direct-frame 経路で video または内蔵 pattern を再生する
 #
 # このファイルは KC_SH2 キーが押された際に logicd によって実行されます。
 # スクリプトの終了コード (exit code) は i2cd に通知されます。
@@ -18,8 +18,12 @@ fi
 PATH="${REPO_DIR}/bin:${PATH}"
 export PATH
 
-PLAYER="${REPO_DIR}/tools/demo/play_led_video.py"
+VIDEO_PLAYER="${REPO_DIR}/tools/demo/play_led_video.py"
+PATTERN_PLAYER="${REPO_DIR}/tools/demo/play_led_pattern.py"
 VIDEO="${REPO_DIR}/demo/assets/led_video_demo.mp4"
+RUNTIME_DIR="${HIDLOOM_RUNTIME_DIR:-/mnt/p3}"
+LED_CONFIG="${RUNTIME_DIR}/ledd.json"
+[ -f "${LED_CONFIG}" ] || LED_CONFIG="${REPO_DIR}/config/default/ledd.json"
 MAX_BRIGHTNESS="${LED_VIDEO_MAX_BRIGHTNESS:-64}"
 LOG_FILE="${LED_VIDEO_LOG:-/tmp/hidloom_led_video_demo.log}"
 PREVIOUS_LED_STATE_FILE="${LED_VIDEO_PREVIOUS_STATE_FILE:-/tmp/hidloom_led_video_prev_led_state.json}"
@@ -151,30 +155,39 @@ PY
     hidloom-ctrl json "${request}"
 }
 
-# 既に LED video demo が実行中なら終了する
-LED_VIDEO_PROC='tools/demo/play_led_video\.py'
-if pgrep -f "${LED_VIDEO_PROC}" > /dev/null 2>&1; then
-    echo "KC_SH2: killing existing play_led_video.py"
-    notify alert "LED video を停止します" 2
-    pkill -TERM -f "${LED_VIDEO_PROC}"
+# 既に LED demo が実行中なら終了する
+LED_DEMO_PROC='tools/demo/play_led_(video|pattern)\.py'
+if pgrep -f "${LED_DEMO_PROC}" > /dev/null 2>&1; then
+    echo "KC_SH2: killing existing LED demo player"
+    notify alert "LED DEMO STOP" 2
+    pkill -TERM -f "${LED_DEMO_PROC}"
     sleep 1
-    restore_previous_led_state || notify warning "LED effect を戻せません" 3
+    restore_previous_led_state || notify warning "LED RESTORE FAILED" 3
     exit 0
 fi
 
-# demo video を ledd direct-frame 経路で再生（バックグラウンド実行）
-if [ ! -f "${VIDEO}" ]; then
-    echo "KC_SH2: missing ${VIDEO}; run demo/prepare_led_video.py first"
-    notify warning "LED video demo が見つかりません" 4
+# ledd direct-frame 経路で再生（外部動画がなければ依存なしの内蔵 pattern）
+DEMO_KIND="pattern"
+if [ -f "${VIDEO}" ] && /usr/bin/python3 -c 'import cv2, numpy' >/dev/null 2>&1; then
+    DEMO_KIND="video"
+elif [ ! -x "${PATTERN_PLAYER}" ]; then
+    echo "KC_SH2: procedural player not found: ${PATTERN_PLAYER}"
+    notify warning "LED PLAYER MISSING" 4
     exit 1
 fi
-echo "KC_SH2: starting play_led_video.py with ${VIDEO} max_brightness=${MAX_BRIGHTNESS}"
 save_current_led_state || true
 if select_direct_multisplash; then
     echo "KC_SH2: selected Direct Multisplash mode=${DIRECT_MULTISPLASH_MODE}"
 else
-    notify warning "Direct Multisplash へ切替できません" 3
+    notify warning "DIRECT MODE FAILED" 3
 fi
-notify alert "LED video demo を再生します" 2
-cd "${REPO_DIR}" && /usr/bin/python3 "${PLAYER}" "${VIDEO}" --backend ledd-direct --max-brightness "${MAX_BRIGHTNESS}" >"${LOG_FILE}" 2>&1 &
+if [ "${DEMO_KIND}" = "video" ]; then
+    echo "KC_SH2: starting video ${VIDEO} max_brightness=${MAX_BRIGHTNESS}"
+    notify alert "LED VIDEO START" 2
+    cd "${REPO_DIR}" && /usr/bin/python3 "${VIDEO_PLAYER}" "${VIDEO}" --backend ledd-direct --max-brightness "${MAX_BRIGHTNESS}" >"${LOG_FILE}" 2>&1 &
+else
+    echo "KC_SH2: video unavailable; starting procedural pattern max_brightness=${MAX_BRIGHTNESS}"
+    notify alert "LED PATTERN START" 2
+    cd "${REPO_DIR}" && /usr/bin/python3 "${PATTERN_PLAYER}" --config "${LED_CONFIG}" --max-brightness "${MAX_BRIGHTNESS}" >"${LOG_FILE}" 2>&1 &
+fi
 exit 0

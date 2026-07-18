@@ -13,7 +13,29 @@ appliance. Changes should preserve the shared device profile and keymap data unl
 
 ## Development checks
 
-Run focused tests for the files changed, then the public preparation checks:
+Run focused tests for the files changed, then the same bounded gate required for a public pull request:
+
+```bash
+for manifest in tools/*/Cargo.toml; do
+  cargo fetch --locked --manifest-path "$manifest"
+done
+python3 script/public_pr_gate.py
+git diff --check
+```
+
+The required `validate` check prioritizes source hygiene, privacy, licensing, public export integrity, and smoke tests
+for the core HID, Vial, USB, JIS, and OLED paths. The `extended` check runs the canonical Python regression suite and
+locked Rust tests after a change reaches `main`, on manual dispatch, and when a GitHub Release is published. Before
+preparing a release, run the extended checks locally as well:
+
+```bash
+python3 script/test_validation_suite.py
+for manifest in tools/*/Cargo.toml; do
+  cargo test --locked --manifest-path "$manifest"
+done
+```
+
+The individual public preparation entrypoints remain available for focused diagnosis:
 
 ```bash
 python3 script/test_docs_links.py --public-export-manifest config/public-export.json

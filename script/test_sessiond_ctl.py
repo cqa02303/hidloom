@@ -118,7 +118,7 @@ async def _run() -> None:
             await asyncio.to_thread(_run_tool, socket_path, "write", "echo okk")
             await asyncio.to_thread(_run_tool, socket_path, "key", "KC_LEFT")
             await asyncio.to_thread(_run_tool, socket_path, "key", "KC_DEL")
-            deleted = await asyncio.to_thread(_run_tool, socket_path, "key", "KC_ENTER")
+            deleted = await asyncio.to_thread(_run_tool, socket_path, "write", "", "--enter")
             assert deleted["ok"] is True
             assert any("ok" in str(item.get("text", "")) for item in deleted["responses"]), deleted
 

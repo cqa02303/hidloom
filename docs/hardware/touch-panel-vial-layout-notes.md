@@ -5,6 +5,23 @@
 この文書は Raspberry Pi 4 touch panel kiosk / `<keyboard-host>` 用に生成する
 `/mnt/p3/vial.json` と、Vial client での表示確認メモを残す場所です。
 
+## Touch Panel Modeの必要パーツ
+
+- Raspberry Pi 4 Model B
+- [Waveshare 8.8inch DSI Capacitive Touch Display (8.8-DSI-TOUCH-A)](https://www.waveshare.com/8.8-dsi-touch-a.htm)
+- Raspberry Piとdisplayを接続する対応DSI ribbon cable
+- Raspberry Pi OSを格納するmicroSD card
+- Raspberry Piとdisplayを安定して動かせる電源
+- HID keyboardとしてhost PCへ接続する場合のUSB data cable
+
+Waveshareの製品ページではpanel native resolutionは`480x1920`、10-point capacitive touchです。
+HIDloomの`touch-waveshare-8.8` kioskはDSI出力を270度回転し、論理viewport
+`1920x480`として使用します。
+
+PCのUSB portだけから給電すると低電圧が起きる場合があるため、displayを含む実運用では
+電流容量に余裕のある安定した電源を使用します。USB data cableと電源経路は、使用する
+Raspberry Pi構成に合わせて分離または共通化してください。
+
 ## 背景
 
 `<keyboard-host>` touch-panel 用 runtime Vial 定義では、`viald` と `/api/layout` が

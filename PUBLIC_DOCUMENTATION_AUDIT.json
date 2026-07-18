@@ -2,10 +2,10 @@
   "schema": "hidloom.public-documentation-audit.v2",
   "ready": true,
   "summary": {
-    "files_scanned": 238,
-    "public_docs": 187,
-    "reachable_public_docs": 187,
-    "omitted_private_links": 113,
+    "files_scanned": 243,
+    "public_docs": 192,
+    "reachable_public_docs": 192,
+    "omitted_private_links": 114,
     "removed_private_navigation_lines": 79,
     "broken_links": 0,
     "orphaned_documents": 0
@@ -13,12 +13,12 @@
   "omitted_private_links": [
     {
       "path": "FRESH_INSTALL.md",
-      "line": 187,
+      "line": 212,
       "target_type": "file"
     },
     {
       "path": "daemon/i2cd/README.md",
-      "line": 352,
+      "line": 355,
       "target_type": "file"
     },
     {
@@ -83,13 +83,8 @@
     },
     {
       "path": "docs/README.md",
-      "line": 70,
+      "line": 71,
       "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 72,
-      "target_type": "directory"
     },
     {
       "path": "docs/README.md",
@@ -104,6 +99,11 @@
     {
       "path": "docs/README.md",
       "line": 75,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 76,
       "target_type": "directory"
     },
     {
@@ -567,6 +567,11 @@
       "target_type": "file"
     },
     {
+      "path": "docs/research/device-side-codex-keyboard-extension-possibilities.md",
+      "line": 11,
+      "target_type": "file"
+    },
+    {
       "path": "docs/research/windows-split-keyboard-identity.md",
       "line": 7,
       "target_type": "file"
@@ -580,7 +585,7 @@
   "removed_private_navigation_lines": [
     {
       "path": "daemon/i2cd/README.md",
-      "line": 352
+      "line": 355
     },
     {
       "path": "daemon/logicd/README.md",
@@ -632,11 +637,7 @@
     },
     {
       "path": "docs/README.md",
-      "line": 70
-    },
-    {
-      "path": "docs/README.md",
-      "line": 72
+      "line": 71
     },
     {
       "path": "docs/README.md",
@@ -649,6 +650,10 @@
     {
       "path": "docs/README.md",
       "line": 75
+    },
+    {
+      "path": "docs/README.md",
+      "line": 76
     },
     {
       "path": "docs/architecture/system-overview.md",

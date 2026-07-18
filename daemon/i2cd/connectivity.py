@@ -7,9 +7,11 @@ from __future__ import annotations
 
 import asyncio
 import copy
+import json
 import os
 import re
 import time
+from pathlib import Path
 from typing import Any
 
 _WIFI_STATUS_CACHE_TTL = 5.0
@@ -23,6 +25,49 @@ OUTPUT_MODE_ICONS: tuple[tuple[str, str], ...] = (
     ("wifi0", "Wi-Fi idle"),
     ("wifi3", "Wi-Fi connected"),
 )
+
+OUTPUTD_STATUS_SCHEMA = "hidloom.outputd.status.v1"
+
+
+def outputd_display_mode(status: dict[str, Any] | None) -> str:
+    """Map the native output router status to the OLED mode label."""
+    if not isinstance(status, dict):
+        return ""
+    if status.get("schema") != OUTPUTD_STATUS_SCHEMA or status.get("process") is not True:
+        return ""
+    target = str(status.get("target") or "").strip()
+    return {
+        "auto": "auto:gadget",
+        "usb": "gadget",
+        "gadget": "gadget",
+        "uinput": "uinput",
+        "console": "uinput",
+        "bt": "bt",
+        "bluetooth": "bt",
+    }.get(target, "")
+
+
+def effective_output_display_mode(
+    notified_mode: str,
+    outputd_status: dict[str, Any] | None,
+) -> str:
+    """Prefer canonical outputd state and retain logicd notifications as fallback."""
+    return outputd_display_mode(outputd_status) or str(notified_mode or "").strip()
+
+
+def load_outputd_status(path: str | Path, *, max_age_sec: float = 2.0) -> dict[str, Any]:
+    """Load a recent native output router status snapshot."""
+    status_path = Path(path)
+    try:
+        stat = status_path.stat()
+        if max_age_sec > 0 and time.time() - stat.st_mtime > max_age_sec:
+            return {}
+        payload = json.loads(status_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if outputd_display_mode(payload):
+        return payload
+    return {}
 
 
 def output_mode_icon_row(

@@ -2,8 +2,8 @@
   "schema": "hidloom.public-privacy-audit.v1",
   "ready": true,
   "summary": {
-    "files_scanned": 1195,
-    "media_files": 8,
+    "files_scanned": 1234,
+    "media_files": 32,
     "findings": 0,
     "blockers": 0
   },
@@ -47,6 +47,126 @@
       "path": "docs/architecture/system-overview.svg",
       "type": "svg",
       "embedded_metadata": false
+    },
+    {
+      "path": "docs/gallery/WebUI/01-keyboard-detailed-status.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/02-keyboard-compact-status.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/03-keymap-editor.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/04-keycode-picker.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/05-led-host-lock-settings.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/06-led-layer-overlay-colors.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/07-led-effect-settings.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/08-oled-editor.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/09-script-editor-placeholder.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/10-script-editor-ip-display.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/11-interaction-morse-editor.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/12-interaction-combo-tap-dance-editor.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/13-settings-auth-and-text-send.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/WebUI/14-settings-analog-stick-calibration.png",
+      "type": "png",
+      "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/exhibition-keyboard-lineup.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/finished-keyboard-front-view.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-oled-status-display-closeup.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-pcb-switch-matrix.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-pcb-with-rotary-encoder.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-pcb-with-switches-and-raspberry-pi-zero.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/open-frame-keyboard-red-backlight.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/prototype-keyboard-and-layout-display.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/touchpanel/osoyoo43dsi.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/touchpanel/waveshare88touch.jpeg",
+      "type": "jpeg",
+      "exif": false
     }
   ],
   "findings": []
