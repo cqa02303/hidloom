@@ -20,7 +20,9 @@ SWITCH_DEB_UNITS = PACKAGE_DIR / "switch_deb_systemd_units.sh"
 DEPLOY_SWITCH_DEB_UNITS = PACKAGE_DIR / "deploy_deb_unit_switch.sh"
 RELEASE_CANDIDATE_CHECK = PACKAGE_DIR / "release_candidate_check.sh"
 PUBLISH_GITHUB_PRERELEASE = PACKAGE_DIR / "publish_github_prerelease.sh"
+PUBLISH_PUBLIC_RELEASE_BUNDLE = PACKAGE_DIR / "publish_public_release_bundle.py"
 VERIFY_GITHUB_RELEASE_ASSETS = PACKAGE_DIR / "verify_github_release_assets.sh"
+VERIFY_GITHUB_PUBLIC_RELEASE_BUNDLE = PACKAGE_DIR / "verify_github_public_release_bundle.py"
 CHECK_GITHUB_RELEASE_STABLE_READY = PACKAGE_DIR / "check_github_release_stable_ready.sh"
 INSTALL_GITHUB_RELEASE_DEB = PACKAGE_DIR / "install_github_release_deb.sh"
 DEPLOY_GITHUB_RELEASE_DEB = PACKAGE_DIR / "deploy_github_release_deb.sh"
@@ -69,11 +71,20 @@ def make_deb(path: Path, package: str, version: str, *, depends: str | None = No
         fields.insert(5, f"Depends: {depends}")
     control.write_text("\n".join(fields) + "\n", encoding="utf-8")
     payload.write_text("fixture\n", encoding="utf-8")
+    for directory in (item for item in root.rglob("*") if item.is_dir()):
+        directory.chmod(0o755)
+    root.chmod(0o755)
+    control.chmod(0o644)
+    payload.chmod(0o644)
     built = run_command(["dpkg-deb", "--build", str(root), str(path)])
     assert built.returncode == 0, built.stdout + built.stderr
 
 
 def main() -> None:
+    gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+    assert "build/*-release-publish-plan.json" in gitignore
+    assert "build/*-release-verification.json" in gitignore
+
     for script in (
         BUILD,
         BUILD_DEB,
@@ -98,6 +109,13 @@ def main() -> None:
         assert syntax.returncode == 0, syntax.stderr
         help_result = run_command([str(script), "--help"])
         assert help_result.returncode == 0
+        assert "usage:" in help_result.stdout
+
+    for script in (PUBLISH_PUBLIC_RELEASE_BUNDLE, VERIFY_GITHUB_PUBLIC_RELEASE_BUNDLE):
+        assert script.exists(), script
+        compile(script.read_text(encoding="utf-8"), str(script), "exec")
+        help_result = run_command([str(script), "--help"])
+        assert help_result.returncode == 0, help_result.stderr
         assert "usage:" in help_result.stdout
 
     make_dry = run_command(
@@ -236,7 +254,9 @@ def main() -> None:
     assert "make release-deb-deploy" in readme
     assert "RELEASE_DEB_REMOTE=pi@192.168.0.x" in readme
     assert "publish_github_prerelease.sh" in readme
+    assert "publish_public_release_bundle.py" in readme
     assert "verify_github_release_assets.sh" in readme
+    assert "verify_github_public_release_bundle.py" in readme
     assert "check_github_release_stable_ready.sh" in readme
     assert "install_github_release_deb.sh" in readme
     assert "deploy_github_release_deb.sh" in readme
@@ -284,6 +304,8 @@ def main() -> None:
     assert "tools/package/deploy_github_release_deb.sh" in ops_runbook
     assert "build/packages/release-note-v<version>.md" in ops_runbook
     assert "publish_github_prerelease.sh --tag TAG --execute" in ops_runbook
+    assert "publish_public_release_bundle.py" in ops_runbook
+    assert "verify_github_public_release_bundle.py" in ops_runbook
     assert "gh release create --prerelease" in ops_runbook
     assert "--prerelease" in ops_runbook
     assert "limited stable" in ops_runbook
@@ -344,6 +366,23 @@ def main() -> None:
     assert "gh release create" in publish_text
     assert "--prerelease" in publish_text
     assert "publish requires a clean git worktree" in publish_text
+
+    public_publish_text = PUBLISH_PUBLIC_RELEASE_BUNDLE.read_text(encoding="utf-8")
+    assert "guarded draft GitHub Release" in public_publish_text
+    assert '"--draft"' in public_publish_text
+    assert '"--prerelease"' in public_publish_text
+    assert "CREATE DRAFT" in public_publish_text
+    assert "origin-is-not-public-repository" in public_publish_text
+    assert "Git tag already exists" in public_publish_text
+    assert "verify_github_public_release_bundle.py" in public_publish_text
+
+    public_verify_text = VERIFY_GITHUB_PUBLIC_RELEASE_BUNDLE.read_text(encoding="utf-8")
+    assert "deeply verify" in public_verify_text
+    assert '"gh",\n                "release",\n                "download"' in public_verify_text
+    assert "SHA256SUMS" in public_verify_text
+    assert "public_release_bundle.py" in public_verify_text
+    assert "--require-publication-ready" in public_verify_text
+    assert "--require-hardware-pass" in public_verify_text
 
     verify_github_text = VERIFY_GITHUB_RELEASE_ASSETS.read_text(encoding="utf-8")
     assert "Raspberry Pi OS split package assets" in verify_github_text
@@ -556,6 +595,8 @@ else:
     assert "apt-get install" in readme
     assert "apt-get -s install" in ops_runbook
     assert "apt-get install" in ops_runbook
+    assert "dpkg --compare-versions" in ops_runbook
+    assert "--allow-downgrades" in ops_runbook
     assert 'HIDLOOM_RUNTIME_DIR="\\${HIDLOOM_RUNTIME_DIR:-/mnt/p3}"' in build_deb_text
     assert 'install -d -m 0755 "\\$HIDLOOM_RUNTIME_DIR" "\\$HIDLOOM_RUNTIME_DIR/script"' in build_deb_text
     assert 'config/default/script' in build_deb_text

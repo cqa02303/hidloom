@@ -38,6 +38,7 @@ TESTS = [
     "script/test_public_community_health.py",
     "script/test_public_reference_audit.py",
     "script/test_public_release_bundle.py",
+    "script/test_profile_release_bundle.py",
     "script/test_public_release_readiness.py",
     "script/test_public_repository_create.py",
     "script/test_public_repository_bootstrap.py",

@@ -2,7 +2,7 @@
   "schema": "hidloom.public-privacy-audit.v1",
   "ready": true,
   "summary": {
-    "files_scanned": 1236,
+    "files_scanned": 1245,
     "media_files": 32,
     "findings": 0,
     "blockers": 0

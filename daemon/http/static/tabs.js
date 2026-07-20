@@ -39,7 +39,10 @@ function setActiveTab(tab, options = {}) {
   }
 
   document.querySelectorAll(".app-tab").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.appTab === tab);
+    const selected = btn.dataset.appTab === tab;
+    btn.classList.toggle("active", selected);
+    btn.setAttribute("aria-selected", String(selected));
+    btn.tabIndex = selected ? 0 : -1;
   });
 
   const keyboardContainer = document.getElementById("keyboard-container");
@@ -82,6 +85,15 @@ function setActiveTab(tab, options = {}) {
     if (tab === "settings") fetchSettings();
   }
 
+  const activePanel = tab === "keyboard" || tab === "keymap"
+    ? keyboardContainer
+    : document.getElementById(`${tab}-panel`);
+  if (activePanel) {
+    activePanel.classList.remove("panel-entering");
+    void activePanel.offsetWidth;
+    activePanel.classList.add("panel-entering");
+  }
+
   if (!syncMode) return;
   if (tab === "keymap") {
     setRemapMode(true, { syncTab: false });
@@ -109,3 +121,45 @@ window.addEventListener("hashchange", () => {
   const hashTab = appTabFromHash();
   if (hashTab && hashTab !== _activeAppTab) setActiveTab(hashTab);
 });
+
+document.getElementById("app-tabs")?.addEventListener("keydown", event => {
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+  const tabs = [...document.querySelectorAll("#app-tabs .app-tab")];
+  const current = Math.max(0, tabs.indexOf(document.activeElement));
+  let next = current;
+  if (event.key === "ArrowLeft") next = (current - 1 + tabs.length) % tabs.length;
+  if (event.key === "ArrowRight") next = (current + 1) % tabs.length;
+  if (event.key === "Home") next = 0;
+  if (event.key === "End") next = tabs.length - 1;
+  event.preventDefault();
+  tabs[next].focus();
+  setActiveTab(tabs[next].dataset.appTab);
+});
+
+function enhanceOperationFeedback() {
+  const selectors = [".script-status", ".lighting-status", "#remap-direct-status"];
+  const statusElements = document.querySelectorAll(selectors.join(","));
+  const pendingPattern = /(読込|保存|測定|検査|反映|実行|リセット|reload)(中|しています|待ち)/i;
+  const errorPattern = /失敗|error|invalid|確認してください/i;
+  for (const el of statusElements) {
+    if (!el.hasAttribute("role")) el.setAttribute("role", "status");
+    if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "polite");
+    const update = () => {
+      const text = el.textContent || "";
+      const state = errorPattern.test(text) || el.classList.contains("error")
+        ? "error"
+        : pendingPattern.test(text)
+          ? "pending"
+          : text && text !== "–" ? "complete" : "idle";
+      el.dataset.state = state;
+      el.setAttribute("aria-busy", String(state === "pending"));
+      el.classList.remove("status-feedback-pop");
+      void el.offsetWidth;
+      el.classList.add("status-feedback-pop");
+    };
+    new MutationObserver(update).observe(el, { childList: true, characterData: true, subtree: true });
+    update();
+  }
+}
+
+enhanceOperationFeedback();

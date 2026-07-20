@@ -48,16 +48,24 @@ native cross-buildからchecksum検証まで一括実行します。
 tools/public_build_rehearsal.sh --package
 ```
 
+Raspberry Pi 4 + Waveshare 8.8inch touch panel用はprofileを明示します。
+
+```bash
+tools/public_build_rehearsal.sh \
+  --package \
+  --profile touch-waveshare-8.8
+```
+
 生成先は`build/public-rebuild`です。`OUT_DIR=/path/to/output`で変更できます。
 
 ```text
 hidloom-<source-sha>-aarch64.tar.zst
 hidloom-core_<version>_arm64.deb
-hidloom-profile-keyboard-ver1_<version>_arm64.deb
+hidloom-profile-<profile>_<version>_arm64.deb
 ```
 
 helperはARM64 Rust daemon、matrixd、USB gadget helper、command helperをx86_64 host上で
-cross-buildし、bundle、core package、`keyboard-ver1` profile packageを作成します。各
+cross-buildし、bundle、core package、指定したprofile packageを作成します。各
 `.sha256`を検証し、`dpkg-deb --info`でpackage metadataを読めることまで確認します。
 同時に`build/public-rebuild/PUBLIC_BUILD_PROVENANCE.json`を生成して再検証します。このreportは
 export report/manifest、source commit、bundle/core/profileのmetadata、全artifactのsize/SHA-256を
@@ -67,8 +75,23 @@ export report/manifest、source commit、bundle/core/profileのmetadata、全art
 python3 tools/public_build_provenance.py verify \
   build/public-rebuild/PUBLIC_BUILD_PROVENANCE.json \
   --source . \
-  --package-dir build/public-rebuild
+  --package-dir build/public-rebuild \
+  --profile touch-waveshare-8.8
 ```
+
+touch profileのpackage set、対応source、compliance metadata、portable checksum、配布ページ用
+release notesを一つのdirectoryへまとめます。この操作はtag作成やGitHub uploadを行いません。
+
+```bash
+tools/package/build_touch_panel_release.sh
+python3 tools/package/build_profile_release_bundle.py verify \
+  build/touch-panel-release
+```
+
+`build/touch-panel-release/PACKAGE_RELEASE_MANIFEST.json`の`publication.ready`は、public build
+provenanceと正式なpublic USB VID/PIDの両方が揃うまで`false`です。Raspberry Pi 4実機で
+touch-ready時間とsmoke結果を記録した最終候補だけ、`--require-hardware-pass`と
+`--require-publication-ready`の両gateを通してRelease assetへ使います。
 
 ## Buildroot M6 image
 
@@ -89,7 +112,7 @@ tools/public_build_rehearsal.sh --buildroot-image
 packageとimageを連続して作る場合:
 
 ```bash
-tools/public_build_rehearsal.sh --all
+tools/public_build_rehearsal.sh --all --profile keyboard-ver1
 ```
 
 既定のBuildroot sourceは`build/artifacts/buildroot-upstream`、outputは
@@ -174,8 +197,37 @@ python3 tools/public_release_bundle.py \
   --core-package build/public-rebuild/hidloom-core_<version>_arm64.deb \
   --profile-package build/public-rebuild/hidloom-profile-keyboard-ver1_<version>_arm64.deb \
   --compliance-bundle build/artifacts/hidloom-buildroot-m6-compliance.tar.zst \
+  --build-provenance build/public-rebuild/PUBLIC_BUILD_PROVENANCE.json \
+  --guide docs/hardware/raspberry-pi-zero-2-w-keyboard-release.md \
   --output build/public-release-0.1.0-rc.1 \
   --version 0.1.0-rc.1
+```
+
+通常はpackage名とversionをprovenanceから解決する専用wrapperを使います。既定出力は
+`build/zero2w-keyboard-release`で、tag作成やGitHub uploadは行いません。
+
+```bash
+tools/package/build_zero2w_keyboard_release.sh
+python3 tools/public_release_bundle.py \
+  --verify build/zero2w-keyboard-release
+```
+
+同じGitHub ReleaseへRaspberry Pi 4 touch profileも並べる場合は、同じsourceから別provenanceで
+touch packageを生成し、Zero 2 W wrapperへ追加します。coreはkeyboard/M6 build側の一つだけを
+採用し、touch profileのversion/source/hashをtouch provenanceで照合します。
+
+```bash
+OUT_DIR=build/public-touch-rebuild \
+PROVENANCE=build/public-touch-rebuild/PUBLIC_BUILD_PROVENANCE.json \
+tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8
+
+tools/package/build_zero2w_keyboard_release.sh \
+  --touch-package-dir build/public-touch-rebuild \
+  --touch-provenance build/public-touch-rebuild/PUBLIC_BUILD_PROVENANCE.json \
+  --hardware-smoke-status pass \
+  --usable-keyboard-seconds <seconds> \
+  --touch-hardware-smoke-status pass \
+  --touch-ready-seconds <seconds>
 ```
 
 生成directoryには次を含めます。
@@ -183,8 +235,10 @@ python3 tools/public_release_bundle.py \
 - manifest掲載fileだけから作る決定的source archive
 - Buildroot M6 raw imageとzstd image
 - `hidloom-core`と`keyboard-ver1` profile package
+- 任意で同一versionの`touch-waveshare-8.8` profile package
 - Buildroot/Bootlin対応source・licenseの検証済みcompliance archive
 - `LICENSE`、SBOM、third-party notices、public export report/manifest
+- `PUBLIC_BUILD_PROVENANCE.json`、Zero 2 W用`QUICKSTART.md`
 - `RELEASE_MANIFEST.json`、offline境界を記載した`RELEASE_NOTES.md`、portable `SHA256SUMS`
 
 buildやCargoがclean export内へ生成した未掲載artifactはsource archiveへ入りません。生成後の通常確認:
@@ -193,8 +247,24 @@ buildやCargoがclean export内へ生成した未掲載artifactはsource archive
 python3 tools/public_release_bundle.py --verify build/public-release-0.1.0-rc.1
 ```
 
+正式なpublic USB identityと同一source/package/imageのbuild provenanceが揃うまでは
+`publication.ready=false`です。公開前はhardware gateと両方を要求します。
+
+```bash
+python3 tools/public_release_bundle.py \
+  --verify build/zero2w-keyboard-release \
+  --require-publication-ready \
+  --require-hardware-pass
+```
+
 実機確認を記録する前はmanifestの`hardware_smoke.status`が`pending`なので、公開用gateは失敗します。
-`-02`で全項目とusable-keyboard時間を確認した候補だけを`pass`として再生成し、次を通します。
+このfieldはRaspberry Pi OS keyboard packageと、同じbundleに収録したexact M6 imageの**集約gate**です。
+packageだけ、または過去revisionのM6だけがpassしても`pass`へ変更しません。`usable_keyboard_seconds`には
+exact M6 imageでUSB接続からhost入力可能までを測った値を記録し、package側のUSB再接続時間とは混同しません。
+touch profileを含む場合は`touch_hardware_smoke.status`も独立して`pass`でなければ失敗します。
+`-02`でpackage smoke、exact M6全項目とM6 usable-keyboard時間、`-40`でtouch/kioskとtouch-ready時間を
+確認した候補だけを
+両方`pass`として再生成し、次を通します。
 
 ```bash
 python3 tools/public_release_bundle.py \
@@ -206,4 +276,6 @@ python3 tools/public_release_bundle.py \
 
 build完了は実機合格を意味しません。別microSDへimageを書き込み、Raspberry Pi Zero 2 Wで
 USB enumerate、JP/US route、LT、Vial保存、OLED、LED、stick、uinput、shutdownを確認します。
+touch profileを同じReleaseへ含める時は、Raspberry Pi 4でもdisplay、touch input、kiosk health、
+USB/Vial、reboot persistence、touch-ready時間を別に確認します。
 既存Raspberry Pi OS microSDはrollback pathとして保持します。

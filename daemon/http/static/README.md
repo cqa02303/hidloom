@@ -23,11 +23,23 @@ PNG / ICOを手で置換せず、generatorを更新して`script/test_hidloom_ic
 | `remap_quick_keys.css` | remap popup の pinned / recent / docs guide |
 | `lighting_panel.css` | Lighting tab の direct-frame metrics / role preview |
 | `oled_panel.css` | OLED tab の用途別icon list、pixel grid、icon preview、Ready layout editor |
+| `apple_design.css` | 共通の視覚・操作基盤。system typography、translucent shell、press feedback、dark / reduced-motion / reduced-transparency / high-contrast対応 |
 
 現在 `index.html` では `keyboard.css` と `interaction_panel.css` を読み込み、
 `interaction_panel.css` が feature CSS を `@import` しています。
+最後に `apple_design.css` を読み込み、feature固有のDOMや挙動を変えずに共通design tokenとinteraction feedbackを適用します。
+タブ操作は `tabs.js` でARIA stateと左右矢印/Home/Endキーを同期し、処理中・完了・失敗のstatusはlive regionとして即時に伝えます。
 将来的には `index.html` の `<head>` に feature CSS を直接 link してもよいですが、
 その場合も CSS の責務分離は維持します。
+
+## 謝辞
+
+Web UIの視覚設計、操作時のフィードバック、モーション、アクセシビリティの見直しでは、
+Emil Kowalski氏が公開している
+[Apple Design SKILL.md](https://github.com/emilkowalski/skills/blob/main/skills/apple-design/SKILL.md)
+を参考にさせていただきました。Web向けに整理された有益なデザイン原則を公開してくださったことに感謝します。
+
+この資料は設計上の参考資料であり、HIDloomのruntime依存関係や配布物には含まれません。
 
 ## JS 構成
 

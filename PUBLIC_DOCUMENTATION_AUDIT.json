@@ -2,9 +2,9 @@
   "schema": "hidloom.public-documentation-audit.v2",
   "ready": true,
   "summary": {
-    "files_scanned": 243,
-    "public_docs": 192,
-    "reachable_public_docs": 192,
+    "files_scanned": 245,
+    "public_docs": 194,
+    "reachable_public_docs": 194,
     "omitted_private_links": 114,
     "removed_private_navigation_lines": 79,
     "broken_links": 0,
@@ -33,16 +33,6 @@
     },
     {
       "path": "docs/README.md",
-      "line": 14,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 15,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
       "line": 16,
       "target_type": "file"
     },
@@ -63,12 +53,12 @@
     },
     {
       "path": "docs/README.md",
-      "line": 38,
+      "line": 20,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
-      "line": 39,
+      "line": 21,
       "target_type": "file"
     },
     {
@@ -83,18 +73,18 @@
     },
     {
       "path": "docs/README.md",
-      "line": 71,
+      "line": 42,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 43,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
       "line": 73,
-      "target_type": "directory"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 74,
-      "target_type": "directory"
+      "target_type": "file"
     },
     {
       "path": "docs/README.md",
@@ -104,6 +94,16 @@
     {
       "path": "docs/README.md",
       "line": 76,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 77,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 78,
       "target_type": "directory"
     },
     {
@@ -597,14 +597,6 @@
     },
     {
       "path": "docs/README.md",
-      "line": 14
-    },
-    {
-      "path": "docs/README.md",
-      "line": 15
-    },
-    {
-      "path": "docs/README.md",
       "line": 16
     },
     {
@@ -621,11 +613,11 @@
     },
     {
       "path": "docs/README.md",
-      "line": 38
+      "line": 20
     },
     {
       "path": "docs/README.md",
-      "line": 39
+      "line": 21
     },
     {
       "path": "docs/README.md",
@@ -637,15 +629,15 @@
     },
     {
       "path": "docs/README.md",
-      "line": 71
+      "line": 42
+    },
+    {
+      "path": "docs/README.md",
+      "line": 43
     },
     {
       "path": "docs/README.md",
       "line": 73
-    },
-    {
-      "path": "docs/README.md",
-      "line": 74
     },
     {
       "path": "docs/README.md",
@@ -654,6 +646,14 @@
     {
       "path": "docs/README.md",
       "line": 76
+    },
+    {
+      "path": "docs/README.md",
+      "line": 77
+    },
+    {
+      "path": "docs/README.md",
+      "line": 78
     },
     {
       "path": "docs/architecture/system-overview.md",

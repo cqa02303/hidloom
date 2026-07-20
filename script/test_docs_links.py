@@ -22,6 +22,21 @@ EXCLUDED_DIRS = {
 }
 
 
+def _ignored_build_directories() -> set[str]:
+    directories: set[str] = set()
+    for raw in (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines():
+        value = raw.strip()
+        if not value.startswith("build/") or not value.endswith("/"):
+            continue
+        parts = value.rstrip("/").split("/")
+        if len(parts) == 2 and not any(character in parts[1] for character in "*?["):
+            directories.add(parts[1])
+    return directories
+
+
+IGNORED_BUILD_DIRS = _ignored_build_directories()
+
+
 def _repo_markdown_files() -> list[Path]:
     files: list[Path] = []
     for dirpath, dirnames, filenames in os.walk(ROOT):
@@ -32,7 +47,7 @@ def _repo_markdown_files() -> list[Path]:
             if name not in EXCLUDED_DIRS
             and not name.startswith(".")
             and not name.startswith("__codex_tmp_")
-            and not (base == ROOT / "build" and name == "artifacts")
+            and not (base == ROOT / "build" and name in IGNORED_BUILD_DIRS)
         ]
         files.extend(base / name for name in filenames if name.endswith(".md"))
     return files
@@ -48,6 +63,7 @@ def _excluded_target(path: Path, target: str, exclude_globs: list[str]) -> bool:
 
 
 def main() -> None:
+    assert {"artifacts", "public-rebuild", "touch-panel-release"} <= IGNORED_BUILD_DIRS
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--public-export-manifest",

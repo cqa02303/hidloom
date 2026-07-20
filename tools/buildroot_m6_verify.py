@@ -114,6 +114,7 @@ def main() -> None:
         target / "mnt/p3/vial.json",
         target / "usr/share/hidloom/hidloom_paths.py",
         target / "usr/share/hidloom/config/default/oled-layout.json",
+        target / "usr/share/hidloom/daemon/oled_text.py",
         target / "usr/share/hidloom/daemon/i2cd/connectivity_icon_bitmaps.txt",
         target / "usr/share/hidloom/daemon/i2cd/oled_customization.py",
         target / "usr/share/hidloom/daemon/usbd/hid_report_broker.py",

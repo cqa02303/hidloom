@@ -3,6 +3,8 @@ Description=HIDloom USB HID Keyboard Gadget
 DefaultDependencies=no
 After=tmp.mount systemd-remount-fs.service systemd-modules-load.service
 Before=getty.target
+Before=shutdown.target
+Conflicts=shutdown.target
 
 [Service]
 Type=oneshot

@@ -4,6 +4,8 @@ Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/logicd/README.md
 DefaultDependencies=no
 After=local-fs.target systemd-journald.socket
 Before=basic.target multi-user.target
+Before=shutdown.target
+Conflicts=shutdown.target
 Wants=dev-hidg0.device
 
 [Service]

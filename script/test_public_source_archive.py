@@ -129,7 +129,17 @@ def main() -> None:
         assert not any("unlisted.tmp" in member for member in members)
         extracted = workspace / "extracted"
         extracted.mkdir()
-        run(["tar", "--zstd", "-xf", str(archives[0]), "-C", str(extracted)])
+        run(
+            [
+                "tar",
+                "--zstd",
+                "--same-permissions",
+                "-xf",
+                str(archives[0]),
+                "-C",
+                str(extracted),
+            ]
+        )
         root = extracted / "hidloom-public"
         assert (root / ".github/dependabot.yml").read_text(encoding="utf-8") == "version: 2\n"
         assert (root / "bin/hidloom-check").stat().st_mode & 0o777 == 0o755

@@ -1,0 +1,450 @@
+/* Apple-inspired interaction and visual foundations.
+   Loaded last so the design system can refine feature styles without coupling
+   those feature styles to the application shell. */
+
+:root {
+  color-scheme: light;
+  font: 100%/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-optical-sizing: auto;
+  --ui-accent: #007aff;
+  --ui-accent-pressed: #0062cc;
+  --ui-text: #1d1d1f;
+  --ui-secondary: #5c5c63;
+  --ui-canvas: #f5f5f7;
+  --ui-surface: rgba(255, 255, 255, 0.78);
+  --ui-surface-solid: #ffffff;
+  --ui-fill: rgba(118, 118, 128, 0.1);
+  --ui-fill-hover: rgba(118, 118, 128, 0.16);
+  --ui-separator: rgba(60, 60, 67, 0.18);
+  --ui-hairline: rgba(255, 255, 255, 0.68);
+  --ui-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 32px rgba(0, 0, 0, 0.07);
+  --ui-shadow-float: 0 18px 48px rgba(0, 0, 0, 0.16);
+  --ui-radius: 14px;
+  --ui-radius-small: 9px;
+  --ui-press: scale(0.97);
+}
+
+html {
+  min-height: 100%;
+  background: var(--ui-canvas);
+}
+
+body {
+  min-height: 100vh;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+  background:
+    radial-gradient(circle at 10% -10%, rgba(0, 122, 255, 0.1), transparent 32rem),
+    var(--ui-canvas);
+  color: var(--ui-text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  letter-spacing: 0;
+}
+
+header {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 60;
+  justify-content: space-between;
+  min-height: 3.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0.625rem 0.75rem 0.625rem 1rem;
+  border: 1px solid var(--ui-hairline);
+  border-radius: var(--ui-radius);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+header h1 {
+  color: var(--ui-text);
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.repo-title-link:hover {
+  color: var(--ui-accent);
+  text-decoration: none;
+}
+
+#app-tabs {
+  position: sticky;
+  top: 4.75rem;
+  z-index: 50;
+  gap: 0.25rem;
+  margin: 0 0 1rem;
+  padding: 0.3rem;
+  overflow-x: auto;
+  border: 1px solid var(--ui-hairline);
+  border-radius: 12px;
+  background: rgba(246, 246, 248, 0.76);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  scrollbar-width: none;
+}
+
+#app-tabs::-webkit-scrollbar { display: none; }
+
+.app-tab {
+  position: static;
+  flex: 0 0 auto;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.85rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ui-secondary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease, transform 100ms ease-out;
+}
+
+.app-tab:hover { background: var(--ui-fill); }
+.app-tab:active { transform: var(--ui-press); }
+.app-tab.active {
+  border: 0;
+  background: var(--ui-surface-solid);
+  color: var(--ui-text);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.11);
+}
+
+.panel-entering {
+  animation: panel-materialize 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: 50% 0;
+}
+
+@keyframes panel-materialize {
+  from { opacity: 0; transform: translateY(4px) scale(0.995); filter: blur(2px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+#system-status,
+#lighting-panel,
+#oled-panel,
+#scripts-panel,
+#interaction-panel,
+#settings-panel,
+#keymap-tab-toolbar,
+.settings-card,
+.oled-card {
+  border-color: var(--ui-separator);
+  border-radius: var(--ui-radius);
+  background-color: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+
+#system-status,
+#lighting-panel,
+#oled-panel,
+#scripts-panel,
+#interaction-panel,
+#settings-panel {
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+button,
+input,
+select,
+textarea { font: inherit; }
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button:not(:disabled) {
+  transition: transform 100ms ease-out, background-color 160ms ease, border-color 160ms ease,
+    color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+button:not(:disabled):active { transform: var(--ui-press); }
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid rgba(0, 122, 255, 0.28);
+  outline-offset: 2px;
+}
+
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  border-color: var(--ui-separator);
+  border-radius: var(--ui-radius-small);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--ui-text);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+.lighting-btn,
+.log-btn,
+.bt-action-btn,
+.remap-vil-btn,
+.oled-tool,
+.script-command-list button,
+.interaction-action-tools button {
+  min-height: 2.25rem;
+  border-color: var(--ui-separator);
+  border-radius: var(--ui-radius-small);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ui-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.lighting-btn:hover,
+.log-btn:hover,
+.bt-action-btn:hover,
+.remap-vil-btn:hover,
+.oled-tool:hover { background: var(--ui-surface-solid); }
+
+.primary-action {
+  border-color: transparent !important;
+  background: var(--ui-accent) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.22) !important;
+}
+
+.primary-action:hover { background: var(--ui-accent-pressed) !important; }
+
+/* KC_TRNS passes the key through to a lower layer. Keep it available while
+   visually quieter than a key that owns an action on the current layer. */
+.remap-key.remap-key-transparent {
+  border: 1px solid #c7c7cc;
+  border-bottom-color: #aeaeb2;
+  background: #f2f2f7;
+  color: #636366;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.remap-key.remap-key-transparent:hover {
+  border-color: #8e8e93;
+  background: #e9e9ef;
+  color: var(--ui-text);
+}
+
+.remap-key.remap-key-transparent.current {
+  border-color: var(--ui-accent);
+  box-shadow: inset 0 0 0 1px var(--ui-accent), 0 0 0 2px rgba(0, 122, 255, 0.14);
+}
+
+/* Keys shown as ▽ in the layer editor inherit their action from a lower
+   layer. A quiet neutral outline distinguishes that state from an override. */
+.key.layer-fallback:not(.pressed):not(.internal-pressed) {
+  border-color: #c7c7cc;
+  border-style: solid;
+  background: #f2f2f7;
+  color: #636366;
+  box-shadow: 0 2px 0 #aeaeb2, 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+.key.layer-fallback:hover:not(.pressed):not(.internal-pressed) {
+  border-color: #8e8e93;
+  background: #e9e9ef;
+  color: var(--ui-text);
+}
+
+.layer-swatch-fallback {
+  border-color: #c7c7cc;
+  border-style: solid;
+  background: #f2f2f7;
+}
+
+.settings-intro {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.25rem 0;
+}
+
+.settings-intro h2 {
+  margin: 0;
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.settings-intro p:not(.settings-eyebrow) {
+  max-width: 44rem;
+  margin: 0.45rem 0 0;
+  color: var(--ui-secondary);
+  line-height: 1.6;
+}
+
+.settings-eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--ui-accent);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+}
+
+.settings-card-title {
+  color: var(--ui-text);
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.settings-card-description {
+  margin: -0.1rem 0 1rem;
+  color: var(--ui-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.script-status,
+.lighting-status,
+#remap-direct-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  color: var(--ui-secondary);
+  font-weight: 600;
+}
+
+[data-state="pending"] { color: #8a5a00; background: rgba(255, 159, 10, 0.12); }
+[data-state="complete"] { color: #16733c; background: rgba(52, 199, 89, 0.12); }
+[data-state="error"] { color: #b42318; background: rgba(255, 59, 48, 0.12); }
+[data-state="pending"]::before {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.4rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  content: "";
+  animation: operation-spin 700ms linear infinite;
+}
+
+.status-feedback-pop { animation: status-feedback-pop 180ms ease-out; }
+@keyframes operation-spin { to { transform: rotate(360deg); } }
+@keyframes status-feedback-pop { from { opacity: 0.65; transform: scale(0.98); } }
+
+.status {
+  border-color: transparent;
+  border-radius: 999px;
+  letter-spacing: 0.015em;
+}
+
+#log-panel {
+  border-color: var(--ui-separator);
+  border-radius: var(--ui-radius);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--ui-shadow-float);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+}
+
+#remap-toast {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(29, 29, 31, 0.9);
+  box-shadow: var(--ui-shadow-float);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+@media (max-width: 720px) {
+  body { padding: 0.625rem; }
+  header { top: 0.375rem; }
+  #app-tabs { top: 4.625rem; }
+  .app-tab { min-height: 2.5rem; padding-inline: 0.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  button:not(:disabled):active,
+  .app-tab:active { transform: none; }
+  .panel-entering { animation: none; }
+  [data-state="pending"]::before { animation: none; border-right-color: currentColor; opacity: 0.55; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  header,
+  #app-tabs,
+  #system-status,
+  #lighting-panel,
+  #oled-panel,
+  #scripts-panel,
+  #interaction-panel,
+  #settings-panel,
+  #log-panel {
+    background-color: var(--ui-surface-solid);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root { --ui-separator: rgba(0, 0, 0, 0.55); }
+  header, #app-tabs, #system-status, #lighting-panel, #oled-panel,
+  #scripts-panel, #interaction-panel, #settings-panel { background: #fff; }
+  .app-tab.active { outline: 2px solid currentColor; outline-offset: -2px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ui-accent: #0a84ff;
+    --ui-accent-pressed: #409cff;
+    --ui-text: #f5f5f7;
+    --ui-secondary: #b3b3b8;
+    --ui-canvas: #101012;
+    --ui-surface: rgba(36, 36, 40, 0.8);
+    --ui-surface-solid: #2c2c2e;
+    --ui-fill: rgba(235, 235, 245, 0.1);
+    --ui-fill-hover: rgba(235, 235, 245, 0.16);
+    --ui-separator: rgba(235, 235, 245, 0.18);
+    --ui-hairline: rgba(255, 255, 255, 0.12);
+    --ui-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 12px 36px rgba(0, 0, 0, 0.25);
+  }
+  body {
+    background: radial-gradient(circle at 10% -10%, rgba(10, 132, 255, 0.13), transparent 32rem), var(--ui-canvas);
+  }
+  header, #app-tabs { background-color: rgba(36, 36, 40, 0.76); }
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]), select, textarea {
+    background-color: rgba(44, 44, 46, 0.9);
+  }
+  .remap-key.remap-key-transparent {
+    border-color: #48484a;
+    border-bottom-color: #636366;
+    background: #2c2c2e;
+    color: #aeaeb2;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .remap-key.remap-key-transparent:hover {
+    border-color: #8e8e93;
+    background: #3a3a3c;
+  }
+  .key.layer-fallback:not(.pressed):not(.internal-pressed) {
+    border-color: #48484a;
+    background: #2c2c2e;
+    color: #aeaeb2;
+    box-shadow: 0 2px 0 #636366, 0 3px 6px rgba(0, 0, 0, 0.24);
+  }
+  .key.layer-fallback:hover:not(.pressed):not(.internal-pressed) {
+    border-color: #8e8e93;
+    background: #3a3a3c;
+  }
+  .layer-swatch-fallback {
+    border-color: #48484a;
+    background: #2c2c2e;
+  }
+}

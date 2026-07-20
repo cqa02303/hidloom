@@ -9,6 +9,7 @@ BUILDROOT_WORK_DIR=$(dirname -- "$BUILDROOT_OUTPUT")
 M6_NATIVE_DIR=${HIDLOOM_M6_NATIVE_DIR:-"$BUILDROOT_WORK_DIR/buildroot-m4-native/bin"}
 BUILD_HOSTBIN=${HIDLOOM_BUILD_HOSTBIN:-"$BUILDROOT_WORK_DIR/buildroot-hostbin"}
 PROVENANCE=${PROVENANCE:-}
+PROFILE=${HIDLOOM_DEVICE_PROFILE:-keyboard-ver1}
 PACKAGE=0
 BUILDROOT_MODE=
 
@@ -19,7 +20,8 @@ usage: tools/public_build_rehearsal.sh [options]
 Rebuild distributable artifacts from a clean public export or public clone.
 
 Options:
-  --package              build the ARM64 release bundle, core .deb, and keyboard profile .deb
+  --package              build the ARM64 release bundle, core .deb, and device profile .deb
+  --profile ID           package device profile; default keyboard-ver1
   --buildroot-configure  prepare pinned Buildroot source and expand the M6 defconfig
   --buildroot-image      build and verify the complete M6 sdcard image
   --all                  build packages and the complete M6 image
@@ -55,6 +57,10 @@ while [ "$#" -gt 0 ]; do
             OUT_DIR=${2:?missing --out-dir value}
             shift 2
             ;;
+        --profile)
+            PROFILE=${2:?missing --profile value}
+            shift 2
+            ;;
         --provenance)
             PROVENANCE=${2:?missing --provenance value}
             shift 2
@@ -82,6 +88,16 @@ if [ ! -f "$ROOT/PUBLIC_EXPORT_REPORT.json" ]; then
     echo "PUBLIC_EXPORT_REPORT.json is missing; run this from a clean public export or clone" >&2
     exit 1
 fi
+case "$PROFILE" in
+    ''|*[!A-Za-z0-9._-]*)
+        echo "invalid profile name: $PROFILE" >&2
+        exit 2
+        ;;
+esac
+if [ ! -f "$ROOT/config/device-profiles/$PROFILE.json" ]; then
+    echo "device profile not found: $PROFILE" >&2
+    exit 1
+fi
 
 if [ "$PACKAGE" -eq 1 ]; then
     mkdir -p "$OUT_DIR"
@@ -90,10 +106,10 @@ if [ "$PACKAGE" -eq 1 ]; then
     "$ROOT/tools/package/build_deb_package.sh" \
         --bundle "$BUNDLE" --out-dir "$OUT_DIR" --package-id hidloom-core
     "$ROOT/tools/package/build_device_profile_deb.sh" \
-        --bundle "$BUNDLE" --out-dir "$OUT_DIR" --profile keyboard-ver1
+        --bundle "$BUNDLE" --out-dir "$OUT_DIR" --profile "$PROFILE"
     (cd "$OUT_DIR" && sha256sum -c ./*.sha256)
     dpkg-deb --info "$OUT_DIR"/hidloom-core_*_arm64.deb >/dev/null
-    dpkg-deb --info "$OUT_DIR"/hidloom-profile-keyboard-ver1_*_arm64.deb >/dev/null
+    dpkg-deb --info "$OUT_DIR"/hidloom-profile-"$PROFILE"_*_arm64.deb >/dev/null
 fi
 
 case "$BUILDROOT_MODE" in
@@ -121,7 +137,7 @@ fi
 
 set -- collect --source "$ROOT" --mode "$PROVENANCE_MODE" --output "$PROVENANCE"
 if [ "$PACKAGE" -eq 1 ]; then
-    set -- "$@" --package-dir "$OUT_DIR"
+    set -- "$@" --package-dir "$OUT_DIR" --profile "$PROFILE"
 fi
 if [ -n "$BUILDROOT_MODE" ]; then
     set -- "$@" --buildroot-source "$BUILDROOT_DIR" --buildroot-output "$BUILDROOT_OUTPUT"
@@ -130,7 +146,7 @@ python3 "$ROOT/tools/public_build_provenance.py" "$@" >/dev/null
 
 set -- verify "$PROVENANCE" --source "$ROOT"
 if [ "$PACKAGE" -eq 1 ]; then
-    set -- "$@" --package-dir "$OUT_DIR"
+    set -- "$@" --package-dir "$OUT_DIR" --profile "$PROFILE"
 fi
 if [ -n "$BUILDROOT_MODE" ]; then
     set -- "$@" --buildroot-source "$BUILDROOT_DIR" --buildroot-output "$BUILDROOT_OUTPUT"

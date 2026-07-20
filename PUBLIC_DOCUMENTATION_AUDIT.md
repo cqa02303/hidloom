@@ -1,9 +1,9 @@
 # HIDloom Public Documentation Audit
 
 - Ready: `true`
-- Markdown files scanned: 243
-- Public docs: 192
-- Reachable public docs: 192
+- Markdown files scanned: 245
+- Public docs: 194
+- Reachable public docs: 194
 - Private links converted to text: 114
 - Private-only navigation lines removed: 79
 - Broken links: 0
@@ -22,21 +22,21 @@
 - `daemon/i2cd/README.md:355` (private-only navigation removed)
 - `daemon/logicd/README.md:131` (private-only navigation removed)
 - `daemon/matrixd/README.md:399` (private-only navigation removed)
-- `docs/README.md:14` (private-only navigation removed)
-- `docs/README.md:15` (private-only navigation removed)
 - `docs/README.md:16` (private-only navigation removed)
 - `docs/README.md:17` (private-only navigation removed)
 - `docs/README.md:18` (private-only navigation removed)
 - `docs/README.md:19` (private-only navigation removed)
-- `docs/README.md:38` (private-only navigation removed)
-- `docs/README.md:39` (private-only navigation removed)
+- `docs/README.md:20` (private-only navigation removed)
+- `docs/README.md:21` (private-only navigation removed)
 - `docs/README.md:40` (private-only navigation removed)
 - `docs/README.md:41` (private-only navigation removed)
-- `docs/README.md:71` (private-only navigation removed)
+- `docs/README.md:42` (private-only navigation removed)
+- `docs/README.md:43` (private-only navigation removed)
 - `docs/README.md:73` (private-only navigation removed)
-- `docs/README.md:74` (private-only navigation removed)
 - `docs/README.md:75` (private-only navigation removed)
 - `docs/README.md:76` (private-only navigation removed)
+- `docs/README.md:77` (private-only navigation removed)
+- `docs/README.md:78` (private-only navigation removed)
 - `docs/architecture/system-overview.md:33` (private-only navigation removed)
 - `docs/bluetooth/consumer-control-gatt-opt-in-design.md:97` (private-only navigation removed)
 - `docs/daemon/logicd-resolved-action-handler-split-design.md:27` (private-only navigation removed)
@@ -105,21 +105,21 @@
 - `daemon/i2cd/README.md:355` (file target omitted)
 - `daemon/logicd/README.md:131` (file target omitted)
 - `daemon/matrixd/README.md:399` (file target omitted)
-- `docs/README.md:14` (file target omitted)
-- `docs/README.md:15` (file target omitted)
 - `docs/README.md:16` (file target omitted)
 - `docs/README.md:17` (file target omitted)
 - `docs/README.md:18` (file target omitted)
 - `docs/README.md:19` (file target omitted)
-- `docs/README.md:38` (file target omitted)
-- `docs/README.md:39` (file target omitted)
+- `docs/README.md:20` (file target omitted)
+- `docs/README.md:21` (file target omitted)
 - `docs/README.md:40` (file target omitted)
 - `docs/README.md:41` (file target omitted)
-- `docs/README.md:71` (file target omitted)
-- `docs/README.md:73` (directory target omitted)
-- `docs/README.md:74` (directory target omitted)
+- `docs/README.md:42` (file target omitted)
+- `docs/README.md:43` (file target omitted)
+- `docs/README.md:73` (file target omitted)
 - `docs/README.md:75` (directory target omitted)
 - `docs/README.md:76` (directory target omitted)
+- `docs/README.md:77` (directory target omitted)
+- `docs/README.md:78` (directory target omitted)
 - `docs/architecture/system-overview.md:33` (file target omitted)
 - `docs/bluetooth/consumer-control-gatt-opt-in-design.md:97` (file target omitted)
 - `docs/bluetooth/hid-backend-plan.md:9` (file target omitted)

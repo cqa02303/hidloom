@@ -3,9 +3,12 @@ Description=HIDloom native HID report broker
 Documentation=file://@HIDLOOM_REPO_ROOT@/docs/daemon/specs/hidd/m0-implementation-spec.md
 DefaultDependencies=no
 After=hidloom-usb-gadget.service
+After=tmp.mount
 Wants=dev-hidg0.device dev-hidg2.device
 Before=basic.target multi-user.target
+Before=shutdown.target
 Conflicts=usbd.service
+Conflicts=shutdown.target
 
 [Service]
 Type=simple

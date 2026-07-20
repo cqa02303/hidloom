@@ -1,11 +1,11 @@
 # HIDloom Public Export Report
 
-- Source base commit: `001a0d2e5dcb5bdaab1b86340ab773e7e932dbe8`
+- Source base commit: `087aa47bef352af25e9931299b9db1eb450a9583`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `f96267da76fc58fc92053c5d6d492c31877b75bc0a39b636879e2b7e9fa519d5`
-- Files: 1231
-- Tracked source paths: 1298
+- Selected source snapshot: `d6ccc511a68c5cc4ec5605b18d586116080ee4392af5992b7b34ebe039b55354`
+- Files: 1240
+- Tracked source paths: 1307
 - Private-only paths: 67
 - Tracked generated outputs: 0
 - Unclassified paths: 0
@@ -18,7 +18,7 @@
 
 - `warn` `credential_word` `.github/workflows/public-ci.yml:123` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
 - `warn` `credential_word` `CONTRIBUTING.md:60` `documentation_security_keyword` — `secret-bearing backup.`
-- `warn` `credential_word` `INSTALL.md:142` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
+- `warn` `credential_word` `INSTALL.md:149` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
 - `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
 - `warn` `credential_word` `SECURITY.md:10` `documentation_security_keyword` — `Do not open a public issue for an unpatched vulnerability, credential, private key, or device-specific secret.`
 - `warn` `credential_word` `SECURITY.md:37` `documentation_security_keyword` — `The current experimental M6 Buildroot image creates the local console account `pi` with the initial password `pi`.`
@@ -121,12 +121,12 @@
 - `warn` `credential_word` `daemon/http/static/csrf.js:23` `security_implementation_keyword` — `if (token) headers.set(HIDLOOM_CSRF_HEADER, token);`
 - `warn` `credential_word` `daemon/http/static/csrf.js:30` `security_implementation_keyword` — `const token = csrfToken();`
 - `warn` `credential_word` `daemon/http/static/csrf.js:31` `security_implementation_keyword` — `if (token) url.searchParams.set("csrf", token);`
-- `warn` `credential_word` `daemon/http/static/index.html:361` `security_implementation_keyword` — `<label for="settings-current-password">Current password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:362` `security_implementation_keyword` — `<input id="settings-current-password" type="password" autocomplete="current-password">`
-- `warn` `credential_word` `daemon/http/static/index.html:365` `security_implementation_keyword` — `<label for="settings-new-password">New password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:366` `security_implementation_keyword` — `<input id="settings-new-password" type="password" autocomplete="new-password">`
-- `warn` `credential_word` `daemon/http/static/index.html:369` `security_implementation_keyword` — `<label for="settings-confirm-password">Confirm password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:370` `security_implementation_keyword` — `<input id="settings-confirm-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:370` `security_implementation_keyword` — `<label for="settings-current-password">現在のパスワード</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:371` `security_implementation_keyword` — `<input id="settings-current-password" type="password" autocomplete="current-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:374` `security_implementation_keyword` — `<label for="settings-new-password">新しいパスワード</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:375` `security_implementation_keyword` — `<input id="settings-new-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:378` `security_implementation_keyword` — `<label for="settings-confirm-password">新しいパスワード（確認）</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:379` `security_implementation_keyword` — `<input id="settings-confirm-password" type="password" autocomplete="new-password">`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:15` `security_implementation_keyword` — `for (const id of ["settings-current-password", "settings-new-password", "settings-confirm-password"]) {`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:518` `security_implementation_keyword` — `const currentPassword = settingsEl("settings-current-password")?.value || "";`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:519` `security_implementation_keyword` — `const newPassword = settingsEl("settings-new-password")?.value || "";`
@@ -1074,14 +1074,14 @@
 - `warn` `credential_word` `system/install/setup_fresh_rpi.sh:327` `implementation_security_keyword` — `user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:11` `pid_codes_migration_required` — `VENDOR_ID="0x1d6b"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:37` `pid_codes_migration_required` — `sh("VENDOR_ID"; .device.vendor_id // "0x1d6b"),`
-- `warn` `credential_word` `tools/README.md:93` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
+- `warn` `credential_word` `tools/README.md:102` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:53` `implementation_security_keyword` — `token in line`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:54` `implementation_security_keyword` — `for token in (`
 - `warn` `credential_word` `tools/buildroot_m1_compare.py:71` `implementation_security_keyword` — `if any(token in line for token in ("hid", "usb", "cqa02303v5", "1d6b:0105")):`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:133` `implementation_security_keyword` — `filesystem_file(debugfs, rootfs, "/etc/passwd"),`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:135` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:138` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:148` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:134` `implementation_security_keyword` — `filesystem_file(debugfs, rootfs, "/etc/passwd"),`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:136` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:139` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:149` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
 - `warn` `credential_word` `tools/collect_license_evidence.py:90` `implementation_security_keyword` — `if not any(token in relative.name.upper() for token in ("LICENSE", "COPYING", "NOTICE")):`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:122` `implementation_security_keyword` — `for token in tokens:`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:123` `implementation_security_keyword` — `if token.type != tokenize.COMMENT:`

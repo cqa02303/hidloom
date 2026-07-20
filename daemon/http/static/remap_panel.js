@@ -447,6 +447,13 @@ function _decorateSystemDefaultRemapKey(keyEl, kc) {
   keyEl.title = `${keyEl.title || kc}\nSystem default for this key`;
 }
 
+function _decorateTransparentRemapKey(keyEl, kc) {
+  if (!keyEl || kc !== "KC_TRNS") return;
+  keyEl.classList.add("remap-key-transparent");
+  keyEl.setAttribute("aria-label", "▽ 下位レイヤーを透過");
+  keyEl.title = "KC_TRNS — 下位レイヤーのキー設定を使用";
+}
+
 function _isLayerTapChoice(kc) {
   return /^LT\(\d+\)$/.test(kc || "");
 }
@@ -655,6 +662,7 @@ function _renderMiniKeyRows(rows, containerEl) {
       keyEl.dataset.tab = "pc104";
       _decorateRemapScriptKey(keyEl, kc);
       _decorateSystemDefaultRemapKey(keyEl, kc);
+      _decorateTransparentRemapKey(keyEl, kc);
       if (_pendingLayerTap && _isAllowedLayerTapTapKey(kc)) {
         keyEl.classList.add("layer-tap-candidate");
       }
@@ -729,6 +737,7 @@ function _renderRemapKeyGroups(container, groups, options = {}) {
         keyEl.dataset.group = group.label || "";
         _decorateRemapScriptKey(keyEl, kc);
         _decorateSystemDefaultRemapKey(keyEl, kc);
+        _decorateTransparentRemapKey(keyEl, kc);
         if (_pendingLayerTap && _isAllowedLayerTapTapKey(kc)) {
           keyEl.classList.add("layer-tap-candidate");
         }
