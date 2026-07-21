@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "9e8357f843242dd33363a214c6eb198a2aa18e29",
-    "base_tree": "9387991bbc6cc28faf708a34818306d3b20400e1",
-    "base_revision_count": 2028,
+    "base_commit": "a0f283708fd5a9f76a1f99505b1994f09ec7ebbf",
+    "base_tree": "569901be17e8427e89b7f914b8ea32a431a30b7b",
+    "base_revision_count": 2029,
     "selected_path_count": 1247,
-    "selected_snapshot_sha256": "1e01f0c99b848ec3937572c7d0d7a56283b8a0dff6583320962b542f5cb340c3"
+    "selected_snapshot_sha256": "981116b567dad56e05b9416af4e27ad9aa20a9d9ab659dca5c3278b4d584c802"
   },
   "files": [
     {
@@ -191,14 +191,14 @@
       "kind": "file",
       "mode": 420,
       "size": 393974,
-      "sha256": "f11631b2b3871d643cef0eb35b7e77409ca91eb23ce3cf51978cae799fbf055a"
+      "sha256": "ef74ed4c7d33a6ef22dfd2f2507b02ec215a315b6e18b778c58c68284d21474e"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
       "size": 162913,
-      "sha256": "8bb333e7995f9df1a811537d106cd764f883bd279d09b8720cad918498f83388"
+      "sha256": "04e9744c9ab05e72b1ce75ef505e65db84b837c4f1f4167caf5a920ec50e7cc7"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
@@ -247,7 +247,7 @@
       "kind": "file",
       "mode": 420,
       "size": 46590,
-      "sha256": "594aa210f8c3dc4fed739d75c619becb6ea696dfefa3244fc2de0abd05b8af51"
+      "sha256": "f6fcca02c31a3b7243f667db602bfae12846978bf01fc2e092c72593eb636206"
     },
     {
       "path": "SECURITY.md",
@@ -3613,8 +3613,8 @@
       "path": "docs/feature/oled-web-ui-qr.md",
       "kind": "file",
       "mode": 420,
-      "size": 3305,
-      "sha256": "53d5b0828e8ff42f9184a60f8a42e826f282ee87853cbbbcceb7fad543c4df83"
+      "size": 3328,
+      "sha256": "045f65392c92d38b13e0d28f29730db6a80095218a6174884c90f401b337754d"
     },
     {
       "path": "docs/feature/power-management-preset-design.md",
@@ -4509,8 +4509,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 162537,
-      "sha256": "446dfb9f9092b4e38e0d339d758dada428010a967698398c7b4a278b115aa2fc"
+      "size": 162976,
+      "sha256": "dff7599472534b6057584ac38950efe8e87db1c8f1d534265f674f1360bb8009"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -6735,8 +6735,8 @@
       "path": "script/test_oled_customization.py",
       "kind": "file",
       "mode": 420,
-      "size": 16994,
-      "sha256": "2e1de7fbda5260a66e94a20966b31a6dd77b1b235ecb58dd2ae12b61c8d52da9"
+      "size": 17005,
+      "sha256": "b48f41a68a77917eb441faaaabceef4aee0b80a6ef76225ce52ff79aa1b45c46"
     },
     {
       "path": "script/test_oled_pointer_editing.py",
@@ -6868,8 +6868,8 @@
       "path": "script/test_public_export.py",
       "kind": "file",
       "mode": 493,
-      "size": 35873,
-      "sha256": "a0587ffa24c3e0bc1f7a6109257849d4e8b42d6da1ad69ea2758494c115fe418"
+      "size": 36099,
+      "sha256": "ff4e0b4e5c6aec2dbdfa86faf668721dfbd800e098c7fabcc14bb52f88868a83"
     },
     {
       "path": "script/test_public_export_bundle.py",

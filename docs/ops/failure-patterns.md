@@ -189,10 +189,10 @@
 
 - symptom: clean export/readinessはpassするが、別Git cloneの`script/test_validation_suite.py`が除外済みarchive/status、`<keyboard-ip>`、`<keyboard-host>`、または欠落した説明fileで失敗する。
 - detect: clean exportを一時Git repositoryへcommitして別directoryへcloneし、export treeを手修正せずfull validation suiteを実行する。
-- likely cause: testがprivate-only文書を必須入力にする、sanitization対象文字列をparser/display幅fixtureへ使う、または実装とtestが参照するtracked説明fileをpublic allowlistへ含めていない。
+- likely cause: testがprivate-only文書を必須入力にする、sanitization対象文字列をparser/display幅fixtureへ使う、QR英数字modeのfixtureを非対応文字を含むplaceholderへ変換する、または実装とtestが参照するtracked説明fileをpublic allowlistへ含めていない。
 - recovery: private-only断言だけをsource modeでskipしpublic code/docs断言は維持する。意味を持つfixtureは架空のportable値へ変更し、必要な説明fileは生成binaryを含めない明示allowlistへ追加する。
-- regression check: standalone public cloneで`python3 script/test_validation_suite.py`と`python3 script/test_remote_fresh_install_tool.py`を完走し、privacy/reference/documentation auditもblocker 0を確認する。`script/test_public_ci_workflow.py`で公開CIにも同じfull suiteが残ることを検査する。
-- evidence: 2026-07-14、archive依存3 code tests、private/public混在docs tests、Morse archive link、IP/hostname fixture、`bin/README.md`欠落を修正し、1164-source-file exportのfull suiteがpassした。
+- regression check: standalone public cloneで`python3 script/test_validation_suite.py`と`python3 script/test_remote_fresh_install_tool.py`を完走し、privacy/reference/documentation auditもblocker 0を確認する。`script/test_public_export.py`はQR test vectorが文書用予約IPのままexportされ、`HTTPS://<keyboard-ip>`へ変わらないことを固定する。`script/test_public_ci_workflow.py`で公開CIにも同じfull suiteが残ることを検査する。
+- evidence: 2026-07-14、archive依存3 code tests、private/public混在docs tests、Morse archive link、IP/hostname fixture、`bin/README.md`欠落を修正し、1164-source-file exportのfull suiteがpassした。2026-07-21、public main extended CIでQR test vectorの実LAN IPが`<keyboard-ip>`へ変換され英数字encoderに拒否されたため、`192.0.2.1`へ置換してexport不変guardを追加した。
 
 ## Public CI weights every pull request as a release build
 
