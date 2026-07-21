@@ -588,6 +588,11 @@ def main() -> None:
         assert "/home/" + "operator/" not in readme
         assert "<user>@<keyboard-ip>:/tmp/" in readme
         assert "github.com/cqa02303/hidloom" not in readme
+        oled_test = (destination / "script/test_oled_customization.py").read_text(
+            encoding="utf-8"
+        )
+        assert "HTTPS://192.0.2.1" in oled_test
+        assert "HTTPS://<keyboard-ip>" not in oled_test
         security = (destination / "SECURITY.md").read_text(encoding="utf-8")
         contributing = (destination / "CONTRIBUTING.md").read_text(encoding="utf-8")
         authors = (destination / "AUTHORS.md").read_text(encoding="utf-8")

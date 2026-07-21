@@ -152,11 +152,12 @@ def test_runtime_icon_override() -> None:
 
 
 def test_web_ui_qr() -> None:
-    matrix = encode_v1_l("HTTPS://<keyboard-ip>")
+    documentation_url = "HTTPS://192.0.2.1"
+    matrix = encode_v1_l(documentation_url)
     assert len(matrix) == 21 and all(len(row) == 21 for row in matrix)
     vector = "\n".join("".join("1" if pixel else "0" for pixel in row) for row in matrix)
     assert hashlib.sha256(vector.encode()).hexdigest() == (
-        "6879b0a6faf898355d0297b57889962220d45fad24838b91a13678ac78b38229"
+        "c1b7be419ea376a0e3b4ca3ab8ce8bbedcc59487d7f2b77527bccce1839ad0c7"
     )
     pixels = scaled_pixels(matrix, scale=2, quiet_modules=4)
     assert len(pixels) == 58 and all(len(row) == 58 for row in pixels)
@@ -167,7 +168,7 @@ def test_web_ui_qr() -> None:
     maximum_matrix = encode_v1_l(maximum_ipv4_url)
     assert len(maximum_matrix) == 21 and all(len(row) == 21 for row in maximum_matrix)
     try:
-        encode_v1_l("https://<keyboard-ip>")
+        encode_v1_l("https://192.0.2.1")
     except ValueError as exc:
         assert "non-alphanumeric" in str(exc)
     else:
@@ -256,24 +257,24 @@ def test_i2cd_ready_layout_override() -> None:
                 x=3,
                 y=10,
                 max_width=58,
-                system_status={"management_url": "HTTPS://<keyboard-ip>"},
+                system_status={"management_url": "HTTPS://192.0.2.1"},
             )
             assert qr_bottom == 68
             assert draw.rectangles[-1] == (([(3, 10), (60, 67)],), {"fill": "white"})
-            assert len(draw.points) == sum(map(sum, encode_v1_l("HTTPS://<keyboard-ip>"))) * 4
+            assert len(draw.points) == sum(map(sum, encode_v1_l("HTTPS://192.0.2.1"))) * 4
 
             draw.texts.clear()
             draw.rectangles.clear()
             draw.points.clear()
             i2cd_daemon._draw_web_ui_qr_screen(
-                Device(), Font(), {"management_url": "HTTPS://<keyboard-ip>"},
+                Device(), Font(), {"management_url": "HTTPS://192.0.2.1"},
             )
             assert draw.rectangles[:2] == [
                 (([(0, 0), (63, 127)],), {"fill": "black"}),
                 (([(3, 17), (60, 74)],), {"fill": "white"}),
             ]
-            assert draw.texts == ["Web UI", "192.168.0", ".48"], draw.texts
-            assert len(draw.points) == sum(map(sum, encode_v1_l("HTTPS://<keyboard-ip>"))) * 4
+            assert draw.texts == ["Web UI", "192.0.2.1"], draw.texts
+            assert len(draw.points) == sum(map(sum, encode_v1_l("HTTPS://192.0.2.1"))) * 4
 
             draw.texts.clear()
             i2cd_daemon._draw_web_ui_qr_screen(Device(), Font(), {"management_url": ""})
