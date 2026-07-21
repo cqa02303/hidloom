@@ -397,6 +397,34 @@ function drawOledPreviewIcon(context, name, x, y, active = false) {
   return x + icon.width + 3;
 }
 
+const OLED_WEB_UI_QR_PREVIEW = [
+  "111111100010101111111", "100000100000101000001", "101110101010001011101",
+  "101110100000101011101", "101110100100101011101", "100000100111001000001",
+  "111111101010101111111", "000000001011000000000", "111011111010011000100",
+  "001111001000110001111", "101011101001101010000", "010100010010011110000",
+  "101110110000101110001", "000000001001110010001", "111111101100001011101",
+  "100000101101101100011", "101110101010101010100", "101110100011001000010",
+  "101110101010101100001", "100000101010001001011", "111111101000001101001",
+];
+
+function drawOledWebUiQrPreview(context, y) {
+  const scale = 2;
+  const quiet = 4 * scale;
+  const size = (21 + 8) * scale;
+  const left = Math.floor((64 - size) / 2);
+  context.fillStyle = "#fff";
+  context.fillRect(left, y, size, size);
+  context.fillStyle = "#000";
+  OLED_WEB_UI_QR_PREVIEW.forEach((row, moduleY) => {
+    Array.from(row).forEach((pixel, moduleX) => {
+      if (pixel === "1") {
+        context.fillRect(left + quiet + moduleX * scale, y + quiet + moduleY * scale, scale, scale);
+      }
+    });
+  });
+  return y + size;
+}
+
 function renderOledScreenPreview() {
   const canvas = oledEl("oled-screen-preview");
   const items = _oledEditorState.customization?.ready?.items;
@@ -431,6 +459,7 @@ function renderOledScreenPreview() {
       ["auto", "usb", "wifi3"].forEach(name => { x = drawOledPreviewIcon(context, name, x, y, true); });
       y += 10;
     }
+    if (item.id === "web_ui_qr") y = drawOledWebUiQrPreview(context, y);
     if (item.id === "layer") text("Layer: 0");
     if (item.id === "active_layers") text("[0,1]");
     if (item.id === "cpu") text("CPU:12 %");
@@ -443,6 +472,15 @@ function renderOledScreenPreview() {
       y += 3;
     }
   });
+  const usage = oledEl("oled-layout-usage");
+  if (usage) {
+    const available = canvas.height - 1;
+    const overflow = Math.max(0, y - available);
+    usage.textContent = overflow
+      ? `表示領域を ${overflow}px 超えています。項目を減らすか順序を調整してください。`
+      : `使用中: ${Math.max(0, y - 3)} / ${available - 3}px`;
+    usage.classList.toggle("error", overflow > 0);
+  }
 }
 
 async function saveOledCustomization() {

@@ -13,7 +13,8 @@ legacy raw 8-byte keyboard report は互換用に受け付ける。
 
 Device Information ServiceのPnP IDはUSB identity profileと同じ
 `HIDLOOM_USB_VENDOR_ID` / `HIDLOOM_USB_PRODUCT_ID`から生成します。
-pid.codes割当前はdevelopment profileだけを使用し、public release readinessが公開を停止します。
+pid.codes割当前はdevelopment profileだけを使用します。PID待ちは`stable-public` binary公開だけを停止し、
+`source-public`同期と`internal-rc`検証は継続します。
 Raspberry Pi OSでは`/etc/hidloom/usb-identity.env`を`btd.service`と
 `hidloom-usb-gadget.service`が共有し、片側だけのidentity変更を防ぎます。
 

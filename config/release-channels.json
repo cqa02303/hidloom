@@ -1,0 +1,37 @@
+{
+  "schema": "hidloom.release-channels.v1",
+  "promotion_order": [
+    "source-public",
+    "internal-rc",
+    "stable-public"
+  ],
+  "channels": {
+    "source-public": {
+      "audience": "public",
+      "artifact_scope": "source",
+      "requires_pid_assignment": false,
+      "requires_build_provenance": false,
+      "requires_hardware_smoke": false,
+      "github_binary_release_allowed": false,
+      "description": "Audited public source sync and source snapshots; pid.codes allocation is not a blocker."
+    },
+    "internal-rc": {
+      "audience": "internal",
+      "artifact_scope": "source-and-binary",
+      "requires_pid_assignment": false,
+      "requires_build_provenance": true,
+      "requires_hardware_smoke": true,
+      "github_binary_release_allowed": false,
+      "description": "Immutable package and image candidate with exact provenance and hardware evidence; never upload publicly."
+    },
+    "stable-public": {
+      "audience": "public",
+      "artifact_scope": "source-and-binary",
+      "requires_pid_assignment": true,
+      "requires_build_provenance": true,
+      "requires_hardware_smoke": true,
+      "github_binary_release_allowed": true,
+      "description": "Turnkey public package and image release using the formally assigned USB identity."
+    }
+  }
+}

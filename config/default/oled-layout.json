@@ -24,6 +24,13 @@
         "separator_after": true
       },
       {
+        "id": "web_ui_qr",
+        "label": "Web UI QR",
+        "description": "Version 1 QR code for the HTTPS management address",
+        "enabled": false,
+        "separator_after": false
+      },
+      {
         "id": "layer",
         "label": "Layer",
         "description": "Current layer",

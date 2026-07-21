@@ -4,19 +4,19 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "001a0d2e5dcb5bdaab1b86340ab773e7e932dbe8",
-    "base_tree": "e0eed736c691c12f66d5e83745f1ea8abd9e7a7d",
-    "base_revision_count": 2012,
-    "selected_path_count": 1231,
-    "selected_snapshot_sha256": "f96267da76fc58fc92053c5d6d492c31877b75bc0a39b636879e2b7e9fa519d5"
+    "base_commit": "9e8357f843242dd33363a214c6eb198a2aa18e29",
+    "base_tree": "9387991bbc6cc28faf708a34818306d3b20400e1",
+    "base_revision_count": 2028,
+    "selected_path_count": 1247,
+    "selected_snapshot_sha256": "1e01f0c99b848ec3937572c7d0d7a56283b8a0dff6583320962b542f5cb340c3"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1231,
+  "file_count": 1247,
   "source_selection": {
-    "tracked_paths": 1298,
-    "public_source_paths": 1231,
+    "tracked_paths": 1314,
+    "public_source_paths": 1247,
     "private_only_paths": 67,
     "generated_output_paths": 0,
     "unclassified_paths": 0
@@ -24,8 +24,8 @@
   "finding_summary": {
     "warn:credential_word": {
       "implementation_security_keyword": 59,
-      "documentation_security_keyword": 72,
-      "security_implementation_keyword": 73,
+      "documentation_security_keyword": 76,
+      "security_implementation_keyword": 82,
       "test_fixture": 46
     },
     "warn:linux_foundation_vid": {
@@ -66,7 +66,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "INSTALL.md",
-      "line": 142,
+      "line": 149,
       "excerpt": "`pi` / `pi` です。長期利用前に password を変更してください。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -328,7 +328,7 @@
       "pattern_id": "credential_word",
       "path": "config/default/script/KC_SH3.sh",
       "line": 43,
-      "excerpt": "hidloom-notify alert \"Node: ${NODE} SSID: ${SSID} IP: ${IP}\" 7",
+      "excerpt": "hidloom-notify alert \"Node: ${NODE} SSID: ${SSID} IP: ${IP}\" 4 || exit $?",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
     },
@@ -489,7 +489,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 250,
+      "line": 251,
       "excerpt": "\"reason\": \"reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -498,7 +498,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 256,
+      "line": 257,
       "excerpt": "\"reason\": \"credential words are validation fixtures; concrete token patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -507,7 +507,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 302,
+      "line": 303,
       "excerpt": "\"reason\": \"security documentation names credential concepts; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -516,7 +516,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 328,
+      "line": 329,
       "excerpt": "\"reason\": \"reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -992,9 +992,81 @@
     {
       "severity": "warn",
       "pattern_id": "credential_word",
-      "path": "daemon/http/static/index.html",
-      "line": 361,
-      "excerpt": "<label for=\"settings-current-password\">Current password</label>",
+      "path": "daemon/http/static/i18n.js",
+      "line": 72,
+      "excerpt": "\"ユーザー名\": \"Username\", \"現在のパスワード\": \"Current password\",",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 73,
+      "excerpt": "\"新しいパスワード\": \"New password\", \"新しいパスワード（確認）\": \"Confirm new password\",",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 74,
+      "excerpt": "\"パスワードを変更\": \"Change password\", \"定型文送信\": \"Saved text entries\",",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 115,
+      "excerpt": "\"この管理画面へアクセスするときのパスワードを変更します。ユーザー名は変更できません。\": \"Change the password used to access this interface. The username cannot be changed.\",",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 146,
+      "excerpt": "[\"check用パスワードが一致しません\", \"The confirmation password does not match\"],",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 147,
+      "excerpt": "[\"Saved。次のアクセスから新しいパスワードでlogインしてください。\", \"Saved. Use the new password on your next visit.\"],",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 309,
+      "excerpt": "[\"確認用パスワードが一致しません\", \"The confirmation password does not match\"],",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 310,
+      "excerpt": "[\"新しいパスワードを入力してください\", \"Enter a new password\"],",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/i18n.js",
+      "line": 311,
+      "excerpt": "[\"次のアクセスから新しいパスワードでログインしてください。\", \"Use the new password on your next visit.\"],",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
     },
@@ -1002,7 +1074,16 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 362,
+      "line": 381,
+      "excerpt": "<label for=\"settings-current-password\">現在のパスワード</label>",
+      "disposition": "security_implementation_keyword",
+      "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "daemon/http/static/index.html",
+      "line": 382,
       "excerpt": "<input id=\"settings-current-password\" type=\"password\" autocomplete=\"current-password\">",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1011,8 +1092,8 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 365,
-      "excerpt": "<label for=\"settings-new-password\">New password</label>",
+      "line": 385,
+      "excerpt": "<label for=\"settings-new-password\">新しいパスワード</label>",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
     },
@@ -1020,7 +1101,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 366,
+      "line": 386,
       "excerpt": "<input id=\"settings-new-password\" type=\"password\" autocomplete=\"new-password\">",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1029,8 +1110,8 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 369,
-      "excerpt": "<label for=\"settings-confirm-password\">Confirm password</label>",
+      "line": 389,
+      "excerpt": "<label for=\"settings-confirm-password\">新しいパスワード（確認）</label>",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
     },
@@ -1038,7 +1119,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/static/index.html",
-      "line": 370,
+      "line": 390,
       "excerpt": "<input id=\"settings-confirm-password\" type=\"password\" autocomplete=\"new-password\">",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1532,6 +1613,24 @@
     {
       "severity": "warn",
       "pattern_id": "credential_word",
+      "path": "docs/feature/oled-web-ui-qr.md",
+      "line": 19,
+      "excerpt": "- password、Basic認証header、cookie、CSRF tokenは格納しない",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "docs/feature/oled-web-ui-qr.md",
+      "line": 40,
+      "excerpt": "`KC_SH3`を押した場合は、従来どおりNode / SSID / IPを4秒表示した後、管理画面QRを15秒間だけ表示し、",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
       "path": "docs/input/touch-panel-flick-input-design.md",
       "line": 26,
       "excerpt": "- host IME / layout の自動判定はしない。日本語入力は `KC_KANA` / `KC_LANG1` / macro token など既存 action と明示設定で扱う。",
@@ -1668,7 +1767,25 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 78,
+      "line": 25,
+      "excerpt": "- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "docs/ops/failure-patterns.md",
+      "line": 27,
+      "excerpt": "- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "docs/ops/failure-patterns.md",
+      "line": 87,
       "excerpt": "- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1677,7 +1794,7 @@
       "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "docs/ops/failure-patterns.md",
-      "line": 280,
+      "line": 289,
       "excerpt": "- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
@@ -1686,7 +1803,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 532,
+      "line": 541,
       "excerpt": "- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1695,7 +1812,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 607,
+      "line": 616,
       "excerpt": "- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -9354,7 +9471,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 240,
+      "line": 247,
       "excerpt": "unknown.write_text(\"password\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9363,7 +9480,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 243,
+      "line": 250,
       "excerpt": "reviewed.write_text(\"password\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9372,7 +9489,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 246,
+      "line": 253,
       "excerpt": "reviewed_scanner.write_text(\"token\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9570,7 +9687,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/README.md",
-      "line": 93,
+      "line": 102,
       "excerpt": "したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -9606,7 +9723,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 133,
+      "line": 134,
       "excerpt": "filesystem_file(debugfs, rootfs, \"/etc/passwd\"),",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -9615,7 +9732,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 135,
+      "line": 136,
       "excerpt": "f\"{rootfs}:/etc/passwd\",",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -9624,7 +9741,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 138,
+      "line": 139,
       "excerpt": "raise SystemExit(\"invalid M6 pi passwd entry\")",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
@@ -9633,7 +9750,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 148,
+      "line": 149,
       "excerpt": "raise SystemExit(\"M6 pi password hash does not match the SHA-256 users table\")",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"

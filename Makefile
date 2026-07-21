@@ -81,10 +81,10 @@ public-export-check: repository-hygiene source-syntax-hygiene development-residu
 	python3 script/test_public_sync_branch.py
 	python3 script/test_public_release_readiness.py
 	python3 script/test_public_repository_policy.py
-	python3 $(PUBLIC_EXPORT_DIR)/tools/public_release_readiness.py $(PUBLIC_EXPORT_DIR) --allow-pending-pid
+	python3 $(PUBLIC_EXPORT_DIR)/tools/public_release_readiness.py $(PUBLIC_EXPORT_DIR) --channel source-public
 
 public-sync-plan: public-export-check
-	python3 $(PUBLIC_EXPORT_DIR)/tools/public_sync_plan.py $(PUBLIC_EXPORT_DIR) --allow-pending-pid
+	python3 $(PUBLIC_EXPORT_DIR)/tools/public_sync_plan.py $(PUBLIC_EXPORT_DIR) --channel source-public
 
 public-repository-create-check:
 	python3 script/test_public_repository_create.py

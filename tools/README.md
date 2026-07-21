@@ -27,6 +27,10 @@ touch kiosk healthをbuild host上で検証します。
 - `local_environment_hygiene.py`
 - `pid_codes_allocation.py`
 - `pid_codes_application.py`
+- `package/build_profile_release_bundle.py`
+- `package/build_zero2w_keyboard_release.sh`
+- `package/publish_public_release_bundle.py`
+- `package/verify_github_public_release_bundle.py`
 - `public_usb_identity.py`
 - `public_asset_inventory.py`
 - `public_build_provenance.py`
@@ -49,9 +53,14 @@ touch kiosk healthをbuild host上で検証します。
 - `touch_kiosk_health_probe.py`
 - `workspace_debris_hygiene.py`
 
-`public_release_readiness.py`は既定でsource公開scopeを検査する。Buildroot image配布前は
-`--require-binary-distribution --compliance-bundle <archive>`を追加し、raw legal-infoの収録待ちblockerが
-同じBuildroot/toolchain用の検証済み対応source archiveで解決されていることまで確認する。
+`public_release_readiness.py`は既定で`source-public`を検査する。`--channel internal-rc`ではPIDを
+要求せずbinary complianceまで、`--channel stable-public`では正式USB identityを含む最終preflightを
+検査する。channel契約は`config/release-channels.json`を正とする。
+
+`package/publish_public_release_bundle.py`はkeyboard package、touch profile、M6、source、complianceを
+一つのdraft GitHub Releaseへ載せる専用入口で、既定はdry-runである。
+`package/verify_github_public_release_bundle.py`はGitHubから全assetをdownloadし、`SHA256SUMS`と
+対応source内verifierを使って公開後の完全性を再確認する。
 
 `public_usb_identity.py`は現行private互換profileと将来のpublic正式profileを同じcontractで検査する。
 現行config/Vial定義とのdriftを拒否し、pid.codes merge evidenceが揃うまで正式profile bundleを生成しない。
@@ -251,6 +260,35 @@ ssh <device> 'sudo apt-get install -y \
   sudo hidloom-profile keyboard-ver1 --apply --backup --restart'
 tools/package/deploy_deb_verify.sh --host <device> --smoke
 ```
+
+Raspberry Pi 4 + Waveshare 8.8inch touch panel向けの公開候補は、clean public sourceで
+cross-buildしてから、対応source、SBOM、quickstart、Release本文、checksumを一つの
+directoryへまとめます。`build_touch_panel_release.sh`はtag作成やuploadを行いません。
+
+```bash
+tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8
+tools/package/build_touch_panel_release.sh
+python3 tools/package/build_profile_release_bundle.py verify \
+  build/touch-panel-release
+```
+
+`PACKAGE_RELEASE_MANIFEST.json`のpublic USB identity gateと、Raspberry Pi 4実機の
+touch-ready hardware gateを両方通したdirectoryだけをGitHub Releaseへ使用します。
+
+Raspberry Pi Zero 2 W向けは、keyboard packageとBuildroot M6 imageを同じprovenanceで
+cross-buildし、対応source/compliance/quickstartと一緒に一つのdirectoryへまとめます。
+
+```bash
+tools/public_build_rehearsal.sh --all --profile keyboard-ver1
+tools/package/build_zero2w_keyboard_release.sh
+python3 tools/public_release_bundle.py --verify build/zero2w-keyboard-release
+```
+
+同じReleaseへtouch profileを加える時は、同じsourceのtouch package provenanceを
+`--touch-package-dir` / `--touch-provenance`で渡します。全assetは一つの`SHA256SUMS`で検証します。
+
+`RELEASE_MANIFEST.json`のpublic USB identity/build provenance gateと、Zero 2 W実機の
+usable-keyboard hardware gateを両方通したdirectoryだけを公開します。
 
 `make package-*` / `package-opt-*` / `package-deb-*` は release bundle 互換 mode
 または pre-.deb rehearsal 用です。通常の更新では使わず、過去 release への復旧や

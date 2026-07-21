@@ -11,8 +11,11 @@ HIDloom の詳細ドキュメント置き場です。
 |---|---|
 | プロジェクト概要と導入 | [../README.md](../README.md) |
 | Raspberry Pi OS package / Buildroot image の選択 | [../INSTALL.md](../INSTALL.md) |
+| Raspberry Pi Zero 2 W keyboard package / M6 image の導入 | [hardware/raspberry-pi-zero-2-w-keyboard-release.md](hardware/raspberry-pi-zero-2-w-keyboard-release.md) |
+| Raspberry Pi 4 touch panel package の導入 | [hardware/raspberry-pi-4-touch-panel-package.md](hardware/raspberry-pi-4-touch-panel-package.md) |
 | 実機失敗パターンの検出、復旧、回帰確認 | [ops/failure-patterns.md](ops/failure-patterns.md) |
 | release bundle / Debian package の build、deploy、verify、rollback | [ops/release-packaging-runbook.md](ops/release-packaging-runbook.md) |
+| PID待ちと開発を分離するrelease channel / RC昇格方針 | [ops/release-channel-policy.md](ops/release-channel-policy.md) |
 | daemon ごとの詳細仕様、実装時に守る条件、移植時 checklist | [daemon/specs/README.md](daemon/specs/README.md) |
 | Zero / Zero 2 向け runtime profile 方針 | [../config/profiles/README.md](../config/profiles/README.md) |
 | テストと helper の棚卸し | [ops/test-script-inventory.md](ops/test-script-inventory.md) |

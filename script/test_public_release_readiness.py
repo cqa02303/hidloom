@@ -46,14 +46,21 @@ def main() -> None:
             text=True,
         )
         readiness = subprocess.run(
-            ["python3", str(export / "tools/public_release_readiness.py"), "--allow-pending-pid"],
+            [
+                "python3",
+                str(export / "tools/public_release_readiness.py"),
+                "--channel",
+                "source-public",
+            ],
             cwd=export,
             check=True,
             capture_output=True,
             text=True,
         )
         payload = json.loads(readiness.stdout)
-        assert payload["schema"] == "hidloom.public-release-readiness.v3"
+        assert payload["schema"] == "hidloom.public-release-readiness.v4"
+        assert payload["release_channel"] == "source-public"
+        assert payload["release_channel_policy_schema"] == "hidloom.release-channels.v1"
         assert payload["evaluation_scope"] == "source-publication"
         assert payload["ready"] is True
         assert payload["source_publication_ready"] is True
@@ -186,19 +193,37 @@ def main() -> None:
         ]
         assert ".github/PULL_REQUEST_TEMPLATE.md" in missing_community_payload["missing_files"]
         pull_request_template.write_bytes(original_pull_request_template)
-        strict = subprocess.run(
+        source_default = subprocess.run(
             ["python3", str(export / "tools/public_release_readiness.py")],
             cwd=export,
             capture_output=True,
             text=True,
         )
-        assert strict.returncode == 2
+        assert source_default.returncode == 0
+        source_default_payload = json.loads(source_default.stdout)
+        assert source_default_payload["release_channel"] == "source-public"
+        stable = subprocess.run(
+            [
+                "python3",
+                str(export / "tools/public_release_readiness.py"),
+                "--channel",
+                "stable-public",
+            ],
+            cwd=export,
+            capture_output=True,
+            text=True,
+        )
+        assert stable.returncode == 2
+        stable_payload = json.loads(stable.stdout)
+        assert stable_payload["release_channel"] == "stable-public"
+        assert stable_payload["unexpected_required_count"] == 12
         plan = subprocess.run(
             [
                 "python3",
                 str(export / "tools/public_sync_plan.py"),
                 str(export),
-                "--allow-pending-pid",
+                "--channel",
+                "source-public",
             ],
             cwd=export,
             check=True,
@@ -206,6 +231,8 @@ def main() -> None:
             text=True,
         )
         sync = json.loads(plan.stdout)
+        assert sync["schema"] == "hidloom.public-sync-plan.v2"
+        assert sync["release_channel"] == "source-public"
         assert sync["dry_run"] is True
         assert sync["branch"].startswith("sync/v0.1.0-")
         assert len(sync["export_manifest_sha256"]) == 64
@@ -229,6 +256,7 @@ def main() -> None:
         assert binary_without_payload["source_publication_ready"] is True
         assert binary_without_payload["ready"] is False
         assert binary_without_payload["evaluation_scope"] == "binary-distribution"
+        assert binary_without_payload["release_channel"] == "internal-rc"
 
         compliance = make_compliance_fixture(Path(tmp) / "compliance", export)
         compliance_result = json.loads(
@@ -294,6 +322,7 @@ def main() -> None:
         assert binary_ready.returncode == 0, binary_ready.stdout + binary_ready.stderr
         binary_payload = json.loads(binary_ready.stdout)
         assert binary_payload["ready"] is True
+        assert binary_payload["release_channel"] == "internal-rc"
         assert binary_payload["evaluation_scope"] == "binary-distribution"
         assert binary_payload["binary_distribution_ready"] is True
         assert binary_payload["binary_distribution_status"] == "verified-compliance-bundle"

@@ -8,9 +8,9 @@
   },
   "published_release_tags": [],
   "summary": {
-    "files_scanned": 1206,
-    "repository_references": 130,
-    "public_repository_references": 45,
+    "files_scanned": 1222,
+    "repository_references": 140,
+    "public_repository_references": 49,
     "findings": 0,
     "blockers": 0
   },
@@ -20,6 +20,30 @@
       "line": 4,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "AUTHORS.md",
+      "line": 24,
+      "slug": "vial-kb/vial-qmk",
+      "url": "https://github.com/vial-kb/vial-qmk"
+    },
+    {
+      "path": "AUTHORS.md",
+      "line": 25,
+      "slug": "vial-kb/vial-gui",
+      "url": "https://github.com/vial-kb/vial-gui"
+    },
+    {
+      "path": "AUTHORS.md",
+      "line": 28,
+      "slug": "qmk/qmk_firmware",
+      "url": "https://github.com/qmk/qmk_firmware"
+    },
+    {
+      "path": "AUTHORS.md",
+      "line": 32,
+      "slug": "nickcoutsos/keypos",
+      "url": "https://github.com/nickcoutsos/keypos"
     },
     {
       "path": "SBOM.cdx.json",
@@ -268,8 +292,14 @@
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
+      "path": "daemon/http/static/README.md",
+      "line": 39,
+      "slug": "emilkowalski/skills",
+      "url": "https://github.com/emilkowalski/skills"
+    },
+    {
       "path": "daemon/http/static/index.html",
-      "line": 20,
+      "line": 21,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -282,6 +312,18 @@
     {
       "path": "daemon/http/static/remap_quick_keys.js",
       "line": 12,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/hardware/raspberry-pi-4-touch-panel-package.md",
+      "line": 22,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "docs/hardware/raspberry-pi-zero-2-w-keyboard-release.md",
+      "line": 20,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -473,7 +515,7 @@
     },
     {
       "path": "docs/ops/failure-patterns.md",
-      "line": 354,
+      "line": 363,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -598,6 +640,18 @@
       "url": "https://github.com/actions/checkout"
     },
     {
+      "path": "script/test_fresh_install_docs.py",
+      "line": 164,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_fresh_install_docs.py",
+      "line": 179,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom"
+    },
+    {
       "path": "script/test_http_interaction_ui_assets.py",
       "line": 16,
       "slug": "cqa02303/hidloom",
@@ -653,9 +707,15 @@
     },
     {
       "path": "script/test_public_export.py",
-      "line": 583,
+      "line": 590,
       "slug": "cqa02303/hidloom",
       "url": "github.com/cqa02303/hidloom"
+    },
+    {
+      "path": "script/test_public_release_bundle.py",
+      "line": 70,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
     {
       "path": "script/test_public_repository_create.py",
@@ -683,7 +743,7 @@
     },
     {
       "path": "script/test_release_bundle_tools.py",
-      "line": 614,
+      "line": 657,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },

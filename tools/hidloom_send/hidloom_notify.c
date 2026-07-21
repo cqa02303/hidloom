@@ -15,6 +15,7 @@
 static void usage(FILE *out) {
     fprintf(out,
             "usage: hidloom-notify [--socket PATH] alert|warning MESSAGE [SEC]\n"
+            "       hidloom-notify [--socket PATH] web-ui-qr [SEC]\n"
             "\n"
             "Logs to syslog and sends an OLED alert/warning. SEC defaults to 2.0 seconds.\n"
             "\n"
@@ -118,15 +119,27 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (argc - i < 2 || argc - i > 3) {
+    if (argc - i < 1 || argc - i > 3) {
         usage(stderr);
         return 2;
     }
     kind = argv[i++];
-    message = argv[i++];
-    if (strcmp(kind, "alert") == 0) {
+    if (strcmp(kind, "web-ui-qr") == 0) {
+        kind = "web_ui_qr";
+        message = "";
+        priority = LOG_INFO;
+        if (argc - i > 1) {
+            usage(stderr);
+            return 2;
+        }
+    } else if (argc - i < 1 || argc - i > 2) {
+        usage(stderr);
+        return 2;
+    } else if (strcmp(kind, "alert") == 0) {
+        message = argv[i++];
         priority = LOG_INFO;
     } else if (strcmp(kind, "warning") == 0) {
+        message = argv[i++];
         priority = LOG_WARNING;
     } else {
         usage(stderr);

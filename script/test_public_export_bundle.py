@@ -169,6 +169,7 @@ def main() -> None:
         else:
             assert evidence["source"]["documentation_audit"]["removed_private_navigation_lines"] == 0
         assert evidence["packages"]["source_mode"] == "public-export"
+        assert evidence["packages"]["profile_id"] == "keyboard-ver1"
         assert len(evidence["packages"]["artifacts"]) == 6
         subprocess.run(
             [
@@ -180,6 +181,68 @@ def main() -> None:
                 str(export),
                 "--package-dir",
                 str(packages),
+            ],
+            cwd=export,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        touch_result = subprocess.run(
+            [
+                str(export / "tools/package/build_device_profile_deb.sh"),
+                "--bundle",
+                str(archives[0]),
+                "--out-dir",
+                str(packages),
+                "--profile",
+                "touch-waveshare-8.8",
+            ],
+            cwd=export,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert touch_result.returncode == 0, touch_result.stderr
+        touch_provenance = workspace / "PUBLIC_TOUCH_BUILD_PROVENANCE.json"
+        subprocess.run(
+            [
+                "python3",
+                str(export / "tools/public_build_provenance.py"),
+                "collect",
+                "--source",
+                str(export),
+                "--mode",
+                "package",
+                "--package-dir",
+                str(packages),
+                "--profile",
+                "touch-waveshare-8.8",
+                "--output",
+                str(touch_provenance),
+            ],
+            cwd=export,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        touch_evidence = json.loads(touch_provenance.read_text(encoding="utf-8"))
+        assert touch_evidence["packages"]["profile_id"] == "touch-waveshare-8.8"
+        assert touch_evidence["packages"]["metadata"]["profile"]["package"] == (
+            "hidloom-profile-touch-waveshare-8.8"
+        )
+        subprocess.run(
+            [
+                "python3",
+                str(export / "tools/public_build_provenance.py"),
+                "verify",
+                str(touch_provenance),
+                "--source",
+                str(export),
+                "--package-dir",
+                str(packages),
+                "--profile",
+                "touch-waveshare-8.8",
             ],
             cwd=export,
             check=True,

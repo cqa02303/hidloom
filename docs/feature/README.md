@@ -16,6 +16,8 @@ Interaction、host profile、power preset など複数 daemon にまたがる fe
 - [conditional-layers-design.md](conditional-layers-design.md)
 - [design-todo-backlog.md](design-todo-backlog.md)
 - [host-profile-design.md](host-profile-design.md)
+- [http-ui-internationalization-design.md](http-ui-internationalization-design.md)
+- [oled-web-ui-qr.md](oled-web-ui-qr.md)
 - [interaction-inspector-design.md](interaction-inspector-design.md)
 - [key-toggle-lock-design.md](key-toggle-lock-design.md)
 - [layer-lock-design.md](layer-lock-design.md)

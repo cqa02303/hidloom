@@ -1,6 +1,6 @@
 # Test Script Inventory
 
-更新日: 2026-07-18
+更新日: 2026-07-20
 
 `script/test_*.py` と周辺手動ツールの棚卸し方針です。現時点ではテストが多いこと自体を
 安全側とみなし、削除より分類を優先します。
@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 336 本程度あり、標準 canonical suite は 224 entrypoints を実行する。
+現在 `script/test_*.py` は 338 本程度あり、標準 canonical suite は 226 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints
@@ -252,8 +252,10 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
 - `script/test_public_buildroot_rebuild.py`
 - `script/test_buildroot_compliance_bundle.py`
 - `script/test_public_release_bundle.py`
+- `script/test_profile_release_bundle.py`
 - `script/test_public_sync_branch.py`
-  - clean exportからのBuildroot M6再構成、package/M6 provenance再検証、Release candidate集約、isolated sync branch pushをfixtureで確認する。
+  - clean exportからのBuildroot M6再構成、package/M6 provenance再検証、任意profile向けsplit Debian package配布bundle、
+    Release candidate集約、isolated sync branch pushをfixtureで確認する。
 - `script/test_unimplemented_keycodes_doc.py`
 - `script/test_man_pages.py`
   - `docs/man/man1|man5|man8` の manual page source、GitHub docs URL、package build 時の placeholder 展開、release candidate contents check を固定する。

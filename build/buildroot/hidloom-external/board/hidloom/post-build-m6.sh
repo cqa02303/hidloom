@@ -20,6 +20,7 @@ install -d "$HIDLOOM_DIR/daemon" "$HIDLOOM_DIR/config"
 for module in logicd viald i2cd ledd usbd; do
     cp -a "$ROOT/daemon/$module" "$HIDLOOM_DIR/daemon/"
 done
+install -m 0644 "$ROOT/daemon/oled_text.py" "$HIDLOOM_DIR/daemon/oled_text.py"
 cp -a "$ROOT/config/." "$HIDLOOM_DIR/config/"
 install -m 0644 "$ROOT/hidloom_paths.py" "$HIDLOOM_DIR/hidloom_paths.py"
 install -m 0644 "$ROOT/vialrgb_effects.py" "$HIDLOOM_DIR/vialrgb_effects.py"

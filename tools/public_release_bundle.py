@@ -16,9 +16,16 @@ from typing import Any
 sys.dont_write_bytecode = True
 
 from public_export_manifest import verify as verify_export_manifest
+from public_usb_identity import ContractError, validate_contract as validate_usb_contract
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = "hidloom.public-release-bundle.v2"
+SCHEMA = "hidloom.public-release-bundle.v5"
+RELEASE_CHANNEL_POLICY_SCHEMA = "hidloom.release-channels.v1"
+SOURCE_PUBLIC_CHANNEL = "source-public"
+INTERNAL_RC_CHANNEL = "internal-rc"
+STABLE_PUBLIC_CHANNEL = "stable-public"
+BINARY_RELEASE_CHANNELS = (INTERNAL_RC_CHANNEL, STABLE_PUBLIC_CHANNEL)
+PUBLIC_USB_BLOCKER = "public-usb-identity-not-assigned"
 REQUIRED_COMPLIANCE = (
     "LICENSE",
     "SBOM.cdx.json",
@@ -42,6 +49,120 @@ def sha256(path: Path) -> str:
 
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_release_channel_policy(source: Path) -> dict[str, Any]:
+    policy = load_json(source / "config/release-channels.json")
+    if policy.get("schema") != RELEASE_CHANNEL_POLICY_SCHEMA:
+        raise SystemExit("unsupported release channel policy schema")
+    if policy.get("promotion_order") != [
+        SOURCE_PUBLIC_CHANNEL,
+        INTERNAL_RC_CHANNEL,
+        STABLE_PUBLIC_CHANNEL,
+    ]:
+        raise SystemExit("release channel promotion order is invalid")
+    channels = policy.get("channels")
+    if not isinstance(channels, dict) or set(channels) != {
+        SOURCE_PUBLIC_CHANNEL,
+        INTERNAL_RC_CHANNEL,
+        STABLE_PUBLIC_CHANNEL,
+    }:
+        raise SystemExit("release channel set is invalid")
+    expected = {
+        SOURCE_PUBLIC_CHANNEL: {
+            "audience": "public",
+            "artifact_scope": "source",
+            "requires_pid_assignment": False,
+            "requires_build_provenance": False,
+            "requires_hardware_smoke": False,
+            "github_binary_release_allowed": False,
+        },
+        INTERNAL_RC_CHANNEL: {
+            "audience": "internal",
+            "artifact_scope": "source-and-binary",
+            "requires_pid_assignment": False,
+            "requires_build_provenance": True,
+            "requires_hardware_smoke": True,
+            "github_binary_release_allowed": False,
+        },
+        STABLE_PUBLIC_CHANNEL: {
+            "audience": "public",
+            "artifact_scope": "source-and-binary",
+            "requires_pid_assignment": True,
+            "requires_build_provenance": True,
+            "requires_hardware_smoke": True,
+            "github_binary_release_allowed": True,
+        },
+    }
+    for name, required in expected.items():
+        channel = channels.get(name)
+        if not isinstance(channel, dict):
+            raise SystemExit(f"release channel is invalid: {name}")
+        for field, value in required.items():
+            if channel.get(field) != value:
+                raise SystemExit(f"release channel policy mismatch: {name}:{field}")
+        description = channel.get("description")
+        if not isinstance(description, str) or not description.strip():
+            raise SystemExit(f"release channel description is missing: {name}")
+    return policy
+
+
+def release_channel_contract(
+    source: Path,
+    selected: str,
+    publication: dict[str, Any],
+    hardware_blockers: list[str],
+) -> dict[str, Any]:
+    if selected not in BINARY_RELEASE_CHANNELS:
+        raise SystemExit(f"unsupported binary release channel: {selected}")
+    policy = load_release_channel_policy(source)
+    publication_blockers = list(publication.get("blockers", []))
+    internal_blockers = [
+        blocker for blocker in publication_blockers if blocker != PUBLIC_USB_BLOCKER
+    ]
+    internal_blockers.extend(hardware_blockers)
+    stable_blockers = [*publication_blockers, *hardware_blockers]
+    blockers_by_channel = {
+        SOURCE_PUBLIC_CHANNEL: [],
+        INTERNAL_RC_CHANNEL: internal_blockers,
+        STABLE_PUBLIC_CHANNEL: stable_blockers,
+    }
+    statuses: dict[str, Any] = {}
+    for name in policy["promotion_order"]:
+        metadata = policy["channels"][name]
+        blockers = blockers_by_channel[name]
+        statuses[name] = {
+            "ready": not blockers,
+            "blockers": blockers,
+            "audience": metadata["audience"],
+            "artifact_scope": metadata["artifact_scope"],
+            "requires_pid_assignment": metadata["requires_pid_assignment"],
+            "github_binary_release_allowed": metadata["github_binary_release_allowed"],
+        }
+    return {
+        "policy_schema": policy["schema"],
+        "selected": selected,
+        "selected_ready": statuses[selected]["ready"],
+        "statuses": statuses,
+    }
+
+
+def integrated_hardware_blockers(
+    hardware_smoke: dict[str, Any],
+    touch_hardware_smoke: dict[str, Any] | None,
+) -> list[str]:
+    blockers: list[str] = []
+    if hardware_smoke.get("status") != "pass" or not isinstance(
+        hardware_smoke.get("usable_keyboard_seconds"), (int, float)
+    ) or hardware_smoke.get("usable_keyboard_seconds", 0) <= 0:
+        blockers.append("hardware-smoke-not-passed")
+    if touch_hardware_smoke is not None and (
+        touch_hardware_smoke.get("status") != "pass"
+        or not isinstance(touch_hardware_smoke.get("touch_ready_seconds"), (int, float))
+        or touch_hardware_smoke.get("touch_ready_seconds", 0) <= 0
+    ):
+        blockers.append("touch-hardware-smoke-not-passed")
+    return blockers
 
 
 def safe_version(value: str) -> str:
@@ -157,10 +278,125 @@ def validate_compliance_source(source: Path, compliance: dict[str, Any]) -> None
         raise SystemExit("Buildroot compliance bundle resolves a different legal baseline")
 
 
+def publication_status(
+    source: Path,
+    build_provenance: Path | None,
+    source_commit: str,
+    package_version: str,
+    core_package: Path,
+    profile_package: Path,
+    image: Path,
+    touch_profile_package: Path | None,
+    touch_build_provenance: Path | None,
+) -> dict[str, Any]:
+    blockers: list[str] = []
+    try:
+        identity = validate_usb_contract(source)
+    except ContractError as error:
+        raise SystemExit(
+            "public USB identity contract is invalid: " + ", ".join(error.issues)
+        ) from error
+    assignment = identity.get("assignment", {})
+    formal = identity.get("profiles", {}).get(identity.get("public_release_profile"), {})
+    if assignment.get("status") != "assigned" or not formal.get("public_release_allowed"):
+        blockers.append(PUBLIC_USB_BLOCKER)
+
+    provenance_asset = None
+    if build_provenance is None or not build_provenance.is_file():
+        blockers.append("public-build-provenance-missing")
+    else:
+        provenance = load_json(build_provenance)
+        packages = provenance.get("packages") or {}
+        buildroot = provenance.get("buildroot") or {}
+        source_data = provenance.get("source") or {}
+        package_artifacts = {
+            (item.get("role"), item.get("name")): item
+            for item in packages.get("artifacts", [])
+            if isinstance(item, dict)
+        }
+        expected_artifacts = (
+            ("raspberry-pi-os-core-package", core_package),
+            ("raspberry-pi-os-device-profile-package", profile_package),
+        )
+        matches = all(
+            package_artifacts.get((role, path.name), {}).get("sha256") == sha256(path)
+            and package_artifacts.get((role, path.name), {}).get("size") == path.stat().st_size
+            for role, path in expected_artifacts
+        )
+        image_data = buildroot.get("image") or {}
+        if (
+            provenance.get("schema") != "hidloom.public-build-provenance.v2"
+            or not provenance.get("ready")
+            or provenance.get("mode") != "all"
+            or source_data.get("source_commit") != source_commit
+            or packages.get("profile_id") != "keyboard-ver1"
+            or packages.get("version") != package_version
+            or not matches
+            or image_data.get("sha256") != sha256(image)
+            or image_data.get("size") != image.stat().st_size
+            or buildroot.get("mode") != "image"
+            or not buildroot.get("ready")
+        ):
+            raise SystemExit("public build provenance does not match the keyboard/M6 artifacts")
+        provenance_asset = {
+            "path": "PUBLIC_BUILD_PROVENANCE.json",
+            "size": build_provenance.stat().st_size,
+            "sha256": sha256(build_provenance),
+        }
+    touch_provenance_asset = None
+    if touch_profile_package is None:
+        if touch_build_provenance is not None:
+            raise SystemExit("touch build provenance was provided without a touch profile package")
+    elif touch_build_provenance is None or not touch_build_provenance.is_file():
+        blockers.append("touch-public-build-provenance-missing")
+    else:
+        touch_provenance = load_json(touch_build_provenance)
+        touch_packages = touch_provenance.get("packages") or {}
+        touch_source = touch_provenance.get("source") or {}
+        touch_artifacts = {
+            (item.get("role"), item.get("name")): item
+            for item in touch_packages.get("artifacts", [])
+            if isinstance(item, dict)
+        }
+        touch_expected = (
+            ("raspberry-pi-os-device-profile-package", touch_profile_package),
+        )
+        touch_matches = all(
+            touch_artifacts.get((role, path.name), {}).get("sha256") == sha256(path)
+            and touch_artifacts.get((role, path.name), {}).get("size") == path.stat().st_size
+            for role, path in touch_expected
+        )
+        if (
+            touch_provenance.get("schema") != "hidloom.public-build-provenance.v2"
+            or not touch_provenance.get("ready")
+            or touch_provenance.get("mode") not in {"package", "all"}
+            or touch_source.get("source_commit") != source_commit
+            or touch_packages.get("profile_id") != "touch-waveshare-8.8"
+            or touch_packages.get("version") != package_version
+            or not touch_matches
+        ):
+            raise SystemExit("touch build provenance does not match the release packages")
+        touch_provenance_asset = {
+            "path": "PUBLIC_BUILD_PROVENANCE_TOUCH.json",
+            "size": touch_build_provenance.stat().st_size,
+            "sha256": sha256(touch_build_provenance),
+        }
+    return {
+        "ready": not blockers,
+        "blockers": blockers,
+        "usb_assignment_status": assignment.get("status"),
+        "build_provenance": provenance_asset,
+        "touch_build_provenance": touch_provenance_asset,
+    }
+
+
 def write_notes(path: Path, manifest: dict[str, Any]) -> None:
     smoke = manifest["hardware_smoke"]
     seconds = smoke.get("usable_keyboard_seconds")
     timing = "not recorded" if seconds is None else f"{seconds:.3f} seconds"
+    touch_smoke = manifest.get("touch_hardware_smoke")
+    touch_seconds = touch_smoke.get("touch_ready_seconds") if touch_smoke else None
+    touch_timing = "not recorded" if touch_seconds is None else f"{touch_seconds:.3f} seconds"
     core_package = next(
         item["path"] for item in manifest["assets"] if item["role"] == "raspberry-pi-os-core-package"
     )
@@ -172,6 +408,31 @@ def write_notes(path: Path, manifest: dict[str, Any]) -> None:
     buildroot_image = next(
         item["path"] for item in manifest["assets"] if item["role"] == "buildroot-m6-zstd-image"
     )
+    touch_package = next(
+        (
+            item["path"]
+            for item in manifest["assets"]
+            if item["role"] == "raspberry-pi-os-touch-profile-package"
+        ),
+        None,
+    )
+    publication = manifest["publication"]
+    publication_text = (
+        "ready" if publication["ready"] else "blocked: " + ", ".join(publication["blockers"])
+    )
+    channels = manifest["release_channels"]
+    selected_channel = channels["selected"]
+    selected_status = channels["statuses"][selected_channel]
+    channel_text = (
+        "ready"
+        if selected_status["ready"]
+        else "blocked: " + ", ".join(selected_status["blockers"])
+    )
+    distribution_boundary = (
+        "Internal validation only; do not upload these binary assets to a public GitHub Release."
+        if selected_channel == INTERNAL_RC_CHANNEL
+        else "Public binary publication is allowed only after every stable-public gate passes."
+    )
     path.write_text(
         "\n".join(
             [
@@ -179,8 +440,22 @@ def write_notes(path: Path, manifest: dict[str, Any]) -> None:
                 "",
                 f"- Source commit: `{manifest['source']['commit']}`",
                 f"- Buildroot commit: `{manifest['buildroot']['commit']}`",
-                f"- Hardware smoke: `{smoke['status']}` on `{smoke['device']}`",
-                f"- Usable keyboard timing: {timing}",
+                f"- Hardware smoke (Raspberry Pi OS package + exact M6 image): "
+                f"`{smoke['status']}` on `{smoke['device']}`",
+                f"- Buildroot M6 usable keyboard timing: {timing}",
+                *(
+                    [
+                        f"- Touch hardware smoke: `{touch_smoke['status']}` on "
+                        f"`{touch_smoke['device']}`",
+                        f"- Touch ready timing: {touch_timing}",
+                    ]
+                    if touch_smoke
+                    else []
+                ),
+                f"- Publication gate: `{publication_text}`",
+                f"- Release channel: `{selected_channel}`",
+                f"- Channel gate: `{channel_text}`",
+                f"- Distribution boundary: {distribution_boundary}",
                 "",
                 "## Choose an Installation Method",
                 "",
@@ -188,12 +463,32 @@ def write_notes(path: Path, manifest: dict[str, Any]) -> None:
                 f"  Install `{core_package}` and `{profile_package}` in the same apt transaction.",
                 "- Buildroot M6 image: use this for the fastest offline appliance startup.",
                 f"  Write `{buildroot_image}` to a dedicated microSD after decompressing it.",
+                *(
+                    [
+                        "- Raspberry Pi OS touch panel: use this for the Raspberry Pi 4 kiosk.",
+                        f"  Install `{core_package}` and `{touch_package}` in the same apt transaction.",
+                    ]
+                    if touch_package
+                    else []
+                ),
                 "- Verify all downloaded assets with `sha256sum -c SHA256SUMS`.",
+                "- See `QUICKSTART.md` for package installation, M6 writing, checks, and rollback.",
                 "",
                 "```sh",
                 f"sudo apt-get install -y ./{core_package} ./{profile_package}",
                 "sudo hidloom-profile keyboard-ver1 --apply --backup --restart",
                 "```",
+                *(
+                    [
+                        "",
+                        "```sh",
+                        f"sudo apt-get install -y ./{core_package} ./{touch_package}",
+                        "sudo hidloom-profile touch-waveshare-8.8 --apply --backup --restart",
+                        "```",
+                    ]
+                    if touch_package
+                    else []
+                ),
                 "",
                 "## Appliance Boundary",
                 "",
@@ -208,6 +503,14 @@ def write_notes(path: Path, manifest: dict[str, Any]) -> None:
                 "",
                 "USB enumerate, JP/US routing, LT tap/hold, Vial save, OLED, LED, analog stick, "
                 "uinput login, shutdown, reboot persistence, and usable-keyboard timing.",
+                *(
+                    [
+                        "Touch display, touch input, kiosk health, USB/Vial, reboot persistence, "
+                        "and touch-ready timing.",
+                    ]
+                    if touch_smoke
+                    else []
+                ),
                 "",
             ]
         ),
@@ -221,10 +524,16 @@ def build(args: argparse.Namespace) -> None:
     core_package = args.core_package.resolve()
     profile_package = args.profile_package.resolve()
     compliance_bundle = args.compliance_bundle.resolve()
+    guide = args.guide.resolve()
+    touch_profile_package = (
+        args.touch_profile_package.resolve() if args.touch_profile_package else None
+    )
     for required in REQUIRED_COMPLIANCE:
         if not (source / required).is_file():
             raise SystemExit(f"public export is missing {required}")
-    for required in (core_package, profile_package):
+    for required in (core_package, profile_package, guide, touch_profile_package):
+        if required is None:
+            continue
         if not required.is_file():
             raise SystemExit(f"release input is missing: {required}")
     if not compliance_bundle.is_file():
@@ -234,6 +543,12 @@ def build(args: argparse.Namespace) -> None:
 
     report = load_json(source / "PUBLIC_EXPORT_REPORT.json")
     export_paths = validate_export_manifest(source)
+    try:
+        guide_relative = guide.relative_to(source).as_posix()
+    except ValueError as error:
+        raise SystemExit("quickstart guide must be inside the public source tree") from error
+    if guide_relative not in export_paths:
+        raise SystemExit("quickstart guide is not listed by the public export manifest")
     source_provenance = report["source_provenance"]
     source_commit = str(source_provenance["base_commit"])
     version = safe_version(args.version or f"0.1.0-dev.{source_commit[:12]}")
@@ -241,6 +556,14 @@ def build(args: argparse.Namespace) -> None:
         args.usable_keyboard_seconds is None or args.usable_keyboard_seconds <= 0
     ):
         raise SystemExit("hardware pass requires a positive usable-keyboard measurement")
+    if touch_profile_package is None and (
+        args.touch_hardware_smoke_status != "pending" or args.touch_ready_seconds is not None
+    ):
+        raise SystemExit("touch hardware smoke requires a touch profile package")
+    if touch_profile_package is not None and args.touch_hardware_smoke_status == "pass" and (
+        args.touch_ready_seconds is None or args.touch_ready_seconds <= 0
+    ):
+        raise SystemExit("touch hardware pass requires a positive touch-ready measurement")
     buildroot_source = load_json(source / "config" / "buildroot-source.json")
     if package_field(core_package, "Package") != "hidloom-core":
         raise SystemExit(f"unexpected core package: {core_package}")
@@ -251,6 +574,25 @@ def build(args: argparse.Namespace) -> None:
         raise SystemExit("core and profile package versions differ")
     if f"git{source_commit[:12]}" not in core_version:
         raise SystemExit("package version does not match public export source commit")
+    if package_field(core_package, "Architecture") != "arm64" or package_field(
+        profile_package, "Architecture"
+    ) != "arm64":
+        raise SystemExit("keyboard packages must use arm64 architecture")
+    if f"hidloom-core (= {core_version})" not in package_field(profile_package, "Depends"):
+        raise SystemExit("keyboard profile package lacks an exact core dependency")
+    if touch_profile_package is not None:
+        if package_field(touch_profile_package, "Package") != (
+            "hidloom-profile-touch-waveshare-8.8"
+        ):
+            raise SystemExit("unexpected touch profile package")
+        if package_field(touch_profile_package, "Version") != core_version:
+            raise SystemExit("core and touch profile package versions differ")
+        if package_field(touch_profile_package, "Architecture") != "arm64":
+            raise SystemExit("touch profile package must use arm64 architecture")
+        if f"hidloom-core (= {core_version})" not in package_field(
+            touch_profile_package, "Depends"
+        ):
+            raise SystemExit("touch profile package lacks an exact core dependency")
 
     if args.buildroot_output:
         buildroot_output = args.buildroot_output.resolve()
@@ -272,6 +614,42 @@ def build(args: argparse.Namespace) -> None:
         raise SystemExit("use --buildroot-output for a release image")
     if not image.is_file():
         raise SystemExit(f"release input is missing: {image}")
+
+    build_provenance = args.build_provenance.resolve() if args.build_provenance else None
+    touch_build_provenance = (
+        args.touch_build_provenance.resolve() if args.touch_build_provenance else None
+    )
+    hardware_smoke = {
+        "status": args.hardware_smoke_status,
+        "device": args.device,
+        "usable_keyboard_seconds": args.usable_keyboard_seconds,
+    }
+    touch_hardware_smoke = (
+        {
+            "status": args.touch_hardware_smoke_status,
+            "device": args.touch_device,
+            "touch_ready_seconds": args.touch_ready_seconds,
+        }
+        if touch_profile_package is not None
+        else None
+    )
+    publication = publication_status(
+        source,
+        build_provenance,
+        source_commit,
+        core_version,
+        core_package,
+        profile_package,
+        image,
+        touch_profile_package,
+        touch_build_provenance,
+    )
+    release_channels = release_channel_contract(
+        source,
+        args.channel,
+        publication,
+        integrated_hardware_blockers(hardware_smoke, touch_hardware_smoke),
+    )
 
     if output.exists():
         if any(output.iterdir()) and not args.force:
@@ -295,6 +673,12 @@ def build(args: argparse.Namespace) -> None:
     shutil.copy2(core_package, copied_core)
     shutil.copy2(profile_package, copied_profile)
     shutil.copy2(compliance_bundle, copied_compliance)
+    copied_touch = None
+    if touch_profile_package is not None:
+        copied_touch = output / touch_profile_package.name
+        shutil.copy2(touch_profile_package, copied_touch)
+    quickstart = output / "QUICKSTART.md"
+    shutil.copy2(guide, quickstart)
 
     assets = [
         asset(source_archive, "corresponding-source"),
@@ -303,7 +687,18 @@ def build(args: argparse.Namespace) -> None:
         asset(copied_core, "raspberry-pi-os-core-package"),
         asset(copied_profile, "raspberry-pi-os-keyboard-profile-package"),
         asset(copied_compliance, "buildroot-compliance-source"),
+        asset(quickstart, "quickstart"),
     ]
+    if build_provenance and build_provenance.is_file():
+        copied_provenance = output / "PUBLIC_BUILD_PROVENANCE.json"
+        shutil.copy2(build_provenance, copied_provenance)
+        assets.append(asset(copied_provenance, "public-build-provenance"))
+    if touch_build_provenance and touch_build_provenance.is_file():
+        copied_touch_provenance = output / "PUBLIC_BUILD_PROVENANCE_TOUCH.json"
+        shutil.copy2(touch_build_provenance, copied_touch_provenance)
+        assets.append(asset(copied_touch_provenance, "touch-public-build-provenance"))
+    if copied_touch is not None:
+        assets.append(asset(copied_touch, "raspberry-pi-os-touch-profile-package"))
     for name in REQUIRED_COMPLIANCE:
         destination = output / name
         shutil.copy2(source / name, destination)
@@ -334,12 +729,15 @@ def build(args: argparse.Namespace) -> None:
                 "summary": compliance["summary"],
             },
         },
-        "packages": {"version": core_version, "profile": "keyboard-ver1"},
-        "hardware_smoke": {
-            "status": args.hardware_smoke_status,
-            "device": args.device,
-            "usable_keyboard_seconds": args.usable_keyboard_seconds,
+        "packages": {
+            "version": core_version,
+            "profile": "keyboard-ver1",
+            "touch_profile": "touch-waveshare-8.8" if copied_touch is not None else None,
         },
+        "hardware_smoke": hardware_smoke,
+        "touch_hardware_smoke": touch_hardware_smoke,
+        "publication": publication,
+        "release_channels": release_channels,
         "network_boundary": {"offline": True, "wifi": False, "httpd": False},
         "assets": assets,
     }
@@ -354,25 +752,95 @@ def build(args: argparse.Namespace) -> None:
         "".join(f"{sha256(path)}  {path.name}\n" for path in checksum_paths),
         encoding="utf-8",
     )
-    verify(output, require_hardware_pass=False)
+    verify(
+        output,
+        require_hardware_pass=False,
+        require_publication_ready=False,
+        require_channel_ready=None,
+    )
     print(f"created public release candidate: {output}")
 
 
-def verify(directory: Path, require_hardware_pass: bool) -> None:
+def verify(
+    directory: Path,
+    require_hardware_pass: bool,
+    require_publication_ready: bool,
+    require_channel_ready: str | None,
+) -> None:
     directory = directory.resolve()
     manifest_path = directory / "RELEASE_MANIFEST.json"
     checksum_path = directory / "SHA256SUMS"
     manifest = load_json(manifest_path)
     if manifest.get("schema") != SCHEMA:
         raise SystemExit("unsupported release manifest schema")
+
+    def release_asset(role: str, *, required: bool = True) -> Path | None:
+        matches = [
+            directory / str(item.get("path", ""))
+            for item in manifest.get("assets", [])
+            if item.get("role") == role
+        ]
+        if len(matches) > 1 or (required and len(matches) != 1):
+            raise SystemExit(f"release asset role count is invalid: {role}")
+        return matches[0] if matches else None
+
+    touch_profile_declared = bool(manifest.get("packages", {}).get("touch_profile"))
+    expected_publication = publication_status(
+        ROOT,
+        release_asset("public-build-provenance", required=False),
+        str(manifest.get("source", {}).get("commit", "")),
+        str(manifest.get("packages", {}).get("version", "")),
+        release_asset("raspberry-pi-os-core-package"),
+        release_asset("raspberry-pi-os-keyboard-profile-package"),
+        release_asset("buildroot-m6-raw-image"),
+        release_asset("raspberry-pi-os-touch-profile-package", required=False)
+        if touch_profile_declared
+        else None,
+        release_asset("touch-public-build-provenance", required=False),
+    )
+    if manifest.get("publication") != expected_publication:
+        raise SystemExit("release publication contract mismatch")
+    expected_channels = release_channel_contract(
+        ROOT,
+        str((manifest.get("release_channels") or {}).get("selected", "")),
+        manifest.get("publication") or {},
+        integrated_hardware_blockers(
+            manifest.get("hardware_smoke") or {},
+            manifest.get("touch_hardware_smoke"),
+        ),
+    )
+    if manifest.get("release_channels") != expected_channels:
+        raise SystemExit("release channel contract mismatch")
+    if require_channel_ready is not None:
+        if expected_channels["selected"] != require_channel_ready:
+            raise SystemExit(
+                f"release channel mismatch: {expected_channels['selected']} != "
+                f"{require_channel_ready}"
+            )
+        selected_status = expected_channels["statuses"][require_channel_ready]
+        if not selected_status["ready"]:
+            raise SystemExit(
+                f"release channel {require_channel_ready} is not ready: "
+                + ", ".join(selected_status["blockers"])
+            )
+    if require_publication_ready and not manifest["publication"]["ready"]:
+        raise SystemExit(
+            "keyboard/M6 release is not publishable: "
+            + ", ".join(manifest["publication"]["blockers"])
+        )
     smoke = manifest["hardware_smoke"]
+    if smoke.get("status") not in {"pending", "pass", "fail"} or not smoke.get("device"):
+        raise SystemExit("keyboard hardware smoke metadata is invalid")
+    keyboard_seconds = smoke.get("usable_keyboard_seconds")
+    if keyboard_seconds is not None and (
+        not isinstance(keyboard_seconds, (int, float)) or keyboard_seconds <= 0
+    ):
+        raise SystemExit("keyboard hardware timing must be positive")
     if require_hardware_pass:
         if smoke["status"] != "pass":
-            raise SystemExit("hardware smoke is not recorded as pass")
-        if not isinstance(smoke.get("usable_keyboard_seconds"), (int, float)) or smoke[
-            "usable_keyboard_seconds"
-        ] <= 0:
-            raise SystemExit("hardware pass lacks a usable-keyboard measurement")
+            raise SystemExit("keyboard hardware smoke is not recorded as pass")
+        if keyboard_seconds is None:
+            raise SystemExit("keyboard hardware pass lacks a usable-keyboard measurement")
     required_roles = {
         "corresponding-source",
         "buildroot-m6-raw-image",
@@ -380,8 +848,31 @@ def verify(directory: Path, require_hardware_pass: bool) -> None:
         "raspberry-pi-os-core-package",
         "raspberry-pi-os-keyboard-profile-package",
         "buildroot-compliance-source",
+        "quickstart",
         "compliance",
     }
+    touch_profile_declared = bool(manifest["packages"].get("touch_profile"))
+    touch_smoke = manifest.get("touch_hardware_smoke")
+    if touch_profile_declared:
+        required_roles.add("raspberry-pi-os-touch-profile-package")
+        if not isinstance(touch_smoke, dict):
+            raise SystemExit("touch profile release lacks touch hardware smoke metadata")
+        if touch_smoke.get("status") not in {"pending", "pass", "fail"} or not touch_smoke.get(
+            "device"
+        ):
+            raise SystemExit("touch hardware smoke metadata is invalid")
+        touch_seconds = touch_smoke.get("touch_ready_seconds")
+        if touch_seconds is not None and (
+            not isinstance(touch_seconds, (int, float)) or touch_seconds <= 0
+        ):
+            raise SystemExit("touch-ready timing must be positive")
+        if require_hardware_pass:
+            if touch_smoke["status"] != "pass":
+                raise SystemExit("touch hardware smoke is not recorded as pass")
+            if touch_seconds is None:
+                raise SystemExit("touch hardware pass lacks a touch-ready measurement")
+    elif touch_smoke is not None:
+        raise SystemExit("release has touch hardware smoke without a touch profile")
     roles = {item["role"] for item in manifest["assets"]}
     if not required_roles <= roles:
         raise SystemExit("release manifest is missing required asset roles")
@@ -435,11 +926,30 @@ def verify(directory: Path, require_hardware_pass: bool) -> None:
         "hidloom-profile keyboard-ver1 --apply --backup --restart",
         "offline keyboard appliance",
         "corresponding-source compliance archive",
+        "QUICKSTART.md",
         "Wi-Fi and httpd are not included",
         "`pi` / `pi`",
     ):
         if phrase not in notes:
             raise SystemExit(f"release notes missing boundary: {phrase}")
+    touch_assets = [
+        item for item in manifest["assets"] if item["role"] == "raspberry-pi-os-touch-profile-package"
+    ]
+    if touch_profile_declared:
+        if len(touch_assets) != 1:
+            raise SystemExit("release manifest must contain exactly one touch profile package")
+        touch_path = directory / str(touch_assets[0]["path"])
+        if package_field(touch_path, "Package") != "hidloom-profile-touch-waveshare-8.8":
+            raise SystemExit("release touch profile metadata mismatch")
+        if package_field(touch_path, "Version") != manifest["packages"]["version"]:
+            raise SystemExit("release touch profile version mismatch")
+        if "touch-waveshare-8.8 --apply --backup --restart" not in notes:
+            raise SystemExit("release notes missing touch profile guidance")
+        for phrase in ("Touch hardware smoke", "Touch ready timing", "touch-ready timing"):
+            if phrase not in notes:
+                raise SystemExit(f"release notes missing touch hardware boundary: {phrase}")
+    elif touch_assets:
+        raise SystemExit("release contains an undeclared touch profile package")
     compressed = next(directory.glob("*-buildroot-m6.img.zst"))
     subprocess.run(["zstd", "--test", "--no-progress", str(compressed)], check=True)
     print(f"ok: public release bundle {manifest['version']} ({manifest['hardware_smoke']['status']})")
@@ -449,22 +959,48 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Build or verify a HIDloom public release candidate")
     parser.add_argument("--verify", type=Path)
     parser.add_argument("--require-hardware-pass", action="store_true")
+    parser.add_argument("--require-publication-ready", action="store_true")
+    parser.add_argument("--require-channel-ready", choices=BINARY_RELEASE_CHANNELS)
     parser.add_argument("--source", type=Path, default=ROOT)
     parser.add_argument("--image", type=Path)
     parser.add_argument("--buildroot-output", type=Path)
     parser.add_argument("--allow-unverified-image", action="store_true")
     parser.add_argument("--core-package", type=Path)
     parser.add_argument("--profile-package", type=Path)
+    parser.add_argument("--touch-profile-package", type=Path)
     parser.add_argument("--compliance-bundle", type=Path)
+    parser.add_argument("--build-provenance", type=Path)
+    parser.add_argument("--touch-build-provenance", type=Path)
+    parser.add_argument("--guide", type=Path, default=ROOT / "INSTALL.md")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--version")
-    parser.add_argument("--hardware-smoke-status", choices=("pending", "pass", "fail"), default="pending")
+    parser.add_argument("--channel", choices=BINARY_RELEASE_CHANNELS, default=INTERNAL_RC_CHANNEL)
+    parser.add_argument(
+        "--hardware-smoke-status",
+        choices=("pending", "pass", "fail"),
+        default="pending",
+        help="aggregate Raspberry Pi OS keyboard package and exact M6 image smoke",
+    )
     parser.add_argument("--device", default="keyboard-ver1")
-    parser.add_argument("--usable-keyboard-seconds", type=float)
+    parser.add_argument(
+        "--usable-keyboard-seconds",
+        type=float,
+        help="positive USB-to-usable timing measured from the exact M6 image",
+    )
+    parser.add_argument(
+        "--touch-hardware-smoke-status", choices=("pending", "pass", "fail"), default="pending"
+    )
+    parser.add_argument("--touch-device", default="touch-waveshare-8.8")
+    parser.add_argument("--touch-ready-seconds", type=float)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
     if args.verify:
-        verify(args.verify, args.require_hardware_pass)
+        verify(
+            args.verify,
+            args.require_hardware_pass,
+            args.require_publication_ready,
+            args.require_channel_ready,
+        )
         return
     for name in ("core_package", "profile_package", "compliance_bundle", "output"):
         if getattr(args, name) is None:
