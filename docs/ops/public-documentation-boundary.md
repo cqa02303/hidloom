@@ -47,7 +47,7 @@ python3 script/test_public_documentation_audit.py
 python3 tools/public_export.py /tmp/hidloom-public-export --draft --force
 python3 /tmp/hidloom-public-export/script/test_docs_links.py
 python3 /tmp/hidloom-public-export/tools/public_release_readiness.py \
-  /tmp/hidloom-public-export --allow-pending-pid
+  /tmp/hidloom-public-export --channel source-public
 ```
 
 この公開可能確認はclean HEADから実行します。編集中に`--draft --allow-dirty-source`で生成できるtreeは

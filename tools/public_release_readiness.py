@@ -15,6 +15,12 @@ from public_community_health import validate as validate_community_health
 from public_export import validate_public_documentation_audit
 from public_export_manifest import verify as verify_export_manifest
 from public_repository_policy import validate_contract as validate_repository_policy
+from public_release_bundle import (
+    INTERNAL_RC_CHANNEL,
+    SOURCE_PUBLIC_CHANNEL,
+    STABLE_PUBLIC_CHANNEL,
+    load_release_channel_policy,
+)
 from public_usb_identity import ContractError, validate_contract as validate_usb_contract
 from development_residue_hygiene import scan as scan_development_residue
 from repository_hygiene import tracked_files
@@ -262,9 +268,11 @@ def evaluate(
     root: Path,
     *,
     allow_pending_pid: bool,
+    release_channel: str,
     compliance_bundle: Path | None = None,
     require_binary_distribution: bool = False,
 ) -> dict[str, Any]:
+    channel_policy = load_release_channel_policy(root)
     report = load_json(root / "PUBLIC_EXPORT_REPORT.json")
     inventory = load_json(root / "docs/ops/third-party-inventory.json")
     buildroot_legal = load_json(root / "docs/ops/buildroot-m6-legal-summary.json")
@@ -327,6 +335,7 @@ def evaluate(
         "config/github-actions-lock.json",
         "config/public-usb-identity.json",
         "config/public-repository-policy.json",
+        "config/release-channels.json",
         "script/test_github_workflow_security.py",
         "script/test_development_residue_hygiene.py",
         "script/test_pid_codes_allocation.py",
@@ -386,7 +395,9 @@ def evaluate(
     )
     source_publication_ready = all(checks.values())
     return {
-        "schema": "hidloom.public-release-readiness.v3",
+        "schema": "hidloom.public-release-readiness.v4",
+        "release_channel": release_channel,
+        "release_channel_policy_schema": channel_policy["schema"],
         "evaluation_scope": (
             "binary-distribution" if require_binary_distribution else "source-publication"
         ),
@@ -430,18 +441,41 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate a generated HIDloom public export")
     parser.add_argument("root", nargs="?", type=Path, default=ROOT)
     parser.add_argument("--allow-pending-pid", action="store_true")
+    parser.add_argument(
+        "--channel",
+        choices=(SOURCE_PUBLIC_CHANNEL, INTERNAL_RC_CHANNEL, STABLE_PUBLIC_CHANNEL),
+    )
     parser.add_argument("--compliance-bundle", type=Path)
     parser.add_argument("--require-binary-distribution", action="store_true")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     compliance_bundle = args.compliance_bundle.resolve() if args.compliance_bundle else None
+    release_channel = args.channel
+    if release_channel is None:
+        release_channel = (
+            INTERNAL_RC_CHANNEL
+            if args.require_binary_distribution or compliance_bundle is not None
+            else SOURCE_PUBLIC_CHANNEL
+        )
+    if release_channel == SOURCE_PUBLIC_CHANNEL:
+        if args.require_binary_distribution or compliance_bundle is not None:
+            parser.error("source-public does not accept binary distribution inputs")
+        allow_pending_pid = True
+        require_binary_distribution = False
+    elif release_channel == INTERNAL_RC_CHANNEL:
+        allow_pending_pid = True
+        require_binary_distribution = True
+    else:
+        if args.allow_pending_pid:
+            parser.error("stable-public cannot allow a pending pid.codes allocation")
+        allow_pending_pid = False
+        require_binary_distribution = True
     payload = evaluate(
         args.root.resolve(),
-        allow_pending_pid=args.allow_pending_pid,
+        allow_pending_pid=allow_pending_pid,
+        release_channel=release_channel,
         compliance_bundle=compliance_bundle,
-        require_binary_distribution=(
-            args.require_binary_distribution or compliance_bundle is not None
-        ),
+        require_binary_distribution=require_binary_distribution,
     )
     text = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     if args.output:

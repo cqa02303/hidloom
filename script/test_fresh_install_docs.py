@@ -37,6 +37,12 @@ def main() -> None:
     install = (ROOT / "INSTALL.md").read_text(encoding="utf-8")
     release = (ROOT / "RELEASE_CHECKLIST.md").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    touch_guide = (ROOT / "docs/hardware/raspberry-pi-4-touch-panel-package.md").read_text(
+        encoding="utf-8"
+    )
+    zero2w_guide = (
+        ROOT / "docs/hardware/raspberry-pi-zero-2-w-keyboard-release.md"
+    ).read_text(encoding="utf-8")
 
     syntax = subprocess.run(
         ["bash", "-n", str(setup_path)],
@@ -154,6 +160,39 @@ def main() -> None:
         assert phrase in install, phrase
 
     for phrase in (
+        "Raspberry Pi 4 Model B",
+        "https://github.com/cqa02303/hidloom/releases",
+        "release_channels.selected=stable-public",
+        "hidloom-core_<version>_arm64.deb",
+        "hidloom-profile-touch-waveshare-8.8_<version>_arm64.deb",
+        "sha256sum -c SHA256SUMS",
+        "--prepare-only --touch-panel-only",
+        "hidloom-profile touch-waveshare-8.8 --apply --backup --restart",
+        "/usr/lib/hidloom/script/start_touch_panel_browser.sh",
+        "touch_kiosk_health_probe.py --require-ready",
+        "https://www.waveshare.com/8.8-dsi-touch-a.htm",
+    ):
+        assert phrase in touch_guide, phrase
+
+    for phrase in (
+        "Raspberry Pi Zero 2 W",
+        "https://github.com/cqa02303/hidloom/releases",
+        "release_channels.selected=stable-public",
+        "hidloom-core_<version>_arm64.deb",
+        "hidloom-profile-keyboard-ver1_<version>_arm64.deb",
+        "buildroot-m6.img.zst",
+        "sha256sum -c SHA256SUMS",
+        "sudo ./setup_fresh_rpi.sh --prepare-only",
+        "hidloom-profile keyboard-ver1 --apply --backup --restart",
+        "Use custom",
+        "Wi-Fi、SSH、httpdは非搭載",
+        "1920x1080",
+        "F11",
+        "`pi` / `pi`",
+    ):
+        assert phrase in zero2w_guide, phrase
+
+    for phrase in (
         "make DEVICE_PROFILE=touch-waveshare-8.8 profile-deb-package",
         "HIDLOOM_KEEP_DESKTOP=1",
         "hidloom-profile touch-waveshare-8.8 --apply --backup --restart",
@@ -174,7 +213,8 @@ def main() -> None:
         "hidloom-ctrl output auto",
         "make public-export-check",
         "make buildroot-compliance-verify",
-        "--require-hardware-pass",
+        "--require-channel-ready internal-rc",
+        "--require-channel-ready stable-public",
     ):
         assert phrase in release, phrase
 
@@ -193,6 +233,8 @@ def main() -> None:
         "INSTALL.md": install,
         "RELEASE_CHECKLIST.md": release,
         "README.md": readme,
+        "docs/hardware/raspberry-pi-4-touch-panel-package.md": touch_guide,
+        "docs/hardware/raspberry-pi-zero-2-w-keyboard-release.md": zero2w_guide,
     }.items():
         for stale in stale_patterns:
             assert stale not in text, f"{name}: {stale}"

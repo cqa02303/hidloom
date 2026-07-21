@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -158,15 +159,26 @@ def collect_source(root: Path) -> dict[str, Any]:
     }
 
 
-def collect_packages(root: Path, directory: Path, source: dict[str, Any]) -> dict[str, Any]:
+def collect_packages(
+    root: Path,
+    directory: Path,
+    source: dict[str, Any],
+    profile_id: str,
+) -> dict[str, Any]:
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", profile_id):
+        raise SystemExit(f"invalid package profile id: {profile_id!r}")
+    profile_definition = root / "config/device-profiles" / f"{profile_id}.json"
+    if not profile_definition.is_file():
+        raise SystemExit(f"package profile definition is missing: {profile_id}")
     short = source["source_commit"][:12]
     revision = source["source_revision_count"]
     version = f"0.0.{revision}+git{short}"
     bundle = directory / f"hidloom-{short}-aarch64.tar.zst"
     core = one(sorted(directory.glob(f"hidloom-core_{version}_arm64.deb")), "core package")
+    profile_package = f"hidloom-profile-{profile_id}"
     profile = one(
-        sorted(directory.glob(f"hidloom-profile-keyboard-ver1_{version}_arm64.deb")),
-        "keyboard profile package",
+        sorted(directory.glob(f"{profile_package}_{version}_arm64.deb")),
+        f"{profile_id} profile package",
     )
     bundle_data = bundle_manifest(bundle)
     core_data = deb_manifest(core)
@@ -201,7 +213,7 @@ def collect_packages(root: Path, directory: Path, source: dict[str, Any]) -> dic
         "architecture": "arm64",
     }:
         raise SystemExit("unexpected core package metadata")
-    if metadata["profile"]["package"] != "hidloom-profile-keyboard-ver1":
+    if metadata["profile"]["package"] != profile_package:
         raise SystemExit("unexpected profile package name")
     if metadata["profile"]["version"] != version or metadata["profile"]["architecture"] != "arm64":
         raise SystemExit("unexpected profile package version or architecture")
@@ -212,10 +224,11 @@ def collect_packages(root: Path, directory: Path, source: dict[str, Any]) -> dic
     artifacts = [
         artifact(bundle, "release-bundle"),
         artifact(core, "raspberry-pi-os-core-package"),
-        artifact(profile, "raspberry-pi-os-keyboard-profile-package"),
+        artifact(profile, "raspberry-pi-os-device-profile-package"),
     ] + [artifact(path, "sha256-sidecar") for path in sidecars]
     return {
         "ready": True,
+        "profile_id": profile_id,
         "version": version,
         "source_mode": bundle_data["source_mode"],
         "package_manifest": bundle_data,
@@ -321,6 +334,7 @@ def collect(
     package_directory: Path | None,
     buildroot_source: Path | None,
     buildroot_output: Path | None,
+    profile_id: str,
 ) -> dict[str, Any]:
     source = collect_source(source_root)
     payload: dict[str, Any] = {
@@ -334,7 +348,12 @@ def collect(
     if mode in PACKAGE_MODES:
         if package_directory is None:
             raise SystemExit("package mode requires --package-dir")
-        payload["packages"] = collect_packages(source_root, package_directory, source)
+        payload["packages"] = collect_packages(
+            source_root,
+            package_directory,
+            source,
+            profile_id,
+        )
     if mode in BUILDROOT_MODES:
         if buildroot_source is None or buildroot_output is None:
             raise SystemExit("Buildroot mode requires --buildroot-source and --buildroot-output")
@@ -350,6 +369,7 @@ def collect(
 def add_inputs(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--package-dir", type=Path)
+    parser.add_argument("--profile", default="keyboard-ver1")
     parser.add_argument("--buildroot-source", type=Path)
     parser.add_argument("--buildroot-output", type=Path)
 
@@ -379,6 +399,7 @@ def main() -> None:
             args.package_dir.resolve() if args.package_dir else None,
             args.buildroot_source.resolve() if args.buildroot_source else None,
             args.buildroot_output.resolve() if args.buildroot_output else None,
+            args.profile,
         )
         if actual != expected:
             raise SystemExit("public build provenance does not match current source/artifacts")
@@ -390,6 +411,7 @@ def main() -> None:
         args.package_dir.resolve() if args.package_dir else None,
         args.buildroot_source.resolve() if args.buildroot_source else None,
         args.buildroot_output.resolve() if args.buildroot_output else None,
+        args.profile,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

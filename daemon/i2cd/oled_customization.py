@@ -210,9 +210,13 @@ def _normalize_ready(value: Any) -> dict[str, Any]:
             "enabled": item["enabled"],
             "separator_after": item.get("separator_after", False),
         })
-    missing = sorted(known - seen)
-    if missing:
-        raise ValueError(f"ready items are missing: {', '.join(missing)}")
+    # Runtime documents created by an older package do not contain newly
+    # introduced Ready items. Append their packaged defaults disabled/enabled
+    # as declared, preserving all user ordering and choices already present.
+    defaults_by_id = {entry["id"]: entry for entry in DEFAULT_READY_ITEMS}
+    for entry in DEFAULT_READY_ITEMS:
+        if entry["id"] not in seen:
+            normalized.append(copy.deepcopy(defaults_by_id[entry["id"]]))
     return {"items": normalized}
 
 

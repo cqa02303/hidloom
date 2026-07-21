@@ -33,6 +33,10 @@ sha256sum -c SHA256SUMS
 
 ## Option A1: Raspberry Pi OS Keyboard Package
 
+Releaseからのdownload、Raspberry Pi OS package、Buildroot M6の書き込みを一つの手順で見る場合は
+[Raspberry Pi Zero 2 W Keyboard Package and M6 Image](docs/hardware/raspberry-pi-zero-2-w-keyboard-release.md)
+を参照してください。
+
 Raspberry Pi OS 64-bit の fresh install を起動し、対象 Release の source checkout または
 source archive で platform preparation を実行します。Raspberry Pi 上では project binary を
 build しません。
@@ -65,6 +69,9 @@ tools/package/install_github_release_deb.sh \
 [FRESH_INSTALL.md](FRESH_INSTALL.md) を参照してください。
 
 ## Option A2: Raspberry Pi OS Touch Panel Package
+
+Releaseからのdownloadを含む最短手順は
+[Raspberry Pi 4 Touch Panel Package](docs/hardware/raspberry-pi-4-touch-panel-package.md)を参照してください。
 
 タッチパネル構成は Raspberry Pi 4、
 [Waveshare 8.8inch DSI Capacitive Touch Display](https://www.waveshare.com/8.8-dsi-touch-a.htm)、
@@ -149,3 +156,28 @@ Buildroot M6 は Wi-Fi、SSH、httpd を含まない offline appliance です。
 
 両方式の package、image、対応 source を同じ revision から再生成する手順は
 [Public Source Rebuild Runbook](docs/ops/public-source-rebuild-runbook.md) にあります。
+
+touch-panel向けの配布assetとRelease説明を再生成する入口は次です。
+
+```bash
+tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8
+tools/package/build_touch_panel_release.sh
+```
+
+Zero 2 W向けkeyboard packageとM6 imageを同じdirectoryへまとめる入口は次です。
+
+```bash
+tools/public_build_rehearsal.sh --all --profile keyboard-ver1
+tools/package/build_zero2w_keyboard_release.sh
+```
+
+同じGitHub Releaseへtouch profileも並べる最終候補では、同じsourceからtouch package setも作り、
+一つの`SHA256SUMS`へ統合します。
+
+```bash
+OUT_DIR=build/public-touch-rebuild \
+  tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8
+tools/package/build_zero2w_keyboard_release.sh \
+  --touch-package-dir build/public-touch-rebuild \
+  --touch-provenance build/public-touch-rebuild/PUBLIC_BUILD_PROVENANCE.json
+```

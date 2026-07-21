@@ -14,19 +14,30 @@
   <link rel="stylesheet" href="/static/lighting_panel.css">
   <link rel="stylesheet" href="/static/oled_panel.css">
   <link rel="stylesheet" href="/static/interaction_panel.css">
+  <link rel="stylesheet" href="/static/apple_design.css">
 </head>
 <body>
   <header>
     <h1><a class="repo-title-link" href="https://github.com/cqa02303/hidloom" target="_blank" rel="noopener noreferrer">{HOSTNAME} Virtual Keyboard</a></h1>
-    <span id="ws-status" class="status disconnected" role="button" tabindex="0" title="Reload" onclick="reloadFromReadyStatus()" onkeydown="handleReadyStatusKeydown(event)">Disconnected</span>
+    <div class="header-actions">
+      <label class="language-picker" for="ui-language">
+        <span data-i18n="language.label">言語</span>
+        <select id="ui-language" data-i18n-aria-label="language.selectLabel">
+          <option value="auto" data-i18n="language.auto">自動</option>
+          <option value="ja">日本語</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+      <span id="ws-status" class="status disconnected" role="button" tabindex="0" title="Reload" data-i18n-title="actions.reload" onclick="reloadFromReadyStatus()" onkeydown="handleReadyStatusKeydown(event)">Disconnected</span>
+    </div>
   </header>
 
   <section id="system-status">
     <div class="sysstat-toolbar">
-      <span class="sysstat-title">System</span>
-      <div class="sysstat-view-toggle" role="group" aria-label="ステータス表示">
-        <button id="status-view-simple" type="button" onclick="setStatusViewMode('simple')">簡易</button>
-        <button id="status-view-detail" type="button" onclick="setStatusViewMode('detail')">詳細</button>
+      <span class="sysstat-title" data-i18n="system.title">System</span>
+      <div class="sysstat-view-toggle" role="group" aria-label="ステータス表示" data-i18n-aria-label="system.viewLabel">
+        <button id="status-view-simple" type="button" data-i18n="system.simple" onclick="setStatusViewMode('simple')">簡易</button>
+        <button id="status-view-detail" type="button" data-i18n="system.detail" onclick="setStatusViewMode('detail')">詳細</button>
       </div>
     </div>
     <div class="sysstat-row">
@@ -71,17 +82,17 @@
       <button class="log-btn" onclick="refreshLog()">更新</button>
       <button class="log-btn log-btn-close" onclick="closeLogPanel()">✕</button>
     </div>
-    <pre id="log-output">読み込み中…</pre>
+    <pre id="log-output" data-i18n="states.loading">読み込み中…</pre>
   </div>
 
-  <nav id="app-tabs" aria-label="表示切り替え">
-    <button class="app-tab active" data-app-tab="keyboard" onclick="setActiveTab('keyboard')">キーボード</button>
-    <button class="app-tab" data-app-tab="keymap" onclick="setActiveTab('keymap')">キーコード変更</button>
-    <button class="app-tab" data-app-tab="lighting" onclick="setActiveTab('lighting')">LED Effect</button>
-    <button class="app-tab" data-app-tab="oled" onclick="setActiveTab('oled')">OLED</button>
-    <button class="app-tab" data-app-tab="scripts" onclick="setActiveTab('scripts')">スクリプト</button>
-    <button class="app-tab" data-app-tab="interaction" onclick="setActiveTab('interaction')">Interaction</button>
-    <button class="app-tab" data-app-tab="settings" onclick="setActiveTab('settings')">Settings</button>
+  <nav id="app-tabs" role="tablist" aria-label="表示切り替え" data-i18n-aria-label="tabs.label">
+    <button class="app-tab active" role="tab" aria-selected="true" data-app-tab="keyboard" data-i18n="tabs.keyboard" onclick="setActiveTab('keyboard')">キーボード</button>
+    <button class="app-tab" role="tab" aria-selected="false" data-app-tab="keymap" data-i18n="tabs.keymap" onclick="setActiveTab('keymap')">キーコード変更</button>
+    <button class="app-tab" role="tab" aria-selected="false" data-app-tab="lighting" data-i18n="tabs.lighting" onclick="setActiveTab('lighting')">LED Effect</button>
+    <button class="app-tab" role="tab" aria-selected="false" data-app-tab="oled" onclick="setActiveTab('oled')">OLED</button>
+    <button class="app-tab" role="tab" aria-selected="false" data-app-tab="scripts" data-i18n="tabs.scripts" onclick="setActiveTab('scripts')">スクリプト</button>
+    <button class="app-tab" role="tab" aria-selected="false" data-app-tab="interaction" onclick="setActiveTab('interaction')">Interaction</button>
+    <button class="app-tab" role="tab" aria-selected="false" data-app-tab="settings" data-i18n="tabs.settings" onclick="setActiveTab('settings')">Settings</button>
   </nav>
 
   <div id="keymap-tab-toolbar" class="tab-hidden">
@@ -171,6 +182,7 @@
         <aside class="oled-card oled-layout-editor">
           <h3>Ready画面</h3>
           <p>表示、区切り線、上下順を変更できます。</p>
+          <p id="oled-layout-usage" class="oled-layout-usage" role="status"></p>
           <div id="oled-layout-list" class="oled-layout-list"></div>
         </aside>
       </div>
@@ -227,12 +239,12 @@
             <label><input class="script-hid-text-mod" type="checkbox" value="0x04" onchange="updateScriptHidPreview()">Alt</label>
             <label><input class="script-hid-text-mod" type="checkbox" value="0x08" onchange="updateScriptHidPreview()">Win</label>
           </div>
-          <code id="script-hid-text-preview">文字列を入力してください</code>
+          <code id="script-hid-text-preview" data-i18n="scripts.enterText">文字列を入力してください</code>
           <button type="button" onclick="insertScriptHidTextCommand()">文字列挿入</button>
         </div>
       </details>
     </div>
-    <textarea id="script-content" class="script-content" spellcheck="false">スクリプトを選択してください</textarea>
+    <textarea id="script-content" class="script-content" spellcheck="false" data-i18n="scripts.selectScript">スクリプトを選択してください</textarea>
   </section>
 
   <section id="interaction-panel" class="tab-hidden">
@@ -255,7 +267,7 @@
           <summary>Raw editor</summary>
           <div class="interaction-accordion-body">
             <label for="interaction-editor">settings.interaction JSON</label>
-            <textarea id="interaction-editor" class="interaction-editor" spellcheck="false">読み込み中…</textarea>
+            <textarea id="interaction-editor" class="interaction-editor" spellcheck="false" data-i18n="states.loading">読み込み中…</textarea>
             <div class="interaction-action-tools">
               <div class="interaction-action-title">Action picker</div>
               <div class="interaction-picker-row">
@@ -350,45 +362,54 @@
   </section>
 
   <section id="settings-panel" class="tab-hidden">
+    <div class="settings-intro">
+      <div>
+        <p class="settings-eyebrow">DEVICE SETTINGS</p>
+        <h2>設定</h2>
+        <p>変更する対象を選び、各カードの主操作で保存します。実機の動作を変える項目には、操作前の確認と結果を表示します。</p>
+      </div>
+    </div>
     <div class="settings-grid">
       <form class="settings-card" onsubmit="saveHttpAuthPassword(event)">
-        <div class="settings-card-title">BASIC認証</div>
+        <div class="settings-card-title">Webアクセス認証</div>
+        <p class="settings-card-description">この管理画面へアクセスするときのパスワードを変更します。ユーザー名は変更できません。</p>
         <div class="settings-field">
-          <label for="settings-http-username">Username</label>
+          <label for="settings-http-username">ユーザー名</label>
           <input id="settings-http-username" type="text" value="admin" readonly>
         </div>
         <div class="settings-field">
-          <label for="settings-current-password">Current password</label>
+          <label for="settings-current-password">現在のパスワード</label>
           <input id="settings-current-password" type="password" autocomplete="current-password">
         </div>
         <div class="settings-field">
-          <label for="settings-new-password">New password</label>
+          <label for="settings-new-password">新しいパスワード</label>
           <input id="settings-new-password" type="password" autocomplete="new-password">
         </div>
         <div class="settings-field">
-          <label for="settings-confirm-password">Confirm password</label>
+          <label for="settings-confirm-password">新しいパスワード（確認）</label>
           <input id="settings-confirm-password" type="password" autocomplete="new-password">
         </div>
         <div class="settings-actions">
-          <button class="lighting-btn" id="settings-http-auth-save" type="submit">保存</button>
-          <span id="settings-status" class="script-status">–</span>
+          <button class="lighting-btn primary-action" id="settings-http-auth-save" type="submit">パスワードを変更</button>
+          <span id="settings-status" class="script-status" role="status" aria-live="polite">–</span>
         </div>
       </form>
       <form class="settings-card" onsubmit="saveSendStrings(event)">
-        <div class="settings-card-title">Text Send named entries</div>
+        <div class="settings-card-title">定型文送信</div>
+        <p class="settings-card-description">名前を付けた定型文を登録し、Interactionの <code>TEXT(name)</code> から呼び出します。</p>
         <div id="settings-send-strings-rows" class="settings-send-strings-rows"></div>
         <div class="settings-actions">
-          <button class="lighting-btn" id="settings-send-strings-add" type="button" onclick="addSendStringRow()">行を追加</button>
+          <button class="lighting-btn" id="settings-send-strings-add" type="button" onclick="addSendStringRow()">＋ 定型文を追加</button>
         </div>
         <div class="settings-field settings-field-stacked">
-          <label for="settings-send-strings">settings.send_strings JSON</label>
+          <label for="settings-send-strings">詳細編集（JSON）</label>
           <textarea id="settings-send-strings" class="settings-json-editor" spellcheck="false">{}</textarea>
         </div>
         <div class="settings-actions">
           <button class="lighting-btn" id="settings-send-strings-format" type="button" onclick="formatSendStrings()">整形</button>
-          <button class="lighting-btn" id="settings-send-strings-save" type="submit">保存</button>
-          <label class="settings-inline-check"><input id="settings-send-strings-reload" type="checkbox" checked> reload logicd</label>
-          <span id="settings-send-strings-status" class="script-status">–</span>
+          <button class="lighting-btn primary-action" id="settings-send-strings-save" type="submit">定型文を保存</button>
+          <label class="settings-inline-check"><input id="settings-send-strings-reload" type="checkbox" checked> 保存後すぐに反映</label>
+          <span id="settings-send-strings-status" class="script-status" role="status" aria-live="polite">–</span>
         </div>
         <pre id="settings-send-strings-validation" class="settings-validation-preview">–</pre>
         <div class="settings-field">
@@ -401,26 +422,27 @@
         <pre id="settings-send-strings-plan-preview" class="settings-validation-preview">–</pre>
       </form>
       <form class="settings-card" onsubmit="return false">
-        <div class="settings-card-title">Analog stick calibration</div>
+        <div class="settings-card-title">アナログスティック調整</div>
+        <p class="settings-card-description">① 中心から手を離して測定、② 外周まで大きく回して範囲を測定、③ 保存値を検査、の順に進めます。測定だけでは実機設定を変更しません。</p>
         <div class="settings-field">
-          <label for="settings-stick-center-duration">Center seconds</label>
+          <label for="settings-stick-center-duration">中心の測定時間（秒）</label>
           <input id="settings-stick-center-duration" type="number" min="0.1" max="10" step="0.1" value="2.0">
         </div>
         <div class="settings-field">
-          <label for="settings-stick-range-duration">Range seconds</label>
+          <label for="settings-stick-range-duration">可動範囲の測定時間（秒）</label>
           <input id="settings-stick-range-duration" type="number" min="1" max="60" step="0.5" value="10.0">
         </div>
         <div class="settings-field">
-          <label for="settings-stick-min-range-volts">Min span volts</label>
+          <label for="settings-stick-min-range-volts">必要な最小電圧幅（V）</label>
           <input id="settings-stick-min-range-volts" type="number" min="0" max="2" step="0.01" value="0.10">
         </div>
         <div class="settings-actions">
-          <button class="lighting-btn" id="settings-stick-center-dry" type="button" onclick="calibrateAnalogStick('center', false)">中心を測定</button>
-          <button class="lighting-btn" id="settings-stick-center" type="button" onclick="calibrateAnalogStick('center', true)">中心を保存</button>
-          <button class="lighting-btn" id="settings-stick-range-dry" type="button" onclick="calibrateAnalogStick('range', false)">最大/最小を測定</button>
-          <button class="lighting-btn" id="settings-stick-range" type="button" onclick="calibrateAnalogStick('range', true)">最大/最小を保存</button>
-          <button class="lighting-btn" id="settings-stick-validate" type="button" onclick="calibrateAnalogStick('validate', false)">保存値を検査</button>
-          <span id="settings-stick-status" class="script-status">–</span>
+          <button class="lighting-btn" id="settings-stick-center-dry" type="button" onclick="calibrateAnalogStick('center', false)">1. 中心を測定</button>
+          <button class="lighting-btn primary-action" id="settings-stick-center" type="button" onclick="calibrateAnalogStick('center', true)">中心を保存</button>
+          <button class="lighting-btn" id="settings-stick-range-dry" type="button" onclick="calibrateAnalogStick('range', false)">2. 可動範囲を測定</button>
+          <button class="lighting-btn primary-action" id="settings-stick-range" type="button" onclick="calibrateAnalogStick('range', true)">可動範囲を保存</button>
+          <button class="lighting-btn" id="settings-stick-validate" type="button" onclick="calibrateAnalogStick('validate', false)">3. 保存値を検査</button>
+          <span id="settings-stick-status" class="script-status" role="status" aria-live="polite">–</span>
         </div>
         <div id="settings-stick-map" class="settings-stick-map" aria-label="Analog stick calibration map"></div>
         <pre id="settings-stick-current" class="settings-validation-preview">–</pre>
@@ -526,6 +548,7 @@
     </div>
   </div>
 
+  <script src="/static/i18n.js"></script>
   <script src="/static/csrf.js"></script>
   <script src="/static/scripts_panel.js"></script>
   <script src="/static/status_panel.js"></script>

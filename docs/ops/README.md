@@ -6,6 +6,7 @@
 
 - [real-device-experiment-workflow.md](real-device-experiment-workflow.md): 実機一時修正を戻し、正式変更だけを repository 経由で反映する標準手順
 - [release-packaging-runbook.md](release-packaging-runbook.md): release bundle / Debian package の build、deploy、verify、rollback 手順
+- [release-channel-policy.md](release-channel-policy.md): source / internal RC / stable public の昇格条件と変更影響別テスト
 - [public-source-rebuild-runbook.md](public-source-rebuild-runbook.md): public sourceからsplit Debian packageとBuildroot M6 imageを再生成する手順
 - [public-documentation-boundary.md](public-documentation-boundary.md): public sourceへ同期する現行文書とprivate運用資料の境界
 - [hidloom-license-review-runbook.md](hidloom-license-review-runbook.md): Debian/Python evidenceとBuildroot legal-info収集手順
@@ -27,6 +28,7 @@
 
 - [codex-ssh-stdio-mcp-profile.md](codex-ssh-stdio-mcp-profile.md)
 - [release-packaging-runbook.md](release-packaging-runbook.md)
+- [release-channel-policy.md](release-channel-policy.md)
 - [public-documentation-boundary.md](public-documentation-boundary.md)
 - [public-source-rebuild-runbook.md](public-source-rebuild-runbook.md)
 - [hidloom-license-review-runbook.md](hidloom-license-review-runbook.md)

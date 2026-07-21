@@ -320,6 +320,7 @@ def main() -> None:
     assert "'/^[^#].*\\/sbin\\/getty /d'" in post_build_text
     assert_m6_post_build_normalizes_getty(post_build)
     assert '"$ROOT/hidloom_paths.py"' in post_build_text
+    assert '"$ROOT/daemon/oled_text.py"' in post_build_text
     assert "logicd viald i2cd ledd usbd" in post_build_text
     assert 'rm -f "$TARGET_DIR/etc/init.d/S25hidloom-m3-router"' in post_build_text
     native_build = read(ROOT / "tools" / "buildroot_m4_native_build.sh")
@@ -332,6 +333,9 @@ def main() -> None:
     assert 'BUILDROOT_WORK_DIR=$(dirname -- "$BUILDROOT_OUTPUT")' in rehearsal
     assert 'HIDLOOM_M6_NATIVE_DIR="$M6_NATIVE_DIR"' in rehearsal
     assert 'HIDLOOM_BUILD_HOSTBIN="$BUILD_HOSTBIN"' in rehearsal
+    assert "--profile ID" in rehearsal
+    assert 'PROFILE=${HIDLOOM_DEVICE_PROFILE:-keyboard-ver1}' in rehearsal
+    assert '--profile "$PROFILE"' in rehearsal
     m6_build_text = read(m6_build)
     assert "buildroot_m6_verify.py" in m6_build_text
     assert "buildroot_legal_info.py" in m6_build_text
@@ -344,6 +348,7 @@ def main() -> None:
     assert "--legal-info" in m6_build_text
     assert "EXPECTED_RELEASE_SHA256" in read(m6_verify)
     assert 'target / "usr/share/hidloom/config/default/oled-layout.json"' in read(m6_verify)
+    assert 'target / "usr/share/hidloom/daemon/oled_text.py"' in read(m6_verify)
     assert 'target / "usr/share/hidloom/daemon/i2cd/connectivity_icon_bitmaps.txt"' in read(m6_verify)
     assert 'target / "usr/share/hidloom/daemon/i2cd/oled_customization.py"' in read(m6_verify)
     assert "microsd-uart-off-hdmi-1080p" in read(m6_verify)

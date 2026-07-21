@@ -1,16 +1,16 @@
 # HIDloom Public Export Report
 
-- Source base commit: `001a0d2e5dcb5bdaab1b86340ab773e7e932dbe8`
+- Source base commit: `9e8357f843242dd33363a214c6eb198a2aa18e29`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `f96267da76fc58fc92053c5d6d492c31877b75bc0a39b636879e2b7e9fa519d5`
-- Files: 1231
-- Tracked source paths: 1298
+- Selected source snapshot: `1e01f0c99b848ec3937572c7d0d7a56283b8a0dff6583320962b542f5cb340c3`
+- Files: 1247
+- Tracked source paths: 1314
 - Private-only paths: 67
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1093
+- Warnings: 1106
 - Untriaged warnings: 0
 - Action-required warnings: 12
 
@@ -18,7 +18,7 @@
 
 - `warn` `credential_word` `.github/workflows/public-ci.yml:123` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
 - `warn` `credential_word` `CONTRIBUTING.md:60` `documentation_security_keyword` — `secret-bearing backup.`
-- `warn` `credential_word` `INSTALL.md:142` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
+- `warn` `credential_word` `INSTALL.md:149` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
 - `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
 - `warn` `credential_word` `SECURITY.md:10` `documentation_security_keyword` — `Do not open a public issue for an unpatched vulnerability, credential, private key, or device-specific secret.`
 - `warn` `credential_word` `SECURITY.md:37` `documentation_security_keyword` — `The current experimental M6 Buildroot image creates the local console account `pi` with the initial password `pi`.`
@@ -47,7 +47,7 @@
 - `warn` `credential_word` `config/default/script/KC_SH3.sh:28` `implementation_security_keyword` — `[ -z "$SSID" ] && SSID="N/A"`
 - `warn` `credential_word` `config/default/script/KC_SH3.sh:29` `implementation_security_keyword` — `SSID=$(ascii_oled_text "$SSID")`
 - `warn` `credential_word` `config/default/script/KC_SH3.sh:30` `implementation_security_keyword` — `[ -z "$SSID" ] && SSID="N/A"`
-- `warn` `credential_word` `config/default/script/KC_SH3.sh:43` `implementation_security_keyword` — `hidloom-notify alert "Node: ${NODE} SSID: ${SSID} IP: ${IP}" 7`
+- `warn` `credential_word` `config/default/script/KC_SH3.sh:43` `implementation_security_keyword` — `hidloom-notify alert "Node: ${NODE} SSID: ${SSID} IP: ${IP}" 4 || exit $?`
 - `warn` `legacy_project_name` `config/public-assets.json:152` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb",`
 - `warn` `legacy_project_name` `config/public-assets.json:153` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",`
 - `warn` `legacy_project_name` `config/public-assets.json:154` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch",`
@@ -65,10 +65,10 @@
 - `warn` `credential_word` `config/public-export-deny-patterns.json:56` `implementation_security_keyword` — `"pattern": "(?i)\\b(?:password|passwd|secret|token|ssid|psk)\\b"`
 - `warn` `linux_foundation_vid` `config/public-export-deny-patterns.json:64` `scanner_definition` — `"pattern": "(?i)0x1d6b"`
 - `warn` `credential_word` `config/public-export.json:106` `implementation_security_keyword` — `"macro/examples/password.kml",`
-- `warn` `credential_word` `config/public-export.json:250` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:256` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:302` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:328` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:251` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:257` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:303` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:329` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:194` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:195` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
@@ -121,12 +121,21 @@
 - `warn` `credential_word` `daemon/http/static/csrf.js:23` `security_implementation_keyword` — `if (token) headers.set(HIDLOOM_CSRF_HEADER, token);`
 - `warn` `credential_word` `daemon/http/static/csrf.js:30` `security_implementation_keyword` — `const token = csrfToken();`
 - `warn` `credential_word` `daemon/http/static/csrf.js:31` `security_implementation_keyword` — `if (token) url.searchParams.set("csrf", token);`
-- `warn` `credential_word` `daemon/http/static/index.html:361` `security_implementation_keyword` — `<label for="settings-current-password">Current password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:362` `security_implementation_keyword` — `<input id="settings-current-password" type="password" autocomplete="current-password">`
-- `warn` `credential_word` `daemon/http/static/index.html:365` `security_implementation_keyword` — `<label for="settings-new-password">New password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:366` `security_implementation_keyword` — `<input id="settings-new-password" type="password" autocomplete="new-password">`
-- `warn` `credential_word` `daemon/http/static/index.html:369` `security_implementation_keyword` — `<label for="settings-confirm-password">Confirm password</label>`
-- `warn` `credential_word` `daemon/http/static/index.html:370` `security_implementation_keyword` — `<input id="settings-confirm-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/i18n.js:72` `security_implementation_keyword` — `"ユーザー名": "Username", "現在のパスワード": "Current password",`
+- `warn` `credential_word` `daemon/http/static/i18n.js:73` `security_implementation_keyword` — `"新しいパスワード": "New password", "新しいパスワード（確認）": "Confirm new password",`
+- `warn` `credential_word` `daemon/http/static/i18n.js:74` `security_implementation_keyword` — `"パスワードを変更": "Change password", "定型文送信": "Saved text entries",`
+- `warn` `credential_word` `daemon/http/static/i18n.js:115` `security_implementation_keyword` — `"この管理画面へアクセスするときのパスワードを変更します。ユーザー名は変更できません。": "Change the password used to access this interface. The username cannot be changed.",`
+- `warn` `credential_word` `daemon/http/static/i18n.js:146` `security_implementation_keyword` — `["check用パスワードが一致しません", "The confirmation password does not match"],`
+- `warn` `credential_word` `daemon/http/static/i18n.js:147` `security_implementation_keyword` — `["Saved。次のアクセスから新しいパスワードでlogインしてください。", "Saved. Use the new password on your next visit."],`
+- `warn` `credential_word` `daemon/http/static/i18n.js:309` `security_implementation_keyword` — `["確認用パスワードが一致しません", "The confirmation password does not match"],`
+- `warn` `credential_word` `daemon/http/static/i18n.js:310` `security_implementation_keyword` — `["新しいパスワードを入力してください", "Enter a new password"],`
+- `warn` `credential_word` `daemon/http/static/i18n.js:311` `security_implementation_keyword` — `["次のアクセスから新しいパスワードでログインしてください。", "Use the new password on your next visit."],`
+- `warn` `credential_word` `daemon/http/static/index.html:381` `security_implementation_keyword` — `<label for="settings-current-password">現在のパスワード</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:382` `security_implementation_keyword` — `<input id="settings-current-password" type="password" autocomplete="current-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:385` `security_implementation_keyword` — `<label for="settings-new-password">新しいパスワード</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:386` `security_implementation_keyword` — `<input id="settings-new-password" type="password" autocomplete="new-password">`
+- `warn` `credential_word` `daemon/http/static/index.html:389` `security_implementation_keyword` — `<label for="settings-confirm-password">新しいパスワード（確認）</label>`
+- `warn` `credential_word` `daemon/http/static/index.html:390` `security_implementation_keyword` — `<input id="settings-confirm-password" type="password" autocomplete="new-password">`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:15` `security_implementation_keyword` — `for (const id of ["settings-current-password", "settings-new-password", "settings-confirm-password"]) {`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:518` `security_implementation_keyword` — `const currentPassword = settingsEl("settings-current-password")?.value || "";`
 - `warn` `credential_word` `daemon/http/static/settings_panel.js:519` `security_implementation_keyword` — `const newPassword = settingsEl("settings-new-password")?.value || "";`
@@ -181,6 +190,8 @@
 - `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-implementation-notes.md:577` `documentation_security_keyword` — `## 2026-06-14 sessiond_ctl key token guard slice`
 - `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-implementation-notes.md:581` `documentation_security_keyword` — `- manual smoke 用の `sessiond_ctl key` が巨大な action / modifier 名や非ASCII token を socket へ送り、`
 - `warn` `credential_word` `docs/daemon/specs/sessiond/pty-terminal-mirror-implementation-notes.md:586` `documentation_security_keyword` — `- `sessiond_ctl key` は action / modifier token を ASCII かつ 1-64 bytes に制限する。`
+- `warn` `credential_word` `docs/feature/oled-web-ui-qr.md:19` `documentation_security_keyword` — `- password、Basic認証header、cookie、CSRF tokenは格納しない`
+- `warn` `credential_word` `docs/feature/oled-web-ui-qr.md:40` `documentation_security_keyword` — ``KC_SH3`を押した場合は、従来どおりNode / SSID / IPを4秒表示した後、管理画面QRを15秒間だけ表示し、`
 - `warn` `credential_word` `docs/input/touch-panel-flick-input-design.md:26` `documentation_security_keyword` — `- host IME / layout の自動判定はしない。日本語入力は `KC_KANA` / `KC_LANG1` / macro token など既存 action と明示設定で扱う。`
 - `warn` `credential_word` `docs/input/touch-panel-flick-input-design.md:110` `documentation_security_keyword` — `2. kana / punctuation は [unicode-send-string-safety-design.md](unicode-send-string-safety-design.md) の UTF / Unicode / Send String 経路が安全に扱えることを確認してから、macro token または explicit action として扱う。`
 - `warn` `credential_word` `docs/input/unicode-send-string-safety-design.md:211` `documentation_security_keyword` — `- password / secret 用途には使わないと明記する。`
@@ -196,10 +207,12 @@
 - `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:538` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:78` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
-- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:280` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:532` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:607` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:25` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:27` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:87` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
+- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:289` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:541` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:616` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
@@ -1050,9 +1063,9 @@
 - `warn` `credential_word` `script/test_logicd_wifi_manager.py:56` `test_fixture` — `assert status.ssid == "HomeAP"`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1371` `test_fixture` — `(root / "done" / "task-a.result.md").write_text("secret body should not return", encoding="utf-8")`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1383` `test_fixture` — `assert "secret body" not in encoded`
-- `warn` `credential_word` `script/test_public_export.py:240` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:243` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:246` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:247` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:250` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:253` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
 - `warn` `credential_word` `script/test_public_usb_identity.py:326` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
 - `warn` `credential_word` `script/test_text_send_safety.py:122` `test_fixture` — `assert not send_string_name_valid("../secret")`
@@ -1074,14 +1087,14 @@
 - `warn` `credential_word` `system/install/setup_fresh_rpi.sh:327` `implementation_security_keyword` — `user_home="$(getent passwd "$SUDO_USER" | cut -d: -f6)"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:11` `pid_codes_migration_required` — `VENDOR_ID="0x1d6b"`
 - `warn` `linux_foundation_vid` `system/install/setup_usb_gadget.sh:37` `pid_codes_migration_required` — `sh("VENDOR_ID"; .device.vendor_id // "0x1d6b"),`
-- `warn` `credential_word` `tools/README.md:93` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
+- `warn` `credential_word` `tools/README.md:102` `documentation_security_keyword` — `したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:53` `implementation_security_keyword` — `token in line`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:54` `implementation_security_keyword` — `for token in (`
 - `warn` `credential_word` `tools/buildroot_m1_compare.py:71` `implementation_security_keyword` — `if any(token in line for token in ("hid", "usb", "cqa02303v5", "1d6b:0105")):`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:133` `implementation_security_keyword` — `filesystem_file(debugfs, rootfs, "/etc/passwd"),`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:135` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:138` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:148` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:134` `implementation_security_keyword` — `filesystem_file(debugfs, rootfs, "/etc/passwd"),`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:136` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:139` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:149` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
 - `warn` `credential_word` `tools/collect_license_evidence.py:90` `implementation_security_keyword` — `if not any(token in relative.name.upper() for token in ("LICENSE", "COPYING", "NOTICE")):`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:122` `implementation_security_keyword` — `for token in tokens:`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:123` `implementation_security_keyword` — `if token.type != tokenize.COMMENT:`

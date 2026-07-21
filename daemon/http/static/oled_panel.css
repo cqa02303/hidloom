@@ -278,6 +278,18 @@
   margin-top: 10px;
 }
 
+.oled-layout-usage {
+  min-height: 1.25rem;
+  margin: 0.5rem 0 0;
+  color: #59636e;
+  font-size: 0.75rem;
+}
+
+.oled-layout-usage.error {
+  color: #b42318;
+  font-weight: 600;
+}
+
 .oled-layout-row {
   display: grid;
   grid-template-columns: 22px minmax(110px, 1fr) auto auto;

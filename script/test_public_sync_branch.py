@@ -62,6 +62,7 @@ def main() -> None:
             export,
         )
         dry_payload = json.loads(dry.stdout)
+        assert dry_payload["release_channel"] == "source-public"
         assert dry_payload["executed"] is False
         assert dry_payload["pushed"] is False
         assert dry_payload["branch"].startswith("sync/v0.1.0-")
@@ -91,6 +92,7 @@ def main() -> None:
         result = json.loads(executed.stdout)
         assert result["executed"] is True
         assert result["pushed"] is True
+        assert result["release_channel"] == "source-public"
         assert len(result["public_commit"]) == 40
         assert result["committed_file_count"] > 1000
 
@@ -98,12 +100,14 @@ def main() -> None:
         assert (inspection / "PUBLIC_EXPORT_MANIFEST.json").is_file()
         assert not (inspection / "obsolete-private-note.txt").exists()
         readiness = run(
-            ["python3", "tools/public_release_readiness.py", ".", "--allow-pending-pid"],
+            ["python3", "tools/public_release_readiness.py", ".", "--channel", "source-public"],
             inspection,
             check=False,
         )
         assert readiness.returncode == 0, readiness.stdout + readiness.stderr
-        assert json.loads(readiness.stdout)["ready"] is True
+        inspection_readiness = json.loads(readiness.stdout)
+        assert inspection_readiness["ready"] is True
+        assert inspection_readiness["release_channel"] == "source-public"
         assert run(["git", "show", "main:README.md"], seed).stdout == "old public tree\n"
 
         duplicate = run(

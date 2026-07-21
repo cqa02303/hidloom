@@ -54,6 +54,7 @@ from .connectivity import (
 from .icons import default_icon_payload, draw_icon_pixels, icon_bitmap
 from .oled_customization import invalidate_cache as invalidate_oled_customization_cache
 from .oled_customization import load_effective_document
+from .qr_v1 import encode_v1_l, scaled_pixels
 from .status_display import daemon_status_active, daemon_status_icon_row
 
 # ---------------------------------------------------------------------------
@@ -508,6 +509,8 @@ def _draw_ready_item(
     if item_id == "output_mode":
         _draw_output_mode(draw, font, x, y, current_mode, wifi, daemon_status)
         return y + 10
+    if item_id == "web_ui_qr":
+        return _draw_web_ui_qr(draw, font=font, x=x, y=y, max_width=max_width, system_status=system_status)
     if item_id == "layer":
         draw.text((x, y), f"Layer: {layer}", font=font, fill="white")
         return y + 12
@@ -531,6 +534,51 @@ def _draw_ready_item(
         draw.text((x, y), time.strftime("  %H:%M"), font=font, fill="white")
         return y + 12
     return y
+
+
+def _draw_web_ui_qr(draw, *, font, x: int, y: int, max_width: int, system_status: dict) -> int:
+    """Draw a standards-compliant 58 px Version 1 symbol with quiet zone."""
+    url = str(system_status.get("management_url") or "")
+    try:
+        pixels = scaled_pixels(encode_v1_l(url), scale=2, quiet_modules=4)
+    except ValueError:
+        draw.text((x, y), "Web UI\nNo address", font=font, fill="white")
+        return y + 20
+    size = len(pixels)
+    left = x + max(0, (max_width - size) // 2)
+    draw.rectangle([(left, y), (left + size - 1, y + size - 1)], fill="white")
+    for dy, row in enumerate(pixels):
+        for dx, dark in enumerate(row):
+            if dark:
+                draw.point((left + dx, y + dy), fill="black")
+    return y + size
+
+
+def _management_url() -> str:
+    """Resolve the routable IPv4 management URL without network traffic."""
+    candidates: list[str] = []
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
+            probe.connect(("192.0.2.1", 9))
+            candidates.append(str(probe.getsockname()[0]))
+    except OSError:
+        pass
+    try:
+        candidates.extend(
+            str(entry[4][0])
+            for entry in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET)
+        )
+    except OSError:
+        pass
+    for address in candidates:
+        if address and not address.startswith("127.") and len(address) <= 15:
+            url = f"HTTPS://{address}"
+            try:
+                encode_v1_l(url)
+            except ValueError:
+                continue
+            return url
+    return ""
 
 
 def _draw_ready_separator(draw, item_id: str, y: int, width: int) -> int:
@@ -751,6 +799,39 @@ def _draw_alert(device, font, message: str, *, inverted: bool = False) -> None:
             draw.text((x, y), line, font=font, fill=fg)
 
 
+def _draw_web_ui_qr_screen(device, font, system_status: dict) -> None:
+    """Draw the on-demand SH3 management QR without changing Ready settings."""
+    width, height = device.width, device.height
+    url = str(system_status.get("management_url") or "")
+    try:
+        pixels = scaled_pixels(encode_v1_l(url), scale=2, quiet_modules=4)
+    except ValueError:
+        _draw_alert(device, font, "Web UI\nNo address")
+        return
+
+    size = len(pixels)
+    left = max(0, (width - size) // 2)
+    top = 17 if height >= size + 42 else max(0, (height - size) // 2)
+    with canvas(device) as draw:
+        draw.rectangle([(0, 0), (width - 1, height - 1)], fill="black")
+        if top >= 14:
+            label = "Web UI"
+            draw.text((max(0, (width - _text_width(font, label)) // 2), 2), label, font=font, fill="white")
+        draw.rectangle([(left, top), (left + size - 1, top + size - 1)], fill="white")
+        for dy, row in enumerate(pixels):
+            for dx, dark in enumerate(row):
+                if dark:
+                    draw.point((left + dx, top + dy), fill="black")
+        text_y = top + size + 3
+        if text_y < height - 8:
+            address = url.removeprefix("HTTPS://")
+            for line in _wrap_text(address, font, width - 6):
+                if text_y >= height - 8:
+                    break
+                draw.text((max(3, (width - _text_width(font, line)) // 2), text_y), line, font=font, fill="white")
+                text_y += 12
+
+
 def _alert_is_immediate(msg: dict) -> bool:
     """Return true when an alert/warning should replace the current display."""
     return bool(msg.get("immediate", False))
@@ -935,6 +1016,7 @@ async def _system_status_loop(
             snapshot_ref["system"] = {
                 "cpu_percent": _cpu_percent(),
                 "cpu_temp": _cpu_temp(),
+                "management_url": _management_url(),
                 "sampled_at": time.monotonic(),
             }
         except Exception as exc:
@@ -1040,14 +1122,17 @@ async def _main() -> None:
     alert_msg: str = ""
     alert_until: float = 0.0
     alert_was_active: bool = False
-    alert_queue: list[tuple[str, float, bool]] = []
+    alert_queue: list[tuple[str, float, bool, str]] = []
 
-    def _start_alert(message: str, duration: float, inverted: bool = False) -> None:
+    def _start_alert(message: str, duration: float, inverted: bool = False, kind: str = "alert") -> None:
         nonlocal alert_msg, alert_until, alert_was_active
         alert_msg = message
         alert_until = time.monotonic() + max(0.1, duration)
         alert_was_active = True
-        _draw_alert(device, font, alert_msg, inverted=inverted)
+        if kind == "web_ui_qr":
+            _draw_web_ui_qr_screen(device, font, status_snapshots.get("system", {}))
+        else:
+            _draw_alert(device, font, alert_msg, inverted=inverted)
 
     if os.path.exists(ledd_sock):
         os.unlink(ledd_sock)
@@ -1129,16 +1214,20 @@ async def _main() -> None:
                     if phase in {"pairing", "passkey", "passkey_wait", "digits"}:
                         title = "BT PAIRING" if phase == "pairing" else "ENTER CODE"
                         shown_digits = "*" * min(len(digits), 6)
-                        alert_queue.append((f"{title}\n{shown_digits}", 2.0, False))
+                        alert_queue.append((f"{title}\n{shown_digits}", 2.0, False, "alert"))
                     elif phase in {"success", "paired", "connected"}:
-                        alert_queue.append(("BT CONNECTED", 2.0, False))
+                        alert_queue.append(("BT CONNECTED", 2.0, False, "alert"))
                     elif phase in {"failed", "error"}:
-                        alert_queue.append(("PAIR FAILED", 3.0, True))
+                        alert_queue.append(("PAIR FAILED", 3.0, True, "alert"))
                 elif msg.get("t") == "script_exit":
                     name = msg.get("name", "")
                     exit_code = msg.get("code", -1)
                     log.info("スクリプト終了受信: %s (exit_code=%d)", name, exit_code)
-                    alert_queue.append((f"{name}\nexit: {exit_code}", 3.0, False))
+                    alert_queue.append((f"{name}\nexit: {exit_code}", 3.0, False, "alert"))
+                elif msg.get("t") == "web_ui_qr":
+                    duration = max(0.1, min(60.0, float(msg.get("sec", 15.0))))
+                    alert_queue.append(("Web UI QR", duration, False, "web_ui_qr"))
+                    log.info("Web UI QR received (%.1f seconds)", duration)
                 elif msg.get("t") in ("alert", "warning"):
                     raw_alert = str(msg.get("msg", ""))
                     incoming_alert = ascii_oled_text(raw_alert)
@@ -1149,7 +1238,7 @@ async def _main() -> None:
                     if _alert_is_immediate(msg):
                         _start_alert(incoming_alert, duration, inverted)
                     else:
-                        alert_queue.append((incoming_alert, duration, inverted))
+                        alert_queue.append((incoming_alert, duration, inverted, "alert"))
                     kind = "警告" if inverted else "アラート"
                     log.info("%s受信: %s (%.1f秒)", kind, incoming_alert, duration)
             except asyncio.TimeoutError:
@@ -1161,8 +1250,8 @@ async def _main() -> None:
             if alert_until > now:
                 await asyncio.sleep(0.1)
             elif alert_queue:
-                pending_msg, pending_duration, pending_inverted = alert_queue.pop(0)
-                _start_alert(pending_msg, pending_duration, pending_inverted)
+                pending_msg, pending_duration, pending_inverted, pending_kind = alert_queue.pop(0)
+                _start_alert(pending_msg, pending_duration, pending_inverted, pending_kind)
                 await asyncio.sleep(0.1)
             elif not (matrixd_ok and logicd_ok):
                 if alert_was_active:

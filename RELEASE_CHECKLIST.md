@@ -197,12 +197,13 @@ systemctl --failed --no-pager
 - [ ] allowlist manifest、deny scan、privacy/reference/docs audit が pass
 - [ ] standalone public clone で canonical validation と locked Rust tests が pass
 - [ ] public repository policy plan/audit が canonical config と一致
-- [ ] pending VID/PID は blocker として release notes に残す
+- [ ] pending VID/PID は`stable-public`だけのblockerとしてrelease notesに残す
+- [ ] `internal-rc` binaryをpublic GitHub Releaseへuploadしない
 
 ```bash
 make public-export-check
 python3 /tmp/hidloom-public-export/tools/public_release_readiness.py \
-  /tmp/hidloom-public-export --allow-pending-pid
+  /tmp/hidloom-public-export --channel source-public
 ```
 
 初回 public repository は GitHub 側で README/LICENSE を生成しない空 repository とし、
@@ -219,12 +220,15 @@ python3 /tmp/hidloom-public-export/tools/public_release_readiness.py \
 ```bash
 make buildroot-compliance-verify
 python3 tools/public_release_readiness.py . \
-  --require-binary-distribution \
+  --channel internal-rc \
   --compliance-bundle build/artifacts/hidloom-buildroot-m6-compliance.tar.zst
 python3 tools/public_release_bundle.py --verify <release-directory>
 python3 tools/public_release_bundle.py \
   --verify <release-directory> \
-  --require-hardware-pass
+  --require-channel-ready internal-rc
+python3 tools/public_release_bundle.py \
+  --verify <stable-release-directory> \
+  --require-channel-ready stable-public
 ```
 
 ## 12. Release Notes

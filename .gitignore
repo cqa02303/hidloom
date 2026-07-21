@@ -76,6 +76,12 @@ conf/http_basic_auth.local.json
 config/default/http_basic_auth.local.json
 build/artifacts/
 build/packages/
+build/public-rebuild/
+build/public-*/
+build/touch-panel-release/
+build/zero2w-keyboard-release/
+build/*-release-publish-plan.json
+build/*-release-verification.json
 build/package-work/
 build/deb-work/
 build/rpi-matrixd/

@@ -7,6 +7,8 @@ HIDloomは、Linux SBCをprogrammable keyboard applianceとして動かすsoftwa
 ## まず見る
 
 - 導入方式を選ぶ: [INSTALL.md](INSTALL.md)
+- Raspberry Pi Zero 2 W keyboardを試す: [Keyboard Package and M6 Image](docs/hardware/raspberry-pi-zero-2-w-keyboard-release.md)
+- Raspberry Pi 4 touch panelを試す: [Touch Panel Package](docs/hardware/raspberry-pi-4-touch-panel-package.md)
 - 詳細ドキュメント目次: [docs/README.md](docs/README.md)
 - 画像ギャラリー: [docs/gallery/README.md](docs/gallery/README.md)
 
@@ -30,7 +32,8 @@ HIDloomは、Linux SBCをprogrammable keyboard applianceとして動かすsoftwa
 | Raspberry Pi OS Touch Panel | Raspberry Pi 4 + Waveshare 8.8inch DSI touch kiosk | `hidloom-core` + `touch-waveshare-8.8` profileの`.deb` |
 | Buildroot M6 image | 高速起動する offline keyboard appliance | `hidloom-<version>-buildroot-m6.img.zst` |
 
-選択基準、Release asset、導入手順: [INSTALL.md](INSTALL.md)
+選択基準、Release asset、導入手順: [INSTALL.md](INSTALL.md)。Zero 2 W向けのpackageとM6は
+[Keyboard Package and M6 Image](docs/hardware/raspberry-pi-zero-2-w-keyboard-release.md)にまとめています。
 
 ## Keyboard Layout
 
@@ -82,6 +85,13 @@ PC / Linux input / log / Bluetooth host
 | `bt` | BT | Bluetooth HID |
 | `uinput` | Pi | Raspberry Pi local input |
 | `debug` | Debug | HID report log |
+
+## 商標
+
+「QRコード」は株式会社デンソーウェーブの登録商標です。
+
+HIDloomのOLED Web UI QR機能、表示仕様、権利関係の説明は
+[OLED Web UI QR](docs/feature/oled-web-ui-qr.md)を参照してください。
 
 ## Repository Layout
 

@@ -174,6 +174,13 @@ def main() -> None:
         permissive_triage,
         root_tracked_paths,
     )
+    credential_review = next(
+        item
+        for item in manifest["warning_triage"]
+        if item["pattern_id"] == "credential_word"
+        and item.get("disposition") == "security_implementation_keyword"
+    )
+    assert "daemon/http/static/i18n.js" in credential_review["path_globs"]
     assert validate_export_contract([], root_tracked_paths) == ["manifest-not-object"]
     unsafe_manifest = copy.deepcopy(manifest)
     unsafe_manifest["include_files"].append("../outside")
@@ -646,6 +653,10 @@ def main() -> None:
                 "--allow-draft-source",
             ],
             ["python3", "tools/public_build_provenance.py", "--help"],
+            ["python3", "tools/package/build_profile_release_bundle.py", "--help"],
+            ["tools/package/build_touch_panel_release.sh", "--help"],
+            ["python3", "tools/package/publish_public_release_bundle.py", "--help"],
+            ["python3", "tools/package/verify_github_public_release_bundle.py", "--help"],
             ["python3", "tools/public_release_bundle.py", "--help"],
             ["python3", "tools/public_sync_branch.py", "--help"],
             ["python3", "tools/public_repository_bootstrap.py", "--help"],

@@ -80,8 +80,7 @@ python3 tools/buildroot_compliance_bundle.py build --fetch-missing
 python3 tools/buildroot_compliance_bundle.py verify \
   build/artifacts/hidloom-buildroot-m6-compliance.tar.zst
 python3 tools/public_release_readiness.py . \
-  --allow-pending-pid \
-  --require-binary-distribution \
+  --channel internal-rc \
   --compliance-bundle build/artifacts/hidloom-buildroot-m6-compliance.tar.zst
 ```
 

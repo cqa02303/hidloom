@@ -2,10 +2,10 @@
   "schema": "hidloom.public-documentation-audit.v2",
   "ready": true,
   "summary": {
-    "files_scanned": 243,
-    "public_docs": 192,
-    "reachable_public_docs": 192,
-    "omitted_private_links": 114,
+    "files_scanned": 248,
+    "public_docs": 197,
+    "reachable_public_docs": 197,
+    "omitted_private_links": 115,
     "removed_private_navigation_lines": 79,
     "broken_links": 0,
     "orphaned_documents": 0
@@ -18,7 +18,7 @@
     },
     {
       "path": "daemon/i2cd/README.md",
-      "line": 355,
+      "line": 363,
       "target_type": "file"
     },
     {
@@ -29,16 +29,6 @@
     {
       "path": "daemon/matrixd/README.md",
       "line": 399,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 14,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 15,
       "target_type": "file"
     },
     {
@@ -63,17 +53,12 @@
     },
     {
       "path": "docs/README.md",
-      "line": 38,
+      "line": 20,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
-      "line": 39,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 40,
+      "line": 21,
       "target_type": "file"
     },
     {
@@ -83,27 +68,42 @@
     },
     {
       "path": "docs/README.md",
-      "line": 71,
+      "line": 42,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
-      "line": 73,
-      "target_type": "directory"
+      "line": 43,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 44,
+      "target_type": "file"
     },
     {
       "path": "docs/README.md",
       "line": 74,
-      "target_type": "directory"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 75,
-      "target_type": "directory"
+      "target_type": "file"
     },
     {
       "path": "docs/README.md",
       "line": 76,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 77,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 78,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 79,
       "target_type": "directory"
     },
     {
@@ -313,17 +313,12 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 12,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/README.md",
       "line": 13,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
-      "line": 33,
+      "line": 14,
       "target_type": "file"
     },
     {
@@ -333,27 +328,22 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 36,
+      "line": 35,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
-      "line": 38,
+      "line": 37,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
-      "line": 39,
+      "line": 40,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
-      "line": 45,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/README.md",
-      "line": 46,
+      "line": 41,
       "target_type": "file"
     },
     {
@@ -363,12 +353,17 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 51,
+      "line": 48,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
-      "line": 54,
+      "line": 49,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 53,
       "target_type": "file"
     },
     {
@@ -378,27 +373,32 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 57,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/README.md",
       "line": 58,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
-      "line": 62,
+      "line": 59,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
-      "line": 67,
+      "line": 60,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 64,
       "target_type": "file"
     },
     {
       "path": "docs/ops/README.md",
       "line": 69,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 71,
       "target_type": "file"
     },
     {
@@ -497,6 +497,11 @@
       "target_type": "file"
     },
     {
+      "path": "docs/ops/release-channel-policy.md",
+      "line": 102,
+      "target_type": "file"
+    },
+    {
       "path": "docs/ops/windows-ime-custom-hid-real-device-runbook.md",
       "line": 7,
       "target_type": "file"
@@ -585,7 +590,7 @@
   "removed_private_navigation_lines": [
     {
       "path": "daemon/i2cd/README.md",
-      "line": 355
+      "line": 363
     },
     {
       "path": "daemon/logicd/README.md",
@@ -594,14 +599,6 @@
     {
       "path": "daemon/matrixd/README.md",
       "line": 399
-    },
-    {
-      "path": "docs/README.md",
-      "line": 14
-    },
-    {
-      "path": "docs/README.md",
-      "line": 15
     },
     {
       "path": "docs/README.md",
@@ -621,15 +618,11 @@
     },
     {
       "path": "docs/README.md",
-      "line": 38
+      "line": 20
     },
     {
       "path": "docs/README.md",
-      "line": 39
-    },
-    {
-      "path": "docs/README.md",
-      "line": 40
+      "line": 21
     },
     {
       "path": "docs/README.md",
@@ -637,11 +630,15 @@
     },
     {
       "path": "docs/README.md",
-      "line": 71
+      "line": 42
     },
     {
       "path": "docs/README.md",
-      "line": 73
+      "line": 43
+    },
+    {
+      "path": "docs/README.md",
+      "line": 44
     },
     {
       "path": "docs/README.md",
@@ -649,11 +646,19 @@
     },
     {
       "path": "docs/README.md",
-      "line": 75
+      "line": 76
     },
     {
       "path": "docs/README.md",
-      "line": 76
+      "line": 77
+    },
+    {
+      "path": "docs/README.md",
+      "line": 78
+    },
+    {
+      "path": "docs/README.md",
+      "line": 79
     },
     {
       "path": "docs/architecture/system-overview.md",
@@ -721,15 +726,11 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 12
-    },
-    {
-      "path": "docs/ops/README.md",
       "line": 13
     },
     {
       "path": "docs/ops/README.md",
-      "line": 33
+      "line": 14
     },
     {
       "path": "docs/ops/README.md",
@@ -737,23 +738,19 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 36
+      "line": 35
     },
     {
       "path": "docs/ops/README.md",
-      "line": 38
+      "line": 37
     },
     {
       "path": "docs/ops/README.md",
-      "line": 39
+      "line": 40
     },
     {
       "path": "docs/ops/README.md",
-      "line": 45
-    },
-    {
-      "path": "docs/ops/README.md",
-      "line": 46
+      "line": 41
     },
     {
       "path": "docs/ops/README.md",
@@ -761,11 +758,15 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 51
+      "line": 48
     },
     {
       "path": "docs/ops/README.md",
-      "line": 54
+      "line": 49
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 53
     },
     {
       "path": "docs/ops/README.md",
@@ -773,23 +774,27 @@
     },
     {
       "path": "docs/ops/README.md",
-      "line": 57
-    },
-    {
-      "path": "docs/ops/README.md",
       "line": 58
     },
     {
       "path": "docs/ops/README.md",
-      "line": 62
+      "line": 59
     },
     {
       "path": "docs/ops/README.md",
-      "line": 67
+      "line": 60
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 64
     },
     {
       "path": "docs/ops/README.md",
       "line": 69
+    },
+    {
+      "path": "docs/ops/README.md",
+      "line": 71
     },
     {
       "path": "docs/ops/buildroot-fast-boot-experiment.md",

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,7 @@ from i2cd.oled_customization import (  # noqa: E402
     normalize_document,
     reset_document,
 )
+from i2cd.qr_v1 import encode_v1_l, scaled_pixels  # noqa: E402
 from oled_api import oled_get_response, oled_put_response, oled_reset_response  # noqa: E402
 
 
@@ -65,6 +67,13 @@ def test_schema_and_persistence() -> None:
     assert normalized["icons"]["bt"]["rows"][0] == "111111"
     assert normalized["ready"]["items"][0]["enabled"] is False
     assert normalized["ready"]["items"][1]["id"] == "output_mode"
+
+    legacy = json.loads(json.dumps(document))
+    legacy["ready"]["items"] = [item for item in legacy["ready"]["items"] if item["id"] != "web_ui_qr"]
+    migrated = normalize_document(legacy, defaults)
+    assert migrated["ready"]["items"][-1] == {
+        "id": "web_ui_qr", "enabled": False, "separator_after": False,
+    }
 
     invalid = json.loads(json.dumps(document))
     invalid["icons"]["bt"]["rows"][0] = "222222"
@@ -142,6 +151,35 @@ def test_runtime_icon_override() -> None:
         reload_icon_bitmaps(BITMAP_FILE)
 
 
+def test_web_ui_qr() -> None:
+    matrix = encode_v1_l("HTTPS://<keyboard-ip>")
+    assert len(matrix) == 21 and all(len(row) == 21 for row in matrix)
+    vector = "\n".join("".join("1" if pixel else "0" for pixel in row) for row in matrix)
+    assert hashlib.sha256(vector.encode()).hexdigest() == (
+        "6879b0a6faf898355d0297b57889962220d45fad24838b91a13678ac78b38229"
+    )
+    pixels = scaled_pixels(matrix, scale=2, quiet_modules=4)
+    assert len(pixels) == 58 and all(len(row) == 58 for row in pixels)
+    assert not any(pixels[0]) and not any(row[0] for row in pixels)
+    assert sum(map(sum, pixels)) == sum(map(sum, matrix)) * 4
+    maximum_ipv4_url = "HTTPS://255.255.255.255"
+    assert len(maximum_ipv4_url) == 23
+    maximum_matrix = encode_v1_l(maximum_ipv4_url)
+    assert len(maximum_matrix) == 21 and all(len(row) == 21 for row in maximum_matrix)
+    try:
+        encode_v1_l("https://<keyboard-ip>")
+    except ValueError as exc:
+        assert "non-alphanumeric" in str(exc)
+    else:
+        raise AssertionError("lowercase QR content accepted")
+    try:
+        encode_v1_l("A" * 26)
+    except ValueError as exc:
+        assert "1..25" in str(exc)
+    else:
+        raise AssertionError("oversized Version 1 QR content accepted")
+
+
 def test_i2cd_ready_layout_override() -> None:
     sys.modules.setdefault("luma", types.ModuleType("luma"))
     sys.modules.setdefault("luma.core", types.ModuleType("luma.core"))
@@ -156,8 +194,11 @@ def test_i2cd_ready_layout_override() -> None:
     class Draw:
         def __init__(self):
             self.texts: list[str] = []
+            self.rectangles: list[tuple] = []
+            self.points: list[tuple] = []
 
-        def rectangle(self, *_args, **_kwargs):
+        def rectangle(self, *args, **kwargs):
+            self.rectangles.append((args, kwargs))
             return None
 
         def line(self, *_args, **_kwargs):
@@ -166,7 +207,8 @@ def test_i2cd_ready_layout_override() -> None:
         def text(self, _position, value, **_kwargs):
             self.texts.append(str(value))
 
-        def point(self, *_args, **_kwargs):
+        def point(self, *args, **kwargs):
+            self.points.append((args, kwargs))
             return None
 
     class Font:
@@ -208,6 +250,34 @@ def test_i2cd_ready_layout_override() -> None:
                 system_status={"cpu_percent": 34, "cpu_temp": 50},
             )
             assert draw.texts == ["CPU:34 %", "Layer: 2"], draw.texts
+            qr_bottom = i2cd_daemon._draw_web_ui_qr(
+                draw,
+                font=Font(),
+                x=3,
+                y=10,
+                max_width=58,
+                system_status={"management_url": "HTTPS://<keyboard-ip>"},
+            )
+            assert qr_bottom == 68
+            assert draw.rectangles[-1] == (([(3, 10), (60, 67)],), {"fill": "white"})
+            assert len(draw.points) == sum(map(sum, encode_v1_l("HTTPS://<keyboard-ip>"))) * 4
+
+            draw.texts.clear()
+            draw.rectangles.clear()
+            draw.points.clear()
+            i2cd_daemon._draw_web_ui_qr_screen(
+                Device(), Font(), {"management_url": "HTTPS://<keyboard-ip>"},
+            )
+            assert draw.rectangles[:2] == [
+                (([(0, 0), (63, 127)],), {"fill": "black"}),
+                (([(3, 17), (60, 74)],), {"fill": "white"}),
+            ]
+            assert draw.texts == ["Web UI", "192.168.0", ".48"], draw.texts
+            assert len(draw.points) == sum(map(sum, encode_v1_l("HTTPS://<keyboard-ip>"))) * 4
+
+            draw.texts.clear()
+            i2cd_daemon._draw_web_ui_qr_screen(Device(), Font(), {"management_url": ""})
+            assert draw.texts == ["Web UI", "No", "address"], draw.texts
     finally:
         i2cd_daemon.canvas = original_canvas
         if original_env is None:
@@ -318,6 +388,10 @@ def test_http_assets() -> None:
     assert "Object.entries(_oledEditorState.customization.icons)" not in panel
     assert "function moveOledLayoutItem" in panel
     assert "function renderOledScreenPreview" in panel
+    assert 'item.id === "web_ui_qr"' in panel
+    assert "OLED_WEB_UI_QR_PREVIEW" in panel
+    assert 'id="oled-layout-usage"' in index
+    assert "表示領域を ${overflow}px 超えています" in panel
     assert 'class="oled-ready-column"' in index
     assert index.index('class="oled-card oled-screen-preview-card"') < index.index('class="oled-card oled-layout-editor"')
     assert "document.createElement(\"style\")" not in panel
@@ -326,6 +400,7 @@ def test_http_assets() -> None:
     assert ".oled-icon-group-list" in css
     assert ".oled-ready-column" in css
     assert ".oled-layout-row" in css
+    assert ".oled-layout-usage.error" in css
     assert 'app.router.add_get("/api/oled"' in httpd
     assert 'app.router.add_put("/api/oled"' in httpd
     assert 'app.router.add_post("/api/oled/reset"' in httpd
@@ -335,6 +410,7 @@ def main() -> None:
     test_schema_and_persistence()
     test_icon_group_catalog()
     test_runtime_icon_override()
+    test_web_ui_qr()
     test_i2cd_ready_layout_override()
     asyncio.run(test_http_api())
     test_http_assets()

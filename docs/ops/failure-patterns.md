@@ -17,6 +17,15 @@
 - evidence:
 ```
 
+## New public UI or feature docs leave publication inventories stale
+
+- symptom: canonical validation stops in `test_public_release_readiness.py`, `test_test_inventory_doc.py`, or `test_docs_reorg.py` after a new public JavaScript asset, test, or feature document is added.
+- likely cause: security terminology in a reviewed UI file is still handled by the catch-all `credential_classification_required` rule, or the canonical test/document category counts were not updated with the new tracked file.
+- detect: run `script/test_public_export.py`, `script/test_public_release_readiness.py`, `script/test_test_inventory_doc.py`, and `script/test_docs_reorg.py` before the full canonical suite. Review exact warning paths; never broadly allow the credential catch-all.
+- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked category count. Keep concrete secret patterns as blockers.
+- regression check: focused tests above must pass; clean public export must report blocker 0, unexpected required 0, and only explicitly allowed pending dispositions before rerunning `script/test_validation_suite.py`.
+- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded updates the canonical 226-entrypoint suite passed in 449.1 seconds.
+
 ## LED startup breathing color storm
 
 - symptom: 起動中の breathing で LED が意図しない色へ激しく変わり続ける。
@@ -808,6 +817,33 @@
 - regression check: `script/test_i2cd_output_mode_label.py`で実iconから期待row heightを算出し、badge下端が次項目開始位置より前か確認する。`script/test_i2cd_oled_icons.py`、customization、Buildroot asset gateも通す。
 - evidence: 2026-07-17、`<keyboard-host>`の保存icon 17件をsource既定へ昇格した際に検出した。11件の変更を維持したままdynamic row heightへ変更し、全17 iconのruntime一致とReady既定順不変、関連OLED回帰をpassした。
 
+## Public package rebuild leaves checksum sidecars as a dirty worktree
+
+- symptom: clean public cloneでARM64 package build自体は成功し、`.deb`と`.tar.zst`はignoreされるが、続くrelease candidate gateがworktree dirtyとして停止する。
+- likely cause: package helperが各artifactのportable `.sha256` sidecarを生成する一方、標準`build/public-rebuild` directoryがignore対象ではなく、checksumだけがuntrackedとして残る。
+- detect: build後に`git status --short`と`git check-ignore build/public-rebuild/<artifact>.sha256`を実行する。tracked source差分と生成checksumを分け、`--skip-clean`だけで公開へ進めない。
+- recovery: clean public cloneでは標準`build/public-rebuild`またはsource tree外を出力先に使う。既にcustom出力へ生成した場合はartifactを保管してdisposable checkoutを作り直し、tracked sourceを削除しない。
+- regression check: `.gitignore`で`build/public-rebuild/`全体を生成物として扱い、`tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8`後もworktree clean、provenance verify、split candidate gateが通ることを確認する。
+- evidence: 2026-07-19、public main `ca62870882e4`のcustom `build/touch-preview`へpackage `0.0.2012+git001a0d2e5dcb`を作成した際、tracked diff 0のまま3個の`.sha256`だけがuntrackedとなりcandidate clean gateが停止した。標準再現出力directoryをignoreし、公開候補ではprovenance付き標準入口へ統一した。
+
+## Archive and package fixture modes depend on the caller umask
+
+- symptom: archive headerはexecutable `0755`とdata file `0644`を正しく保持しているのにsource archive testが展開後mode不一致となる、またはfixture `.deb`生成が`control directory has bad permissions 700`で停止する。通常shellではpassし、restrictive `umask 0077`のhostだけで再現する。
+- likely cause: archive testがtar既定のumask適用を許し、fixture package builderも`DEBIAN/`とcontrol fileを明示正規化していないため、artifact contractではなく呼出元processのpermission policyを測定していた。
+- detect: `tar --zstd -tvf`のheader modeと展開後modeを比較する。`.deb` fixtureは`stat`でroot/`DEBIAN`が`0755`、controlが`0644`か確認し、dpkg-deb stderrを隠さない。
+- recovery: archive自体を再生成せず、mode検証用の展開へ`tar --same-permissions`を指定する。fixture packageは全directoryを`0755`、control/payloadを`0644`へ正規化してからbuildする。
+- regression check: source archive、public release bundle、profile release bundle、release helper testをrestrictive umaskでも実行し、deterministic bytes、manifest限定file、archive mode、fixture `.deb`生成を同時に確認する。
+- evidence: 2026-07-19、x86_64 build hostのcaller umask `0077`でarchive mode assertionとpublic release fixture `.deb`が順に停止した。explicit permission preservationとfixture mode正規化後はartifact contractをcaller environmentから分離した。
+
+## Generated release Markdown is mistaken for repository documentation
+
+- symptom: touch-panel release bundleはhash検証をpassするが、その直後のrepository Markdown link testが`build/touch-panel-release/QUICKSTART.md`内の相対linkをbrokenとして報告する。
+- likely cause: docs testがfilesystem上の全`.md`を再帰走査し、`.gitignore`で明示したgenerated build directoryをsource docsと区別していない。Release assetとして単独配置したquickstartのlink基準はrepository root文書と異なる。
+- detect: finding pathが`build/<generated-output>/`か、`git check-ignore`対象か確認する。trackedな`docs/`のbroken linkと同列に修正しない。
+- recovery: generated release directoryを削除せず、docs scannerをroot `.gitignore`のdirect `build/<name>/`境界へ合わせる。tracked/untrackedでignoreされていない新規docsは引き続き走査する。
+- regression check: `build/touch-panel-release/QUICKSTART.md`が存在する状態で`python3 script/test_docs_links.py`をpassさせ、clean snapshotのpublic documentation auditでも新しい導入ページがreachableか確認する。
+- evidence: 2026-07-19、検証済みpreview directory生成後に4件のfalse positiveを検出した。scannerを`.gitignore`由来のgenerated build directory除外へ変更し、previewを保持した状態のrepository link testとclean public documentation auditをpassした。
+
 ## Profile restart returns before control sockets are ready
 
 - symptom: split package更新後の`hidloom-profile keyboard-ver1 --apply --backup --restart`は成功するが、直後の`hidloom-ctrl output auto`が`connect /tmp/ctrl_events.sock: No such file or directory`で失敗する。数秒後は同じcommandが成功する。
@@ -843,3 +879,57 @@
 - recovery: 修正版i2cdでrecent outputd statusをcanonical stateとして同期し、status unavailable時だけlogicd通知へfallbackする。HTTP statusもschema/process/targetを検証したnative outputd statusからruntime modeとtargetを解決し、不正またはunavailable時だけlogicd値へfallbackする。
 - regression check: `script/test_i2cd_connectivity.py`でauto/USB/uinput/BT mapping、stale/invalid status fallback、明示uinput優先、configを検証し、`script/test_http_system_status.py`でnative autoがstale uinputを`AUTO USB`へ上書きすることとwrong-schema/process false fallbackを検証する。実機ではoutputd auto/USB counters、OLEDとHTTPの`auto USB Wi-Fi`、uinput切替後`Pi Wi-Fi`、auto復帰後`auto USB Wi-Fi`を確認する。
 - evidence: 2026-07-18、`<keyboard-host>` package `0.0.1974+git19c13255`でOLEDに再現した。outputdは`target=auto`、USB 726 frames、uinput/BT 0、error 0だったが、i2cd journal最終modeは`uinput`だった。i2cd修正版package `0.0.1980+git043975fc`では`auto -> uinput -> auto`のoutputd/i2cd同期をpassしたが、同時採取した`/api/status`が`runtime_mode=uinput` / `display_label=AUTO Pi`を返したためHTTP側の同型不具合も検出した。HTTP追補package `0.0.1981+git08f842d4`ではAPI `AUTO USB -> Pi -> AUTO USB`、outputd `auto -> uinput -> auto`、i2cd `uinput -> auto:gadget`を同時にpassし、最終output `auto`へ復旧した。利用者も実OLEDでauto/USB表示とuinput/Pi表示の往復を確認した。
+
+## Stale Buildroot output is mistaken for a current M6 release image
+
+- symptom: `build/artifacts/buildroot-m6-output/images/sdcard.img`は存在して過去の起動実績もあるが、現行sourceのartifact verifierが新しいOLED/runtime file不足で停止する。近くにあるpackageやpublic sourceと同じrevisionのM6だと誤認しやすい。
+- likely cause: Buildroot outputはtracked sourceではなく増分build cacheであり、別revisionのprivate/public sourceや古いexternal treeから生成されたtarget/imageを保持する。file名`sdcard.img`と更新日時だけではsource provenanceを識別できない。
+- detect: 配布前に`tools/buildroot_m6_verify.py --output <output>`、ARM import/runtime smoke、`tools/public_build_provenance.py verify`を同じclean public sourceから実行する。image SHA-256だけ、過去の実機合格、directory名だけで合格にしない。
+- recovery: stale outputのimageを公開assetへcopyせず、x86_64 build hostでclean public sourceから`tools/public_build_rehearsal.sh --all --profile keyboard-ver1`を実行する。package、profile、M6 imageを同じ`PUBLIC_BUILD_PROVENANCE.json`へ固定し、専用bundle helperで再検証する。
+- regression check: Zero 2 W bundleは`all` mode、`keyboard-ver1`、source commit、core/profile size/SHA-256、raw image size/SHA-256が一致するprovenanceを必須にする。内部候補は`--require-channel-ready internal-rc`、正式公開は再生成後に`--require-channel-ready stable-public`を要求する。
+- evidence: 2026-07-19、既存outputの`sdcard.img` SHA-256 `5ec1342a0d5d6e8705419998f4298a8782fe2dcf713955f864fe053c14ea17ff`を現行verifierへ渡すと、`oled-layout.json`と`oled_customization.py`不足を検出した。これは過去single-getty候補の有効な証跡だが、現行配布物としては不合格のため再利用しない。
+
+## M6 post-build omits a shared daemon helper
+
+- symptom: fresh Buildroot buildは`sdcard.img`生成まで完了するが、ARM Python import smokeの`import i2cd.i2cd`が`ModuleNotFoundError: No module named 'oled_text'`で停止する。Raspberry Pi OS packageと通常のhost testはpassする。
+- cause: M6 post-buildは`logicd viald i2cd ledd usbd`の各subdirectoryをtargetへcopyしていたが、複数daemonがimportするroot-level `daemon/oled_text.py`をcopyしていなかった。ASCII OLED alert機能追加時に従来OS packageだけが更新され、Buildroot staging contractが追随していなかった。
+- detect: freshまたはincremental M6 build後に`tools/buildroot_m6_import_smoke.py --output <output>`を必ず実行し、targetの`usr/share/hidloom/daemon/oled_text.py`もartifact verifierで要求する。image生成成功だけで合格にしない。
+- recovery: M6 post-buildでshared helperを`0644`として明示installし、同じsourceでrootfsとimageを再生成する。失敗したimageを公開assetへ流用せず、artifact/import/runtime smokeとall-mode provenanceを取り直す。
+- regression check: `script/test_buildroot_fast_boot_assets.py`でpost-build copy文とverifier必須pathを固定し、`script/test_oled_alert_ascii.py`、M6 artifact verifier、ARM import/runtime smokeを通す。従来OSへshared daemon moduleを追加した変更ではBuildroot搭載判断も同時に更新する。
+- evidence: 2026-07-19、public main `ca62870882e4` / source `001a0d2e5dcb`のfresh cross-buildがimage生成後に本症状で停止した。修正を含むclean preview commit `faec035aa5ef`では21 required files、ARM import、startup release、split route、uinput login、companion runtime、all-mode provenanceをpassし、image SHA-256は`d115ea45e206fee1c1f166ad6919edabd8fb2bb9117d24ad5e788ce3116b988a`となった。
+
+## Legacy package publisher uploads only part of a unified public release
+
+- symptom: GitHub Releaseにはcore/profile `.deb`とsidecar checksumだけがあり、Buildroot M6、touch profile、corresponding source、Buildroot compliance、SBOM、統合`SHA256SUMS`がない。localの統合bundle自体は完全である。
+- likely cause: 既存`publish_github_prerelease.sh`はlegacy single/split package配布用で、最新`.deb`を選びtagを作る。統合bundleのmanifestとasset集合を読まずに同じhelperを流用すると、一部だけが公式配布物に見えるReleaseを作る。またpublisher planやverification JSONを未ignoreの`build/`直下へ置くと、dirty-source previewへoperator絶対pathごと混入し得る。
+- detect: 公開前planのasset集合と`SHA256SUMS`掲載fileを完全一致で比較し、M6 zstd image、両profile、source、compliance、provenance、SBOM、Release manifestが全てあることを確認する。GitHub公開後は全assetを別directoryへdownloadし、対応source内verifierを実行する。public export前には生成planがsource selectionへ入っていないことも確認する。
+- recovery: 不完全なReleaseはstableへ昇格せず、draftなら削除する。正式identityと実機smokeを記録したfinal clean public bundleを再生成し、`publish_public_release_bundle.py`のdry-run、確認句付きdraft作成、`verify_github_public_release_bundle.py`を順に通す。planとverification evidenceは`build/artifacts/`へ置き、`build/*-release-publish-plan.json`と`build/*-release-verification.json`をsourceから除外する。
+- regression check: `script/test_public_release_bundle.py`でblocked previewのdry-run成功、keyboard passでもtouch pendingなら`--require-ready`/`--execute`拒否、fake GitHub全asset download、checksum、対応source extraction、両hardware gate付きdeep verifyを固定する。`script/test_release_bundle_tools.py`で生成plan/evidenceのignoreを固定し、legacy publisherを統合runbookの入口として記載しない。
+- evidence: 2026-07-19、統合preview `0.1.0-distribution-preview`のplanは22 assets / 1,413,888,808 bytesを列挙した。PID未割当、keyboard smoke未記録、touch smoke未記録、source/HEAD不一致、dirty private worktree、private originの6 blockerを検出してdraft作成を拒否し、GitHub側を変更しなかった。続くclean-snapshot回帰は`build/zero2w-keyboard-release-publish-plan.json`とverification JSONのoperator絶対path混入を検出し、artifact領域への移動とignore追加後に再実行した。
+
+## Early-boot service keeps `/tmp` busy during shutdown
+
+- symptom: dedicated shutdown keyは`poweroff.target`と`systemd-poweroff.service`まで進むが、終了直前に`Failed unmounting tmp.mount - Temporary Directory /tmp`が出る。
+- cause: input-ready短縮のため`DefaultDependencies=no`にした早期起動serviceは、通常serviceへ自動追加される`Conflicts=shutdown.target` / `Before=shutdown.target`を持たない。`hidloom-hidd`などがstop jobなしで生存し、Unix socketを開いたまま`tmp.mount`のunmountと競合する。
+- detect: shutdown前に`systemctl show <unit> -p DefaultDependencies -p Before -p After -p Conflicts`と`fuser -vm /tmp`を採取し、次bootで`journalctl -b -1`のservice stop順、`Unmounted tmp.mount`、`Failed unmounting tmp.mount`を確認する。shutdown keyのroute成功とmount hygieneを別々に判定する。
+- recovery: deviceが再起動できたらpackage/profile、failed units、主要service、status JSONを確認し、output targetを`auto`へ戻す。早期起動serviceへ明示`Conflicts=shutdown.target` / `Before=shutdown.target`を追加し、`/tmp`利用serviceは`After=tmp.mount`または同等のlocal filesystem orderingを持たせる。socketを強制削除してmount busyだけを隠さない。
+- regression check: `DefaultDependencies=no`のruntime ownerであるUSB gadget、`hidloom-hidd`、legacy `logicd`がshutdown conflict/orderを持つことをstatic testで固定する。修正版packageを実機へ入れ、shutdown後のprevious-boot journalで全ownerのstop、`tmp.mount` unmount成功、unmount failure 0、failed unit 0、output `auto`を確認する。ext4 orphan cleanupはこのgateへ含めず、filesystem stateと複数bootのbaselineで別判定する。
+- evidence: 2026-07-19、`<keyboard-host>`のcore/profile `0.0.2014+gitfaec035aa5ef`でoperator shutdownはpassしたが、previous bootは`hidloom-logicd-core` / outputd / uiddを停止した一方で`hidloom-hidd`のstopを記録せず、`tmp.mount`がstatus 32で失敗した。修正版`0.0.2015+gite4619b3eed8a`のcontrolled rebootではhidd、USB gadget、`tmp.mount`の順に停止し、正常unmount 1、failure 0をpassした。ext4 orphan cleanupは正常unmount後も含む直近5 bootすべてで観測され、superblock stateは`clean`だったため本原因から分離した。
+
+## Sibling preview commit produces a non-monotonic Debian version
+
+- symptom: 修正版packageのsource内容とchecksumは正しいが、installed版とcandidate版が同じ`0.0.<revision-count>`で、`+git<sha>`だけを比較するとcandidateがDebian上のdowngradeになる。`apt-get -s install`がupgradeではなくdowngradeまたは保持を示す。
+- likely cause: 一時clean snapshotを同じparentから作るとGit revision countが同じになり、hash suffixの辞書順は作成時刻や機能の新旧を表さない。`0.0.<count>+git<sha>`は一つの直線historyでは単調だが、sibling preview間では単調性を保証しない。
+- detect: copy/install前にcandidateとinstalledの`dpkg-deb -f ... Version` / `dpkg-query`を取得し、`dpkg --compare-versions "$candidate" gt "$installed"`を必須にする。APT simulationでも2 packageが`upgraded`であることを確認する。
+- recovery: 非単調candidateは`--allow-downgrades`で押し込まず、導入前にrejectする。実source内容を変えずに検証用snapshot revisionを単調増加させ、core/profileを同じsource/versionで再buildし、provenanceとchecksumを取り直す。rejectしたartifactには理由を残す。
+- regression check: preview実機更新手順へ`dpkg --compare-versions`とAPT simulationを置き、release packaging runbook testでversion preflight記述を固定する。正式Releaseはtemporary siblingではなくcanonical public historyから再生成する。
+- evidence: 2026-07-19、最初の修正版`0.0.2014+git3aab7cc07136`はinstalled `0.0.2014+gitfaec035aa5ef`より小さかったためscp/install前にrejectした。revision 2015のclean snapshotから`0.0.2015+gite4619b3eed8a`を再生成すると`dpkg --compare-versions`とAPT simulationがupgradeを示し、`<keyboard-host>`への導入に成功した。
+
+## External PID review blocks unrelated development and accumulates release-test debt
+
+- symptom: pid.codes review中はsource同期、package/M6 candidate、機能追加まで停止し、承認時にはprivate headと最後の実機確認済みsourceの差分が大きすぎて現実的なrelease試験範囲を決められない。
+- likely cause: source公開、内部binary candidate、正式turnkey binary公開を一つの`publication.ready`へ束ね、PID割当を全工程の共通blockerとして扱った。外部review待ちと内部品質gateの寿命が異なることを契約化していなかった。
+- detect: `config/release-channels.json`の三段階、manifestの`release_channels.selected` / `selected_ready`、source commit、最後の`internal-rc ready=true`候補を確認する。PID未割当だけを理由に`source-public`または`internal-rc`が失敗した場合は再発である。
+- recovery: private開発と監査済みsource同期を再開し、exact source/build provenance/hardware smokeを持つimmutableな内部RCをマイルストーンごとに作る。PID承認時は開発headではなく最新の認定済みRCを選び、正式identity差分を適用して再buildする。
+- regression check: `script/test_public_release_readiness.py`でPID未割当の`source-public`成功、`script/test_public_release_bundle.py`でprovenanceと実機smoke済み`internal-rc`成功、publisherによる内部RC拒否、`stable-public`のPID要求を固定する。
+- evidence: 2026-07-21、pid.codes PR #1246はCI成功・review待ちで、upstreamには56件のopen PRと番号上54件の先行PRがあった。外部待ちを全release blockerにすると継続開発の検証負債が増えるため、PIDを`stable-public`だけのgateへ変更した。

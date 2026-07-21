@@ -32,7 +32,7 @@ def create_plan(
     export_root: Path,
     repository: str,
     version: str | None,
-    allow_pending_pid: bool,
+    release_channel: str,
 ) -> dict[str, Any]:
     command = [
         "python3",
@@ -40,22 +40,22 @@ def create_plan(
         str(export_root),
         "--repository",
         repository,
+        "--channel",
+        release_channel,
     ]
     if version:
         command.extend(["--version", version])
-    if allow_pending_pid:
-        command.append("--allow-pending-pid")
     return json.loads(run(command, cwd=export_root).stdout)
 
 
-def verify_readiness(export_root: Path, allow_pending_pid: bool) -> dict[str, Any]:
+def verify_readiness(export_root: Path, release_channel: str) -> dict[str, Any]:
     command = [
         "python3",
         str(export_root / "tools" / "public_release_readiness.py"),
         str(export_root),
+        "--channel",
+        release_channel,
     ]
-    if allow_pending_pid:
-        command.append("--allow-pending-pid")
     result = run(command, cwd=export_root)
     payload = json.loads(result.stdout)
     if not payload["ready"]:
@@ -140,7 +140,7 @@ def execute(args: argparse.Namespace, plan: dict[str, Any]) -> dict[str, Any]:
     run(["git", "clone", "--quiet", "--branch", args.base, "--single-branch", args.remote, str(worktree)])
     run(["git", "checkout", "-q", "-b", plan["branch"]], cwd=worktree)
     replace_worktree(worktree, export_root)
-    copied_readiness = verify_readiness(worktree, args.allow_pending_pid)
+    copied_readiness = verify_readiness(worktree, args.channel)
     if manifest_sha(worktree) != plan["export_manifest_sha256"]:
         raise SystemExit("copied export manifest differs from sync plan")
 
@@ -172,6 +172,7 @@ def execute(args: argparse.Namespace, plan: dict[str, Any]) -> dict[str, Any]:
         "base": args.base,
         "branch": plan["branch"],
         "source_commit": plan["source_commit"],
+        "release_channel": args.channel,
         "public_commit": commit,
         "committed_file_count": committed_file_count,
         "export_manifest_sha256": plan["export_manifest_sha256"],
@@ -189,14 +190,15 @@ def main() -> None:
     parser.add_argument("--base", default="main")
     parser.add_argument("--version")
     parser.add_argument("--worktree", type=Path)
-    parser.add_argument("--allow-pending-pid", action="store_true")
+    parser.add_argument("--channel", choices=("source-public",), default="source-public")
+    parser.add_argument("--allow-pending-pid", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--allow-local-remote", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
 
     export_root = args.export_root.resolve()
-    readiness = verify_readiness(export_root, args.allow_pending_pid)
-    plan = create_plan(export_root, args.repository, args.version, args.allow_pending_pid)
+    readiness = verify_readiness(export_root, args.channel)
+    plan = create_plan(export_root, args.repository, args.version, args.channel)
     if not args.execute:
         print(
             json.dumps(
@@ -207,6 +209,7 @@ def main() -> None:
                     "base": args.base,
                     "branch": plan["branch"],
                     "source_commit": plan["source_commit"],
+                    "release_channel": args.channel,
                     "export_manifest_sha256": plan["export_manifest_sha256"],
                     "pending_dispositions": readiness["pending_dispositions"],
                     "pushed": False,

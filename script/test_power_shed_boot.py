@@ -193,9 +193,17 @@ def main() -> None:
     assert "ExecStart=@HIDLOOM_REPO_ROOT@/bin/hidloom-hidd" in hidd
     assert "DefaultDependencies=no" in hidd
     assert "Conflicts=usbd.service" in hidd
+    assert "After=tmp.mount" in hidd
+    assert "Before=shutdown.target" in hidd
+    assert "Conflicts=shutdown.target" in hidd
     assert "Before=basic.target multi-user.target" in hidd
     assert "Before=logicd.service" not in hidd
     assert "WantedBy=sysinit.target" in hidd
+
+    for early_runtime in (logicd, hidd, usb_gadget):
+        assert "DefaultDependencies=no" in early_runtime
+        assert "Before=shutdown.target" in early_runtime
+        assert "Conflicts=shutdown.target" in early_runtime
 
     print("ok: boot power shedding service and kiosk delay are wired")
 

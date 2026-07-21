@@ -12,6 +12,7 @@ from typing import Any
 sys.dont_write_bytecode = True
 
 from public_export_manifest import verify as verify_export_manifest
+from public_release_bundle import SOURCE_PUBLIC_CHANNEL, load_release_channel_policy
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -23,16 +24,18 @@ def main() -> None:
     parser.add_argument("export_root", type=Path)
     parser.add_argument("--repository", default="cqa02303/hidloom")
     parser.add_argument("--version")
-    parser.add_argument("--allow-pending-pid", action="store_true")
+    parser.add_argument("--channel", choices=(SOURCE_PUBLIC_CHANNEL,), default=SOURCE_PUBLIC_CHANNEL)
+    parser.add_argument("--allow-pending-pid", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     root = args.export_root.resolve()
     report = load_json(root / "PUBLIC_EXPORT_REPORT.json")
+    channel_policy = load_release_channel_policy(root)
     verification = verify_export_manifest(root)
     if not verification["ready"]:
         details = verification["mismatches"] + verification["source_provenance_issues"]
         raise SystemExit("public export verification failed: " + ", ".join(details))
     required = [item for item in report["findings"] if item["disposition"].endswith("_required")]
-    allowed = {"pid_codes_migration_required"} if args.allow_pending_pid else set()
+    allowed = {"pid_codes_migration_required"}
     unexpected = [item for item in required if item["disposition"] not in allowed]
     if unexpected:
         raise SystemExit("public export contains unexpected action-required findings")
@@ -44,7 +47,9 @@ def main() -> None:
     manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     branch = f"sync/v{version}-{commit[:12]}"
     payload = {
-        "schema": "hidloom.public-sync-plan.v1",
+        "schema": "hidloom.public-sync-plan.v2",
+        "release_channel": args.channel,
+        "release_channel_policy_schema": channel_policy["schema"],
         "dry_run": True,
         "source_commit": commit,
         "version": version,

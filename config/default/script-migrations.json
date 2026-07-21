@@ -21,7 +21,8 @@
       "legacy_sha256": [
         "62b87a8ae9b6ad73aba330b47819190ad9972f8b0f2d074f5276d951bc2e693b",
         "2b33d0e78e7f66abc1c462a030595c9cc1ae34799e6e14bc200e9ecd98b9d1b4",
-        "5ae6eb2fb002f0422c45ed8d0bd0df2d2eb185be73a1bf3e2411d4e26c5af73d"
+        "5ae6eb2fb002f0422c45ed8d0bd0df2d2eb185be73a1bf3e2411d4e26c5af73d",
+        "baefcb7322319cecc17c3218230f89040b76c3204b2a6d71c7e137c801483281"
       ]
     },
     "KC_SH4.sh": {

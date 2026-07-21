@@ -40,5 +40,6 @@ IP=$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -v '^$' | head -3 | tr '\n' ' 
 IP=$(ascii_oled_text "$IP")
 [ -z "$IP" ] && IP="N/A"
 
-hidloom-notify alert "Node: ${NODE} SSID: ${SSID} IP: ${IP}" 7
+hidloom-notify alert "Node: ${NODE} SSID: ${SSID} IP: ${IP}" 4 || exit $?
+hidloom-notify web-ui-qr 15
 exit $?

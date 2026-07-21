@@ -303,6 +303,85 @@ core/profile split package の candidate gate:
 tools/package/release_candidate_check.sh --split-profile touch-waveshare-8.8
 ```
 
+clean public sourceからtouch profile packageをcross-buildし、利用者向け配布directoryまで
+まとめる場合:
+
+```bash
+tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8
+tools/package/build_touch_panel_release.sh
+python3 tools/package/build_profile_release_bundle.py verify \
+  build/touch-panel-release
+```
+
+配布directoryには同一versionのcore/profile `.deb`、manifest掲載fileだけから作るsource archive、
+`QUICKSTART.md`、`RELEASE_NOTES.md`、SBOMとlicense metadata、portable `SHA256SUMS`が入ります。
+`build_touch_panel_release.sh`はtagやGitHub Releaseを作成しません。既定channelは`internal-rc`で、
+build provenanceと実機smokeが揃えばPID割当前でも合格できます。
+
+Zero 2 W向けkeyboard packageとBuildroot M6 imageは、同じ`--all` provenanceから
+一つの配布directoryへまとめます。
+
+```bash
+tools/public_build_rehearsal.sh --all --profile keyboard-ver1
+tools/package/build_zero2w_keyboard_release.sh
+python3 tools/public_release_bundle.py --verify build/zero2w-keyboard-release
+```
+
+`build_zero2w_keyboard_release.sh`はpackage versionをprovenanceから解決し、core/profile、
+raw/zstd M6 image、対応source、Buildroot compliance、`QUICKSTART.md`、Release本文、
+portable `SHA256SUMS`を生成します。tag、GitHub upload、実機変更は行いません。内部RCは
+`--require-channel-ready internal-rc`、正式公開は再生成後に`--require-channel-ready stable-public`で検証します。
+
+同一Releaseへtouch profileも並べる場合は、同じsource/versionのtouch package buildを追加します。
+
+```bash
+OUT_DIR=build/public-touch-rebuild \
+  tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8
+tools/package/build_zero2w_keyboard_release.sh \
+  --touch-package-dir build/public-touch-rebuild \
+  --touch-provenance build/public-touch-rebuild/PUBLIC_BUILD_PROVENANCE.json \
+  --hardware-smoke-status pass \
+  --usable-keyboard-seconds <seconds> \
+  --touch-hardware-smoke-status pass \
+  --touch-ready-seconds <seconds>
+```
+
+統合bundleをGitHubへ載せる時は、legacy single-package用`publish_github_prerelease.sh`ではなく
+`publish_public_release_bundle.py`を使います。既定はdeep verify付きdry-runで、全asset、source
+commit、正式USB identity、keyboard/touch個別実機smoke、clean public checkout、canonical originを
+一括確認します。
+
+```bash
+python3 tools/package/publish_public_release_bundle.py \
+  --bundle build/zero2w-keyboard-release \
+  --output-plan build/artifacts/public-release-publish-plan.json
+```
+
+PID割当、実機smoke、final clean public build、人間によるplan確認が完了した後だけ、表示された
+確認句をそのまま指定してdraft prereleaseを作成します。helperは既存Release/tagを拒否し、source commitを`--target`へ固定して、
+作成後に全assetを別directoryへdownloadして、対応source内のverifierで再検証します。
+
+```bash
+python3 tools/package/publish_public_release_bundle.py \
+  --bundle build/zero2w-keyboard-release \
+  --require-ready
+python3 tools/package/publish_public_release_bundle.py \
+  --bundle build/zero2w-keyboard-release \
+  --execute \
+  --confirm 'CREATE DRAFT cqa02303/hidloom v0.1.0'
+```
+
+既存のdraft/prereleaseをread-onlyで再検証する場合:
+
+```bash
+python3 tools/package/verify_github_public_release_bundle.py \
+  --tag v0.1.0 \
+  --repository cqa02303/hidloom
+```
+
+draft作成は公開完了ではありません。GitHub上のasset一覧、Release本文、source tag差分を人間が確認し、
+最後に`gh release edit v0.1.0 --repo cqa02303/hidloom --draft=false`で公開します。
+
 この target は GitHub upload や実機 install を行わず、local validation、`.deb` build、
 `dpkg-deb --info`、`dpkg-deb --contents`、`.sha256`、runtime path に効く
 systemd unit / default script 内の旧 checkout path 混入なしを確認し、
@@ -323,7 +402,8 @@ make release-prerelease-plan
 make release-prerelease-publish
 ```
 
-`publish_github_prerelease.sh` は既定 dry-run です。`--execute` がない限り
+`publish_github_prerelease.sh` はlegacy single/split package Release用で、既定dry-runです。
+M6、touch profile、corresponding source、complianceを含む統合bundleには使用しません。`--execute`がない限り
 GitHub upload は行いません。`--execute` で公開した場合は、upload 後に
 `tools/package/verify_github_release_assets.sh --tag <tag>` を自動実行し、GitHub から
 download した legacy single package の `.sha256` が portable で通ることまで確認します。

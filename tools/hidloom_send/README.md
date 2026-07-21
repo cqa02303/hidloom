@@ -50,6 +50,7 @@ OLED alert / warning を送り、同じ内容を syslog / journal にも残し�
 
 ```bash
 bin/hidloom-notify alert "Saved" 2
+bin/hidloom-notify web-ui-qr 15
 bin/hidloom-notify warning "Script failed" 3
 ```
 

@@ -233,6 +233,7 @@
         "daemon/http/settings_api.py",
         "daemon/http/static/csrf.js",
         "daemon/http/static/index.html",
+        "daemon/http/static/i18n.js",
         "daemon/http/static/settings_panel.js",
         "daemon/http/static/status_panel.js",
         "daemon/http/wifi_status.py",

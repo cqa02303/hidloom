@@ -140,7 +140,7 @@ def execute(
     run(["git", "init", "-q", "-b", "main", str(worktree)])
     run(["git", "remote", "add", "origin", remote], cwd=worktree)
     copy_export(export_root, worktree)
-    copied_readiness = verify_readiness(worktree, allow_pending_pid)
+    copied_readiness = verify_readiness(worktree, "source-public")
     if manifest_sha(worktree) != plan["export_manifest_sha256"]:
         raise SystemExit("copied export manifest differs from bootstrap plan")
 
@@ -208,7 +208,7 @@ def main() -> None:
     if not REPOSITORY_RE.fullmatch(args.repository):
         parser.error("--repository must be OWNER/REPOSITORY")
     verify_repository_contract(export_root, args.repository)
-    readiness = verify_readiness(export_root, args.allow_pending_pid)
+    readiness = verify_readiness(export_root, "source-public")
     plan = create_plan(export_root, args.repository, readiness)
     if not args.execute:
         print(json.dumps(plan, ensure_ascii=False, indent=2))

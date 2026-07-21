@@ -9,6 +9,8 @@ board profile、配線、matrix 座標、touch-panel layout note を置きます
 - [charlieplex-specification.md](charlieplex-specification.md): charlieplex 仕様
 - [complete-matrix-coordinates.md](complete-matrix-coordinates.md): matrix 座標
 - [keyswitch-matrix-map.md](keyswitch-matrix-map.md): key switch 対応表
+- [raspberry-pi-zero-2-w-keyboard-release.md](raspberry-pi-zero-2-w-keyboard-release.md): Zero 2 W向けpackage / M6 image
+- [raspberry-pi-4-touch-panel-package.md](raspberry-pi-4-touch-panel-package.md): Raspberry Pi 4 touch kiosk package
 
 文書一覧:
 
@@ -19,6 +21,8 @@ board profile、配線、matrix 座標、touch-panel layout note を置きます
 - [keyswitch-matrix-map.md](keyswitch-matrix-map.md)
 - [new-board-config-guide.md](new-board-config-guide.md)
 - [paw3805ek-mounted-cursor-settings-design.md](paw3805ek-mounted-cursor-settings-design.md)
+- [raspberry-pi-4-touch-panel-package.md](raspberry-pi-4-touch-panel-package.md)
+- [raspberry-pi-zero-2-w-keyboard-release.md](raspberry-pi-zero-2-w-keyboard-release.md)
 - [touch-panel-vial-layout-notes.md](touch-panel-vial-layout-notes.md)
 
 関連文書:
