@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "a0f283708fd5a9f76a1f99505b1994f09ec7ebbf",
-    "base_tree": "569901be17e8427e89b7f914b8ea32a431a30b7b",
-    "base_revision_count": 2029,
+    "base_commit": "ac82e7675c29db3c1d35158a8ac5789455f07209",
+    "base_tree": "53cf317de902fda57e4a5c16117e39705182eddd",
+    "base_revision_count": 2034,
     "selected_path_count": 1247,
-    "selected_snapshot_sha256": "981116b567dad56e05b9416af4e27ad9aa20a9d9ab659dca5c3278b4d584c802"
+    "selected_snapshot_sha256": "7e20c06b7ae3dc916c3f32ed89df20269459da6ab2543288281d8a035686041e"
   },
   "files": [
     {
@@ -190,15 +190,15 @@
       "path": "PUBLIC_EXPORT_REPORT.json",
       "kind": "file",
       "mode": 420,
-      "size": 393974,
-      "sha256": "ef74ed4c7d33a6ef22dfd2f2507b02ec215a315b6e18b778c58c68284d21474e"
+      "size": 393975,
+      "sha256": "27f6e5ac9e2009be3c6819a32d3337abd54b2e16fe636a9b5c7f544da62199bc"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
-      "size": 162913,
-      "sha256": "04e9744c9ab05e72b1ce75ef505e65db84b837c4f1f4167caf5a920ec50e7cc7"
+      "size": 162914,
+      "sha256": "2c6d165071a1e65c78a25332d8ea183f5e30daa634a99c06bcbfa87c0ab50569"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
@@ -219,7 +219,7 @@
       "kind": "file",
       "mode": 420,
       "size": 24038,
-      "sha256": "09c3995f1f78e2393aed5f3bcb333958d033232acc8e97e2ba1b4506d42c67d8"
+      "sha256": "f4df038962a853403229227cd6f6fdc6ae0d1da92bdae13ec8aa76ef43b05696"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.md",
@@ -247,7 +247,7 @@
       "kind": "file",
       "mode": 420,
       "size": 46590,
-      "sha256": "f6fcca02c31a3b7243f667db602bfae12846978bf01fc2e092c72593eb636206"
+      "sha256": "27ecd827d8a334a0bbd4c49d106cb2c0ff80bd64a4f78c4cfa1d2f17572efb78"
     },
     {
       "path": "SECURITY.md",
@@ -828,7 +828,7 @@
       "kind": "file",
       "mode": 420,
       "size": 12368,
-      "sha256": "511f0852d0715da41bc76862ac5315a59af3772662f7c54ce2826ab6ac8f197c"
+      "sha256": "2f4c2ee4400a146cbc4ba21d57e7dc77bc32691582637b3d46ee2549e12c5ccd"
     },
     {
       "path": "config/boards/ver0.1/conf/ledd.json",
@@ -877,7 +877,7 @@
       "kind": "file",
       "mode": 420,
       "size": 12366,
-      "sha256": "6807cb6fa81f8c0fdc5d9473dac0e3fe163b30c38e5b285b14b3ad9d4974e06f"
+      "sha256": "80a1cfc1ea3ac3e1f14bfd8d9c933e6b75b5ea64b612e2b4f6465933b0159179"
     },
     {
       "path": "config/boards/ver1.0/conf/ledd.json",
@@ -968,7 +968,7 @@
       "kind": "file",
       "mode": 420,
       "size": 12366,
-      "sha256": "6807cb6fa81f8c0fdc5d9473dac0e3fe163b30c38e5b285b14b3ad9d4974e06f"
+      "sha256": "80a1cfc1ea3ac3e1f14bfd8d9c933e6b75b5ea64b612e2b4f6465933b0159179"
     },
     {
       "path": "config/default/ledd.json",
@@ -2249,7 +2249,7 @@
       "kind": "file",
       "mode": 420,
       "size": 4230,
-      "sha256": "d4ff6fefd0de5b3faabba91926dcb9bb670e2baeaac9d9137ca5a926e847da14"
+      "sha256": "c2445c5501580e47e78a497e568358e453e11c1e5097b4861dd5c8c845049544"
     },
     {
       "path": "daemon/logicd/bt_manager.py",
@@ -2437,8 +2437,8 @@
       "path": "daemon/logicd/joystick.py",
       "kind": "file",
       "mode": 420,
-      "size": 7872,
-      "sha256": "215e597ee9da58556be6aaf506552a1956f5aedea702997eb89311cdbd3f63a2"
+      "size": 8635,
+      "sha256": "d2b30daab2788221c52260cd1b670537bd9ffb8066f7ab27c1ea71182ce2c338"
     },
     {
       "path": "daemon/logicd/key_event_pipeline.py",
@@ -4509,8 +4509,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 162976,
-      "sha256": "dff7599472534b6057584ac38950efe8e87db1c8f1d534265f674f1360bb8009"
+      "size": 167775,
+      "sha256": "4c52ad59cc09c83ab5a28eb45212f1e82a9638fadeb0ae84c321b4df3344d8a9"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -5342,8 +5342,8 @@
       "path": "script/test_buildroot_fast_boot_assets.py",
       "kind": "file",
       "mode": 420,
-      "size": 19708,
-      "sha256": "d10f787959aee0fb73773466b68c13b13c727d3e98beb5c7ba8e48f39fdf3e5e"
+      "size": 19763,
+      "sha256": "bf7e845cce18ce1c3d874da0aca27c5ac1cb5e1199131bbd5e2f97477b8391f4"
     },
     {
       "path": "script/test_buildroot_legal_summary.py",
@@ -6308,8 +6308,8 @@
       "path": "script/test_logicd_joystick.py",
       "kind": "file",
       "mode": 420,
-      "size": 6928,
-      "sha256": "1552efc2e9c1e82493872a882572c37c1ec5ca080c33d5b5ffa104f397cb76f1"
+      "size": 8036,
+      "sha256": "8785eef0b1581547b0a3cde096f315c4c0df26e660a94fd7137fc779fc43756c"
     },
     {
       "path": "script/test_logicd_ledd_semantic_roles_snapshot.py",
@@ -7827,8 +7827,8 @@
       "path": "tools/buildroot_m6_build.sh",
       "kind": "file",
       "mode": 493,
-      "size": 2737,
-      "sha256": "60f67d19136e635e62769b808f994b776c390eb5a07329c4215c7a92d13d3e35"
+      "size": 2804,
+      "sha256": "b315d6fe40688712b476fa42c61e594539249fbf8aa5d2483b8ab180bb56e16e"
     },
     {
       "path": "tools/buildroot_m6_import_smoke.py",

@@ -87,7 +87,7 @@ def load_joystick_bindings(raw_items: object, matrix_in_range: MatrixRangeCheck)
                     release_threshold=release_threshold,
                     mouse_deadzone=max(0, min(100, int(item.get("mouse_deadzone", 8)))),
                     cursor_max=max(1, min(127, int(item.get("cursor_max", 12)))),
-                    wheel_max=max(1, min(127, int(item.get("wheel_max", 6)))),
+                    wheel_max=max(1, min(127, int(item.get("wheel_max", 2)))),
                 )
             )
         except (KeyError, TypeError, ValueError) as exc:

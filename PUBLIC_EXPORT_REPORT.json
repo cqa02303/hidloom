@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "a0f283708fd5a9f76a1f99505b1994f09ec7ebbf",
-    "base_tree": "569901be17e8427e89b7f914b8ea32a431a30b7b",
-    "base_revision_count": 2029,
+    "base_commit": "ac82e7675c29db3c1d35158a8ac5789455f07209",
+    "base_tree": "53cf317de902fda57e4a5c16117e39705182eddd",
+    "base_revision_count": 2034,
     "selected_path_count": 1247,
-    "selected_snapshot_sha256": "981116b567dad56e05b9416af4e27ad9aa20a9d9ab659dca5c3278b4d584c802"
+    "selected_snapshot_sha256": "7e20c06b7ae3dc916c3f32ed89df20269459da6ab2543288281d8a035686041e"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
@@ -1767,7 +1767,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 25,
+      "line": 52,
       "excerpt": "- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1776,7 +1776,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 27,
+      "line": 54,
       "excerpt": "- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1785,7 +1785,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 87,
+      "line": 114,
       "excerpt": "- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1794,7 +1794,7 @@
       "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "docs/ops/failure-patterns.md",
-      "line": 289,
+      "line": 316,
       "excerpt": "- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
@@ -1803,7 +1803,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 541,
+      "line": 568,
       "excerpt": "- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1812,7 +1812,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 616,
+      "line": 643,
       "excerpt": "- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"

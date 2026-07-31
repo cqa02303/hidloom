@@ -339,6 +339,7 @@ def main() -> None:
     m6_build_text = read(m6_build)
     assert "buildroot_m6_verify.py" in m6_build_text
     assert "buildroot_legal_info.py" in m6_build_text
+    assert '--buildroot "$BUILDROOT"' in m6_build_text
     assert "repair_python_target_cache" in m6_build_text
     for package in ["python3", "python-cbor2", "python-pillow", "python-rpi-ws281x", "python-smbus2", "python-luma-core", "python-luma-oled"]:
         assert f"{package}-reinstall" in m6_build_text

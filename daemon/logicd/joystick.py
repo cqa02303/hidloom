@@ -61,7 +61,7 @@ class JoystickBinding:
     release_threshold: int = 20
     mouse_deadzone: int = 8
     cursor_max: int = 12
-    wheel_max: int = 6
+    wheel_max: int = 2
 
     def coord(self, direction: Direction) -> tuple[int, int]:
         return getattr(self, direction)
@@ -102,6 +102,7 @@ class _StickState:
         self.last_x = 0
         self.last_y = 0
         self.last_values: dict[Direction, int] = {direction: 0 for direction in _DIRS}
+        self.wheel_remainders: dict[Direction, float] = {direction: 0.0 for direction in _DIRS}
 
 
 class JoystickManager:
@@ -132,7 +133,7 @@ class JoystickManager:
             code = _mouse_code(action)
             value = values[direction]
             if code in _MOUSE_CODES:
-                mdx, mdy, mwheel = _mouse_delta(code, value, binding)
+                mdx, mdy, mwheel = _mouse_delta(code, value, binding, state, direction)
                 dx += mdx
                 dy += mdy
                 wheel += mwheel
@@ -235,9 +236,29 @@ def _accelerated_cursor_scaled(value: int, deadzone: int, limit: int) -> int:
     return max(1, min(127, delta))
 
 
-def _mouse_delta(code: int, value: int, binding: JoystickBinding) -> tuple[int, int, int]:
+def _wheel_scaled(state: _StickState, direction: Direction, value: int, binding: JoystickBinding) -> int:
+    if value <= binding.mouse_deadzone:
+        state.wheel_remainders[direction] = 0.0
+        return 0
+    span = max(1, 100 - binding.mouse_deadzone)
+    progress = min(1.0, max(0.0, (value - binding.mouse_deadzone) / span))
+    state.wheel_remainders[direction] += max(1, binding.wheel_max) * progress * progress
+    steps = int(state.wheel_remainders[direction])
+    if steps <= 0:
+        return 0
+    state.wheel_remainders[direction] -= steps
+    return max(1, min(127, steps))
+
+
+def _mouse_delta(
+    code: int,
+    value: int,
+    binding: JoystickBinding,
+    state: _StickState,
+    direction: Direction,
+) -> tuple[int, int, int]:
     move = _accelerated_cursor_scaled(value, binding.mouse_deadzone, binding.cursor_max)
-    wheel = _scaled(value, binding.mouse_deadzone, binding.wheel_max)
+    wheel = _wheel_scaled(state, direction, value, binding)
     if code == MOUSE_MS_U:
         return 0, -move, 0
     if code == MOUSE_MS_D:

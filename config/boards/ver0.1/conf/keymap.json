@@ -516,7 +516,7 @@
       "release_threshold": 20,
       "mouse_deadzone": 12,
       "cursor_max": 12,
-      "wheel_max": 6
+      "wheel_max": 2
     }
   ],
   "layers": [

@@ -1,9 +1,9 @@
 # HIDloom Public Export Report
 
-- Source base commit: `a0f283708fd5a9f76a1f99505b1994f09ec7ebbf`
+- Source base commit: `ac82e7675c29db3c1d35158a8ac5789455f07209`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `981116b567dad56e05b9416af4e27ad9aa20a9d9ab659dca5c3278b4d584c802`
+- Selected source snapshot: `7e20c06b7ae3dc916c3f32ed89df20269459da6ab2543288281d8a035686041e`
 - Files: 1247
 - Tracked source paths: 1314
 - Private-only paths: 67
@@ -207,12 +207,12 @@
 - `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:538` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:25` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:27` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:87` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
-- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:289` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:541` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:616` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:52` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:54` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:114` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
+- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:316` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:568` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:643` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
