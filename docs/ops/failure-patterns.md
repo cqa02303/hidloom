@@ -17,6 +17,33 @@
 - evidence:
 ```
 
+## Buildroot legal-info wrapper ignores an overridden source checkout
+
+- symptom: `BUILDROOT_DIR=<prepared-checkout> tools/buildroot_m6_build.sh --legal-info` completes the Buildroot `source` target, then `buildroot_legal_info.py` reports that a different repository-relative `build/artifacts/buildroot-upstream` path is missing.
+- likely cause: the wrapper passes the overridden output directory but omits `--buildroot "$BUILDROOT"`; the legal-info helper therefore resolves its own default relative to the clean public checkout rather than using the source tree already prepared by the wrapper.
+- detect: invoke the wrapper with `BUILDROOT_DIR` outside the source checkout and compare the missing path in stderr with the supplied checkout. Inspect the wrapper command for an explicit `--buildroot "$BUILDROOT"` argument.
+- recovery: run `buildroot_legal_info.py --buildroot <prepared-checkout> --output <output> --execute`, or use the corrected wrapper. Do not copy legal evidence from another Buildroot revision.
+- regression check: `script/test_buildroot_fast_boot_assets.py` requires the explicit forwarding argument; run `sh -n tools/buildroot_m6_build.sh` and the focused asset test before the next full M6 build.
+- evidence: 2026-07-21 internal RC `a0f283708fd5` first reproduced the missing clean-clone-local checkout. The direct helper generated and verified the exact legal-info payload and compliance archive; the wrapper was then corrected without changing the runtime image payload.
+
+## Exact package rollback repack cannot enter a root-only backup directory
+
+- symptom: `dpkg-repack`の一時導入とruntime snapshotまでは成功するが、一般user shellの`cd /var/backups/hidloom/<upgrade>/rollback-debs`がpermission deniedで停止し、一時toolがinstalledのまま残る。
+- likely cause: backup directoryをroot `0700`で正しく保護した後、再梱包処理だけを`sudo`にして一般user側で先に`cd`した。directory traversalもroot権限が必要である。
+- detect: package更新前に`dpkg-query -W dpkg-repack`、backup directory mode、rollback deb有無、`dpkg --audit`を見る。permission denied後はactual candidate installへ進まない。
+- recovery: `sudo sh -c 'cd "$1/rollback-debs" && dpkg-repack ...' sh "$backup"`のようにdirectory移動からchecksum生成まで同じroot subshellで行い、その後`apt-get purge dpkg-repack`と`dpkg --audit`を確認する。
+- regression check: rollback作成手順はroot-only directoryを前提にし、現行core/profileのexact version・architectureとrollback deb metadata/checksumが一致し、一時toolがinstalledでないことをAPT simulation前に確認する。
+- evidence: 2026-07-21 `<keyboard-host>`の`0.0.2025` rollback作成で初回`cd`だけが失敗した。root subshellで2 debを生成し、一時toolをpurge、checksumとauditをpassしてから`0.0.2029`導入へ進んだ。
+
+## Package validation overlaps abrupt boots without shutdown markers
+
+- symptom: remote package導入とsmokeはpassするが、その後SSHが消え、`journalctl --list-boots`に短いboot IDが複数増える。previous journalは通常のshutdown末尾を持たず起動途中やsession終了直後で途切れる。
+- likely cause: softwareの`reboot` / `poweroff`より、USB給電断、cable接触、operatorによる電源操作など外部リセットを先に疑う。`KC_SHUTDOWN`、systemd shutdown marker、watchdog/panic、undervoltage evidenceの有無で分ける。
+- detect: install前後のboot ID、`journalctl --list-boots`、各`journalctl -b -N`末尾、shutdown / reboot / `KC_SHUTDOWN` / watchdog / panic / voltage marker、`vcgencmd get_throttled`を採取する。package stateとboot interruptionを同一原因と即断しない。
+- recovery: deviceが安定して戻るまでactual変更を止め、`dpkg --audit`、`dpkg -V`、core/profile exact version、profile/customization、主要service、status JSON、authenticated HTTPS、output `auto`、rollback checksumを再確認する。package/runtime不整合があればexact rollbackを同一APT transactionで適用し、整合していれば物理電源確認を残す。
+- regression check: package更新証跡へpre/post boot IDを含め、予期しない変化時はcurrent bootで標準live smokeとboot markerを取り直す。operatorへ電源・USB操作の有無を確認し、shutdown markerなしのbootを正常reboot実績として数えない。
+- evidence: 2026-07-21 `<keyboard-host>`の`0.0.2029+gita0f283708fd5`検証中に複数bootを観測した。journalにsoftware shutdown markerはなく、最終bootは`get_throttled=0x0`、package/audit/verify/service/API/status/smokeをpassし、45秒同一boot ID、output `auto`を確認したためrollbackしなかった。
+
 ## New public UI or feature docs leave publication inventories stale
 
 - symptom: canonical validation stops in `test_public_release_readiness.py`, `test_test_inventory_doc.py`, or `test_docs_reorg.py` after a new public JavaScript asset, test, or feature document is added.

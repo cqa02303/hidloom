@@ -63,7 +63,10 @@ case "$MODE" in
         ;;
     --legal-info)
         PATH="$HOSTBIN:$PATH" make -C "$BUILDROOT" O="$OUTPUT" source
-        PATH="$HOSTBIN:$PATH" python3 "$ROOT/tools/buildroot_legal_info.py" --output "$OUTPUT" --execute
+        PATH="$HOSTBIN:$PATH" python3 "$ROOT/tools/buildroot_legal_info.py" \
+            --buildroot "$BUILDROOT" \
+            --output "$OUTPUT" \
+            --execute
         ;;
     all)
         "$ROOT/tools/buildroot_m4_native_build.sh" "$(dirname "$NATIVE")"

@@ -43,6 +43,8 @@ def test_config_loader_extracts_stick() -> None:
     assert sticks[0]["left"] == [1, 1]
     assert sticks[0]["right"] == [2, 2]
     assert sticks[0]["down"] == [3, 3]
+    assert sticks[0]["cursor_max"] == 12
+    assert sticks[0]["wheel_max"] == 2
 
 
 def test_threshold_key_press_release() -> None:
@@ -94,6 +96,33 @@ def test_mouse_action_uses_analog_amount() -> None:
     assert result.mouse_event.dx > 0
     assert result.mouse_event.dy == 0
     assert result.mouse_event.wheel == 0
+
+
+def test_wheel_action_uses_smaller_scale() -> None:
+    manager = JoystickManager([_binding()])
+
+    def resolver(row: int, col: int) -> str:
+        return "KC_WH_U" if (row, col) == (0, 0) else "KC_NONE"
+
+    result = manager.process(0, 0, -100, resolver)
+    assert result.key_events == []
+    assert result.mouse_event is not None
+    assert result.mouse_event.dx == 0
+    assert result.mouse_event.dy == 0
+    assert result.mouse_event.wheel == 2
+
+
+def test_wheel_action_throttles_low_mid_range() -> None:
+    manager = JoystickManager([_binding()])
+
+    def resolver(row: int, col: int) -> str:
+        return "KC_WH_U" if (row, col) == (0, 0) else "KC_NONE"
+
+    assert manager.process(0, 0, -40, resolver).mouse_event is None
+    assert manager.process(0, 0, -60, resolver).mouse_event is None
+    result = manager.process(0, 0, -60, resolver)
+    assert result.mouse_event is not None
+    assert result.mouse_event.wheel == 1
 
 
 def test_status_reports_active_direction() -> None:
@@ -200,6 +229,8 @@ def main() -> None:
     test_threshold_key_press_release()
     test_release_uses_pressed_action()
     test_mouse_action_uses_analog_amount()
+    test_wheel_action_uses_smaller_scale()
+    test_wheel_action_throttles_low_mid_range()
     test_status_reports_active_direction()
     asyncio.run(test_logicd_ctrl_integration())
     asyncio.run(test_stick_mouse_motion_preserves_held_button())
