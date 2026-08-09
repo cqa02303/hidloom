@@ -5,9 +5,9 @@ from datetime import date
 import json
 import os
 from pathlib import Path
-import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,8 +23,13 @@ def run(
     environment = os.environ.copy()
     if environment_overrides:
         environment.update(environment_overrides)
+    command = ["python3", str(TOOL)]
+    git_wrapper = environment.get("HIDLOOM_TEST_GIT_WRAPPER")
+    if git_wrapper:
+        command.extend(["--git-command", sys.executable, git_wrapper])
+    command.extend(["--root", str(root), *args])
     return subprocess.run(
-        ["python3", str(TOOL), "--root", str(root), *args],
+        command,
         cwd=ROOT,
         check=check,
         capture_output=True,
@@ -129,23 +134,25 @@ def main() -> None:
 
         real_git = shutil.which("git")
         assert real_git is not None
-        wrapper_directory = temporary_path / "git-wrapper"
-        wrapper_directory.mkdir()
-        git_wrapper = wrapper_directory / "git"
+        git_wrapper = temporary_path / "git-wrapper.py"
         git_wrapper.write_text(
-            "#!/bin/sh\n"
-            'if [ "$1" = "ls-remote" ] && [ "$2" = "--exit-code" ] '
-            '&& [ "$3" = "origin" ] && [ "$4" = "HEAD" ]; then\n'
-            '  [ -n "${HIDLOOM_TEST_REMOTE_HEAD:-}" ] || exit 2\n'
-            '  printf "%s\\tHEAD\\n" "$HIDLOOM_TEST_REMOTE_HEAD"\n'
-            "  exit 0\n"
-            "fi\n"
-            f"exec {shlex.quote(real_git)} \"$@\"\n",
+            "import os\n"
+            "import subprocess\n"
+            "import sys\n"
+            f"REAL_GIT = {real_git!r}\n"
+            "arguments = sys.argv[1:]\n"
+            "if arguments == ['ls-remote', '--exit-code', 'origin', 'HEAD']:\n"
+            "    remote_head = os.environ.get('HIDLOOM_TEST_REMOTE_HEAD')\n"
+            "    if not remote_head:\n"
+            "        raise SystemExit(2)\n"
+            "    print(f'{remote_head}\\tHEAD')\n"
+            "    raise SystemExit(0)\n"
+            "raise SystemExit(subprocess.run([REAL_GIT, *arguments]).returncode)\n",
             encoding="utf-8",
+            newline="\n",
         )
-        git_wrapper.chmod(0o755)
         upstream_environment = {
-            "PATH": f"{wrapper_directory}:{os.environ.get('PATH', '')}",
+            "HIDLOOM_TEST_GIT_WRAPPER": str(git_wrapper),
             "HIDLOOM_TEST_REMOTE_HEAD": upstream_commit,
         }
 

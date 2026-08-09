@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -189,7 +190,9 @@ def main() -> None:
         assert "HIDLOOM_USB_SERIAL_SUFFIX=''" in env_text
         assert not (compatibility_output / "usb-gadget.env").exists()
         for path in compatibility_output.iterdir():
-            assert path.stat().st_mode & 0o777 == 0o644, path
+            assert path.is_file() and not path.is_symlink(), path
+            if os.name != "nt":
+                assert path.stat().st_mode & 0o777 == 0o644, path
 
         exists = run(
             "--profile",

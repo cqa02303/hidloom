@@ -671,37 +671,37 @@
     },
     {
       "path": "script/test_pid_codes_allocation.py",
-      "line": 156,
+      "line": 158,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "script/test_pid_codes_allocation.py",
-      "line": 157,
+      "line": 159,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "script/test_pid_codes_allocation.py",
-      "line": 178,
+      "line": 180,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "script/test_pid_codes_application.py",
-      "line": 74,
+      "line": 79,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "script/test_pid_codes_application.py",
-      "line": 204,
+      "line": 211,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "script/test_pid_codes_application.py",
-      "line": 359,
+      "line": 366,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -731,13 +731,13 @@
     },
     {
       "path": "script/test_public_usb_identity.py",
-      "line": 61,
+      "line": 62,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
     {
       "path": "script/test_public_usb_identity.py",
-      "line": 257,
+      "line": 260,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
@@ -827,13 +827,13 @@
     },
     {
       "path": "tools/pid_codes_application.py",
-      "line": 48,
+      "line": 49,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
     {
       "path": "tools/pid_codes_application.py",
-      "line": 157,
+      "line": 161,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "git@github.com:pidcodes/pidcodes.github.com.git"
     },

@@ -1361,3 +1361,21 @@
 - detect: failed helper後にdestination worktreeが存在しないこと、`git ls-remote --heads`で予定branchが存在しないこと、`gh auth status`のactive accountとgit protocolを値非表示で確認する。SSH鍵内容やtokenをlogへ出さない。
 - recovery: SSH identityやcredential設定を変更せず、helperが許可する同じofficial repositoryのHTTPS URLと既存GitHub CLI credentialでfresh empty worktreeから再実行する。2026-08-09 runでは予定branch不在を確認後、同じexport manifestからnon-force pushへ復旧した。
 - regression check: execute前に選択protocolのread-only remote accessと予定branch不在を確認し、helperのapproved repository guard、empty worktree guard、remote branch overwrite拒否を維持する。認証失敗後に別repository、force push、credential再生成へ進まない。
+
+## PID fixture command wrappers are bypassed on Windows
+
+- symptom: `script/test_pid_codes_application.py`と`script/test_pid_codes_allocation.py`がWindowsだけchild `CalledProcessError`で停止する。fixture repositoryとrecorded payloadは正しいが、申請preflightはremote HEAD照合、allocation guardはPR merge確認の最初の実行でnonzeroになる。
+- cause: testは拡張子なしPOSIX shell wrapperを`chmod(0755)`し、PATHをliteral `:`で連結していた。Windowsではexecute bit/shebangをprocess launcherとして扱わず、PATH separatorも`;`のためfake `git` / `gh`を選択できない。fixtureはinstalled real CLIへ漏れ、未mergeの実PR状態などfixture外の結果を読んだ。
+- detect: child stderrだけでなく、wrapper invocation record、`os.pathsep`、wrapper suffix/shebang、実行hostを確認する。同じfixtureがPOSIXでpassしWindowsでremote query境界から失敗し、live PRがfixtureの`MERGED`と異なる場合はproduction allocation判定ではなくcommand injection境界を疑う。
+- recovery: PID toolへargv prefixとして明示できる`--git-command` / `--gh-command`を追加し、testはcurrent Python interpreterとportable fake Python scriptを直接渡す。PATH、PATHEXT、shell associationへ依存せず、通常実行のdefault `git` / `gh`とfail-closed判定は変更しない。
+- regression check: 両PID testをWindowsとPOSIXで直接実行し、remote HEAD unavailable/stale、URL rewrite、OPEN/wrong-head/missing/failed check、unreachable merge、content drift、confirm/apply/repeat拒否まで通す。public exportとcanonical Linux suiteでもdefault command pathを再確認する。
+- evidence: 2026-08-09 Windows execution hostのprivate closeout validationで、public export/policyまでpassした後にallocation testが失敗し、application testも同じ境界で再現した。Windows command prefix修正後に両fixtureを取り直し、公式PR #1246のlive状態やallocation evidence、runtime profileは変更していない。
+
+## POSIX output mode assertion is applied to a Windows profile fixture
+
+- symptom: `script/test_public_usb_identity.py`は生成JSON/envの内容を全てpassした後、`PROFILE_PLAN.json`のmodeが期待`0644`ではなく`0666`として見えるためWindowsだけ停止する。
+- cause: production helperは各outputへ`chmod(0644)`しているが、Windows/NTFSの`st_mode`はPOSIX owner/group/other permissionを表現せず通常fileを`0666`相当として返す。内容、regular-file境界、symlink拒否の欠陥ではない。
+- detect: 全生成fileのcontent assertion、`path.is_file()`、`path.is_symlink()`、host OS、`stat().st_mode`を分ける。POSIXでだけ`0644`となりWindowsで一様に`0666`ならmode driftとしてoutputを書き換えない。
+- recovery: regular fileかつnon-symlinkのassertionは全hostで維持し、exact `0644` assertionはmodeを表現できるPOSIX hostで維持する。production chmod、force overwrite、unexpected file、symlink fail-closed処理は緩めない。
+- regression check: WindowsとPOSIXでpublic USB identity testを完走し、POSIXでは4 outputの`0644`、両hostでは内容一致、unexpected file保持、symlink拒否、正式profile activation guardを確認する。
+- evidence: 2026-08-09 Windows execution hostでPID fixture修正後の追加focused validation中に検出した。platform assertion分離後も生成profile、runtime identity、allocation evidenceは変更していない。
