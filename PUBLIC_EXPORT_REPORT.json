@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "c2e7126ea0f07b16449c8f49a756eb47104ad006",
-    "base_tree": "e0a4e63418a0177275c4ae0679d775dc18a5785d",
-    "base_revision_count": 2066,
+    "base_commit": "85bffd48b2b626fa8edb9c774b7ca2b6d6d5a315",
+    "base_tree": "67d5a759cc7ed33330f286c762dc1355aa9a2c3c",
+    "base_revision_count": 2067,
     "selected_path_count": 1271,
-    "selected_snapshot_sha256": "27575f148fcb0e90d93a2e9fd739f3feae789e88d1996bd3033b5ca9a483eded"
+    "selected_snapshot_sha256": "7dfe1e2bcd5e0ba2553f57214632be08a7c1e21fa0cf3d4198bcb8cc7f584d62"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
@@ -9624,7 +9624,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_usb_identity.py",
-      "line": 326,
+      "line": 329,
       "excerpt": "contract[\"source_bindings\"][\"usb_config\"] = \"../../etc/passwd\"",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"

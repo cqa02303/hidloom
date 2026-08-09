@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "c2e7126ea0f07b16449c8f49a756eb47104ad006",
-    "base_tree": "e0a4e63418a0177275c4ae0679d775dc18a5785d",
-    "base_revision_count": 2066,
+    "base_commit": "85bffd48b2b626fa8edb9c774b7ca2b6d6d5a315",
+    "base_tree": "67d5a759cc7ed33330f286c762dc1355aa9a2c3c",
+    "base_revision_count": 2067,
     "selected_path_count": 1271,
-    "selected_snapshot_sha256": "27575f148fcb0e90d93a2e9fd739f3feae789e88d1996bd3033b5ca9a483eded"
+    "selected_snapshot_sha256": "7dfe1e2bcd5e0ba2553f57214632be08a7c1e21fa0cf3d4198bcb8cc7f584d62"
   },
   "files": [
     {
@@ -191,14 +191,14 @@
       "kind": "file",
       "mode": 420,
       "size": 405081,
-      "sha256": "056a1df07da66f9d9ec066d2681656b9edcd390c87dc1b01c2c22ff1729ee42d"
+      "sha256": "06368ac248d0afa41775aea006d22c82db13008ac1d641838db7cbc370c37bde"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
       "size": 167040,
-      "sha256": "c05f195eacb96bc175ba580a034de110ce8ec032502c4d93be639e8471ad9fd2"
+      "sha256": "42d0144a0a90308098f74b01f47bb616f4bc6fff358c81a89020edce91403748"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
@@ -219,7 +219,7 @@
       "kind": "file",
       "mode": 420,
       "size": 24039,
-      "sha256": "ed129d07af2c5e57b02e5651b62c3c1253d0349327dfc91edf74622964b606cc"
+      "sha256": "860f47f0365a2f81f868ca552dcec899cf117b50dea723a9e989f00c32bb8ccf"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.md",
@@ -247,7 +247,7 @@
       "kind": "file",
       "mode": 420,
       "size": 46590,
-      "sha256": "089715a1772514660d31e5c2358ccb453332f8b9591447b63c2a294070834c2f"
+      "sha256": "b3d881806f3e250fca74a0d97cf8bd66e40c7e176d373121451ea37f1de815e6"
     },
     {
       "path": "SECURITY.md",
@@ -4509,8 +4509,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 250403,
-      "sha256": "ca21a568b64f21ba717f5ae60b09671ac922c3aaa0bb6e48fe3536f6838ee0cd"
+      "size": 253949,
+      "sha256": "929a3944ff29635405d4da9c75932c0d6d80b4d3e31cbd0b59e726468a16e46a"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -6805,15 +6805,15 @@
       "path": "script/test_pid_codes_allocation.py",
       "kind": "file",
       "mode": 420,
-      "size": 14893,
-      "sha256": "cd1dce63034535cfff03af439906d958dbd27a1c64285211f362f2d6313a93ee"
+      "size": 15359,
+      "sha256": "1f554cdff924dc4fcfdf7da4b3dcdcfec9fd592dab3a09b96e6844433f9adbb5"
     },
     {
       "path": "script/test_pid_codes_application.py",
       "kind": "file",
       "mode": 420,
-      "size": 16309,
-      "sha256": "ef726c6c3268b211c31f701891e17f000994a4bdfe8e8b92dec4bb53a5f99e46"
+      "size": 16588,
+      "sha256": "4e4bc9765b6384e055b832abda2eee9553a3cc1f446020447714f0856eb99864"
     },
     {
       "path": "script/test_power_preset_status.py",
@@ -6959,8 +6959,8 @@
       "path": "script/test_public_usb_identity.py",
       "kind": "file",
       "mode": 420,
-      "size": 15982,
-      "sha256": "07212e8ed848e33efd7ec19e10e336c66c22b5e256f8eae095a71c6d956da367"
+      "size": 16094,
+      "sha256": "5b24791233b345c6c36261be0841192767a2446cf9aa3534bb510c158fb2d61e"
     },
     {
       "path": "script/test_qmk_alias_completion_design_doc.py",
@@ -8653,15 +8653,15 @@
       "path": "tools/pid_codes_allocation.py",
       "kind": "file",
       "mode": 420,
-      "size": 12929,
-      "sha256": "268c959c17f61bfba488f8c87ed2e974267fa91dce2408bd7662bbbc547d313c"
+      "size": 13512,
+      "sha256": "6adb5dcb2dbc11afb5680282e35ce7774753bc11a26c2e439ce3bb8e79173f02"
     },
     {
       "path": "tools/pid_codes_application.py",
       "kind": "file",
       "mode": 420,
-      "size": 16182,
-      "sha256": "cbabe63c019983315387bafcab090b8091cc956f78a36c9e247c2b6428c605ca"
+      "size": 16551,
+      "sha256": "a18e6dd1a7f8897e5b4f454a16a6c4b3c2275427a9e845fe91ed34b6cfdc9150"
     },
     {
       "path": "tools/preview_ledd_direct_pattern.py",

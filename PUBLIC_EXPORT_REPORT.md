@@ -1,9 +1,9 @@
 # HIDloom Public Export Report
 
-- Source base commit: `c2e7126ea0f07b16449c8f49a756eb47104ad006`
+- Source base commit: `85bffd48b2b626fa8edb9c774b7ca2b6d6d5a315`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `27575f148fcb0e90d93a2e9fd739f3feae789e88d1996bd3033b5ca9a483eded`
+- Selected source snapshot: `7dfe1e2bcd5e0ba2553f57214632be08a7c1e21fa0cf3d4198bcb8cc7f584d62`
 - Files: 1271
 - Tracked source paths: 1339
 - Private-only paths: 68
@@ -1080,7 +1080,7 @@
 - `warn` `credential_word` `script/test_public_export.py:253` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_export.py:256` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
-- `warn` `credential_word` `script/test_public_usb_identity.py:326` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
+- `warn` `credential_word` `script/test_public_usb_identity.py:329` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:34` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:264` `pid_codes_migration_required` — `"idVendor": "0x1d6b",`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_initramfs_tool.py:31` `pid_codes_migration_required` — `HIDLOOM_USB_VENDOR_ID=0x1D6B`
