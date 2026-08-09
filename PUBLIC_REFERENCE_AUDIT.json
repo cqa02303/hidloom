@@ -8,7 +8,7 @@
   },
   "published_release_tags": [],
   "summary": {
-    "files_scanned": 1222,
+    "files_scanned": 1246,
     "repository_references": 140,
     "public_repository_references": 49,
     "findings": 0,
@@ -515,7 +515,7 @@
     },
     {
       "path": "docs/ops/failure-patterns.md",
-      "line": 390,
+      "line": 580,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -641,13 +641,13 @@
     },
     {
       "path": "script/test_fresh_install_docs.py",
-      "line": 164,
+      "line": 172,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "script/test_fresh_install_docs.py",
-      "line": 179,
+      "line": 187,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -707,7 +707,7 @@
     },
     {
       "path": "script/test_public_export.py",
-      "line": 590,
+      "line": 639,
       "slug": "cqa02303/hidloom",
       "url": "github.com/cqa02303/hidloom"
     },
@@ -719,13 +719,13 @@
     },
     {
       "path": "script/test_public_repository_create.py",
-      "line": 188,
+      "line": 194,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "script/test_public_repository_policy.py",
-      "line": 174,
+      "line": 180,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -743,7 +743,7 @@
     },
     {
       "path": "script/test_release_bundle_tools.py",
-      "line": 657,
+      "line": 1070,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },

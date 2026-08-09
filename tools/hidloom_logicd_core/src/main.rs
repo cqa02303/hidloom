@@ -1239,6 +1239,7 @@ fn status_payload(core: &Core, config: &Config, broker_available: bool, last_err
     json!({
         "schema": "logicd-core.status.v1",
         "process": true,
+        "pid": std::process::id(),
         "mode": "shadow",
         "output_enabled": config.output_enabled,
         "matrix_socket": {

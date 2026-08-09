@@ -191,7 +191,9 @@ def verify(root: Path, *, allow_draft_source: bool = False) -> dict[str, Any]:
         expected_mode = int(item.get("mode", -1))
         if item["kind"] == "file":
             actual_mode = 0o755 if path.stat().st_mode & 0o111 else 0o644
-            if expected_mode not in {0o644, 0o755} or actual_mode != expected_mode:
+            if expected_mode not in {0o644, 0o755} or (
+                os.name != "nt" and actual_mode != expected_mode
+            ):
                 mismatches.append(f"mode:{value}")
         elif expected_mode != 0o777:
             mismatches.append(f"mode:{value}")

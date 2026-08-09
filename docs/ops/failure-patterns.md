@@ -17,6 +17,196 @@
 - evidence:
 ```
 
+## Bounded Windows watcher appears stalled after the new boot is reachable
+
+- symptom: cold-boot runner logs a new boot ID, then prints nothing for several minutes, so the operator may interpret the run as hung and repeat the power cycle or start another runner.
+- likely cause: `windows_usb_enumeration_watch.ps1` intentionally observes the full bounded `DurationSec` window before writing `report.json`; post-boot baseline collection starts only after that window exits. The child remains responsive but does not emit a countdown.
+- detect: compare the UTC `WATCHER_READY` timestamp with `DurationSec`, confirm both runner/watcher PIDs are responsive, and verify that `report.json` is absent only while the observation deadline has not elapsed. Do not use SSH reachability alone as watcher completion.
+- recovery: leave the USB cable and Pi state unchanged until the deadline plus baseline collection time. Do not press Enter repeatedly, repeat the power cycle, resend reboot/shutdown, or start a duplicate runner. If the bounded deadline is exceeded, preserve the fresh prefix and logs and fail closed.
+- regression check: operator runners must print the watcher duration and expected completion time before requesting physical action; a future tracked runner should expose periodic countdown/progress without changing watcher verdict semantics.
+- evidence: Windows host E5 cold-boot run `20260808T085207Z` sample 01 reached new boot ID at `08:54:18Z`, remained silent until the 240 second watcher window ended, then collected baseline and passed at `08:57:51Z`. The responsive PIDs and final exit 0 / `reason=pass` showed this was expected bounded observation, not a hang.
+
+## Private execution-host names re-enter public source through evidence updates
+
+- symptom: focused feature tests pass, but canonical validation stops in `test_public_export.py` with `private_machine_hostname` blockers in an operational document or a test that validates excluded private status/TODO text.
+- likely cause: private evidence is copied into a document selected for clean public export, or a public regression source embeds the exact private hostname it expects to find in a private document. Text replacement is not a substitute for keeping private machine identity out of reviewed public source.
+- detect: inspect the block findings from `PUBLIC_EXPORT_REPORT.json`, then distinguish public operational prose from excluded private evidence. Preserve boot/run identifiers and technical behavior while checking whether the machine name adds any reproducibility value.
+- recovery: replace host identity in public prose with a role such as `Windows host` or `cross-build host`. When a public test must validate private-only text, construct the fixture literal from split fragments so the scanner still rejects accidental plain-text copies elsewhere. Do not weaken the deny pattern or add a block-level allowlist.
+- regression check: run `script/test_public_export.py`, the focused document test, and `script/test_validation_suite.py`; all must pass with `private_machine_hostname` findings 0 in the export report.
+- evidence: 2026-08-08、E5/E6 evidence追加後に公開運用文書7件とprivate TODO検証test 4件のblockを検出し、役割名への一般化とtest literal分割後にcanonical validationをpassした。device/runtimeは変更していない。
+
+## Windows watcher runner passes USB observation but fails its post-watch health expression
+
+- symptom: fresh watcherはexit 0 / `reason=pass`、six checks true、exact 3 selector ready/OKまで完了するが、runnerが直後にPowerShellの型変換または`Count` property errorで停止する。
+- likely cause: Bash用quotingをPowerShell function argumentへ持ち込むと余分な引数が`[int]ConnectTimeout`へbindされる。StrictModeでは0件の`Where-Object`結果に直接`.Count`を使えない。early bootとnormal bootのruntime/gadget/output期待値混同もrunnerだけを誤判定させる。
+- detect: watcher `report.json`とpost-watch healthを分離し、report SHA、reboot前後boot ID、six checks、baseline/final selectorを先に確定する。deviceではE4 complete evidence、実gadgetの`UDC`、cmdline、package statusをread-onlyで確認し、runner例外だけでrebootを再送しない。
+- recovery: fresh reportを削除・再利用せず、persistent configがenabledなら`hidloom-early-boot disable --reason <failure>`でfail closedに戻す。必要なnormal fallbackだけを新しいdynamic prefixで1回実行し、healthはSSH commandを小さく分けてJSONをPowerShell側でparseする。
+- regression check: 外部command結果は`@(...)`で配列化してから`.Count`を使い、Bash quotingを埋め込まない。early handoffとnormal fallbackの期待状態を別fixtureにする。watcher pass後のcollector/verifierは同じboot IDで実行する。
+- evidence: E6 run `20260808T094628Z`はpersistent boot `d52c66d8-3938-4d49-b09c-5622cb96c93e`のwatcher pass後にquotingで停止し、trapがconfigをdisabledへ復旧した。fallback run `20260808T095845Z`はboot `1d117305-9560-4b0f-82c0-b59c5dd7a160`のwatcher pass後に0件filterの`.Count`で停止した。同じbootのmanual health、baseline、package verifier smokeはpassし、reboot/reportを再実行していない。
+
+## WSL verifier uses a different SSH route from Windows OpenSSH
+
+- symptom: Windowsの`ssh pi@<alias>`は接続できるが、WSLから`deploy_deb_verify.sh --host pi@<alias>`は名前解決失敗または同じaddressへのtimeoutになる。
+- likely cause: Windows OpenSSHだけがuser SSH configのHostName、key、agent経路を使い、WSLの`ssh`は別home/config/network contextを使う。device/package障害ではない。
+- detect: Windows `ssh -G <alias>`、Windows OpenSSHのread-only hostname/boot ID、WSL `command -v ssh`を比較する。最初のremote command前のresolver failureとdevice上で開始したverifier failureを分ける。
+- recovery: addressをdocsへ固定せず、当該runだけWindows `ssh -G`のHostNameを取得し、WSL PATH先頭のwrapperからWindows OpenSSHへ委譲する。hostnameとboot IDを照合してから標準verifierを実行する。
+- regression check: wrapper経由の複数行read-only commandを先にpassさせ、続けて未変更の`deploy_deb_verify.sh --smoke`を実行する。verifier結果と最終output autoをartifactへ保存する。
+- evidence: 2026-08-08 E6 final normal bootでWSL sshはalias解決失敗とaddress timeoutを再現した。Windows OpenSSH wrapperでは同じboot ID `1d117305-9560-4b0f-82c0-b59c5dd7a160`を確認し、標準package verifier、HID/native-owner smoke、output autoがpassした。
+
+## Physical input before companion sockets are ready increments core error counters
+
+- symptom: cold boot input appears usable later and HID/native smoke passes, but `logicd-core-status.json` retains nonzero `delegate_errors` / `matrix_tap_errors` from the first seconds of boot.
+- likely cause: the operator begins key checks before `/tmp/logicd_delegate_events.sock` and `/tmp/matrix_tap_events.sock` are listening. Native core receives matrix actions first and records failed forwards; the companion sockets become ready shortly afterward.
+- detect: correlate the first core warnings with the companion `Listening on` lines and boot marker `keyboard_ready`. Require socket existence and normal input-ready before operator input; compare counters before/after smoke instead of treating a non-increasing historical value as final zero.
+- recovery: stop operator input, wait for both companion sockets, confirm pressed state 0, then restart only `hidloom-logicd-core.service` once. Re-run package/native smoke and require broker available, delegate/tap errors 0, pressed state 0, HID/output errors 0, failed unit 0, and output `auto`. The USB gadget must remain bound and must not re-enumerate.
+- regression check: operator cold-boot instructions must explicitly wait for normal input-ready or both companion sockets before requesting modifier/stuck-key checks. Final health must inspect absolute core error counters, not only smoke deltas.
+- evidence: E5 final operator boot `ed5f15ab-485e-4456-b454-e0e7eb2e9f44` logged 2 delegated socket and 10 matrix tap socket failures immediately before companion listen. Counters did not increase during smoke. After one core restart with sockets ready, native smoke passed with both counters 0, broker available, pressed state 0, and no USB/HID/output error.
+
+## UDC systemd wants races with an already queued poweroff
+
+- symptom: a clean dedicated shutdown journal contains `Failed to enqueue SYSTEMD_WANTS job` for `usb-gadget.target/start` while `poweroff.target` is already queued.
+- likely cause: stopping the gadget exposes a UDC event late in shutdown. Raspberry Pi OS standard `/usr/lib/udev/rules.d/99-systemd.rules` tags UDC devices and requests `usb-gadget.target`; systemd rejects that new start job because shutdown is already destructive.
+- detect: inspect the surrounding previous-boot journal. This warning is non-blocking only when gadget/hidd stopped, `tmp.mount` and boot filesystems unmounted, swaps deactivated, `shutdown.target`, `systemd-poweroff.service`, `poweroff.target`, and filesystem sync all complete.
+- recovery: do not restart services or repeat shutdown after the target has powered off. Remove power only after the normal halt wait, then boot the preserved Raspberry Pi OS path and verify normal cmdline, early runtime absence, package/profile, UDC configured, failed unit 0, smoke, and output `auto`.
+- regression check: keep the full shutdown marker sequence in operator evidence. If the warning appears without successful unmount/poweroff/sync, treat it as a real shutdown failure; otherwise retain it as a known standard-rule race and do not mask the vendor udev rule locally.
+- evidence: E5 dedicated `KC_SHUTDOWN` from boot `87a5febd-a154-4981-aa5b-9b3155401b1e` logged the rejected UDC wants job at 733.633s, then unmounted `/boot/firmware` and `/tmp`, deactivated swap, reached all shutdown/poweroff targets, and synced filesystems. Normal boot `c0051857-222d-42a4-9da0-b5d3566e3507` recovered with failed unit 0.
+
+## Reboot baseline series loses earlier samples from remote `/tmp`
+
+- symptom: `remote_boot_baseline_collect.py --samples 3 --reboot-before-sample`は3回rebootを完走してexit 0になるが、local outputと`summary.md`には`sample-03`しか残らない。
+- likely cause: helperが各sampleをremote `/tmp/hidloom-remote-boot-baseline-*`へ保存し、全sample終了後に一度だけlocalへcopyしていた。次のrebootで前sampleのremote `/tmp` artifactが消える。
+- detect: `--samples N --reboot-before-sample`後、localの`*-systemd-analyze.txt`数とsummary row数がNか確認する。reboot seriesのexit 0だけで複数sample採取成功と判断しない。
+- recovery: 各remote sampleのcollect直後、次のrebootを要求する前にlocal outputへcopyする修正版helperでseries全体を取り直す。最後の1 sampleだけを複数回baselineとして流用しない。
+- regression check: `script/test_remote_boot_baseline_collect_tool.py`は3回のevent順を`collect, copy`の3組に固定する。実機では3 sample fileとsummary 3 rowを確認する。
+- evidence: 2026-08-05 `<keyboard-host>` early-initramfs E0初回seriesでsample 03だけが残った。helper修正後に同じ3 rebootを取り直し、`keyboard_ready=13.690 / 14.681 / 15.076s`の3 rowを回収した。boot/package設定は変更していない。
+
+## Early gadget is unbound again at normal systemd handoff
+
+- symptom: initramfsでUSB gadgetをbindできても、normal systemd到達時にUSB disconnect / enumerateがもう一度発生する。
+- likely cause: 現行`hidloom-usb-gadget.service`は通常helperを起動し、native helperとshell fallbackはいずれも既存gadgetのUDCを空書きして削除後に再作成する。early gadgetをadoptする分岐はない。
+- detect: one-shot前のsource auditでnormal helperの`remove_existing` / UDC空書きを確認する。実機試験ではhost watcherとUDC stateを使い、handoff中のdisconnect / enumerate回数を記録する。
+- recovery: handoff中に不一致を検出した場合はgadgetを変更せず、SSHまたは電源cycleで次回通常bootへ戻す。adopt成功後の明示service restartでは、ExecStop wrapperがUDCを空にし、markerとruntime contract、stable-unboundを照合してephemeral markerだけを削除してから通常create経路で復旧する。既定`config.txt` / `cmdline.txt`は変更しない。
+- regression check: read-only adopterを3値判定にする。markerとgadgetがともにないfresh boot、またはmarkerなしでUDCが2回とも空かつconfigfs snapshot不変のnormal service restart residueだけ従来createへ進む。完全一致はconfigfs不変でadoptし、marker不正、bound markerless gadget、不一致は変更せずfail closedにする。stop fixtureではUDC unbind後に正規markerだけをclearし、続くstartがcreateして復旧することと、malformed/symlink markerを消さないことを確認する。
+- evidence: 2026-08-05 E2 source auditで`hidloom_usb_gadget_fast.c`とshell fallbackの無条件unbind経路を確認した。実機one-shotは未実施で、既定bootは不変。
+
+## Tryboot staging validates names but not the exact boot payload
+
+- symptom: host-only stage testはpassするが、存在しないkernel名、firmwareの98文字制限を超えるdirective、検証後に差し替えられたimageを含む配置物を生成できる。
+- likely cause: kernelをbasenameだけで扱い、入力pathを検証時に再openし、出力directoryを逐次作成していた。`config.txt`のfirmware境界と通常boot pathも明示gateに含めていなかった。
+- detect: nonexistent kernel、長いinitramfs名、gzip展開後のkernel release不一致、検証中のinput swap、`/boot`直下output、active `include`をnegative fixtureへ入れる。stage後は独立`verify`を実行する。
+- recovery: boot領域へ配置せずstageを破棄する。exact kernel fileとE1 image/accepted manifestをmemory snapshotへ固定し、alternate basename、98文字以内、atomic directory rename、mode固定、通常boot input hashを含むplacement manifestで再生成する。
+- regression check: `script/test_rpi_os_early_tryboot_tool.py`でexact gzip/raw kernel linkage、TOCTOU耐性、2 build byte再現、stage verify、path/line/include/default-kernel/boot-root/tamper拒否を固定する。`autoboot.txt`、secure-boot path、通常boot hashは実機配置直前にも再確認する。
+- evidence: 2026-08-05 E2 independent source auditでmissing kernel名が受理され、143-byte `initramfs` directiveが生成されることを再現した。修正gateがpassするまでdisabled配置も行わなかった。
+
+## Placement preflight treats pseudo-file `st_size=0` as empty content
+
+- symptom: host fixtureのdisabled-placement testはpassするが、実機preflightがlive modelまたはkernel releaseをemptyとして拒否する。
+- likely cause: 通常file向けreaderが`stat.st_size` bytesだけを読み、その後に1 byteでも取得できるとgrowthとして拒否していた。procfs/sysfs/device-treeのpseudo-fileは内容を持っていても`st_size=0`を返す場合がある。
+- detect: target上で`stat -c '%F %s %a %u' /proc/sys/kernel/osrelease /sys/firmware/devicetree/base/model`と実際のread結果を比較する。regular-file fixtureだけでproduction preflight合格と判断しない。
+- recovery: boot領域へ書く前に停止する。stage/boot artifactはsize固定readerのまま維持し、model/kernel releaseだけをmax+1までEOF readするbounded pseudo-file readerで二回読み、owner、write bitなし、inode不変、byte一致を確認する。
+- regression check: `script/test_rpi_os_early_tryboot_place_tool.py`で実`/proc/sys/kernel/osrelease`の`st_size=0`成功、bounded超過拒否、fixtureのmodel/release mode 0444を固定する。実機ではplacement `preflight`を`install-disabled`直前に同じ引数で実行する。
+- evidence: 2026-08-05 independent E2 auditで`/proc/sys/kernel/osrelease`がsize 0でもkernel releaseを返すことを確認した。`<keyboard-host>`のmodelはroot:root 0444、kernel releaseはroot:root 0444 / size 0で、修正helperのread-only確認をpassした。boot領域へは未配置。
+
+## Device placement repeats host deep verify and is OOM-killed
+
+- symptom: Pi Zero 2 Wのdisabled-placement `preflight`がstage確認中に終了し、kernel logへPython / zstd処理のOOM killが残る。boot領域への配置は始まっていない。
+- likely cause: device helperがstage全体をmemory snapshotとtemporary copyへ複製したうえ、hostと同じE1 deep verifyでinitramfsを展開し、compressed / decompressed payloadを複数同時保持した。
+- detect: hostで`rpi_os_early_tryboot.py verify`がpassしたstageに対し、device `preflight`中のRSS/swapとOOM logを確認する。placement outputやbackup directoryがないこと、通常boot hashが不変なことも確認する。
+- recovery: reboot後に通常healthとboot hashを確認する。host deep verifyの`placement_sha256`を明示pinし、deviceではcanonical manifest、全file inventory/owner/mode/size/SHA、live normal inputをbounded streamingで照合する。E1やkernelをdeviceで展開しない。
+- regression check: `script/test_rpi_os_early_tryboot_place_tool.py`でhost deep verifierと`Path.read_bytes`を失敗化してもpreflightがpassすること、誤ったpinとaccepted baseに一致しないnormal initramfsを拒否すること、成功/拒否後にretained FDが残らないことを固定する。
+- evidence: 2026-08-05 `<keyboard-host>`（RAM 415 MiB、swap 414 MiB）でdeep stage verification中のpreflightが2回OOM-killされた。いずれもplacement前で、通常bootから復旧し既定boot fileは不変だった。
+
+## Accepted early image pins the wrong normal initramfs basename
+
+- symptom: deterministic image、manifest、deep verifyはpassし、live normal initramfsと内容・size・SHA-256も同一だが、device placement `preflight`が`normal initramfs name differs from the accepted E1 base name`で配置前に拒否する。
+- likely cause: builderへ渡したbyte-identical input copyのbasenameがlive boot fileと異なる。accepted manifestはbase payloadのhashだけでなくbasenameも固定し、placement helperはstageが実際のnormal boot inputへ結び付くことを要求する。
+- detect: build前にinput pathのbasenameをdevice `config.txt`が参照するnormal initramfs名と照合する。stage後はaccepted manifestの`base.name`とplacement引数`--normal-initramfs-name`を比較し、deviceでは必ず`preflight`を`install-disabled`より先に同じ引数とplacement pinで実行する。内容一致だけで合格にしない。
+- recovery: 拒否されたstageを配置せず保持し、live normal initramfsのbyte-identical copyを同じbasenameで用意してimageを2回再生成する。deep verifyとbyte一致を再実行し、installed package/profileに対してnormal gadgetを再capture、accepted manifestとtryboot stageを再生成してからdevice preflightをやり直す。
+- regression check: `script/test_rpi_os_early_tryboot_place_tool.py`はaccepted baseとlive normal fileを同一size / 同一SHA-256にしたままbasenameだけ変え、exact errorで拒否し、boot payload / backup / accepted outputを作らないことを固定する。
+- evidence: 2026-08-07 source `3e7ab2b10`の最初のE3候補はinput copy `base-initramfs8`をmanifestへ固定したため、`<keyboard-host>`のnormal名`initramfs8`に対するpreflightが配置前に拒否した。`repro-v2-input/initramfs8`から再生成したimage SHA-256 `255f294ae7eb79858406eec35c4297856650c697084cccc78aa0067ea461c47c`は2回byte一致、deep verify、capture、stage、device `preflight` / `install-disabled` / `verify-installed`をpassした。既定bootは変更していない。
+
+## APT parent thrashes memory after package transaction completes
+
+- symptom: split packageのAPTは対象packageのunpack/setupと`Processing triggers for man-db`を最後に表示したまま終了せず、pingと既存SSHのTCP ACKは続く一方、新規SSHはbanner exchange、HTTPSはaccept後の応答でtimeoutする。保存logではpackage transactionが既に完了していても、APT parentだけが残る場合がある。
+- likely cause: actual開始前から圧迫されたzramへlibapt cacheが重なり、package transaction後のAPT parentがpage fault / compression thrashで進めなくなる。zramは追加RAMではなくcompressed pageをRAM内に保持するため、logical swap残量だけで安全と判断しない。terminalの最終行だけから`man-db` trigger停止やmicroSD I/O不良と断定しない。
+- detect: APT simulation後かつactual直前に`/proc/meminfo`を確認し、Pi Zero 2 Wでは初期保守値として`MemAvailable >= 128 MiB`、`SwapFree >= 256 MiB`かつ`SwapTotalの75%`、`dpkg --audit`空、APT / dpkg / mandb processとpackage-manager lock holderなしを必須にする。絶対量も要求し、swapなし・極小swapを空き率100%として通さない。60秒以上無出力なら別sessionから`ps`のpid/ppid/state/etime/RSS/VSZ/wchan、APTの`VmRSS` / `VmSwap`、`free`、`/proc/meminfo`、zram `mm_stat`、lock、kernel OOM / MMC / EXT4 logを保存する。APT historyの`End-Date`、terminalの`Log ended`、dpkg logのpackage / trigger `status installed`も照合する。
+- recovery: memory gate不合格時は`swapoff`せず、actualを開始しない。package checksum/state/auditを保持してclean reboot後にgateを取り直す。停滞中は確立済みsessionを切断せず追加probeを最小限にし、非TTY sessionへのsignal、`dpkg`直接kill、即電源断を避ける。復旧後にpackage / trigger完了、process / lockなし、audit cleanが揃えば`dpkg --configure -a`やAPTを再実行しない。auditにpendingがありlock ownerなしの場合だけ`sudo dpkg --configure -a`、dependency不整合の場合だけmemory gate後に`sudo apt-get -f install`を行う。audit clean後にprofile適用とhealth確認へ進む。
+- regression check: 更新前にexact rollback `.deb`、通常boot 4 file、package/profile/healthをroot-only backupへ保存してchecksumを確認する。simulation後のPi Zero 2 W actualでは`deploy_github_release_deb.sh --install --low-memory-preflight`を使い、同じSSH shellでAPT直前のgateを通して`ready=true`のJSONを証跡へ残す。local candidateを手動導入する場合も`tools/package/low_memory_install_preflight.py`をactual直前に実行する。core/profileは同じAPT transaction、profile applyは別commandにする。APT完了、audit clean、同一version/architecture/source、profile apply、failed unit 0、status JSON、HTTPS、output `auto`を確認するまでE1 accepted captureやboot配置へ進まない。
+- evidence: 2026-08-05 `<keyboard-host>`の`0.0.2036+git1d59ce4ab`から`0.0.2037+gitcdadc2bcd`への更新で再現した。APT simulationは2 upgrade / new 0 / remove 0。actual直前は`MemAvailable=89 MiB`、swap free 168 / 414 MiB。logではcore/profileが23:36:41、`man-db 2.13.1-1`が9秒後の23:36:50にinstalledとなり、APT historyもEnd-Date 23:36:50だった。約95分後、swap free 0、zram physical 252,240 KiBでkernelがRSS約43.6 MiB / swap約135 MiBの`apt-get`をglobal OOM victimにした。同時点にdpkg/mandbはなく、MMC / I/O / EXT4 errorもない。電源再投入後はpackage `ii`、audit/verify clean、profile/service/status/HTTPS/output `auto`、通常boot hash不変を確認した。
+
+## Early gadget accepted snapshot freezes a kernel-normalized configfs value before bind
+
+- symptom: early gadgetはWindowsへ正常に列挙されUDCも`configured`を維持するが、normal systemdのadopterが`unsafe: configfs snapshot mismatch: changed=bMaxPacketSize0`でexit 78になり、`hidloom-usb-gadget.service`と依存する`hidloom-hidd.service`がfailed / inactiveになる。
+- likely cause: accepted manifestはnormal gadgetのpre-bind snapshotにあった`bMaxPacketSize0=0x00`をbyte固定した一方、kernel / UDCはbind後のlive configfs値を`0x40`へ正規化した。adopterは意図どおり不一致をfail closedにしたが、accepted contractがbind前後でkernelが正規化するfieldを区別していなかった。
+- detect: accepted capture時に同じgadgetのbind前後snapshotを取り、kernelが書き換えるconfigfs fieldを列挙する。one-shotではWindows watcher成功だけで合格にせず、adopt marker、`hidloom-usb-gadget.service`のexit、live/accepted `bMaxPacketSize0`のtext/hex/SHA-256、`hidloom-hidd.service`を確認する。
+- recovery: configfsやaccepted manifestをone-shot中に書き換えず、ephemeral evidenceを先にcopyする。gadgetがboundのままならその状態を保存し、fresh watcherをarmして通常rebootを1回行い、通常bootへ戻してservice/health/output `auto`を確認する。
+- regression check: accepted capture/adopter fixtureへbind後にkernel-normalizeされるfieldを追加し、許容する値はfield単位の明示contractで扱う。snapshot v2では`bMaxPacketSize0`だけをregular fileかつ`0 / 8 / 9 / 16 / 32 / 64`の明示値として初回・最終snapshotで検査し、static hashから除外する。未知field、不正値、symlink、descriptor/function/UDCなど安全性に関わる真の差分は引き続きexit 78で変更せず拒否する。旧snapshot v1もfail closedで拒否する。修正版source/packageからaccepted manifestとE1/stageを再生成し、Windows watcher付きone-shot / fallbackを再実施する。
+- evidence: 2026-08-06 `<keyboard-host>`の初回E2 one-shotではboot ID `e2750320-4852-4257-934b-e1a2d6d2a56b`、early ready 3.160秒、Windows watcher exit 0だったが、live `bMaxPacketSize0`は`0x40\n` / SHA-256 `155f29140e12e0e0b92fba5aa6f42f46b93678fcdb0e1c877ea68ab3d1234671`、accepted値は`0x00\n`だった。adopter exit 78後もUDCは`configured`を維持した。通常fallback boot ID `c0e63dd9-5ce0-4c9d-b613-d2e72f6f00e4`ではfailed unit 0、全service、通常boot hash、output `auto`へ復旧した。
+- fixed candidate: source `0ebc76ddb`、core/profile `0.0.2043+git0ebc76ddb`、accepted manifest `f0eeb2eef76f0ba10439cd7690012c0d6de1948bb1f95c1e52b6e665a2a0a322`でsnapshot v2を再試験した。one-shot boot ID `7def3c57-8f1c-41d0-86b5-9f7313d22e25`はearly ready 3.160秒、adopt 15.198秒、live `bMaxPacketSize0=0x40`、`status=adopted` / configfs mutation 0、UDC `configured`、Windows watcher exit 0をpassした。通常fallback boot ID `749a1fad-577a-4bd5-8c7e-d1be8ecfbd04`もearly token/treeなし、failed unit 0、全service、通常boot hash、pressed/error 0、output `auto`をpassし、このfailure patternのcorrected E2 gateをclosedとした。証跡は`build/artifacts/<keyboard-host>-rpi-os-early-e2-v2-0ebc76ddb-20260806T131123Z/`。
+
+## Windows watcher launcher fails before `WATCHER_READY`
+
+- symptom: read-only 5秒gateがPnP観測をarmする前に、`${Mode}`で区切られていない`$Mode:`のparser error、利用環境にない`Get-FileHash`、parameter `$Pid`とread-only自動変数`$PID`の衝突、またはmandatoryな空collection / 空文字のbinding errorで終了する。Codexの`CodexSandboxOffline` contextでは`Get-PnpDevice`自体が拒否される場合もある。
+- likely cause: generated operator wrapperをWindows PowerShell 5.1のparser/cmdlet差分に対して検証しておらず、PowerShellの変数名がcase-insensitiveであることと、`[Parameter(Mandatory)]`がempty collection/stringを追加attributeなしでは拒否する境界をfixture化していなかった。Codex sandboxのPnP権限はnative管理者PowerShellと同一ではない。
+- detect: generated wrapperをWindows PowerShell 5.1 parserへ通し、helper SHA-256照合方法がそのhostで利用可能か確認する。native管理者PowerShellからfresh prefixの5秒gateを実行し、literal `WATCHER_READY`、baseline/final 3 selector ready、exit 21 / `initial_disconnect_not_observed`、`target_operation_before_ready_zero=true`が揃うまでtargetをrebootしない。
+- recovery: parser/binding/PnP error時はone-shotを消費せず停止し、新しいimmutable bundleと`OutputPrefix`を使う。colon直前は`${Mode}`、hashは`.NET` SHA-256 fallback、VID/PID parameterは`$ProductId`、empty listを受けるparameterは`AllowEmptyCollection` / `AllowEmptyString`を明示する。PnP観測はsandbox経由でなくnative管理者PowerShellから行う。
+- regression check: `script/test_windows_usb_enumeration_watch_tool.py`でcase-insensitive `$Pid` parameterを拒否し、全empty `ArrayList` / event record / Markdown line pathのAllow属性を固定する。operator wrapperはPowerShell 5.1 parse、`Get-FileHash`なしのhash照合、既存evidence非上書きを確認し、実hostの5秒runtime gateを必須にする。
+- evidence: 2026-08-06のE2準備では上記4種類のlauncher/helper errorとsandbox PnP拒否を順に検出した。すべて`WATCHER_READY`前で、`reboot '0 tryboot'`は一度も実行していない。修正版をnative管理者PowerShellで通した後だけone-shotを1回実行し、one-shot / fallback watcherはともにexit 0となった。
+
+## Windows watcher reuses a fixed output prefix
+
+- symptom: watcherは120秒のPnP観測とtarget rebootを終えた後、`refusing to overwrite an existing watcher report bundle`でexit 70になり、今回のreportをpublishできない。
+- likely cause: launcherが定数`OutputPrefix`を持ち、前回のreport directoryが残ったまま再利用した。watcherの非上書き動作は意図どおりだが、衝突を起動前に検出しないと観測後にしか失敗が分からない。
+- detect: arm前に`$RunId=[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')`からprefixを作り、`Test-Path -LiteralPath (Join-Path $OutputDirectory $OutputPrefix)`がfalseであることを必須にする。固定prefixのCMDを再実行しない。
+- recovery: 旧reportを削除も上書きもせず保存する。fresh unique prefixでwatcherをarmし、literal `WATCHER_READY`後に通常rebootをちょうど1回実行してfallback証跡を取り直す。
+- regression check: `script/test_windows_usb_enumeration_watch_tool.py`でreport bundleの非上書きを維持し、operator手順ではdynamic RunIdと起動前`Test-Path`を必須にする。実hostでexit 0、`reason=pass`、全6 check trueを確認する。
+- evidence: 2026-08-08のE3通常fallbackで、deviceはboot ID `0d059889-6b87-447b-870c-2497bf89cab5`の正常bootへ復帰したが、固定prefix `e3-normal-fallback-20260807T125000Z`の衝突によりwatcherがexit 70となった。このreportは正常fallback gateの証跡に使わない。
+
+## Package verifier reads root-only E4 evidence without privilege
+
+- symptom: `tools/package/deploy_deb_verify.sh`はpackage/serviceが正常でも、one-shot bootの`/run/hidloom-early/e4-handoff.prepare.json`または`e4-handoff.complete.json`の読み込みで`PermissionError`になる。
+- likely cause: E4証跡は改ざん防止のためroot:root `0600`で正しく保護されているが、verifierのembedded Pythonだけを非特権userで起動していた。
+- detect: `sudo -n stat -c '%U:%G %a %n' /run/hidloom-early/e4-handoff.*.json`とverifierのstderrを照合する。modeを緩めず、同じJSONを`sudo -n python3`で解析できることを切り分ける。
+- recovery: evidenceをchmod/copy/置換せず、runtime status検査のembedded Pythonを`sudo -n python3`で起動する修正版verifierをexactな同一bootで再実行する。
+- regression check: `script/test_release_bundle_tools.py`で`sudo -n python3 - '$PROFILE' ... /run/hidloom-early 10`の呼出しを固定し、`python3 script/test_release_bundle_tools.py`をpassさせる。実機ではroot:root `0600`のE4証跡を保ったまま`deploy_deb_verify.sh`をpassさせる。
+- evidence: 2026-08-07のE3 one-shot boot ID `296462dd-672e-4e6b-8eb6-6b8b3305ddb5`で検出した。E4自体は`status=prepared` / `status=complete`、release `result=ok` / `released=true`、error counter 0であり、読取権限だけを修正した。
+
+## Windows collector uploads UTF-8 helper through the active ANSI codepage
+
+- symptom: Windows execution hostから`tools/remote_boot_baseline_collect.py`を実行すると、remoteへ置いた`/tmp/hidloom-boot_marker_baseline.py`が`Non-UTF-8 code`の`SyntaxError`で起動しない。remote `file`ではCRLFかつNon-ISO extended-ASCII textに見え、local helperはUTF-8として正常。
+- likely cause: `subprocess.run(..., text=True)`へencodingを明示せず、SSH stdinへ送るhelper textがWindowsの既定codepageでencodeされた。helperには日本語journal patternが含まれるため、remote PythonのUTF-8 source parserで壊れる。
+- detect: Windows hostからcollectorを実行した後、remoteで`python3 /tmp/hidloom-boot_marker_baseline.py`またはcollector stderrの`Non-UTF-8 code`を見る。localでは`Path('tools/boot_marker_baseline.py').read_bytes().decode('utf-8')`が通ることを確認する。
+- recovery: targetをrebootしない。collectorをUTF-8 stdin明示版へ更新し、remote helperを上書きして同じbootからbaselineを取り直す。すでにremote採取が完了しlocal copyだけ失敗した場合は、Windows OpenSSHの同じSSH contextで`scp -r`してartifactを回収する。
+- regression check: `script/test_remote_boot_baseline_collect_tool.py`で`run_with_input`が`設定読み込み完了`をUTF-8 byte列としてstdinへ渡すことを固定する。Windows実行ではcollectorのhelper upload後にremote `python3`がsource parseできることを確認する。
+- evidence: 2026-08-08 Windows host final fallback boot `c44838d2-a104-43f5-bcd6-d813f3adceff`のbaseline回収で検出した。`run_with_input(..., encoding="utf-8")`へ修正後、同一bootのbaselineを採取できた。WSL `bash | tar` copyはhost alias解決差で失敗したため、artifactはWindows OpenSSH `scp -r`で回収した。
+
+## Windows Git Bash tar copy cannot use relative backslash paths
+
+- symptom: Windows上の`tools/remote_boot_baseline_collect.py`で`--reboot-before-sample`付きseriesを開始し、sample回収後のremote tar copyだけが`tar: build\artifacts\...\boot-series: Cannot open: No such file or directory`で失敗する。
+- likely cause: collectorはcopy pipeをGit Bashの`bash -o pipefail -c 'ssh ... | tar -C ...'`で実行するが、Windows relative pathやbackslashをそのまま`tar -C`へ渡していた。Git Bash側の`tar`はその文字列をPOSIX pathとして解釈するため、local Windows上の出力directoryを見つけられない。
+- detect: rebootとremote sample採取は完了しているのに、local copy段階の`tar -C build\artifacts\...`だけが失敗することをcollector stderrで見る。targetのboot ID、UDC、failed unitを確認し、device側failureではなくhost copy failureとして分ける。
+- recovery: rebootを再送しない。remote staging dirが残っている場合はWindows OpenSSH `scp -r`等でpartial evidenceを回収し、fresh output dir / remote dirでseriesを取り直す。collectorはWindows時に`Path.resolve().as_posix()`を通したabsolute POSIX pathを`tar -C`へ渡す。
+- regression check: `script/test_remote_boot_baseline_collect_tool.py`で`bash_local_path(Path("build/artifacts/example"))`がWindowsではbackslashなし、drive letter後が`:/`のresolved pathになることを固定する。Linux/macOSではrelative POSIX pathを維持する。
+- evidence: 2026-08-08のE5 first attemptで1 sample採取後にcopyだけ失敗し、boot ID `d1ad9a16-8314-4b28-a40e-291981c411d0`のdevice healthはUDC `configured`、failed unit 0だった。partial evidenceは`build/artifacts/<keyboard-host>-rpi-os-early-e5-controlled-reboot-20260808T071514Z/partial-first-copy/`へ退避し、修正後にfresh 10 sample series `build/artifacts/<keyboard-host>-rpi-os-early-e5-controlled-reboot-20260808T071706Z/`を採取した。
+
+## E5 Windows watcher runner can be duplicated or misread child process state
+
+- symptom: Windows host E5 watcher 10 reboot runnerをUAC起動した直後に同じscriptを手動起動すると、2本のrunnerが同じbefore boot IDでsample 01 watcherをarmし、片方が`ssh_exit=0`、もう片方がreboot開始後のtransport dropで`ssh_exit=255`を記録する。別試行ではreboot中のSSH pollingが無出力になり、PowerShell StrictModeでnullを踏んでrunnerがfatal stopする。また、watcher reportはpassでも`Start-Process`で保持したchild processの`ExitCode`が空文字になり、runnerが誤ってfailする。
+- likely cause: UAC起動と手動起動の二重実行を防ぐglobal lockがrunnerに無かった。PowerShell 5.1のStrictModeではnative commandが無出力/timeoutの時にhelper内の未初期化またはnull値処理がfatalになりやすい。elevated child watcherの合否はprocess objectの`ExitCode`ではなく、atomicにpublishされた`report.json`を正本にすべきだった。
+- detect: Windows hostのE5 watcher artifactにある`runner-*/runner.log`で同じbefore boot IDのrunnerが複数存在し、`NORMAL_REBOOT_SENT_ONCE`が重複していないかを見る。runner fatalの場合は`FATAL=`行、watcher単体reportの場合は各`report.json`の`exit_code` / `reason` / six checksを確認する。
+- recovery: 追加rebootを送らず、実行中runner/watcher processが無いことを確認する。targetを通常bootへ戻し、`hidloom-ctrl output auto`、boot ID、failed unit 0を確認する。重複/途中停止runは合格証跡から除外し、fresh unique run IDで取り直す。runnerにはglobal mutex、null-safe SSH helper、fatal trap、`report.json`正本のwatcher verdict判定を入れる。
+- regression check: 管理者runnerは起動時にdevice/run固有のglobal mutexを取得できない場合reboot前にfail closedする。SSH polling helperは無出力でも`ExitCode`と空文字`Text`を返し、watcher childのprocess `ExitCode`ではなくreport JSONの`exit_code=0` / `reason=pass` / six checks trueでpass判定する。
+- evidence: 2026-08-08 E5 Windows watcherで、重複run `runner-20260808T073814Z` / `runner-20260808T073816Z`、null fatal run `runner-20260808T074531Z`、blank ExitCode fatal run `runner-20260808T074722Z`を合格証跡から除外した。targetはいずれも通常bootへ復帰し、failed unit 0、output `auto`へ戻した。修正後のfresh run `runner-20260808T075206Z`は10/10 watcher exit 0 / `reason=pass`、post-first-ready disconnect 0、final smoke/health passとなった。
+
+## Early handoff fixture samples a child before PID publication or exec completes
+
+- symptom: `script/test_rpi_os_early_input_handoff_tool.py`が稀にempty PIDの`ValueError`、または`executable inode mismatch`で失敗し、再実行すると通過地点が変わる。
+- likely cause: fixture reaperはbackground childをforkした直後にPID fileを作る。observerがfileの存在だけを条件に読むと、PID text書込み前のempty file、またはchildがcopied daemon binaryへexecする前の`/bin/sh` inodeを採取できる。
+- detect: failureが`int(child_pid_file.read_text(...))`のempty textか、期待inodeと一時的なshell inodeの不一致かを見る。製品ツールのhandoff evidence失敗と分ける。
+- recovery: PID file内容がpositive integerになり、同じPIDの`/proc/<pid>/exe`がexpected copied binaryへ解決するまでbounded pollしてからstarttime / inodeを記録する。
+- regression check: E4 fixtureを単独とcanonical validation snapshotの両方で実行し、empty PID / pre-exec inodeを認証recordに固定しないことを確認する。
+- evidence: 2026-08-08のcross-build host上の連続実行でoutputd inode mismatchとempty PIDを別々再現し、同じsourceの再実行でpassすることからfixtureのpublication / exec raceと判断した。
+
 ## Buildroot legal-info wrapper ignores an overridden source checkout
 
 - symptom: `BUILDROOT_DIR=<prepared-checkout> tools/buildroot_m6_build.sh --legal-info` completes the Buildroot `source` target, then `buildroot_legal_info.py` reports that a different repository-relative `build/artifacts/buildroot-upstream` path is missing.
@@ -461,8 +651,8 @@
 - likely cause: Linuxのcase-sensitive filesystemで作成・検証したtracked pathを、そのままcross-platform public repositoryへ同期する。content scannerとgenerated artifact gateだけではfilename portabilityを証明できない。
 - detect: `tools/repository_hygiene.py`で全tracked prefixをNFC/casefoldし、Windows予約名・禁止code point・末尾文字・UTF-16 lengthを検査する。Git metadataがないexportでは`PUBLIC_EXPORT_MANIFEST.json`を同じinventoryとして使う。
 - recovery: collisionするpathをcanonical spellingへ統合し、予約名や禁止文字をportable filenameへrenameする。allowlistや`core.longpaths`必須化で回避しない。
-- regression check: fixtureで`CON.txt`、colon、末尾dot、NFD、case-only directory衝突、180 UTF-16 unit超過、255 unit超過component、非Unicode pathを拒否し、現行private indexとstandalone public manifestをpassさせる。
-- evidence: 2026-07-14、現行1238 tracked pathsを監査し、衝突・禁止名・NFC違反0、最長relative path 99 UTF-16 unitsを確認した。schema v2で導入したportable path policyをschema v3のcontent policyと共にrepository hygiene gateへ固定した。
+- regression check: pure path fixtureで`CON.txt`、colon、末尾dot、NFD、case-only directory衝突、180 UTF-16 unit超過、255 unit超過component、非Unicode pathを全OSで拒否する。実filesystem fixtureはそのhostで作成可能なpathに限定し、現行private indexとstandalone public manifestをpassさせる。
+- evidence: 2026-07-14、現行1238 tracked pathsを監査し、衝突・禁止名・NFC違反0、最長relative path 99 UTF-16 unitsを確認した。schema v2で導入したportable path policyをschema v3のcontent policyと共にrepository hygiene gateへ固定した。2026-08-09 Windows execution hostではnegative Git fixtureの`docs/CON.txt`をstageできず停止したため、禁止path判定をfilesystem作成から分離し、Git index executable modeも明示した。
 
 ## Checkout or generators silently change tracked text bytes
 
@@ -853,14 +1043,14 @@
 - regression check: `.gitignore`で`build/public-rebuild/`全体を生成物として扱い、`tools/public_build_rehearsal.sh --package --profile touch-waveshare-8.8`後もworktree clean、provenance verify、split candidate gateが通ることを確認する。
 - evidence: 2026-07-19、public main `ca62870882e4`のcustom `build/touch-preview`へpackage `0.0.2012+git001a0d2e5dcb`を作成した際、tracked diff 0のまま3個の`.sha256`だけがuntrackedとなりcandidate clean gateが停止した。標準再現出力directoryをignoreし、公開候補ではprovenance付き標準入口へ統一した。
 
-## Archive and package fixture modes depend on the caller umask
+## Archive and package fixture modes depend on the caller filesystem policy
 
-- symptom: archive headerはexecutable `0755`とdata file `0644`を正しく保持しているのにsource archive testが展開後mode不一致となる、またはfixture `.deb`生成が`control directory has bad permissions 700`で停止する。通常shellではpassし、restrictive `umask 0077`のhostだけで再現する。
-- likely cause: archive testがtar既定のumask適用を許し、fixture package builderも`DEBIAN/`とcontrol fileを明示正規化していないため、artifact contractではなく呼出元processのpermission policyを測定していた。
-- detect: `tar --zstd -tvf`のheader modeと展開後modeを比較する。`.deb` fixtureは`stat`でroot/`DEBIAN`が`0755`、controlが`0644`か確認し、dpkg-deb stderrを隠さない。
-- recovery: archive自体を再生成せず、mode検証用の展開へ`tar --same-permissions`を指定する。fixture packageは全directoryを`0755`、control/payloadを`0644`へ正規化してからbuildする。
-- regression check: source archive、public release bundle、profile release bundle、release helper testをrestrictive umaskでも実行し、deterministic bytes、manifest限定file、archive mode、fixture `.deb`生成を同時に確認する。
-- evidence: 2026-07-19、x86_64 build hostのcaller umask `0077`でarchive mode assertionとpublic release fixture `.deb`が順に停止した。explicit permission preservationとfixture mode正規化後はartifact contractをcaller environmentから分離した。
+- symptom: archive headerはexecutable `0755`とdata file `0644`を正しく保持しているのにsource archive testが展開後mode不一致となる、またはfixture `.deb`生成が`control directory has bad permissions 700`で停止する。restrictive `umask 0077`のhostに加え、POSIX execute bitを表現しないWindows NTFSでも再現する。
+- likely cause: archive testが展開先filesystemのmodeをartifact contractとして測定していた。POSIXではtar既定のumask、Windowsでは`chmod/stat`の`0666`表現がheader modeを失わせる。fixture package builderも`DEBIAN/`とcontrol fileを明示正規化しない場合はcaller policyを引き継ぐ。
+- detect: `tar --zstd -tvf`またはuncompressed tar memberのheader modeと展開後modeを分けて比較する。Windowsでheader `0755` / extracted `0666`ならarchive不良ではない。`.deb` fixtureはPOSIX hostでroot/`DEBIAN` `0755`、control `0644`とdpkg-deb stderrを確認する。
+- recovery: archive writerはpublic export manifestのcanonical `0644/0755/0777`をtar headerへ明示し、source filesystem modeを再推測しない。mode検証はtar memberを正本とし、POSIX展開testだけ`--same-permissions`後のmodeも確認する。fixture packageは全directoryを`0755`、control/payloadを`0644`へ正規化してからbuildする。
+- regression check: source archive、public release bundle、profile release bundle、release helper testをrestrictive umaskとWindowsで実行し、deterministic bytes、manifest限定file、tar member mode、fixture `.deb`生成を確認する。Windows verifierはmanifest modeの許可値とcontent hashを検査し、表現不能なNTFS execute bitを等値比較しない。
+- evidence: 2026-07-19、x86_64 build hostのcaller umask `0077`でarchive mode assertionとpublic release fixture `.deb`が順に停止した。2026-08-09にはWindowsでtar展開後のexecutableが`0666`となり、さらにwriterがsource filesystem modeからheaderを`0644`へ落とす経路を検出した。manifest modeからのheader生成とtar member検査へ変更した。
 
 ## Generated release Markdown is mistaken for repository documentation
 
@@ -960,3 +1150,197 @@
 - recovery: private開発と監査済みsource同期を再開し、exact source/build provenance/hardware smokeを持つimmutableな内部RCをマイルストーンごとに作る。PID承認時は開発headではなく最新の認定済みRCを選び、正式identity差分を適用して再buildする。
 - regression check: `script/test_public_release_readiness.py`でPID未割当の`source-public`成功、`script/test_public_release_bundle.py`でprovenanceと実機smoke済み`internal-rc`成功、publisherによる内部RC拒否、`stable-public`のPID要求を固定する。
 - evidence: 2026-07-21、pid.codes PR #1246はCI成功・review待ちで、upstreamには56件のopen PRと番号上54件の先行PRがあった。外部待ちを全release blockerにすると継続開発の検証負債が増えるため、PIDを`stable-public`だけのgateへ変更した。
+
+## Initramfs `/run` move invalidates early pathname sockets
+
+- symptom: initramfs内ではhidd/outputd/logicd-core/matrixdがreadyになったように見えるが、real rootのsystemd handoffからearly control socketへ接続できない、またはPID/status evidenceだけが見えてsocketが消えている。
+- cause: initramfs-toolsはinit-bottomで`/dev`を`${rootmnt}/dev`へmoveした後、init-bottom完了後に`/run`を`${rootmnt}/run`へmoveする。move前のrootfs側`/run`や、後で別mountに隠れるpathnameへsocketを作ると、daemonのopen file descriptorは生きてもreal rootから同じpathnameで到達できない。
+- detect: exact base initramfsの`/init`と`/scripts/init-bottom/udev`を確認し、`mount -o move /dev`、init-bottom hooks、`mount -o move /run`の順を固定する。early ready markerだけでなく、real rootから各socket node、status、PID identityへ到達できることを確認する。
+- recovery: early chainを有効化せず通常bootへ戻す。実験imageではdaemonを`/dev` move後にreal-root chrootで起動し、live socket/status/log/runtimeを`/dev/hidloom-early`へ置く。`/run/hidloom-early`はmove後に公式ready、runtime contract、PID、handoff証跡だけを置き、live rootへのsymlinkを追加する。
+- regression check: E3 image verifierでroot-transition hookと`/dev/hidloom-early` contractをbyte固定し、QEMU chain smokeで4 daemon接続とfinal releaseを確認する。E4 helperは公式ready/contract/PIDとlive rootを別々に認証し、markerだけでactionしない。Windows watcher付きone-shotまではinstalled-disabledを維持する。
+- evidence: 2026-08-06、E3設計監査で旧案の`/run`集約がmount move順と両立しないことを検出した。exact Raspberry Pi OS initramfsではudev init-bottomが`/dev`をmoveしてsymlink化し、`/run`は全init-bottom完了後にmoveすることを確認したため、live `/dev` / evidence `/run`へ分離した。
+
+## Init-bottom observes the launcher before `setsid` establishes its process group
+
+- symptom: E1 gadgetはreadyだがE3 launcherが一命令も実行せず、native input chainが常にfail-openする。またはPGID未成立のlauncherがcleanup後に遅れてdaemonを起動し、direct zeroの後へnonzero reportを送る余地がある。
+- cause: `setsid ... &`直後の`kill -0 -$pid`はsession/process-group生成前にはfalseになる。negative PGIDだけで生存判定するとnumeric launcherを見失い、TERM後のwaitやterminal reportを早められる。
+- detect: `setsid`を50 ms遅延するwrapperで旧hookを実行し、launcher record 0を再現する。別fixtureではPGID未成立のままTERMを無視させ、cleanup後にstub launcher/childが一件も起動しないことをpidfdで確認する。
+- recovery: numeric leaderとnegative PGIDの双方をbounded handshake/cleanup対象にする。どちらかがTERM猶予後も残る場合は先にverified UDC unbindし、numeric leaderとprocess groupをSIGKILLして両方の消滅を確認する。消滅を証明できない場合はdirect zeroを終端扱いせず`chain-staged`を残す。
+- regression check: fixed hookは遅延`setsid`でもlauncher開始と`chain-staged`を観測する。通常cleanupのexact main 9 bytes / US-sub 8 bytes、residual child時のunbind、release/unbind双方失敗時のunsafe state、PGID未成立+TERM無視時のunbindとlate child 0を実行fixtureで固定する。native build/verifyは必要な16 command pathをbase archive内で解決し、missing `setsid`を拒否する。
+- evidence: 2026-08-07、outer-hook behavioral fixture導入時に旧raceを再現し、PGID handshakeとleader/group共通cleanupへ修正した。E1/E3 focused、両template `dash -n`、production base prerequisite検査をpassした。
+
+## E3 prepare failure still starts independently enabled normal owners
+
+- symptom: E3 discovery/auth/pre-actionでprepareが失敗してUDCを安全にunbindした後も、通常`hidloom-outputd`、`hidloom-logicd-core`、`matrixd`が起動し、停止していないearly chainとsocketまたは入力ownerを競合する。
+- cause: USB gadgetとhiddだけがprepareを強依存し、独立enableされたoutputd/core/matrixdは既存chainへの`Wants=`または`Requires=`しか持たなかった。prepare evidenceがないfinalizeは`not-applicable`になるため、二重ownerを後段で検出・停止できない。
+- detect: 各systemd unitの`Requires=`と`After=`を静的確認し、release candidateからいずれかのprepare依存を除いた負例が拒否されることを確認する。prepare失敗後に通常ownerが起動する構成はfail-closed違反とする。
+- recovery: verified UDC unbindを維持したまま通常ownerを開始せず、次回の通常bootへ戻す。outputd/core/matrixdをprepareへ直接`Requires=`かつ`After=`し、markerなし通常bootはprepareの`not-applicable`成功を経由して従来どおり起動する。
+- regression check: `script/test_rpi_os_early_input_handoff_tool.py`でsource unit contractを固定し、`script/test_release_bundle_tools.py`で実unit相当fixture、packaged unit、3つのmissing-`Requires`負例を検証する。`release_candidate_check.sh`も各unitの両行をexact matchで必須にする。
+- evidence: 2026-08-07、E4最終依存監査でprepare失敗時のtransitive chainを追跡して検出した。通常native chainの全独立enable unitへ強依存を追加し、重点testを再実行した。
+
+## Early output release overtakes queued nonzero reports
+
+- symptom: E4 handoffのoutputd `release_all`はmain/US-subともdeliveredを返し、hidd zero counterも増えるが、その後に古い押下reportがUSBへ書かれてstuck keyになり得る。
+- cause: `hidloom-outputd`のloopはcontrol clientをreport datagramより先に処理する。logicd-coreがliveのまま、またはoutputd受信queueを証明せず`release_all`すると、zero 2本を先にforwardした後で既存queueのnonzeroを処理できる。
+- detect: outputdを一時停止してreport datagramとcontrol requestを同時にqueueし、再開後のUSB broker wire orderを採取する。counterの単なる増加や、producerがlive中の一時的な等値を合格にしない。core停止後に`broker_frames_sent == outputd frames_received == frames_to_usb == hidd frames_received`を要求する。
+- recovery: one-shotを合格扱いせず通常fallback bootへ戻す。通常成功するE4 prepareはmatrix停止、core release、
+  pidfdによるcore停止、exact queue barrier、outputd release/status、outputd停止、hidd final-zero/status、hidd停止の順とし、
+  UDCを変更せずmutation-free adoptへ進む。認証後actionの失敗時は認証済み全daemonを順序停止し、
+  main 9 bytes / US sub 8 bytesのexact terminal reportを書く。全daemon終了または両writeを証明できない場合と、
+  chain-staged discovery / 認証失敗はverified UDC unbindでhostを切断する。exclusiveな0600 failure evidenceを残し、
+  normal USBを開始せず次回rebootで通常構成へ復旧する。
+- regression check: 遅延queue fixtureはcore identityが消えるまでoutputd/hidd counterを進めず、output controlをcore生存中に呼ぶ実装を拒否する。outputd停止後のhidd受信数をexact `core+2`、両endpoint zero counterをbarrier後各+1以上、全route/error counterを0として固定する。release merge window内の古いpending zeroが後でflushされるとzero counterは+2になり得るため、上限1は要求しない。early/normalのstatus PID、socket kernel inodeとowner FD、HID character nodeとhidd FDを照合し、同じstream pathにlistenerとaccepted connectionが共存する正常形はlistener recordだけを一意に選ぶ。wrong PID/wiring/endpoint/foreign ownerをaction前に拒否する。失敗fixtureはpost-actionのordered stop + exact terminal report、write不能時のverified UDC unbind、chain-staged discovery / 認証失敗のunbind、failure evidenceの上書き拒否を固定する。
+- evidence: 2026-08-06、hostの実`hidloom-outputd`でSIGSTOP中にmain押下と`release_all`をqueueして再開すると、10/10で`main zero -> US-sub zero -> queued main press`を再現した。実`hidloom-hidd`でも16 ms release merge windowにより安全なzero counter増分+2を再現した。producer停止後のexact counter barrierとpidfd ordered stopへ修正し、focused E4 fixtureとARM64 QEMU chainをpassした。
+
+## Raspberry Pi Imager accepts only the canonical-cased Windows device path
+
+- symptom: 管理者PowerShellでexact imageを指定してもImager CLIが書き込み前にexit 1になる。または公式`.cmd` wrapperがexit 0を返すのにmicroSD内容が変わらず、physical-device readback SHA-256がsourceと一致しない。
+- cause: Imager 2.0.10のremovable-drive roleは`\\.\PhysicalDriveN`を保持し、destination照合は大小文字を区別する。CIMが返す`\\.\PHYSICALDRIVEN`をそのまま渡すと拒否される。公式`.cmd` wrapperはchild processの拒否を呼出元へ正しく返さない経路があり、wrapper exitだけではwrite成功を証明できない。
+- detect: `Get-Disk`でdisk number、USB bus、boot/system false、serial、sizeを照合し、Imager本体のchild exitを取得する。成功表示後もphysical drive先頭をraw image sizeだけ読み、sourceと独立にSHA-256比較する。readback mismatchならmediaをbootしない。
+- recovery: 失敗runとmediaを削除・再利用扱いにせず保存する。disk identityを再確認し、destinationをdisk numberからcanonical `\\.\PhysicalDriveN`として組み立て、`rpi-imager.exe --cli`を直接実行する。Imager verifyとbounded physical readbackの両方が一致したrunだけを採用する。
+- regression check: Windows writerは管理者token、exact disk serial/size、nonboot/nonsystem、USB bus、raw size/hash、direct child exit、customizationなし、Imager verify、bounded readback hashをすべてfail-closedにする。`.cmd` wrapperのexit 0だけを合否に使わない。
+- evidence: 2026-08-09 Windows execution host run `20260809T032112Z`はuppercase destinationでexit 1、run `20260809T032257Z`はwrapper exit 0でもreadback `9571e272377b4f562cce4ab0fd699e63ff0f86d02e3088bf0f08c49b4319489d`で拒否した。canonical pathとdirect child exitを使ったfresh run `20260809T032443Z`はImager verifyと243,270,144 bytes readbackがexact SHA-256 `a09de9e149a3bc7c06a54bf67a8307ae417b41e69e4898ddc993c973b94cf4d1`でpassした。
+
+## Buildroot M6 handoff calls a Raspberry Pi OS-only control CLI
+
+- symptom: exact M6のHDMI shellで`hidloom-ctrl output auto`を実行するとcommand not foundになり、手順に書かれたPATHを探して作業が止まる。output daemonとstatus JSON自体は存在する。
+- cause: offline applianceのexact M6 rootfsは`hidloom-outputd`などのruntime daemonを収録するが、Raspberry Pi OS package用`hidloom-ctrl`を収録しない。handoffが両OSのoutput復旧手順を同一視していた。
+- detect: `command -v hidloom-ctrl`とrootfs file inventoryを確認し、`/run/hidloom/outputd-status.json`の有無を分ける。daemon/statusが正常でCLIだけ不在ならimage欠損やPATH破損として扱わない。
+- recovery: Vialで位置を確認したphysical `KC_CONNAUTO`を使う。HDMI shellで`(sleep 5; cat /run/hidloom/outputd-status.json) &`を実行し、5秒以内にkeyを押して遷移後の`target=auto`を確認する。Windows hostのUSB入力復帰とkey/modifier非固着も確認する。`KC_USB`の`target=usb`を最終autoの代用にしない。
+- regression check: exact M6 handoffは存在しないCLIを第一経路にせず、`KC_CONNAUTO`とbackground status確認をcanonicalにする。M6を最小offline applianceとして維持する限り、CLIを追加搭載すること自体をpass条件にしない。
+- evidence: 2026-08-09 exact source `a0f283708fd5`のphysical gateでcommand不在を検出した。operatorは`KC_CONNAUTO`後の`outputd-status.json target=auto`、Windows hostのUSB入力、非固着をpassし、その後dedicated shutdownとRaspberry Pi OS rollbackを完了した。
+
+## Reduced install-ready directory is used as an all-mode bundle input
+
+- symptom: unified release builderのprovenance検証が`tar --zstd -xOf .../hidloom-<source>-aarch64.tar.zst ./build/package-manifest.json`で停止する。`.deb`と`PUBLIC_BUILD_PROVENANCE.json`は存在し、output directoryはまだ生成されていない。
+- cause: `install-ready-keyboard-ver1/`は実機導入用に2つの`.deb`へ絞ったdirectoryで、all-mode provenanceが参照する元release tarとsidecarを含まない。完全build output用の`--package-dir`とinstall setを取り違えた。
+- detect: bundle生成前にpackage directoryへrelease tar、tar sidecar、core/profile deb、deb sidecar、all-mode `PUBLIC_BUILD_PROVENANCE.json`が揃うことを確認する。provenance verifierがoutput作成前に停止した場合はforceや手動copyで迂回しない。
+- recovery: 失敗した固定prefixを上書きせず、同sourceの完全な`rebuild/` directoryを指定してfresh outputへ再実行する。既存pending bundleも保持し、生成後に`--require-channel-ready internal-rc`とasset hash比較を行う。
+- regression check: internal RC closeout手順はinstall-ready setとall-mode package build outputの責務を明記する。builderのfail-closed挙動を維持し、missing release tarを`.deb`だけから推測して合格にしない。
+- evidence: 2026-08-09、`install-ready-keyboard-ver1/`指定はoutput生成前に停止した。完全な`rebuild/`を使ったfresh hardware-pass directoryはprovenance、M6 verifier、ARM runtime、全checksum、hardware smoke pass、`internal-rc ready=true`をpassした。
+
+## Windows dirty public export records NTFS mode 0666
+
+- symptom: dirty-sourceのpublic export生成自体は完了するが、`PUBLIC_EXPORT_MANIFEST.json`のfile mode検査で`0644/0755/0777`以外を検出して停止する。Windowsでは多数または全fileがdecimal 438 (`0666`)になる。
+- cause: exporterはdestinationへ`chmod(0644/0755)`した後に`stat().st_mode`を読み戻してmanifestへ記録していた。Windowsの`chmod`はPOSIX execute/write bitsを表現せず、NTFS上の通常fileを`0666`として返す。またsource filesystem modeだけではGit indexの`100755` executableも復元できない。
+- detect: manifestの許可外modeをpathとともに列挙し、`git ls-files --stage`の`100644/100755/120000`と比較する。全fileが一様に`0666`ならcontent leakや個別permission driftではなくplatform mode変換を疑う。
+- recovery: tracked sourceはGit index modeを`0644/0755/0777`へ正規化し、copyとmanifestへ同じcanonical modeを渡す。生成fileとuntracked dirty fixtureだけfilesystem execute bitへfallbackする。Windowsの`chmod`結果をcanonical値として読み戻さない。
+- regression check: fixture repositoryで`git update-index --chmod=+x`したtracked fileが`0755`、通常tracked fileが`0644`になることを確認する。manifest writerへ明示`0755`を渡し、host OSに関係なく同modeを記録するtestとfull dirty public exportをpassさせる。
+- evidence: 2026-08-09 Windows execution hostのdirty closeout差分で1,271 fileが`0666`となり、既存allowed-mode assertionが検出した。Git index modeをcanonical source modeに変更後、mode gateを越えてprivacy/reference/documentation監査まで進むことを確認した。
+
+## POSIX shebang fake CLI is not executable on Windows
+
+- symptom: public exportのdirect test実行でfake CLIを使うtestだけがerror payloadを返し、期待したaudit payloadの`exists` keyがない。errorは`WinError 193`で、拡張子なしfixtureを有効なWin32 applicationとして実行できないと示す。
+- cause: fixtureは`#!/usr/bin/env python3`と`chmod(0755)`だけでfake `gh`を作っていた。POSIXでは直接実行できるが、Windowsはshebangとexecute bitをprocess launcherとして扱わない。
+- detect: testの期待keyだけでなくstdoutのerror schemaと`error`文字列を確認する。fake CLIの最初のAPI recordが生成されず`WinError 193`ならproduction API parsingではなくfixture launcherの問題である。
+- recovery: POSIXでは従来のshebang fixtureを使い、Windowsでは同じPython fixtureを`gh.py`へ置いて`gh.cmd` wrapperから現在のPython interpreterで起動する。production `--gh`処理やGitHub API contractは変更しない。
+- regression check: `script/test_public_repository_create.py`と`script/test_public_repository_policy.py`をWindowsとPOSIXの両方で直接実行し、create/auditとpolicy audit/applyのfake API recordsを確認する。public export testのdirect-import checkも通す。
+- evidence: 2026-08-09 Windows execution hostでmode/privacy gate修正後に初めて最終direct testまで進み、create testとpolicy testの同型failureを順に検出した。platform別launcherだけを修正し、fake API payloadとproduction toolは不変にした。
+
+## Cargo metadata UTF-8 is decoded with the Windows locale
+
+- symptom: third-party inventory generatorがWindowsで失敗し、subprocess reader threadにcp932 `UnicodeDecodeError`、後段に`json.loads(None)`のTypeErrorが出る。元のCargo commandが成功したか失敗したかも読めない。
+- cause: `cargo metadata --format-version 1`のUTF-8 stdout/stderrを`subprocess.run(..., text=True)`で読み、encodingを指定していなかった。Windowsの既定cp932がUTF-8のrepository pathやmetadataをdecodeできず、本来のCargo exitとstderrを隠した。
+- detect: generatorを単独実行してreader threadの最初のdecode errorを確認する。Cargo commandのexitやJSON schemaだけを追わず、`subprocess.run`のencodingとhost localeを確認する。UTF-8明示後に現れるoffline cache不足などは別の実エラーとして扱う。
+- recovery: Cargo subprocessへ`encoding="utf-8"`を明示する。decode errorを`errors=replace`で隠さず、invalid UTF-8はfailさせる。offline cache不足ならtracked lockfileに従って`cargo fetch --locked`を事前実行し、inventory生成自体の`--offline`は維持する。
+- regression check: `script/test_third_party_inventory.py`でgeneratorを実行し、56 components、review-required 0、tracked JSON/Markdown byte一致をWindowsとPOSIXで確認する。full public export内の同testも通す。
+- evidence: 2026-08-09 Windows execution hostのpublic export exported-checkで検出し、generator単独実行でcp932 decode errorを再現した。UTF-8明示後に本来の`serde_json` offline cache不足を確認し、`cargo fetch --locked`後に同じCargo.lock入力を読める状態へ復旧した。
+
+## Windows newline translation changes generated inventory bytes
+
+- symptom: third-party inventoryのJSON内容とMarkdown表示は一致するが、tracked fileとの`read_bytes()`比較だけがWindowsで失敗する。`git diff --no-index`は内容差分を表示せず、CRLF警告だけを出す。
+- cause: `Path.write_text()`の既定`newline=None`がWindows上でLFをCRLFへ変換した。release/compliance inventoryはhostに依存しないbyte identityを要求するため、意味が同じでも不合格になる。
+- detect: generated/tracked fileのbinary hash、CRLF count、`git diff --no-index`警告を比較する。JSON object差分がなく全行終端だけ異なる場合はschemaやdependency更新として扱わない。
+- recovery: generated JSONとMarkdownの`write_text`へ`newline="\n"`を明示する。tracked outputをWindows形式へ更新して差分を正当化しない。
+- regression check: `script/test_third_party_inventory.py`でgenerated JSON/Markdownとtracked filesを`read_bytes()`比較し、Windows/POSIX両方で56 components、review-required 0を確認する。
+- evidence: 2026-08-09、UTF-8 decodeとCargo cache復旧後のWindows生成物でcontent diff 0 / CRLFのみを検出した。LF固定後にtracked inventoryとのbyte identityを再検証した。
+
+## Windows validation host has no zstd CLI
+
+- symptom: public source archive testがcompression開始時に`FileNotFoundError: zstd`で停止する。source manifest、tar生成、Python runtimeは正常で、archive outputは完成していない。
+- cause: Windows hostとbundled workspace runtimeのPATHに`zstd.exe`がなく、release toolingが要求するexternal compressorを起動できない。Python標準libraryだけでは`.tar.zst` contractを満たさない。
+- detect: test前に`Get-Command zstd`または`zstd --version`を実行する。見つからない場合はarchive testを開始せずdependency不足として分ける。既存`.zst` artifactがあることをCLI availabilityの証明にしない。
+- recovery: system-wide installを必須にせず、official Zstandard releaseのpinned Win64 portable assetをignored validation directoryへ取得し、asset hashと`zstd --version`を記録する。そのtest processのPATHだけへbinary directoryを追加し、source archive testを省略せず再実行する。
+- regression check: source archiveのcreate、2回生成byte一致、decompress、tar member mode、manifest限定fileをportable CLIでpassさせる。CI/build hostは`zstd` preflightをrelease作業前に行う。
+- evidence: 2026-08-09 Windows execution hostではbundled runtimeにも`zstd`がなかった。official v1.5.7 Win64 ZIP SHA-256 `acb4e8111511749dc7a3ebedca9b04190e37a17afeb73f55d4425dbf0b90fad9`をignored directoryへ展開し、CLI v1.5.7をprocess-local PATHで使用した。
+
+## Windows bash validation receives an unconverted native absolute path
+
+- symptom: public export後のfresh-install文書testが`bash -n`で停止し、`/bin/bash: C:Users...setup_fresh_rpi.sh: No such file or directory`を返す。source scriptは存在し、同じcheckoutでrelative pathを使う`bash -n`は成功する。
+- cause: Windows Pythonの`Path`が生成したdrive letter付きbackslash absolute pathをWSLまたはGit Bashへそのままargvで渡した。bashはbackslashをescapeとして解釈し、Windows pathをPOSIX filesystem pathへ自動変換できない。続くshebang scriptの直接実行もWindows process launcherでは成立しない。
+- detect: failing argvと`cwd`を記録し、同じbashでrepository rootから`bash -n system/install/setup_fresh_rpi.sh`と`bash setup_fresh_rpi.sh --help`を比較する。relative invocationがpassする場合はscript syntaxやmissing fileではなくhost path境界として扱う。
+- recovery: bashをrepository rootの`cwd`で起動し、repository相対のforward-slash pathを渡す。Windowsだけhelp surfaceも`bash <script> --help`で起動し、POSIXではscriptを直接起動してexecutable contractの検査を維持する。
+- regression check: `script/test_fresh_install_docs.py`をWindowsとPOSIXで直接実行し、syntax、help、`--prepare-only` contractを確認する。full public exportのexported-checkでも同testを通す。
+- evidence: 2026-08-09 Windows execution hostのdirty public exportで、先行するmode、repository、inventory、archive、community-health検査を通過後に本failureを検出した。relative bash invocationへ変更し、単体testとfull exportを再実行した。
+
+## Windows public text replacement converts shell scripts to CRLF
+
+- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/Markdownを`non_lf_line_ending`で拒否する。
+- cause: exporterがprivacy/name置換対象を`read_text()`で読み、`write_text()`の既定`newline=None`で再保存した。呼び出す公開audit generatorも同じ既定を使っていた。Windowsでは正規化済み`\n`がCRLFへ変換され、repositoryの`.gitattributes` `eol=lf` contractをexport directory内で破った。
+- detect: sourceとexport先のbyte列についてCRLF countを比較し、置換対象だけが変化しているか確認する。bash syntax failureの`$'{\r''`をscript内容の構文変更として修正しない。
+- recovery: exporterと公開audit generatorが生成または置換するUTF-8 textは`newline="\n"`で保存する。既存export directoryは上書き昇格せずfresh directoryへ再生成し、全`.sh`とmanifest掲載textのCRLF 0を確認する。
+- regression check: `script/test_public_export.py`でexportされた全`.sh`にCRLFがないことをbyte検査し、export先のfresh-install、SBOM再生成byte一致、repository hygiene、source archive testを通す。WindowsとPOSIXの両hostで同じLF contractを維持する。
+- evidence: 2026-08-09 Windows execution hostでnative absolute path問題の修正後、export先`system/install/setup_fresh_rpi.sh`のline 29にCRLFを検出した。source text正規化後も`PUBLIC_ASSET_PROVENANCE.*`、`PUBLIC_PRIVACY_AUDIT.*`、`PUBLIC_REFERENCE_AUDIT.*`、`SBOM.cdx.json`の7 fileがraw manifest hygieneで拒否されたため、全公開text writerをLF固定してfresh exportで再検証した。
+
+## KiCad generators produce host-dependent line endings
+
+- symptom: exported sourceの`script/test_kicad_generation.py`が、再生成した`build/generated/keymap_matrix_analysis.json`とtracked fileのbyte不一致で停止する。JSONをparseした内容とgenerator exitは正常である。
+- cause: KiCad解析、report、Vial JSONのgeneratorがtext modeの既定newlineで出力していた。POSIXで作られたtracked LF bytesに対し、Windows再生成はCRLFとなり、source artifactのbyte再現性を満たさない。
+- detect: regenerated/tracked outputのSHA-256、CRLF count、parsed JSONまたはline単位diffを比較する。semantic diff 0かつCRLFだけが増えた場合はKiCad inputやassignment変更として扱わない。
+- recovery: KiCad-derived JSON/report writerを`newline="\n"`へ固定する。tracked outputをWindows形式へ更新せず、一時fixtureで再生成して全6 outputのbyte一致を確認する。
+- regression check: `python3 script/test_kicad_generation.py`をWindowsとPOSIXで実行し、matrix JSON/report、PCB JSON/report、Vial JSON/reportのexact byte一致とcanonical input欠落時のfail-closedを確認する。full public exportでも同testを実行する。
+- evidence: 2026-08-09 Windows execution hostのfull dirty public exportで、fresh-install検査を通過後に最初のmatrix JSONで検出した。KiCad系text writerをLF固定し、単体とfresh exportを再実行した。
+
+## Git UTF-8 output is decoded with the Windows locale
+
+- symptom: repository hygiene toolが日本語を含むcheckout pathで`git rev-parse --show-toplevel`を実行すると、Pythonの`UnicodeDecodeError: cp932`で停止する。toolのhygiene findingやsummaryは出力されない。
+- cause: Git for WindowsのUTF-8 stdoutを`subprocess.check_output(..., text=True)`で読み、encodingを明示していなかった。Windows既定cp932がUTF-8 byte列を途中で誤decodeした。
+- detect: tracebackの最初のdecode error、失敗したGit command、checkout absolute pathを確認する。repository findingやmanifest不整合より前に落ちる場合はGit出力encoding境界として扱う。
+- recovery: Gitのtext stdoutを`encoding="utf-8"`かつstrict error handlingで読む。pathをASCII directoryへ移して回避した結果だけを合格証跡にせず、元のnon-ASCII pathでtoolを再実行する。
+- regression check: `script/test_repository_hygiene.py`のGit fixture自体をnon-ASCII parent directoryへ置き、current checkout、Git fixture、manifest fixtureをWindowsとPOSIXでpassさせる。full public exportのexported-checkでも同testを通す。
+- evidence: 2026-08-09 Windows execution hostのpublic export後半でrepository hygiene testが停止し、private treeでtoolを直接実行して日本語checkout pathのcp932 decode errorを特定した。UTF-8明示後に同じpathで再検証した。
+
+## Repository hygiene scans smudged Windows line endings as artifact bytes
+
+- symptom: `.gitattributes`が`* text=auto eol=lf`でGit差分もないWindows checkoutに対し、repository hygieneが数百件の`non_lf_line_ending`とduplicate allowance不一致を報告する。Git blob同士はLFかつ同一である。
+- cause: hygiene inventoryとmodeはGit indexから取得する一方、contentだけをlegacy worktreeからraw readしていた。過去にcheckoutまたはgeneratorが残したCRLFはGit clean filterでLFへ戻るためcommit差分にならないが、raw scannerは配布artifactのCRとして数えた。
+- detect: finding対象のworktree CRLF count、`git hash-object <path>`、`git rev-parse HEAD:<path>`を比較する。normalized object IDが一致しraw bytesだけ異なる場合はsource変更ではなくsmudged worktree境界である。
+- recovery: global `eol=lf` policyを持つGit checkoutのtextだけCRLFをLFへメモリ上で正規化してscanする。binaryとbare CRは変更せず、Git metadataのないpublic manifest treeではraw bytes検査を維持する。exporterはUTF-8 textを物理LFへ正規化してfresh exportを作る。
+- regression check: Windows private checkoutのrepository hygiene、public export内のmanifest-based hygiene、全export shell CRLF 0、duplicate allowanceを同時にpassさせる。source provenanceはLF/CRLF worktree表現で同じselected snapshot digestになることを固定する。
+- evidence: 2026-08-09 Windows execution hostでUTF-8 path decode修正後、438件のCR findingと`config/boards/ver1.0/conf/vial.json`のfalse stale duplicateを検出した。Git object ID一致を確認し、Git checkoutとmanifest exportの検査境界を分離した。
+
+## Windows source syntax hygiene cannot invoke POSIX parsers
+
+- symptom: source syntax hygieneがWindowsで多数の`sh not found`とshell `exit 127`を報告し、parser stderrを読むthreadにもcp932 `UnicodeDecodeError`が出る。Python/JSON/TOML自体のsyntax findingではない。
+- cause: hostにはWSLまたはGit Bashの`bash`はあるが`sh.exe` aliasがなく、toolはWindows absolute pathをbashへ渡していた。parserのUTF-8 stderrもWindows既定localeでdecodeしていた。NodeとPyYAMLがprocess PATH/PYTHONPATHにない場合もfail-closedのmissing parserになる。
+- detect: `Get-Command bash,sh,node`、PyYAML import、failing parser argv、最初のdecode tracebackを確認する。repository rootから`bash -n relative/path.sh`がpassするならsource syntaxではなくlauncher境界である。
+- recovery: Windowsでは`sh` parser不在時だけ`bash`へfallbackし、shell sourceはrepository相対pathで渡す。parser出力はUTF-8 strictで読む。Node/PyYAMLはsystem-wide設定を変えず、検証processのPATH/PYTHONPATHへpinned runtimeを追加する。
+- regression check: `script/test_source_syntax_hygiene.py`をnon-ASCII checkout pathのWindowsとPOSIXで実行し、Python/JSON/TOML/YAML/shell/JavaScript/SVGのvalid/invalid fixtureを確認する。parserを除いたPATHではmissing parserを維持し、full public exportのexported-checkも通す。
+- evidence: 2026-08-09 Windows execution hostのfull public exportでrepository hygiene通過後に検出した。`sh`不在、13 shell absolute-path exit 127、Node不在、parser output cp932 decodeを分離し、process-local runtimeで再検証した。
+
+## POSIX deploy integration is launched as a Win32 executable
+
+- symptom: Windows public export testのgenerated-binary hygieneが`tools/deploy_rpi_rust.sh`起動時に`WinError 193`で停止する。またはexported helperの`--help`検査が同じ理由で開始しない。
+- cause: POSIX shebangとexecute bitを持つproduction shell scriptをWindows `CreateProcess`へ直接渡した。deploy integrationはPOSIX executable、PATH、rsync/ssh shim semanticsも検査するため、Win32 launcherだけ置換しても同じcontractにはならない。
+- detect: tracebackのCreateProcess対象、script shebang、実行予定fixtureのPOSIX依存を確認する。script内容のsyntax failureやgenerated binary cleanup failureと区別する。
+- recovery: Windowsではgenerated-binary cleanupの実動作とdeploy script静的契約を実行し、POSIX deploy integrationはLinux clean snapshotへ委ねる。副作用のないexported `--help` shell checkだけはWindowsで明示`bash`経由にする。production scriptへ`.cmd` wrapperを追加しない。
+- regression check: Windows full public exportをpassさせた上で、Linuxで`script/test_generated_binary_hygiene.py`を実行してfake rsync/ssh、retired cleanup、canonical binary集合、argument boundaryを完走する。exported shell helperのhelp surfaceも両hostで確認する。
+- evidence: 2026-08-09 Windows execution hostのfull public exportでsource syntax hygiene通過後に`deploy_rpi_rust.sh`のWinError 193を検出した。platform boundaryを明示し、POSIX integrationをLinux focused validationへ残した。
+
+## POSIX dotenv permission fixture cannot model mode 0600 on Windows
+
+- symptom: Windowsのlocal-environment hygiene testで`.env`へ`chmod(0600)`してもcanonical fixtureが`insecure_environment_mode`で拒否される。続くatomic rewriteではPOSIX ownership/fsync semanticsも同じ形では検証できない。
+- cause: Windows filesystemとPython `st_mode`はPOSIX owner/group/other permissionを表現せず、通常fileを`0666`相当として返す。production toolの`.env` mode gateをWindows test都合で緩めると秘密fileのfail-closed contractを壊す。
+- detect: fixture `stat.S_IMODE`、host OS、tool findingを確認する。assignment parseやvalue redaction failureではなく、canonical fixtureの最初のmode checkだけで止まることを確認する。
+- recovery: production mode/ownership/atomic rewrite gateは不変にする。Windowsではmode gate対象外の`.env.example` fixtureでparse、retired key、value非露出を検査し、`0600`、atomic replace、symlink、collision、duplicateを含む完全integrationはLinux clean snapshotで実行する。
+- regression check: Windows full public exportでredaction/parse subsetをpassし、Linuxで`script/test_local_environment_hygiene.py`を完走してmode保持、確認句、backupなし、race拒否を確認する。WindowsのsubsetをPOSIX mode passの代用にしない。
+- evidence: 2026-08-09 Windows execution hostのfull public exportでgenerated-binary境界通過後にcanonical `.env` fixtureが非zeroとなり、NTFS mode表現差を検出した。production gateを維持してplatform別test boundaryを明示した。
+
+## Host-observed license collector assumes a Debian host
+
+- symptom: Windowsでlicense evidence testを実行すると、collectorが`/etc/os-release`の`FileNotFoundError`で停止し、inventory summaryもevidence fileも生成しない。次段では`dpkg-query`不在も同様にprocess起動前失敗となる。
+- cause: evidence schemaは`host-observed-only`なのに、host identityとDebian package観測をLinux/Debian固定path・commandとして実装していた。componentが未観測である状態とcollector自体の故障を区別していなかった。
+- detect: tracebackがhost OS読取または`dpkg-query`探索で止まるか、inventory component parsing後のschema failureかを分ける。対象hostにcommandがない場合はpackageをmissingと推測せず`observed=false`とする。
+- recovery: `/etc/os-release`がないhostはPython `platform`情報を同じ3 fieldへ記録する。`dpkg-query`がないhostでは全Debian entryを名前付き`observed=false`で保持し、PyPI観測と総component数を継続する。Linuxでは従来どおりcopyright fileを採取する。
+- regression check: WindowsとLinuxで`script/test_license_evidence_tools.py`を実行し、schema、host field、Debian 21/Python 2のtotalを固定する。Linux focused validationでは実`dpkg-query`観測も維持し、Windowsのunobserved結果をLinux evidenceの代用にしない。
+- evidence: 2026-08-09 Windows execution hostのfull public exportでlocal environment hygiene通過後に検出した。host fallbackとcommand availabilityを明示し、LF固定evidenceを再生成した。

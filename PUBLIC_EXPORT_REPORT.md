@@ -1,18 +1,18 @@
 # HIDloom Public Export Report
 
-- Source base commit: `ac82e7675c29db3c1d35158a8ac5789455f07209`
+- Source base commit: `ef7dbe0760ff49682ef573f67d2e75124df07706`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `7e20c06b7ae3dc916c3f32ed89df20269459da6ab2543288281d8a035686041e`
-- Files: 1247
-- Tracked source paths: 1314
-- Private-only paths: 67
+- Selected source snapshot: `76a0c4f2da58575e4af8d64d871f1b748c779730d76e637ae228e2fe00619ebe`
+- Files: 1271
+- Tracked source paths: 1339
+- Private-only paths: 68
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1106
+- Warnings: 1129
 - Untriaged warnings: 0
-- Action-required warnings: 12
+- Action-required warnings: 17
 
 ## Findings
 
@@ -64,11 +64,11 @@
 - `warn` `legacy_project_name` `config/public-assets.json:165` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
 - `warn` `credential_word` `config/public-export-deny-patterns.json:56` `implementation_security_keyword` — `"pattern": "(?i)\\b(?:password|passwd|secret|token|ssid|psk)\\b"`
 - `warn` `linux_foundation_vid` `config/public-export-deny-patterns.json:64` `scanner_definition` — `"pattern": "(?i)0x1d6b"`
-- `warn` `credential_word` `config/public-export.json:106` `implementation_security_keyword` — `"macro/examples/password.kml",`
-- `warn` `credential_word` `config/public-export.json:251` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:257` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:303` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:329` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:107` `implementation_security_keyword` — `"macro/examples/password.kml",`
+- `warn` `credential_word` `config/public-export.json:252` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:258` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:304` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:332` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:194` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:195` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
@@ -207,12 +207,14 @@
 - `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:538` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:52` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:54` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:114` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
-- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:316` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:568` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:643` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:145` `documentation_security_keyword` — `- fixed candidate: source `0ebc76ddb`、core/profile `0.0.2043+git0ebc76ddb`、accepted manifest `f0eeb2eef76f0ba10439cd7690012c0d6de1948bb1f95c1e52b6e665a2a0a322`でsnapshot v2を再試験した。one-shot boot ID `7def`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:242` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:244` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:304` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
+- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:506` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:758` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:833` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:1278` `documentation_security_keyword` — `- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
@@ -224,8 +226,11 @@
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:900` `documentation_security_keyword` — `- allowlist 済みの非 secret operational flag の値`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:1169` `documentation_security_keyword` — `- HTTP transport を採用する場合の bearer token / OAuth 設計:`
 - `warn` `credential_word` `docs/ops/performance-tuning-plan.md:62` `documentation_security_keyword` — `Linux HID gadget の `/dev/hidgX` は、USB host の IN polling token を userspace callback として直接通知する interface ではない。`
+- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:605` `documentation_security_keyword` — `early token/treeはなく通常boot 4 hashは正しく、`keyboard_ready` 14.666秒、`usb->input` 0.686秒、`
+- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:659` `documentation_security_keyword` — `通常rebootを1回実行し、fallback boot ID `c0e63dd9-5ce0-4c9d-b613-d2e72f6f00e4`、early token/treeなし、`
+- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:702` `documentation_security_keyword` — ``749a1fad-577a-4bd5-8c7e-d1be8ecfbd04`へ戻した。early token/treeなし、keyboard ready 14.092秒、`
 - `warn` `credential_word` `docs/ops/script-safety-metadata.md:52` `documentation_security_keyword` — `- 危険 script の通常 run が backend 経由になった場合、API 側でも確認 token なし実行を拒否する。`
-- `warn` `credential_word` `docs/ops/test-script-inventory.md:86` `documentation_security_keyword` — `- public repositoryのvisibility/main、feature/merge設定、secret scanning、private vulnerability reporting、Actions allowlist、`
+- `warn` `credential_word` `docs/ops/test-script-inventory.md:91` `documentation_security_keyword` — `- public repositoryのvisibility/main、feature/merge設定、secret scanning、private vulnerability reporting、Actions allowlist、`
 - `warn` `credential_word` `docs/policy/decisions-spec.md:130` `documentation_security_keyword` — `- HTTP UI に Settings タブを追加し、Basic 認証 password を変更できるようにする。`
 - `warn` `credential_word` `docs/policy/decisions-spec.md:132` `documentation_security_keyword` — `- `config/default/config.json` の `settings.http_basic_auth.password` は `__HOSTNAME__` を許可し、`
 - `warn` `credential_word` `docs/policy/decisions-spec.md:133` `documentation_security_keyword` — `fresh install の初期 password は node 名 (`hostname` の出力) とする。`
@@ -1026,6 +1031,9 @@
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi/mouse_sch.kicad_sch:1372` `allowed_device_profile` — `(project "cqa02303v5rpi"`
 - `warn` `credential_word` `macro/README.md:65` `documentation_security_keyword` — `- `examples/password.kml` - パスワード入力デモ`
 - `warn` `credential_word` `script/start_touch_panel_browser.sh:234` `implementation_security_keyword` — `--password-store=basic \`
+- `warn` `credential_word` `script/test_boot_marker_baseline_tool.py:190` `test_fixture` — `outside = work / "outside-secret"`
+- `warn` `credential_word` `script/test_boot_marker_baseline_tool.py:491` `test_fixture` — `(race_outside / "outside-secret.txt").write_text(`
+- `warn` `credential_word` `script/test_boot_marker_baseline_tool.py:515` `test_fixture` — `assert not any(item.path.endswith("outside-secret.txt") for item in race_tree)`
 - `warn` `credential_word` `script/test_buildroot_fast_boot_assets.py:293` `test_fixture` — `assert 'filesystem_file(debugfs, rootfs, "/etc/passwd")' in m6_verify_text`
 - `warn` `credential_word` `script/test_current_status_doc.py:264` `test_fixture` — `assert config["settings"]["http_basic_auth"]["password"] == "__HOSTNAME__"`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:128` `test_fixture` — `assert 'id="settings-current-password"' in index_html`
@@ -1043,31 +1051,40 @@
 - `warn` `legacy_project_name` `script/test_kicad_generation.py:41` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",`
 - `warn` `legacy_project_name` `script/test_kicad_generation.py:54` `allowed_device_profile` — `(fixture / "kicad/cqa02303v5rpi/keymap.kicad_sch").unlink()`
 - `warn` `legacy_project_name` `script/test_kicad_generation.py:98` `allowed_device_profile` — `raw_leds = led_gen._extract_led_positions(str(ROOT / "kicad" / "cqa02303v5rpi" / "cqa02303v5rpi.kicad_pcb"))`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:51` `test_fixture` — `secret = "fixture-secret-value"`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:54` `test_fixture` — `f"HIDLOOM_HTTPD_BASIC_AUTH_PASSWORD={secret}\n"`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:61` `test_fixture` — `assert secret not in canonical.stdout + canonical.stderr`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:64` `test_fixture` — `env_file.write_text(f"{retired_key}={secret}\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:50` `test_fixture` — `secret = "fixture-secret-value"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:53` `test_fixture` — `f"HIDLOOM_HTTPD_BASIC_AUTH_PASSWORD={secret}\n",`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:59` `test_fixture` — `assert secret not in canonical.stdout + canonical.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:62` `test_fixture` — `f"{retired_key}={secret}\n",`
 - `warn` `credential_word` `script/test_local_environment_hygiene.py:69` `test_fixture` — `assert secret not in retired.stdout + retired.stderr`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:75` `test_fixture` — `f" export {retired_key} = {secret}\n"`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:84` `test_fixture` — `assert secret not in planned.stdout + planned.stderr`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:98` `test_fixture` — `assert secret not in wrong_confirmation.stdout + wrong_confirmation.stderr`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:119` `test_fixture` — `assert secret not in applied.stdout + applied.stderr`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:124` `test_fixture` — `f"{retired_key}={secret}\n"`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:132` `test_fixture` — `assert secret not in collision_plan.stdout + collision_plan.stderr`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:145` `test_fixture` — `env_file.write_text("not an assignment with secret material\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:149` `test_fixture` — `assert "secret material" not in malformed.stderr`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:158` `test_fixture` — `env_file.write_text(f"{retired_key}={secret}\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:162` `test_fixture` — `assert env_file.read_text(encoding="utf-8") == f"{retired_key}={secret}\n"`
-- `warn` `credential_word` `script/test_local_environment_hygiene.py:163` `test_fixture` — `assert secret not in insecure_plan.stdout + insecure_plan.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:82` `test_fixture` — `secret = "fixture-secret-value"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:85` `test_fixture` — `f"HIDLOOM_HTTPD_BASIC_AUTH_PASSWORD={secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:92` `test_fixture` — `assert secret not in canonical.stdout + canonical.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:95` `test_fixture` — `env_file.write_text(f"{retired_key}={secret}\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:100` `test_fixture` — `assert secret not in retired.stdout + retired.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:106` `test_fixture` — `f" export {retired_key} = {secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:115` `test_fixture` — `assert secret not in planned.stdout + planned.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:129` `test_fixture` — `assert secret not in wrong_confirmation.stdout + wrong_confirmation.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:150` `test_fixture` — `assert secret not in applied.stdout + applied.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:155` `test_fixture` — `f"{retired_key}={secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:163` `test_fixture` — `assert secret not in collision_plan.stdout + collision_plan.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:176` `test_fixture` — `env_file.write_text("not an assignment with secret material\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:180` `test_fixture` — `assert "secret material" not in malformed.stderr`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:189` `test_fixture` — `env_file.write_text(f"{retired_key}={secret}\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:193` `test_fixture` — `assert env_file.read_text(encoding="utf-8") == f"{retired_key}={secret}\n"`
+- `warn` `credential_word` `script/test_local_environment_hygiene.py:194` `test_fixture` — `assert secret not in insecure_plan.stdout + insecure_plan.stderr`
 - `warn` `credential_word` `script/test_logicd_wifi_actions.py:84` `test_fixture` — `wifi.status = WifiStatus(blocked=False, connected=True, ssid="HomeAP")`
 - `warn` `credential_word` `script/test_logicd_wifi_manager.py:56` `test_fixture` — `assert status.ssid == "HomeAP"`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1371` `test_fixture` — `(root / "done" / "task-a.result.md").write_text("secret body should not return", encoding="utf-8")`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1383` `test_fixture` — `assert "secret body" not in encoded`
-- `warn` `credential_word` `script/test_public_export.py:247` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:250` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:253` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:250` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:253` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:256` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
 - `warn` `credential_word` `script/test_public_usb_identity.py:326` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
+- `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:33` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`
+- `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:263` `pid_codes_migration_required` — `"idVendor": "0x1d6b",`
+- `warn` `linux_foundation_vid` `script/test_rpi_os_early_initramfs_tool.py:31` `pid_codes_migration_required` — `HIDLOOM_USB_VENDOR_ID=0x1D6B`
+- `warn` `linux_foundation_vid` `script/test_rpi_os_early_tryboot_tool.py:144` `pid_codes_migration_required` — `"""HIDLOOM_USB_VENDOR_ID=0x1d6b`
 - `warn` `credential_word` `script/test_text_send_safety.py:122` `test_fixture` — `assert not send_string_name_valid("../secret")`
 - `warn` `credential_word` `script/test_unicode_send_string_safety_design_doc.py:62` `test_fixture` — `assert "secret / password" in text`
 - `warn` `linux_foundation_vid` `script/test_usb_gadget_descriptor.py:49` `test_fixture` — `assert "`0x1d6b:0x0105`" in documentation`
@@ -1095,12 +1112,12 @@
 - `warn` `credential_word` `tools/buildroot_m6_verify.py:136` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
 - `warn` `credential_word` `tools/buildroot_m6_verify.py:139` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
 - `warn` `credential_word` `tools/buildroot_m6_verify.py:149` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
-- `warn` `credential_word` `tools/collect_license_evidence.py:90` `implementation_security_keyword` — `if not any(token in relative.name.upper() for token in ("LICENSE", "COPYING", "NOTICE")):`
+- `warn` `credential_word` `tools/collect_license_evidence.py:103` `implementation_security_keyword` — `if not any(token in relative.name.upper() for token in ("LICENSE", "COPYING", "NOTICE")):`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:122` `implementation_security_keyword` — `for token in tokens:`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:123` `implementation_security_keyword` — `if token.type != tokenize.COMMENT:`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:125` `implementation_security_keyword` — `line_number, column = token.start`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:127` `implementation_security_keyword` — `comments[offset : offset + len(token.string)] = token.string`
-- `warn` `credential_word` `tools/generate_third_party_inventory.py:80` `implementation_security_keyword` — `values.extend(token for token in lexer if re.fullmatch(r"[A-Za-z0-9_.+-]+", token))`
+- `warn` `credential_word` `tools/generate_third_party_inventory.py:81` `implementation_security_keyword` — `values.extend(token for token in lexer if re.fullmatch(r"[A-Za-z0-9_.+-]+", token))`
 - `warn` `linux_foundation_vid` `tools/hidloom_usb_gadget_fast/README.md:19` `pid_codes_migration_required` — `- `HIDLOOM_USB_VENDOR_ID` defaults to `0x1d6b``
 - `warn` `linux_foundation_vid` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:21` `pid_codes_migration_required` — `#define DEFAULT_VENDOR_ID "0x1d6b"`
 - `warn` `credential_word` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:306` `implementation_security_keyword` — `char *password = strchr(group_name, ':');`
@@ -1111,6 +1128,12 @@
 - `warn` `credential_word` `tools/morse_browser_smoke.py:222` `implementation_security_keyword` — `token = base64.b64encode(f"{args.username}:{args.password}".encode("utf-8")).decode("ascii")`
 - `warn` `credential_word` `tools/morse_browser_smoke.py:223` `implementation_security_keyword` — `client.call("Network.setExtraHTTPHeaders", {"headers": {"Authorization": f"Basic {token}"}})`
 - `warn` `credential_word` `tools/morse_browser_smoke.py:327` `implementation_security_keyword` — `parser.add_argument("--password", default="<keyboard-host>")`
+- `warn` `linux_foundation_vid` `tools/rpi_os_early_gadget_adopt.py:63` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`
+- `warn` `credential_word` `tools/rpi_os_early_initramfs.py:426` `implementation_security_keyword` — `if any(token in value for token in ("$", "`", "\\", "__HOSTNAME__")):`
+- `warn` `credential_word` `tools/rpi_os_early_tryboot.py:226` `implementation_security_keyword` — `if any(token.startswith("hidloom.early=") for token in tokens):`
+- `warn` `credential_word` `tools/rpi_os_early_tryboot.py:227` `implementation_security_keyword` — `raise StageError("cmdline.txt already contains a hidloom.early token")`
+- `warn` `credential_word` `tools/rpi_os_early_tryboot.py:228` `implementation_security_keyword` — `if any(token.startswith("panic=") for token in tokens):`
+- `warn` `credential_word` `tools/rpi_os_early_tryboot.py:229` `implementation_security_keyword` — `raise StageError("cmdline.txt already contains a panic token")`
 - `warn` `credential_word` `tools/sessiond_ctl.py:155` `implementation_security_keyword` — `for token in tokens:`
 - `warn` `credential_word` `tools/sessiond_ctl.py:157` `implementation_security_keyword` — `data = token.encode("ascii")`
 - `warn` `legacy_project_name` `windows-driver/README.md:9` `allowed_device_profile` — `- `build-sign-install-cqa-jis-inf-admin.ps1`: INF を package 化し、自己署名 catalog を作成して install する管理者用 script。`

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
+import stat
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -33,6 +35,7 @@ def run_with_input(command: list[str], stdin: str, *, timeout: float) -> Command
             command,
             input=stdin,
             text=True,
+            encoding="utf-8",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             timeout=timeout,
@@ -151,6 +154,24 @@ def local_scp_source(path: Path) -> str:
     return raw
 
 
+def bash_executable() -> str:
+    if os.name == "nt":
+        for candidate in (
+            r"C:\Program Files\Git\bin\bash.exe",
+            r"C:\Program Files\Git\usr\bin\bash.exe",
+            r"C:\Program Files (x86)\Git\bin\bash.exe",
+        ):
+            if Path(candidate).is_file():
+                return candidate
+    return "bash"
+
+
+def bash_local_path(path: Path) -> str:
+    if os.name == "nt":
+        return path.resolve().as_posix()
+    return str(path)
+
+
 def upload_text_file(target: str, remote_path: str, text: str, *, connect_timeout: int) -> CommandResult:
     remote_script = f"umask 077; cat > {shlex.quote(remote_path)}"
     return run_with_input(ssh_command(target, remote_script, connect_timeout=connect_timeout), text, timeout=30.0)
@@ -181,8 +202,15 @@ def remote_collect_script(remote_helper: str, remote_dir: str, prefix: str, *, n
     sudo_prefix = "sudo -n " if sudo else ""
     return f"""
 set -eu
+umask 077
 mkdir -p {out_dir}
-{sudo_prefix}python3 {helper} --output {out_dir}/{file_prefix}-boot-baseline.md{http_arg}
+report={out_dir}/{file_prefix}-boot-baseline.md
+report_tmp="${{report}}.tmp.$$"
+trap 'rm -f -- "$report_tmp"' EXIT HUP INT TERM
+{sudo_prefix}python3 {helper}{http_arg} > "$report_tmp"
+test -s "$report_tmp"
+mv -- "$report_tmp" "$report"
+trap - EXIT HUP INT TERM
 systemd-analyze --no-pager > {out_dir}/{file_prefix}-systemd-analyze.txt 2>&1 || true
 systemd-analyze blame --no-pager > {out_dir}/{file_prefix}-systemd-blame.txt 2>&1 || true
 systemd-analyze critical-chain --no-pager > {out_dir}/{file_prefix}-critical-chain.txt 2>&1 || true
@@ -253,7 +281,19 @@ def wait_for_ssh(
     raise SystemExit(f"timed out waiting for SSH after reboot: {target}{detail}")
 
 
-def copy_remote_dir(target: str, remote_dir: str, output_dir: Path, *, connect_timeout: int) -> None:
+def copy_remote_dir(
+    target: str,
+    remote_dir: str,
+    output_dir: Path,
+    *,
+    connect_timeout: int,
+    required_name: str | None = None,
+) -> None:
+    if required_name is not None and (
+        required_name in {"", ".", ".."}
+        or Path(required_name).name != required_name
+    ):
+        raise ValueError("required_name must be a safe basename")
     output_dir.mkdir(parents=True, exist_ok=True)
     ssh_parts = [
         "ssh",
@@ -265,8 +305,19 @@ def copy_remote_dir(target: str, remote_dir: str, output_dir: Path, *, connect_t
         f"tar -C {shlex.quote(remote_dir)} -cf - .",
     ]
     command = " ".join(shlex.quote(part) for part in ssh_parts)
-    command += f" | tar -C {shlex.quote(str(output_dir))} -xf -"
-    require_ok(run(["bash", "-lc", command], timeout=60.0))
+    command += f" | tar -C {shlex.quote(bash_local_path(output_dir))} -xf -"
+    require_ok(run([bash_executable(), "-o", "pipefail", "-c", command], timeout=60.0))
+    if required_name is None:
+        return
+    report_path = output_dir / required_name
+    try:
+        details = report_path.lstat()
+    except OSError as exc:
+        raise SystemExit(f"copied artifact is missing: {report_path}: {exc}") from exc
+    if not stat.S_ISREG(details.st_mode) or details.st_size <= 0:
+        raise SystemExit(
+            f"copied artifact is not a non-empty regular file: {report_path}"
+        )
 
 
 def read_first_line(path: Path) -> str:
@@ -296,6 +347,17 @@ def section_text(text: str, heading: str) -> str:
     return "\n".join(lines[start:end])
 
 
+def parse_report_metadata(report_text: str) -> dict[str, str]:
+    metadata: dict[str, str] = {}
+    for line in report_text.splitlines():
+        if line.startswith("## "):
+            break
+        match = re.fullmatch(r"- ([a-z0-9_]+): `(.*)`", line)
+        if match:
+            metadata[match.group(1)] = match.group(2)
+    return metadata
+
+
 def parse_boot_timeline(report_text: str) -> dict[str, str]:
     section = section_text(report_text, "## Readiness Timeline")
     markers: dict[str, str] = {}
@@ -311,7 +373,13 @@ def parse_boot_timeline(report_text: str) -> dict[str, str]:
             continue
         key = ""
         priority = 10
-        if kind == "usb-gadget" and label == "usb gadget configured":
+        if kind == "early-usb-ready" and label == "early gadget bound":
+            key = "early"
+            priority = 100
+        elif kind == "usb-adopt" and label == "early gadget adopted":
+            key = "adopt"
+            priority = 100
+        elif kind == "usb-gadget" and label == "usb gadget configured":
             key = "usb"
             priority = 90
         elif kind == "hid-broker" and label == "hidd broker active":
@@ -389,8 +457,8 @@ def render_summary(target: str, output_dir: Path) -> str:
         "",
         "## Samples",
         "",
-        "| sample | systemd-analyze | keyboard_ready | usb->input | hidd->input | input->ssh | input->network | usb | hidd | core | input | sockets | ssh | network | top blame | hidg | modules |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |",
+        "| sample | systemd-analyze | early_ready | adopt | early->adopt | keyboard_ready | early->input | usb->input | hidd->input | input->ssh | input->network | usb | hidd | core | input | sockets | ssh | network | udc | udc_state | accepted_manifest | tryboot_receipt | activation | top blame | hidg | modules |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for systemd_path in sorted(output_dir.glob("*-systemd-analyze.txt")):
         prefix = systemd_path.name[: -len("-systemd-analyze.txt")]
@@ -400,11 +468,13 @@ def render_summary(target: str, output_dir: Path) -> str:
         analyze = read_first_line(systemd_path)
         blame = read_first_line(blame_path)
         snapshot = snapshot_path.read_text(encoding="utf-8", errors="replace") if snapshot_path.exists() else ""
-        timeline = (
-            parse_boot_timeline(boot_report_path.read_text(encoding="utf-8", errors="replace"))
+        boot_report = (
+            boot_report_path.read_text(encoding="utf-8", errors="replace")
             if boot_report_path.exists()
-            else {}
+            else ""
         )
+        timeline = parse_boot_timeline(boot_report) if boot_report else {}
+        metadata = parse_report_metadata(boot_report) if boot_report else {}
         hidg = "present" if "/dev/hidg" in snapshot else "none"
         loaded_modules = section_text(snapshot, "## modules")
         modules = "loaded" if any(name in loaded_modules for name in ("dwc2", "libcomposite", "usb_f_hid", "g_hid")) else "not loaded"
@@ -414,7 +484,11 @@ def render_summary(target: str, output_dir: Path) -> str:
                 [
                     f"`{prefix}`",
                     analyze or "(no output)",
+                    timeline.get("early", ""),
+                    timeline.get("adopt", ""),
+                    timeline_delta(timeline, "early", "adopt"),
                     keyboard_ready_at(timeline),
+                    timeline_delta(timeline, "early", "input"),
                     timeline_delta(timeline, "usb", "input"),
                     timeline_delta(timeline, "hidd", "input"),
                     timeline_delta(timeline, "input", "ssh"),
@@ -426,6 +500,11 @@ def render_summary(target: str, output_dir: Path) -> str:
                     timeline.get("sockets", ""),
                     timeline.get("ssh", ""),
                     timeline.get("network", ""),
+                    metadata.get("gadget_udc_name", ""),
+                    metadata.get("gadget_udc_state", ""),
+                    metadata.get("accepted_manifest_sha256", ""),
+                    metadata.get("tryboot_receipt_sha256", ""),
+                    metadata.get("tryboot_activation", ""),
                     blame or "(no output)",
                     hidg,
                     modules,
@@ -519,10 +598,19 @@ def main() -> None:
             upload_helper(args.target, args.remote_helper, helper_text, connect_timeout=args.connect_timeout)
         script = remote_collect_script(args.remote_helper, remote_dir, prefix, no_http_status=args.no_http_status, sudo=args.sudo)
         require_ok(run(ssh_command(args.target, script, connect_timeout=args.connect_timeout), timeout=args.sample_timeout_sec))
+        # The default remote directory is under /tmp and can be cleared by the
+        # next reboot.  Copy every completed sample immediately instead of
+        # waiting until the whole reboot series has finished.
+        copy_remote_dir(
+            args.target,
+            remote_dir,
+            output_dir,
+            connect_timeout=args.connect_timeout,
+            required_name=f"{prefix}-boot-baseline.md",
+        )
         if sample != args.samples:
             time.sleep(args.interval_sec)
 
-    copy_remote_dir(args.target, remote_dir, output_dir, connect_timeout=args.connect_timeout)
     (output_dir / "summary.md").write_text(render_summary(args.target, output_dir), encoding="utf-8")
     print(output_dir)
 

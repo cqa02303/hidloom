@@ -1,7 +1,9 @@
 [Unit]
 Description=HIDloom USB HID Keyboard Gadget
 DefaultDependencies=no
+Requires=hidloom-early-input-handoff-prepare.service
 After=tmp.mount systemd-remount-fs.service systemd-modules-load.service
+After=hidloom-early-input-handoff-prepare.service
 Before=getty.target
 Before=shutdown.target
 Conflicts=shutdown.target
@@ -15,8 +17,8 @@ Environment=HIDLOOM_USB_GADGET_SETUP_BACKEND=native
 ExecStartPre=/bin/sh -c 'sleep "${HIDLOOM_USB_GADGET_START_DELAY_SEC:-1}"'
 ExecStartPre=/bin/sh -c 'modprobe libcomposite'
 ExecStartPre=/bin/sh -c 'mountpoint -q /sys/kernel/config || mount -t configfs configfs /sys/kernel/config'
-ExecStart=@HIDLOOM_REPO_ROOT@/setup_usb_gadget.sh
-ExecStop=/bin/bash -c 'echo "" > /sys/kernel/config/usb_gadget/cqa02303v5/UDC 2>/dev/null || true'
+ExecStart=@HIDLOOM_REPO_ROOT@/system/install/hidloom_usb_gadget_start.sh
+ExecStop=@HIDLOOM_REPO_ROOT@/system/install/hidloom_usb_gadget_start.sh --stop
 
 [Install]
 WantedBy=multi-user.target

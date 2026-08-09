@@ -255,7 +255,11 @@ def test_ctrl_switch_sends_release_to_old_and_new_targets() -> None:
         uidd = bind_receiver(tmp / "uidd_reports.sock")
         proc, paths = run_outputd(tmp, target="usb")
         response = ctrl_request(paths["ctrl"], {"t": "set_output_target", "target": "uinput"})
-        assert response == {"result": "ok", "target": "uinput"}
+        assert response == {
+            "result": "ok",
+            "target": "uinput",
+            "release": {"attempted": 4, "delivered": 4, "errors": 0},
+        }
         assert recv_all(usb, 2) == [null_keyboard, null_us_sub]
         assert recv_all(uidd, 2) == [null_keyboard, null_us_sub]
         send_frame(paths["report"], frame)
@@ -265,6 +269,34 @@ def test_ctrl_switch_sends_release_to_old_and_new_targets() -> None:
     assert status["target"] == "uinput"
     assert status["counters"]["release_frames"] == 4
     assert status["counters"]["frames_to_uinput"] == 1
+
+
+def test_ctrl_switch_keeps_old_target_when_release_delivery_fails() -> None:
+    frame = encode_hid_report_request(KIND_KEYBOARD, bytes.fromhex("0000050000000000"))
+    null_keyboard = encode_hid_report_request(KIND_KEYBOARD, bytes(8))
+    null_us_sub = encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes(8))
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+        usb = bind_receiver(tmp / "usbd_hid_reports.sock")
+        proc, paths = run_outputd(tmp, target="usb")
+        response = ctrl_request(paths["ctrl"], {"t": "set_output_target", "target": "uinput"})
+        assert response == {
+            "result": "error",
+            "error": "release_delivery_failed",
+            "target": "usb",
+            "release": {"attempted": 4, "delivered": 2, "errors": 2},
+        }
+        assert recv_all(usb, 2) == [null_keyboard, null_us_sub]
+        live_status = ctrl_request(paths["ctrl"], {"t": "status"})
+        assert live_status["target"] == "usb"
+        assert live_status["counters"]["release_errors"] == 2
+        send_frame(paths["report"], frame)
+        assert recv_all(usb, 1) == [frame]
+        wait_proc(proc)
+        status = json.loads(paths["status"].read_text(encoding="utf-8"))
+    assert status["target"] == "usb"
+    assert status["counters"]["frames_to_usb"] == 1
+    assert status["counters"]["frames_to_uinput"] == 0
 
 
 def test_ctrl_status_reports_schema_and_socket_paths() -> None:
@@ -303,7 +335,10 @@ def test_ctrl_release_all_sends_null_reports_to_current_target() -> None:
         uidd = bind_receiver(tmp / "uidd_reports.sock")
         proc, paths = run_outputd(tmp, target="uinput")
         response = ctrl_request(paths["ctrl"], {"t": "release_all"})
-        assert response == {"result": "ok"}
+        assert response == {
+            "result": "ok",
+            "release": {"attempted": 2, "delivered": 2, "errors": 0},
+        }
         assert recv_all(uidd, 2) == [null_keyboard, null_us_sub]
         usb.settimeout(0.05)
         try:
@@ -317,7 +352,27 @@ def test_ctrl_release_all_sends_null_reports_to_current_target() -> None:
         status = json.loads(paths["status"].read_text(encoding="utf-8"))
     assert status["target"] == "uinput"
     assert status["counters"]["release_frames"] == 2
+    assert status["counters"]["release_errors"] == 0
     assert status["counters"]["frames_to_uinput"] == 1
+
+
+def test_ctrl_release_all_reports_delivery_failures() -> None:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp = Path(tmpdir)
+        proc, paths = run_outputd(tmp, target="usb")
+        response = ctrl_request(paths["ctrl"], {"t": "release_all"})
+        assert response == {
+            "result": "error",
+            "error": "release_delivery_failed",
+            "release": {"attempted": 2, "delivered": 0, "errors": 2},
+        }
+        live_status = ctrl_request(paths["ctrl"], {"t": "status"})
+        assert live_status["last_error"].startswith("failed to forward to ")
+        assert live_status["counters"]["release_frames"] == 0
+        assert live_status["counters"]["release_errors"] == 2
+        assert live_status["counters"]["forward_errors"] == 2
+        send_frame(paths["report"], b"invalid")
+        wait_proc(proc)
 
 
 def test_console_switch_login_sequence_round_trip() -> None:
@@ -343,7 +398,11 @@ def test_console_switch_login_sequence_round_trip() -> None:
 
         assert ctrl_request(
             outputd_paths["ctrl"], {"t": "set_output_target", "target": "uinput"}
-        ) == {"result": "ok", "target": "uinput"}
+        ) == {
+            "result": "ok",
+            "target": "uinput",
+            "release": {"attempted": 4, "delivered": 4, "errors": 0},
+        }
         assert recv_all(usb, 2) == [null_keyboard, null_us_sub]
         for frame in login_frames:
             send_frame(outputd_paths["report"], frame)
@@ -354,7 +413,11 @@ def test_console_switch_login_sequence_round_trip() -> None:
 
         assert ctrl_request(
             outputd_paths["ctrl"], {"t": "set_output_target", "target": "usb"}
-        ) == {"result": "ok", "target": "usb"}
+        ) == {
+            "result": "ok",
+            "target": "usb",
+            "release": {"attempted": 4, "delivered": 4, "errors": 0},
+        }
         assert recv_all(usb, 2) == [null_keyboard, null_us_sub]
         send_frame(outputd_paths["report"], final_usb)
         assert recv_all(usb, 1) == [final_usb]
@@ -396,8 +459,10 @@ def main() -> None:
     test_uinput_target_forwards_to_uidd_socket()
     test_bt_target_forwards_to_btd_socket()
     test_ctrl_switch_sends_release_to_old_and_new_targets()
+    test_ctrl_switch_keeps_old_target_when_release_delivery_fails()
     test_ctrl_status_reports_schema_and_socket_paths()
     test_ctrl_release_all_sends_null_reports_to_current_target()
+    test_ctrl_release_all_reports_delivery_failures()
     test_console_switch_login_sequence_round_trip()
     print("ok: hidloom-outputd native report router")
 

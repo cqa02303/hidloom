@@ -51,7 +51,8 @@ def repository_payload(contract: dict[str, object]) -> dict[str, object]:
 
 
 def write_fake_gh(path: Path) -> None:
-    path.write_text(
+    script_path = path.with_suffix(".py") if os.name == "nt" else path
+    script_path.write_text(
         """#!/usr/bin/env python3
 import json
 import os
@@ -114,7 +115,12 @@ else:
 """,
         encoding="utf-8",
     )
-    path.chmod(0o755)
+    script_path.chmod(0o755)
+    if os.name == "nt":
+        path.write_text(
+            f'@echo off\n"{sys.executable}" "%~dp0{script_path.name}" %*\n',
+            encoding="utf-8",
+        )
 
 
 def run_tool(
@@ -263,7 +269,7 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory() as temporary:
         workspace = Path(temporary)
-        fake_gh = workspace / "gh"
+        fake_gh = workspace / ("gh.cmd" if os.name == "nt" else "gh")
         state_path = workspace / "state.json"
         log = workspace / "gh.ndjson"
         write_fake_gh(fake_gh)

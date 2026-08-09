@@ -10,7 +10,13 @@ import sys
 
 sys.dont_write_bytecode = True
 
-from public_release_bundle import deterministic_tar, load_json, sha256, validate_export_manifest
+from public_release_bundle import (
+    deterministic_tar,
+    export_manifest_modes,
+    load_json,
+    sha256,
+    validate_export_manifest,
+)
 
 
 def outside_source(source: Path, path: Path) -> None:
@@ -43,7 +49,7 @@ def main() -> None:
     report = load_json(source / "PUBLIC_EXPORT_REPORT.json")
     source_provenance = report["source_provenance"]
     archive.parent.mkdir(parents=True, exist_ok=True)
-    deterministic_tar(source, archive, args.root_name, paths)
+    deterministic_tar(source, archive, args.root_name, paths, export_manifest_modes(source))
     payload = {
         "schema": "hidloom.public-source-archive.v2",
         "source_commit": source_provenance["base_commit"],

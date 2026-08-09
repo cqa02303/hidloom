@@ -43,6 +43,8 @@ DAEMON_DIR_TO_SPEC = {
 SYSTEMD_UNIT_TO_SPEC = {
     "btd.service": "btd",
     "hidloom-bluetooth-unblock.service": "service-helpers",
+    "hidloom-early-input-handoff-finalize.service": "service-helpers",
+    "hidloom-early-input-handoff-prepare.service": "service-helpers",
     "hidloom-hidd.service": "hidd",
     "hidloom-late-services.service": "service-helpers",
     "hidloom-logicd-core.service": "logicd-core-rs",

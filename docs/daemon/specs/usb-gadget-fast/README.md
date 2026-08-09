@@ -18,6 +18,7 @@
 
 - 実装: `tools/hidloom_usb_gadget_fast/`
 - systemd: `system/systemd/hidloom-usb-gadget.service`
+- systemd start wrapper: `system/install/hidloom_usb_gadget_start.sh`
 - fallback: `setup_usb_gadget.sh`
 
 ## 実装時に守る条件
@@ -29,6 +30,8 @@
 - optional custom HID / Windows IME diagnostic interface は default で追加しない。
 - setup 失敗時は既存 gadget を壊す前に検出できる probe / fallback を優先する。
 - `ExecStop` で UDC detach できることを維持する。
+- early-initramfsからbound済みのgadgetはnative helperへ渡さず、read-only adopterが完全一致を証明した時だけそのまま維持する。
+- normal service restartでは`ExecStop` wrapperがUDCを空にし、early markerが正規ならruntime contractとの対応とstable-unboundを再確認してmarkerだけを削除する。次の`ExecStart`はmarkerless stable-unbound treeだけ従来helperによる再作成を許可する。
 
 ## テスト観点
 
@@ -38,6 +41,8 @@
   - shell fallback との互換。
 - `script/test_usb_gadget_descriptor.py`
   - descriptor / report length。
+- `script/test_rpi_os_early_gadget_adopt_tool.py` / `script/test_rpi_os_early_gadget_handoff_wrapper.py`
+  - configfs不変のadopt、stop時のmarker限定cleanup、restart recreate、bound不一致のfail-closed routing。
 - 実機 smoke
   - `/dev/hidg0` / `/dev/hidg1` / `/dev/hidg2` が期待通り作られる。
   - Linux / Windows host で keyboard / mouse / consumer / Vial Raw HID が見える。

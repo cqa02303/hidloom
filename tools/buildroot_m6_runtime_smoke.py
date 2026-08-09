@@ -206,9 +206,13 @@ def smoke_console_route(qemu: str, target: Path, temporary: Path) -> None:
 
         null_keyboard = encode_frame(KIND_KEYBOARD, bytes(8))
         null_us_sub = encode_frame(KIND_US_SUB_KEYBOARD, bytes(8))
-        if ctrl_request(outputd_ctrl_socket, {"t": "set_output_target", "target": "uinput"}) != {
+        switch_to_uinput = ctrl_request(
+            outputd_ctrl_socket, {"t": "set_output_target", "target": "uinput"}
+        )
+        if switch_to_uinput != {
             "result": "ok",
             "target": "uinput",
+            "release": {"attempted": 4, "delivered": 4, "errors": 0},
         }:
             raise SystemExit("M6 ARM outputd rejected the uinput target")
         if [usb.recv(128), usb.recv(128)] != [null_keyboard, null_us_sub]:
@@ -228,9 +232,13 @@ def smoke_console_route(qemu: str, target: Path, temporary: Path) -> None:
             lambda status: status["counters"]["frames_received"] >= 8,
         )
 
-        if ctrl_request(outputd_ctrl_socket, {"t": "set_output_target", "target": "usb"}) != {
+        switch_to_usb = ctrl_request(
+            outputd_ctrl_socket, {"t": "set_output_target", "target": "usb"}
+        )
+        if switch_to_usb != {
             "result": "ok",
             "target": "usb",
+            "release": {"attempted": 4, "delivered": 4, "errors": 0},
         }:
             raise SystemExit("M6 ARM outputd rejected the USB return target")
         if [usb.recv(128), usb.recv(128)] != [null_keyboard, null_us_sub]:

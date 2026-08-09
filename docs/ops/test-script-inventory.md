@@ -1,6 +1,6 @@
 # Test Script Inventory
 
-更新日: 2026-07-20
+更新日: 2026-08-08
 
 `script/test_*.py` と周辺手動ツールの棚卸し方針です。現時点ではテストが多いこと自体を
 安全側とみなし、削除より分類を優先します。
@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 338 本程度あり、標準 canonical suite は 226 entrypoints を実行する。
+現在 `script/test_*.py` は 348 本程度あり、標準 canonical suite は 236 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints
@@ -59,6 +59,11 @@
 - `script/test_real_device_smoke_cleanup.py`
   - 実機 smoke が matrix press を送ったまま pressed state を残さないよう、runtime smoke script の
     release cleanup を静的に固定する。
+- `script/test_windows_usb_enumeration_watch_tool.py`
+  - Windows-native watcherの必須VID/PID、3つのexact HID child prefix、PresentOnly baseline/final、
+    target PnP instance operation timing、poll間remove/re-add、unrelated event除外、bundle単位atomic report、
+    delayed event delivery順、initial disconnect / first re-add / post-ready disconnect判定、read-only境界を
+    Linux fixtureで固定する。
 - `script/test_logicd_core_active_owner_smoke_tool.py`
   - `tools/logicd_core_active_owner_smoke.py` の dry-run guard、systemd drop-in、synthetic matrix tap、
     restore path を静的に固定する。
@@ -294,6 +299,34 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
   - `setup_usb_gadget.sh` の keyboard / raw HID report descriptor が Host LED Output Report と Raw HID IN/OUT を含むことを確認する。
 - `script/test_usb_gadget_fast_helper.py`
   - native USB gadget fast helper の descriptor 配列が shell fallback と一致し、JSON / regex parsing を持たないことを確認する。
+- `script/test_rpi_os_early_initramfs_tool.py`
+  - Raspberry Pi OSのuncompressed early-newcとzstd mainの境界へdeterministic E1 overlayを挿入し、
+    prefix / suffix不変、2 build再現性、deep展開、ARM64 helper/module、profile/identity/descriptor contractを固定する。
+  - wrong ABI / architecture / dependency / descriptor、dynamic helper、unsafe newc、unknown base、path collision、
+    image / manifest tamperをfail closedで拒否する。
+- `script/test_rpi_os_early_boot_control.py`
+  - exact source/kernel/profile artifactの`verify`、明示`enable`、非reboot `try-once`、`disable`、
+    kernel mismatch guard、`rollback`と既存boot file ownership保持をfixtureで確認する。
+  - wrong source、artifact/config drift、boot領域の32 MiB reserve不足を変更前にfail closedで拒否する。
+- `script/test_rpi_os_early_tryboot_tool.py`
+  - accepted E1 manifest、exact alternate kernel、通常boot input hashを一つのdeterministic staging treeへ固定し、
+    完全な`tryboot.txt`、alternate cmdline、98文字上限、atomic生成と独立verifyを確認する。
+  - default kernel名、active include、kernel/release不一致、TOCTOU、`/boot`への直接stage、tamperを拒否する。
+- `script/test_rpi_os_early_tryboot_place_tool.py`
+  - verified stageを既定boot無変更のdisabled状態で配置し、normal input backup、atomic copy、receipt、
+    preflight / installed verify、既存targetやunsafe boot構成のfail-closed境界を固定する。
+- `script/test_rpi_os_early_gadget_adopt_tool.py`
+  - normal gadget、package/profile/helper、identity、全HID descriptor、configfs snapshotをcaptureし、
+    early markerと完全一致する時だけread-only adoptする3値判定を固定する。
+  - markerなしで安定してUDCが空のrestart residueだけcreateを許可し、bound markerless gadget、
+    symlink、metadata / contract不一致を変更せず拒否する。
+- `script/test_rpi_os_early_gadget_handoff_wrapper.py`
+  - fresh normal bootのPythonなしcreate、verified early gadgetのadopt、安定unbound residueのcreate、
+    verifierエラー時のfail-closed routingをsystemd wrapperへ固定する。
+  - ExecStopの安全なUDC unbind、検証済みearly markerだけのcleanup、続くstartでの通常create復旧を確認する。
+- `script/test_low_memory_install_preflight_tool.py`
+  - Pi Zero 2 Wのpackage actual前に`MemAvailable` / `SwapFree`、`dpkg --audit`、package process / lockを
+    read-only確認するgateの境界値、fixture、fail-closed JSONを固定する。
 - `script/test_hidloom_paths.py`
   - repository default config、board profile、runtime `/mnt/p3`、runtime script path の helper が現行 layout と環境変数 override の両方を返すことを確認する。
 - `script/test_command_help_surfaces.py`
@@ -379,7 +412,7 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
 - `script/test_test_inventory_doc.py`
 - `script/test_current_status_doc.py`
 - `script/test_current_todo_completion.py`
-  - `TODO_PRIORITY.md` の未完了キューが空で、直近フォーカスが自動完了ゲートと Current Status へ移っていることを確認する。
+  - `TODO_PRIORITY.md` のearly-initramfs E0/E1完了とE2-E6 active phase、Current Statusの判断境界を確認する。
 - `script/test_docs_archive.py`
 - `script/test_docs_reorg.py`
   - `docs/REORG_PROGRESS.md`、`docs/research/`、移動済み調査メモへの導線、旧ファイル名参照の混入防止を固定する。

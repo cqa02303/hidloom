@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
 TAG=
 REPOSITORY=${HIDLOOM_RELEASE_REPOSITORY:-cqa02303/hidloom}
 PROFILE=${HIDLOOM_RELEASE_PROFILE:-keyboard-ver1}
@@ -10,6 +12,7 @@ DRY_RUN=0
 INSTALL=0
 APT=0
 KEEP=0
+LOW_MEMORY_PREFLIGHT=0
 
 usage() {
     cat <<'EOF'
@@ -30,6 +33,8 @@ Options:
   --dry-run              run remote install simulation/check
   --install              install both packages and apply the profile
   --apt                  use apt-get for dependency-aware dry-run/install
+  --low-memory-preflight run the read-only low-memory gate immediately before
+                         apt-get; requires --install --apt
   --keep                 keep the temporary download directory
   -h, --help             show this help
 
@@ -87,6 +92,10 @@ while [ "$#" -gt 0 ]; do
             APT=1
             shift
             ;;
+        --low-memory-preflight)
+            LOW_MEMORY_PREFLIGHT=1
+            shift
+            ;;
         --keep)
             KEEP=1
             shift
@@ -102,6 +111,11 @@ while [ "$#" -gt 0 ]; do
             ;;
     esac
 done
+
+if [ "$LOW_MEMORY_PREFLIGHT" -eq 1 ] && { [ "$INSTALL" -ne 1 ] || [ "$APT" -ne 1 ]; }; then
+    echo "--low-memory-preflight requires --install --apt" >&2
+    exit 2
+fi
 
 require_cmd() {
     if ! command -v "$1" >/dev/null 2>&1; then
@@ -363,6 +377,18 @@ EOF
     exit 0
 fi
 
+remote_preflight=
+preflight_sha256=
+if [ "$LOW_MEMORY_PREFLIGHT" -eq 1 ]; then
+    preflight_helper="$SCRIPT_DIR/low_memory_install_preflight.py"
+    if [ ! -f "$preflight_helper" ]; then
+        echo "low-memory preflight helper not found: $preflight_helper" >&2
+        exit 1
+    fi
+    preflight_sha256=$(sha256sum "$preflight_helper" | sed 's/[[:space:]].*$//')
+    remote_preflight="/tmp/hidloom-low-memory-install-preflight-$preflight_sha256.py"
+fi
+
 if [ "$MODE" = split ]; then
     remote_core="/tmp/$CORE_ASSET"
     remote_profile="/tmp/$PROFILE_ASSET"
@@ -376,6 +402,11 @@ else
     scp "$LEGACY_PACKAGE" "$REMOTE:$remote_legacy"
     remote_packages="'$remote_legacy'"
     query_packages="'$LEGACY_NAME'"
+fi
+
+if [ "$LOW_MEMORY_PREFLIGHT" -eq 1 ]; then
+    echo "copying low-memory preflight -> $REMOTE:$remote_preflight"
+    scp "$preflight_helper" "$REMOTE:$remote_preflight"
 fi
 
 ssh "$REMOTE" "
@@ -415,6 +446,15 @@ ssh "$REMOTE" "
     fi
     if [ '$INSTALL' -eq 1 ]; then
         if [ '$APT' -eq 1 ]; then
+            if [ '$LOW_MEMORY_PREFLIGHT' -eq 1 ]; then
+                echo 'low-memory install preflight:'
+                actual_preflight_sha256=\$(sha256sum '$remote_preflight' | sed 's/[[:space:]].*\$//')
+                if [ "\$actual_preflight_sha256" != '$preflight_sha256' ]; then
+                    echo 'low-memory preflight checksum mismatch' >&2
+                    exit 1
+                fi
+                python3 '$remote_preflight'
+            fi
             echo 'apt install:'
             sudo apt-get install -y $remote_packages
         else

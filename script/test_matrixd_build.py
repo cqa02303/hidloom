@@ -27,6 +27,10 @@ def main() -> None:
     assert "matrix tap" in source
     assert "startup_quiet_ms" in source
     assert "startup_quiet_until_us" in source
+    assert 'getenv("MATRIXD_STATUS_PATH")' in source
+    assert "matrixd.status.v1" in source
+    assert "write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 1)" in source
+    assert "write_runtime_status(status_path, &cfg, 0, 0, 0)" in source
 
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / f"matrixd{sysconfig.get_config_var('EXE') or ''}"

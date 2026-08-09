@@ -50,6 +50,17 @@ mode は legacy / recovery 用として残していますが、通常更新で�
 fresh Raspberry Pi OS は、先に `setup_fresh_rpi.sh --prepare-only` で boot/module と
 device permission を準備し、実機で project binary をbuildせずsplit packageをinstallします。
 
+Pi Zero 2 WではAPT simulation後、actual直前にread-only low-memory gateを通します。
+
+```bash
+ssh <device> 'python3 -' < tools/package/low_memory_install_preflight.py
+```
+
+既定は`MemAvailable >= 128 MiB`、`SwapFree >= 256 MiB`かつ`SwapTotalの75%`、`dpkg --audit`空、
+APT / dpkg / mandb processとpackage lock holderなしです。stdout JSONの`ready=true`と終了code 0を
+確認してからactualへ進みます。fail時は`swapoff`せずactualを開始せず、clean reboot後にcandidate checksum、
+package state、simulation、gateを取り直します。このtoolはpackage、service、lock、swapを変更しません。
+
 標準キーボード用の流れ:
 
 ```bash
@@ -469,6 +480,24 @@ make release-deb-deploy RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=01
 make release-deb-deploy RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=02
 ```
 
+Pi Zero 2 WではMake targetの代わりにscriptへ`--low-memory-preflight`を明示し、actual直前の
+memory / package state gateを同じSSH shellへ組み込みます。
+
+```bash
+tools/package/deploy_github_release_deb.sh \
+  --tag v0.0.<git_rev_count>+git<git_sha> \
+  --host <device> \
+  --install \
+  --low-memory-preflight
+```
+
+このoptionは`--install --apt`の時だけ有効です。wrapperでは`--install`を指定するとAPT modeが
+自動的に選ばれます。helperをpackageと同じ`/tmp`へcopyし、host側SHA-256との一致をremoteで
+確認した後、単一の`apt-get install -y <core> <profile>`の直前にread-only gateを実行します。
+gateが不合格、実行不能、またはchecksum不一致ならAPT、profile apply、unit switch、smokeへは
+進みません。core/profileは従来どおり同じAPT transactionで、profile applyはAPT完了後の別commandです。
+swapなし・極小swapも保守的に拒否するPi Zero 2 W向けoptionなので、別classのdeviceへ暗黙適用はしません。
+
 fresh OS や一時 IP の個体に入れる時は、`DEVICE` の代わりに explicit remote を指定できます。
 
 ```bash
@@ -517,6 +546,26 @@ package unit へ移行し、`/home/pi/hidloom` を
 `/home/pi/hidloom.disabled-20260627T153347` へリネーム退避しました。
 `-02` は main input device のため、この回は HID live smoke を省略し、
 read-only verify と HTTP status で確認しました。
+
+## Optional Raspberry Pi OS Early-Boot Package
+
+`build_early_boot_deb.sh` builds the optional arm64 `hidloom-early-boot` control package from a reviewed,
+installed-disabled E3 payload. Run it on an x86_64 Linux/WSL host; do not build the image on the target.
+
+```bash
+tools/package/build_early_boot_deb.sh \
+  --payload-root build/artifacts/<candidate>/payload \
+  --version 0.0.<rev>+git<sha> \
+  --out-dir build/artifacts/<candidate>/package \
+  --work-root /tmp/hidloom-early-boot-deb-work
+```
+
+The package depends on the exact `hidloom-core` and profile package version. Its postinst verifies package
+content but never changes `/boot` or the default boot config. Begin with `dpkg -i`, then run
+`sudo hidloom-early-boot verify --live` and `sudo hidloom-early-boot status`. Activation requires the full source SHA. Use the Windows USB
+watcher before every reboot. Run `disable` before removal and `rollback` to restore the atomic config backup
+and remove only package-created payloads. Kernel postinst only applies the mismatch guard; rebuild a new exact
+artifact on the cross-host before enabling a new kernel. See `docs/ops/rpi-os-early-initramfs-experiment.md`.
 
 ## Retiring Device Checkouts
 

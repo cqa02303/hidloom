@@ -58,6 +58,8 @@ fi
 units="
 btd.service
 hidloom-bluetooth-unblock.service
+hidloom-early-input-handoff-prepare.service
+hidloom-early-input-handoff-finalize.service
 hidloom-hidd.service
 hidloom-late-services.service
 hidloom-late-services.timer

@@ -2,6 +2,7 @@
 """Regression checks for package-first fresh install and release guides."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -45,15 +46,22 @@ def main() -> None:
     ).read_text(encoding="utf-8")
 
     syntax = subprocess.run(
-        ["bash", "-n", str(setup_path)],
+        ["bash", "-n", "system/install/setup_fresh_rpi.sh"],
+        cwd=ROOT,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=False,
     )
     assert syntax.returncode == 0, syntax.stderr
+    help_command = (
+        ["bash", "setup_fresh_rpi.sh", "--help"]
+        if os.name == "nt"
+        else [str(ROOT / "setup_fresh_rpi.sh"), "--help"]
+    )
     help_result = subprocess.run(
-        [str(ROOT / "setup_fresh_rpi.sh"), "--help"],
+        help_command,
+        cwd=ROOT,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,

@@ -119,7 +119,7 @@ ssh "$REMOTE" "
     dpkg-deb --info '$remote_deb'
     echo
     echo 'package key paths:'
-    dpkg-deb --contents '$remote_deb' | grep -E './usr/lib/hidloom/bin/(hidloom-hidd|hidloom-usb-gadget-fast)|./usr/lib/hidloom/daemon/matrixd/matrixd|./lib/systemd/system/(hidloom-hidd|httpd|i2cd|ledd|btd|viald|hidloom-usb-gadget).service|./var/lib/hidloom/package-manifest.json' || true
+    dpkg-deb --contents '$remote_deb' | grep -E './usr/lib/hidloom/bin/(hidloom-hidd|hidloom-usb-gadget-fast)|./usr/lib/hidloom/daemon/matrixd/matrixd|./usr/lib/hidloom/tools/rpi_os_early_input_handoff.py|./lib/systemd/system/(hidloom-early-input-handoff-(prepare|finalize)|hidloom-hidd|httpd|i2cd|ledd|btd|viald|hidloom-usb-gadget).service|./var/lib/hidloom/package-manifest.json' || true
     echo
     if [ '$INSTALL' -eq 1 ]; then
         if [ '$APT' -eq 1 ]; then
@@ -141,6 +141,8 @@ ssh "$REMOTE" "
     echo
     echo 'systemd unit shadow check:'
     for unit in \
+        hidloom-early-input-handoff-prepare.service \
+        hidloom-early-input-handoff-finalize.service \
         hidloom-hidd.service \
         hidloom-uidd.service \
         hidloom-outputd.service \

@@ -128,6 +128,35 @@ typedef struct {
 static volatile uint32_t *g_gpio = NULL;
 static volatile sig_atomic_t g_running = 1;
 
+static void write_runtime_status(const char *path, const Config *cfg,
+                                 int process, int gpio_ready,
+                                 int logic_connected)
+{
+    if (!path || !*path)
+        return;
+    char temporary[MAX_PATH_LEN + 32];
+    int written = snprintf(temporary, sizeof(temporary), "%s.tmp", path);
+    if (written < 0 || (size_t)written >= sizeof(temporary))
+        return;
+    FILE *stream = fopen(temporary, "w");
+    if (!stream)
+        return;
+    fprintf(stream,
+            "{\"schema\":\"matrixd.status.v1\",\"process\":%s,"
+            "\"configured\":true,\"gpio_ready\":%s,"
+            "\"logic_socket\":{\"path\":\"%s\",\"connected\":%s},"
+            "\"pid\":%ld}\n",
+            process ? "true" : "false",
+            gpio_ready ? "true" : "false",
+            cfg->socket_path,
+            logic_connected ? "true" : "false",
+            (long)getpid());
+    if (fclose(stream) == 0)
+        (void)rename(temporary, path);
+    else
+        (void)unlink(temporary);
+}
+
 /* ------------------------------------------------------------------ */
 /* シグナルハンドラ                                                      */
 /* ------------------------------------------------------------------ */
@@ -928,6 +957,7 @@ int main(int argc, char *argv[])
     /* 設定ファイルパス */
     const char *config_path = (argc >= 2) ? argv[1]
                                            : "/etc/matrixd.json";
+    const char *status_path = getenv("MATRIXD_STATUS_PATH");
 
     /* シグナル設定 */
     struct sigaction sa = { .sa_handler = sig_handler };
@@ -949,13 +979,16 @@ int main(int argc, char *argv[])
 
     /* GPIO 初期化 */
     if (cfg.gpio_enabled) {
-        if (gpio_open() < 0)
+        if (gpio_open() < 0) {
+            write_runtime_status(status_path, &cfg, 0, 0, 0);
             return 1;
+        }
         gpio_init_all(&cfg);
         syslog(LOG_INFO, "GPIO 初期化完了");
     } else {
         syslog(LOG_WARNING, "gpio_enabled=false: GPIO スキャンを無効化 (ハードウェア未接続モード)");
     }
+    write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 0);
 
     /* デバウンス用配列 */
     uint8_t raw[MAX_ROWS][MAX_COLS];  /* スキャン生データ */
@@ -1010,6 +1043,7 @@ int main(int argc, char *argv[])
                 continue;
             }
             syslog(LOG_INFO, "logicd に接続しました: %s", cfg.socket_path);
+            write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 1);
         }
 
         if (tap_enabled && tap_sock_fd < 0) {
@@ -1072,6 +1106,7 @@ int main(int argc, char *argv[])
                         syslog(LOG_WARNING, "送信失敗。再接続します");
                         close(sock_fd);
                         sock_fd = -1;
+                        write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 0);
                         goto next_scan;
                     }
                     if (tap_sock_fd >= 0 && sock_send_event(tap_sock_fd, type, r, c) < 0) {
@@ -1105,6 +1140,7 @@ next_scan:
         gpio_cleanup(&cfg);
         gpio_close();
     }
+    write_runtime_status(status_path, &cfg, 0, 0, 0);
     closelog();
     return 0;
 }

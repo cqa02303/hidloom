@@ -7,6 +7,7 @@ from importlib import metadata
 import json
 import os
 from pathlib import Path
+import platform
 import shutil
 import subprocess
 from typing import Any
@@ -23,8 +24,15 @@ def sha256(path: Path) -> str:
 
 
 def host_os() -> dict[str, str]:
+    os_release = Path("/etc/os-release")
+    if not os_release.is_file():
+        return {
+            "ID": platform.system().lower(),
+            "VERSION_ID": platform.release(),
+            "PRETTY_NAME": platform.platform(),
+        }
     values = {}
-    for line in Path("/etc/os-release").read_text(encoding="utf-8").splitlines():
+    for line in os_release.read_text(encoding="utf-8").splitlines():
         if "=" in line:
             key, value = line.split("=", 1)
             values[key] = value.strip('"')
@@ -35,11 +43,16 @@ def debian_evidence(names: list[str], output: Path) -> list[dict[str, Any]]:
     results = []
     target = output / "debian"
     target.mkdir(parents=True, exist_ok=True)
+    query_tool = shutil.which("dpkg-query")
     for name in names:
+        if query_tool is None:
+            results.append({"name": name, "observed": False})
+            continue
         query = subprocess.run(
-            ["dpkg-query", "-W", "-f=${binary:Package}\t${Version}", name],
+            [query_tool, "-W", "-f=${binary:Package}\t${Version}", name],
             capture_output=True,
             text=True,
+            encoding="utf-8",
         )
         item: dict[str, Any] = {"name": name, "observed": query.returncode == 0}
         if query.returncode == 0:
@@ -132,6 +145,7 @@ def main() -> None:
     (output / "LICENSE_EVIDENCE.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     print(json.dumps(payload["summary"], ensure_ascii=False))
 

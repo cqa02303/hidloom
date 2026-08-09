@@ -368,7 +368,7 @@ class KiCadMatrixAnalyzer:
             }
         }
 
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, 'w', encoding='utf-8', newline='\n') as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
             f.write("\n")
 
@@ -392,7 +392,7 @@ def main():
 
     base_name = os.path.splitext(os.path.basename(schema_file))[0]
     report_output = os.path.join(output_dir, f"{base_name}_matrix_analysis_final_report.txt")
-    with open(report_output, 'w', encoding='utf-8') as f:
+    with open(report_output, 'w', encoding='utf-8', newline='\n') as f:
         f.write(report + "\n")
     print(f"\nレポートを保存しました: {report_output}")
 

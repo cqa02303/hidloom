@@ -426,6 +426,7 @@ restore_repo_user_ownership() {
 prepare_runtime_files() {
     log "Preparing runtime directories and scripts"
     chmod +x "$REPO_ROOT/system/install/setup_usb_gadget.sh"
+    chmod +x "$REPO_ROOT/system/install/hidloom_usb_gadget_start.sh"
     chmod +x "$REPO_ROOT/script/select_touch_panel_profile.py"
     chmod +x "$REPO_ROOT/tools/hidloom_send/build.sh"
     chmod +x "$REPO_ROOT/tools/hidloom_usb_gadget_fast/build.sh"
@@ -490,6 +491,8 @@ install_unit_from_repo() {
 install_services() {
     log "Installing systemd units"
     install_unit_from_repo "$REPO_ROOT/system/systemd/hidloom-power-shed.service"
+    install_unit_from_repo "$REPO_ROOT/system/systemd/hidloom-early-input-handoff-prepare.service"
+    install_unit_from_repo "$REPO_ROOT/system/systemd/hidloom-early-input-handoff-finalize.service"
     install_unit_from_repo "$REPO_ROOT/system/systemd/hidloom-usb-gadget.service"
     install_unit_from_repo "$REPO_ROOT/system/systemd/hidloom-touch-panel-profile.service"
     install_unit_from_repo "$REPO_ROOT/system/systemd/hidloom-bluetooth-unblock.service"

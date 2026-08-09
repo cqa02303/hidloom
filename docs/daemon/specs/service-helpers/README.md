@@ -5,6 +5,8 @@
 対象:
 
 - `hidloom-usb-gadget.service`
+- `hidloom-early-input-handoff-prepare.service`
+- `hidloom-early-input-handoff-finalize.service`
 - `hidloom-bluetooth-unblock.service`
 - `hidloom-late-services.service`
 - `hidloom-network-late.service`
@@ -15,6 +17,7 @@
 ## 役割
 
 - USB gadget を早期に用意する。
+- initramfs native input chainをrelease-safeに停止し、通常input chainのreadyを別phaseで確認する。
 - boot-critical input path を network / UI / Bluetooth より先に成立させる。
 - network / Bluetooth / UI を late service として遅延起動する。
 - PC USB 給電時の起動ピークを緩和する。
@@ -30,6 +33,22 @@
 ## 起動順序で守る条件
 
 - `hidloom-usb-gadget.service` は `DefaultDependencies=no`、`WantedBy=sysinit.target` を維持し、USB HID endpoint を早く出す。
+- `hidloom-usb-gadget.service` はsystemd専用wrapperを通し、early markerがある時はread-only adopterの完全一致だけを受理する。
+  markerなしfresh bootまたはUDC emptyのnormal restart residueだけ従来createへ進み、bound不一致時はUDCを変更しない。
+- `hidloom-early-input-handoff-prepare.service`はUSB gadgetの前に必ず実行し、path Conditionを使わない。
+  valid E3 markerがある場合だけPID identityをpidfdへ固定し、4 status PID、固定socket topology、
+  `/proc/net/unix`のkernel socket inodeとprocess FD、両HID character endpointとhidd FDを照合する。
+  その後にlogical release、core停止後のoutputd/hidd queue drain、両keyboard endpoint zero write、ordered stopを
+  証明する。証明できなければUSBを開始しない。
+  markerなし通常bootはhelper内で`not-applicable`とする。
+- `hidloom-early-input-handoff-finalize.service`は通常hidd/outputd/core/matrixdの後に実行し、prepareとは別の
+  complete証跡を作る。通常側もstatus PID/executable、socket/endpointの実ownerをprocess FDへ結合する。
+  ready判定はdaemon/socketの健全性を対象とし、未送信のidle coreが示す`broker.available=false`や
+  利用者の正当なkey holdを待ち条件にしない。通常成功時はconfigfs/UDCを変更しないが、early chainの
+  安全な終端を証明できない緊急復旧だけはverified UDC unbindでhostを切断する。gadget adopterの責務は持たない。
+- `hidloom-hidd.service` はUSB gadgetを`After=`だけでなく`Requires=`し、adopt/create失敗時にendpoint ownerを開始しない。
+- 独立enableされる`hidloom-outputd.service`、`hidloom-logicd-core.service`、`matrixd.service`も
+  prepareを`Requires=`かつ`After=`し、E3 discovery/auth/release失敗時にearly chainと通常chainを同時起動しない。
 - `logicd-core-rs` は `hidloom-outputd` の後、`matrixd` の前に起動する。
 - `matrixd` は `logicd-core-rs` を `Requires=` する。
 - `logicd-companion` は matrix socket owner にならず、`LOGICD_MATRIX_SOCKET=none` とする。
@@ -58,6 +77,7 @@
 - `script/test_power_shed_boot.py`
   - boot-critical service ordering。
   - native hot path の service dependency。
+  - USB gadget service wrapperとhidd hard dependency。
   - late service / network timer。
   - native tools build and install path。
 - `script/test_install_account_portability.py`
@@ -73,3 +93,4 @@
 
 - boot time 改善は service ordering だけでなく host enumeration timing も見る。
 - helper service は成功しても、実際の endpoint / status JSON ができているかを別途確認する。
+- early adopterのaccepted manifestはdevice/kernel/package固有であり、generic core packageへ埋め込まずdisabled配置時にroot-owned fileとして設置する。

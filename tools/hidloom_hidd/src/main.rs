@@ -52,6 +52,8 @@ struct Counters {
     keyboard_reports: u64,
     us_sub_keyboard_reports: u64,
     startup_release_reports: u64,
+    keyboard_zero_reports: u64,
+    us_sub_keyboard_zero_reports: u64,
     mouse_reports: u64,
     consumer_reports: u64,
     invalid_frames: u64,
@@ -727,8 +729,18 @@ fn write_usb_report(
         return false;
     }
     match report.kind {
-        KIND_KEYBOARD => counters.keyboard_reports += 1,
-        KIND_US_SUB_KEYBOARD => counters.us_sub_keyboard_reports += 1,
+        KIND_KEYBOARD => {
+            counters.keyboard_reports += 1;
+            if keyboard_is_zero_report(report) {
+                counters.keyboard_zero_reports += 1;
+            }
+        }
+        KIND_US_SUB_KEYBOARD => {
+            counters.us_sub_keyboard_reports += 1;
+            if keyboard_is_zero_report(report) {
+                counters.us_sub_keyboard_zero_reports += 1;
+            }
+        }
         KIND_MOUSE => counters.mouse_reports += 1,
         KIND_CONSUMER => counters.consumer_reports += 1,
         _ => {}
@@ -764,8 +776,14 @@ fn send_startup_keyboard_releases(
         };
         endpoint.write_startup_release(&report.report, cfg);
         match report.kind {
-            KIND_KEYBOARD => counters.keyboard_reports += 1,
-            KIND_US_SUB_KEYBOARD => counters.us_sub_keyboard_reports += 1,
+            KIND_KEYBOARD => {
+                counters.keyboard_reports += 1;
+                counters.keyboard_zero_reports += 1;
+            }
+            KIND_US_SUB_KEYBOARD => {
+                counters.us_sub_keyboard_reports += 1;
+                counters.us_sub_keyboard_zero_reports += 1;
+            }
             _ => unreachable!(),
         }
         counters.startup_release_reports += 1;
@@ -783,6 +801,11 @@ fn keyboard_payload(report: &UsbReport) -> &[u8] {
 fn keyboard_is_release(report: &UsbReport) -> bool {
     let payload = keyboard_payload(report);
     payload.len() >= 8 && payload[0] == 0 && payload[2..8].iter().all(|byte| *byte == 0)
+}
+
+fn keyboard_is_zero_report(report: &UsbReport) -> bool {
+    matches!(report.kind, KIND_KEYBOARD | KIND_US_SUB_KEYBOARD)
+        && keyboard_payload(report).iter().all(|byte| *byte == 0)
 }
 
 fn keyboard_keys_and_modifiers(report: &UsbReport) -> ([u8; 6], u8) {
@@ -848,6 +871,7 @@ fn write_status(
             "{{\n",
             "  \"schema\":\"hidd.status.v1\",\n",
             "  \"process\":true,\n",
+            "  \"pid\":{},\n",
             "  \"protocol\":\"usbd-hid-report-broker.v1+raw-hid-bridge.v1\",\n",
             "  \"socket\":{{\"path\":\"{}\",\"listening\":true}},\n",
             "  \"endpoints\":{{\n",
@@ -860,6 +884,8 @@ fn write_status(
             "    \"keyboard_reports\":{},\n",
             "    \"us_sub_keyboard_reports\":{},\n",
             "    \"startup_release_reports\":{},\n",
+            "    \"keyboard_zero_reports\":{},\n",
+            "    \"us_sub_keyboard_zero_reports\":{},\n",
             "    \"mouse_reports\":{},\n",
             "    \"consumer_reports\":{},\n",
             "    \"invalid_frames\":{},\n",
@@ -870,6 +896,7 @@ fn write_status(
             "  }}\n",
             "}}\n"
         ),
+        std::process::id(),
         json_escape(&cfg.socket_path),
         json_escape(&endpoints.hidg0.path),
         endpoints.hidg0.file.is_some(),
@@ -899,6 +926,8 @@ fn write_status(
         counters.keyboard_reports,
         counters.us_sub_keyboard_reports,
         counters.startup_release_reports,
+        counters.keyboard_zero_reports,
+        counters.us_sub_keyboard_zero_reports,
         counters.mouse_reports,
         counters.consumer_reports,
         counters.invalid_frames,

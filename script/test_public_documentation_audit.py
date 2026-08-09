@@ -27,6 +27,7 @@ PRIVATE_OPERATIONAL_DOCUMENTS = frozenset(
         "docs/ops/boot-userspace-network-handoff.md",
         "docs/ops/real-device-next-start.md",
         "docs/ops/repository-layout-inventory.md",
+        "docs/ops/rpi-os-early-e3-final-fallback-handoff.md",
         "docs/ops/windows-hidloom-hidd-p3-handoff.md",
         "docs/ops/workflow-runbook.md",
     }

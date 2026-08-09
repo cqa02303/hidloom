@@ -468,11 +468,11 @@ def main() -> None:
 	vial_json = _build_vial_json(keymap, points, template)
 
 	os.makedirs(os.path.dirname(out_path), exist_ok=True)
-	with open(out_path, "w", encoding="utf-8") as f:
+	with open(out_path, "w", encoding="utf-8", newline="\n") as f:
 		json.dump(vial_json, f, ensure_ascii=False, indent=2)
 		f.write("\n")
 
-	with open(report_path, "w", encoding="utf-8") as f:
+	with open(report_path, "w", encoding="utf-8", newline="\n") as f:
 		f.write(_assignment_report(slots, points, assignment, overrides))
 
 	print(f"Generated: {out_path}")

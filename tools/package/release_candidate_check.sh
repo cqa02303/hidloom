@@ -101,6 +101,164 @@ require_cmd python3
 require_cmd readlink
 require_cmd sha256sum
 
+require_executable_file() {
+    executable_path=$1
+    executable_label=$2
+    if [ ! -f "$executable_path" ]; then
+        echo "$executable_label missing: $executable_path" >&2
+        exit 1
+    fi
+    if [ ! -x "$executable_path" ]; then
+        echo "$executable_label is not executable: $executable_path" >&2
+        exit 1
+    fi
+}
+
+require_file_text() {
+    text_check_path=$1
+    text_required=$2
+    text_label=$3
+    if ! grep -F "$text_required" "$text_check_path" >/dev/null; then
+        echo "$text_label missing required text: $text_required" >&2
+        exit 1
+    fi
+}
+
+reject_file_text() {
+    text_check_path=$1
+    text_rejected=$2
+    text_label=$3
+    if grep -F "$text_rejected" "$text_check_path" >/dev/null; then
+        echo "$text_label contains forbidden text: $text_rejected" >&2
+        exit 1
+    fi
+}
+
+require_unit_line() {
+    unit_check_path=$1
+    unit_required_line=$2
+    unit_label=$3
+    if [ ! -f "$unit_check_path" ]; then
+        echo "$unit_label unit missing: $unit_check_path" >&2
+        exit 1
+    fi
+    if ! grep -F -x "$unit_required_line" "$unit_check_path" >/dev/null; then
+        echo "$unit_label unit missing required line: $unit_required_line" >&2
+        exit 1
+    fi
+}
+
+validate_usb_gadget_service_integration() {
+    integration_root=$1
+    integration_label=$2
+    integration_wrapper="$integration_root/usr/lib/hidloom/system/install/hidloom_usb_gadget_start.sh"
+    integration_adopter="$integration_root/usr/lib/hidloom/tools/rpi_os_early_gadget_adopt.py"
+    integration_handoff="$integration_root/usr/lib/hidloom/tools/rpi_os_early_input_handoff.py"
+    integration_usb_unit="$integration_root/lib/systemd/system/hidloom-usb-gadget.service"
+    integration_hidd_unit="$integration_root/lib/systemd/system/hidloom-hidd.service"
+    integration_outputd_unit="$integration_root/lib/systemd/system/hidloom-outputd.service"
+    integration_core_unit="$integration_root/lib/systemd/system/hidloom-logicd-core.service"
+    integration_prepare_unit="$integration_root/lib/systemd/system/hidloom-early-input-handoff-prepare.service"
+    integration_finalize_unit="$integration_root/lib/systemd/system/hidloom-early-input-handoff-finalize.service"
+    integration_matrix_unit="$integration_root/lib/systemd/system/matrixd.service"
+
+    require_executable_file "$integration_wrapper" "$integration_label USB gadget service wrapper"
+    require_executable_file "$integration_adopter" "$integration_label early gadget adopter"
+    require_executable_file "$integration_handoff" "$integration_label early input handoff helper"
+    require_file_text \
+        "$integration_wrapper" \
+        "clear-marker-after-unbind" \
+        "$integration_label USB gadget service wrapper"
+    require_file_text \
+        "$integration_adopter" \
+        "clear-marker-after-unbind" \
+        "$integration_label early gadget adopter"
+    require_unit_line \
+        "$integration_usb_unit" \
+        "ExecStart=/usr/lib/hidloom/system/install/hidloom_usb_gadget_start.sh" \
+        "$integration_label USB gadget"
+    require_unit_line \
+        "$integration_usb_unit" \
+        "ExecStop=/usr/lib/hidloom/system/install/hidloom_usb_gadget_start.sh --stop" \
+        "$integration_label USB gadget"
+    require_unit_line \
+        "$integration_usb_unit" \
+        "Requires=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label USB gadget"
+    require_unit_line \
+        "$integration_usb_unit" \
+        "After=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label USB gadget"
+    require_unit_line \
+        "$integration_hidd_unit" \
+        "Requires=hidloom-usb-gadget.service" \
+        "$integration_label hidd"
+    require_unit_line \
+        "$integration_hidd_unit" \
+        "After=hidloom-usb-gadget.service" \
+        "$integration_label hidd"
+    require_unit_line \
+        "$integration_outputd_unit" \
+        "Requires=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label outputd"
+    require_unit_line \
+        "$integration_outputd_unit" \
+        "After=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label outputd"
+    require_unit_line \
+        "$integration_core_unit" \
+        "Requires=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label logicd core"
+    require_unit_line \
+        "$integration_core_unit" \
+        "After=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label logicd core"
+    require_unit_line \
+        "$integration_prepare_unit" \
+        "DefaultDependencies=no" \
+        "$integration_label early input handoff prepare"
+    require_unit_line \
+        "$integration_prepare_unit" \
+        "Before=hidloom-usb-gadget.service" \
+        "$integration_label early input handoff prepare"
+    require_unit_line \
+        "$integration_prepare_unit" \
+        "ExecStart=/usr/bin/python3 -S /usr/lib/hidloom/tools/rpi_os_early_input_handoff.py prepare" \
+        "$integration_label early input handoff prepare"
+    require_unit_line \
+        "$integration_finalize_unit" \
+        "After=hidloom-usb-gadget.service hidloom-hidd.service hidloom-outputd.service" \
+        "$integration_label early input handoff finalize"
+    require_unit_line \
+        "$integration_finalize_unit" \
+        "After=hidloom-logicd-core.service matrixd.service" \
+        "$integration_label early input handoff finalize"
+    require_unit_line \
+        "$integration_finalize_unit" \
+        "ExecStart=/usr/bin/python3 -S /usr/lib/hidloom/tools/rpi_os_early_input_handoff.py finalize --normal-hidd-exe /usr/lib/hidloom/bin/hidloom-hidd --normal-outputd-exe /usr/lib/hidloom/bin/hidloom-outputd --normal-core-exe /usr/lib/hidloom/bin/hidloom-logicd-core --normal-matrix-exe /usr/lib/hidloom/daemon/matrixd/matrixd" \
+        "$integration_label early input handoff finalize"
+    require_unit_line \
+        "$integration_matrix_unit" \
+        "Requires=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label matrixd"
+    require_unit_line \
+        "$integration_matrix_unit" \
+        "After=hidloom-early-input-handoff-prepare.service" \
+        "$integration_label matrixd"
+    require_unit_line \
+        "$integration_matrix_unit" \
+        "Wants=hidloom-early-input-handoff-finalize.service" \
+        "$integration_label matrixd"
+    reject_file_text \
+        "$integration_prepare_unit" \
+        "ConditionPathExists" \
+        "$integration_label early input handoff prepare unit"
+    reject_file_text \
+        "$integration_finalize_unit" \
+        "ConditionPathExists" \
+        "$integration_label early input handoff finalize unit"
+}
+
 if [ "$SKIP_CLEAN" -eq 0 ]; then
     if [ -n "$(git -C "$REPO_ROOT" status --porcelain)" ]; then
         echo "release candidate check requires a clean git worktree" >&2
@@ -221,7 +379,13 @@ if [ -n "$SPLIT_PROFILE" ]; then
     require_split_content "$core_contents" '\./usr/lib/hidloom/bin/hidloom-usb-gadget-fast$' core
     require_split_content "$core_contents" '\./usr/lib/hidloom/bin/hidloom-key$' core
     require_split_content "$core_contents" '\./usr/lib/hidloom/daemon/matrixd/matrixd$' core
+    require_split_content "$core_contents" '\./usr/lib/hidloom/system/install/hidloom_usb_gadget_start\.sh$' core
+    require_split_content "$core_contents" '\./usr/lib/hidloom/tools/rpi_os_early_gadget_adopt\.py$' core
+    require_split_content "$core_contents" '\./usr/lib/hidloom/tools/rpi_os_early_input_handoff\.py$' core
     require_split_content "$core_contents" '\./lib/systemd/system/hidloom-hidd.service$' core
+    require_split_content "$core_contents" '\./lib/systemd/system/hidloom-usb-gadget.service$' core
+    require_split_content "$core_contents" '\./lib/systemd/system/hidloom-early-input-handoff-prepare.service$' core
+    require_split_content "$core_contents" '\./lib/systemd/system/hidloom-early-input-handoff-finalize.service$' core
     require_split_content "$core_contents" '\./lib/systemd/system/httpd.service$' core
     require_split_content "$core_contents" '\./var/lib/hidloom/package-manifest.json$' core
     require_split_content "$profile_contents" "\./usr/share/hidloom/profiles/$SPLIT_PROFILE/profile.json$" profile
@@ -246,6 +410,7 @@ if [ -n "$SPLIT_PROFILE" ]; then
         echo "split package manifest/profile metadata missing" >&2
         exit 1
     fi
+    validate_usb_gadget_service_integration "$TMP_DIR/core" "core package"
     for command in hidloom-key hidloom-keytext hidloom-oled hidloom-notify hidloom-ctrl; do
         command_link="$TMP_DIR/core/usr/bin/$command"
         expected_target="/usr/lib/hidloom/bin/$command"
@@ -324,6 +489,7 @@ PY
 - sha256: passed
 - exact version dependency: passed
 - runtime path check: passed
+- USB gadget service integration: passed
 
 ## Real Device Verification
 
@@ -424,7 +590,13 @@ require_content '\./usr/lib/hidloom/bin/hidloom-oled$'
 require_content '\./usr/lib/hidloom/bin/hidloom-notify$'
 require_content '\./usr/lib/hidloom/bin/hidloom-ctrl$'
 require_content '\./usr/lib/hidloom/daemon/matrixd/matrixd$'
+require_content '\./usr/lib/hidloom/system/install/hidloom_usb_gadget_start\.sh$'
+require_content '\./usr/lib/hidloom/tools/rpi_os_early_gadget_adopt\.py$'
+require_content '\./usr/lib/hidloom/tools/rpi_os_early_input_handoff\.py$'
 require_content '\./lib/systemd/system/hidloom-hidd.service$'
+require_content '\./lib/systemd/system/hidloom-usb-gadget.service$'
+require_content '\./lib/systemd/system/hidloom-early-input-handoff-prepare.service$'
+require_content '\./lib/systemd/system/hidloom-early-input-handoff-finalize.service$'
 require_content '\./lib/systemd/system/hidloom-logicd-core.service$'
 require_content '\./lib/systemd/system/matrixd.service$'
 require_content '\./lib/systemd/system/httpd.service$'
@@ -453,6 +625,7 @@ if [ ! -f "$MANIFEST" ]; then
     echo "package manifest missing: /var/lib/hidloom/package-manifest.json" >&2
     exit 1
 fi
+validate_usb_gadget_service_integration "$TMP_DIR" "package"
 manifest_metadata=$(
     python3 - "$MANIFEST" <<'PY'
 import json
@@ -515,6 +688,7 @@ cat > "$NOTE_OUT" <<EOF
 - dpkg contents: passed
 - sha256: passed
 - retired checkout path check: passed
+- USB gadget service integration: passed
 
 ## Real Device Verification
 

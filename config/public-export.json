@@ -99,6 +99,7 @@
     "docs/ops/repository-layout-inventory.md",
     "docs/ops/real-device-next-start.md",
     "docs/ops/real-device-test-checklist.md",
+    "docs/ops/rpi-os-early-e3-final-fallback-handoff.md",
     "docs/ops/windows-hidloom-hidd-p3-handoff.md",
     "docs/ops/workflow-runbook.md",
     "docs/policy/codex-mailbox-worker-decision.md",
@@ -323,10 +324,12 @@
         "tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c",
         "tools/local_environment_hygiene.py",
         "tools/morse_browser_smoke.py",
+        "tools/rpi_os_early_initramfs.py",
+        "tools/rpi_os_early_tryboot.py",
         "tools/sessiond_ctl.py"
       ],
       "disposition": "implementation_security_keyword",
-      "reason": "reviewed implementation or configuration paths name credential concepts; concrete secret patterns remain blockers"
+      "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
     },
     {
       "pattern_id": "credential_word",

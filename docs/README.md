@@ -20,6 +20,7 @@ HIDloom の詳細ドキュメント置き場です。
 | Zero / Zero 2 向け runtime profile 方針 | [../config/profiles/README.md](../config/profiles/README.md) |
 | テストと helper の棚卸し | [ops/test-script-inventory.md](ops/test-script-inventory.md) |
 | Buildroot / fast boot 実験計画 | [ops/buildroot-fast-boot-experiment.md](ops/buildroot-fast-boot-experiment.md) |
+| Raspberry Pi OS early-initramfs 実験 | [ops/rpi-os-early-initramfs-experiment.md](ops/rpi-os-early-initramfs-experiment.md) |
 | daemon とデータフローの全体像 | [architecture/system-overview.md](architecture/system-overview.md) / [architecture/system-overview.svg](architecture/system-overview.svg) |
 
 完了済みロードマップや古い進捗ログはprivate workspaceのarchiveへ移し、public exportには同期しません。
