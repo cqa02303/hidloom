@@ -1,9 +1,9 @@
 # HIDloom Public Export Report
 
-- Source base commit: `a5065d1dc9b6010bb304753c8fde3dcf300e033d`
+- Source base commit: `c2e7126ea0f07b16449c8f49a756eb47104ad006`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `5c9d0c64db94fdc6a8346619a455d767dba67eb6f60b9ff40215bd0f29b47e97`
+- Selected source snapshot: `27575f148fcb0e90d93a2e9fd739f3feae789e88d1996bd3033b5ca9a483eded`
 - Files: 1271
 - Tracked source paths: 1339
 - Private-only paths: 68
@@ -1081,8 +1081,8 @@
 - `warn` `credential_word` `script/test_public_export.py:256` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
 - `warn` `credential_word` `script/test_public_usb_identity.py:326` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
-- `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:33` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`
-- `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:263` `pid_codes_migration_required` — `"idVendor": "0x1d6b",`
+- `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:34` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`
+- `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:264` `pid_codes_migration_required` — `"idVendor": "0x1d6b",`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_initramfs_tool.py:31` `pid_codes_migration_required` — `HIDLOOM_USB_VENDOR_ID=0x1D6B`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_tryboot_tool.py:144` `pid_codes_migration_required` — `"""HIDLOOM_USB_VENDOR_ID=0x1d6b`
 - `warn` `credential_word` `script/test_text_send_safety.py:122` `test_fixture` — `assert not send_string_name_valid("../secret")`

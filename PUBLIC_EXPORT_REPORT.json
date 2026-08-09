@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "a5065d1dc9b6010bb304753c8fde3dcf300e033d",
-    "base_tree": "5a1386d9f4ddfdbcacb386de1a2b12aedb044205",
-    "base_revision_count": 2059,
+    "base_commit": "c2e7126ea0f07b16449c8f49a756eb47104ad006",
+    "base_tree": "e0a4e63418a0177275c4ae0679d775dc18a5785d",
+    "base_revision_count": 2066,
     "selected_path_count": 1271,
-    "selected_snapshot_sha256": "5c9d0c64db94fdc6a8346619a455d767dba67eb6f60b9ff40215bd0f29b47e97"
+    "selected_snapshot_sha256": "27575f148fcb0e90d93a2e9fd739f3feae789e88d1996bd3033b5ca9a483eded"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
@@ -9633,7 +9633,7 @@
       "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "script/test_rpi_os_early_gadget_adopt_tool.py",
-      "line": 33,
+      "line": 34,
       "excerpt": "\"HIDLOOM_USB_VENDOR_ID\": \"0x1d6b\",",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
@@ -9642,7 +9642,7 @@
       "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "script/test_rpi_os_early_gadget_adopt_tool.py",
-      "line": 263,
+      "line": 264,
       "excerpt": "\"idVendor\": \"0x1d6b\",",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
