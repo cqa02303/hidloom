@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "a5065d1dc9b6010bb304753c8fde3dcf300e033d",
-    "base_tree": "5a1386d9f4ddfdbcacb386de1a2b12aedb044205",
-    "base_revision_count": 2059,
+    "base_commit": "a7426bfb2246a6b94a10f5c1adf46918c99545cf",
+    "base_tree": "cb514eaa075f8e4295c9f07faae5dcdbdd64ced7",
+    "base_revision_count": 2061,
     "selected_path_count": 1271,
-    "selected_snapshot_sha256": "5c9d0c64db94fdc6a8346619a455d767dba67eb6f60b9ff40215bd0f29b47e97"
+    "selected_snapshot_sha256": "fa077b94aa0d0a23d9aeeaeb0aebe626d0914ff1e83e900884feb9557535dde6"
   },
   "files": [
     {
@@ -191,14 +191,14 @@
       "kind": "file",
       "mode": 420,
       "size": 405081,
-      "sha256": "b39bc1f053f26c43f47d13a2f014ef9bf721e006dcff9ea1b3156daa7db315d2"
+      "sha256": "e20c524faa869a7a1822701e54073fec5505d0f6a64fb4c8fa8605c2684e6305"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
       "size": 167040,
-      "sha256": "9ba5204884c04111dd335632a3e2091a41e7445ce68c6d22f363b8d665a16902"
+      "sha256": "c15e877c5ea0b6e1300b62b89842f1f82ddde52f80570103f6433a864cf11db8"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
@@ -247,7 +247,7 @@
       "kind": "file",
       "mode": 420,
       "size": 46590,
-      "sha256": "9b0116f5699103daa811c57114175fd9315ca18469514d22c2058c60ab3550d3"
+      "sha256": "eb9e24777feedc6402402c4f7ea6ce9e9973bd4ab2fd47f537e6959e8efc68ca"
     },
     {
       "path": "SECURITY.md",
@@ -4509,8 +4509,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 248059,
-      "sha256": "9bfb7e4b14370a2e30acfd0169ddbf61dad8915254097c4b0851ce7a1740a3e9"
+      "size": 249441,
+      "sha256": "1197a3288333e37519b8b6c40bc0572ca09195c2dd5bbe587a4a2e220a68f620"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -7057,8 +7057,8 @@
       "path": "script/test_rpi_os_early_initramfs_tool.py",
       "kind": "file",
       "mode": 493,
-      "size": 22095,
-      "sha256": "25977523b2fb493acedb9c4a04fe8f2ad48ad2095fe5e8c1ba569cb6c5f5a30a"
+      "size": 23463,
+      "sha256": "53b8da3e1a361ea07c1378ba4f3b4ab8de8eafd0c92ea6d8318366133baffc0d"
     },
     {
       "path": "script/test_rpi_os_early_input_handoff_tool.py",
@@ -8828,8 +8828,8 @@
       "path": "tools/rpi_os_early_initramfs.py",
       "kind": "file",
       "mode": 493,
-      "size": 67649,
-      "sha256": "1b5ef58235388b713de02dd3b58a68eb00df8fbbabc6724bd790c7543bdd6f4f"
+      "size": 68209,
+      "sha256": "62c65b345f9e0bac068818dfcb2adde93144679180540c9b2d63d534f5f6c86b"
     },
     {
       "path": "tools/rpi_os_early_input_handoff.py",
