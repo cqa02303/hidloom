@@ -21,6 +21,7 @@ from public_release_bundle import (  # noqa: E402
     REQUIRED_COMPLIANCE,
     asset,
     deterministic_tar,
+    export_manifest_modes,
     load_json,
     release_channel_contract,
     package_field,
@@ -273,7 +274,13 @@ def build(args: argparse.Namespace) -> None:
     output.mkdir(parents=True)
 
     source_archive = output / f"hidloom-{version}-source.tar.zst"
-    deterministic_tar(source, source_archive, f"hidloom-{version}-source", export_paths)
+    deterministic_tar(
+        source,
+        source_archive,
+        f"hidloom-{version}-source",
+        export_paths,
+        export_manifest_modes(source),
+    )
     copied_core = output / core.name
     copied_profile = output / profile_package.name
     shutil.copy2(core, copied_core)

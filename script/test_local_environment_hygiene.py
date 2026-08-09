@@ -2,6 +2,7 @@
 """Regression tests for value-safe local dotenv hygiene."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -41,6 +42,36 @@ def main() -> None:
     example = run(ROOT, ROOT / ".env.example", check=True)
     assert "4 assignments" in example.stdout
     assert "keyboard.example" not in example.stdout
+
+    if os.name == "nt":
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            env_file = root / ".env.example"
+            secret = "fixture-secret-value"
+            env_file.write_text(
+                "HIDLOOM_ACTIVE_DEVICE=XX\n"
+                f"HIDLOOM_HTTPD_BASIC_AUTH_PASSWORD={secret}\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            canonical = run(root, env_file, check=True)
+            assert "2 assignments" in canonical.stdout
+            assert secret not in canonical.stdout + canonical.stderr
+            retired_key = RETIRED_PREFIX + "SSH_TARGET"
+            env_file.write_text(
+                f"{retired_key}={secret}\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            retired = run(root, env_file, check=False)
+            assert retired.returncode == 1
+            assert f"key={retired_key}" in retired.stderr
+            assert secret not in retired.stdout + retired.stderr
+        print(
+            "ok: local environment hygiene never exposes dotenv values "
+            "(POSIX mode and atomic rewrite fixtures deferred to POSIX validation)"
+        )
+        return
 
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)

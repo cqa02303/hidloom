@@ -75,6 +75,7 @@ rollbackはfileを削除して両serviceを再起動します。USBとBLEの片�
 | `tools/public_usb_identity.py` | profile完全性検査と割当guard付きbundle生成 |
 | `/etc/hidloom/usb-identity.env` | USB gadgetとBLE PnP IDが共有するprofile環境file |
 | `setup_usb_gadget.sh` | shell/native backendを選ぶrepository root wrapper |
+| `system/install/hidloom_usb_gadget_start.sh` | systemd専用のearly gadget adopt / normal create判定と、stop後の検証済みearly marker cleanup |
 | `system/install/setup_usb_gadget.sh` | configfsを構築するportable shell backend |
 | `bin/hidloom-usb-gadget-fast` | package/install時にbuildされる高速native backend |
 | `system/systemd/hidloom-usb-gadget.service` | boot時のgadget owner |
@@ -114,6 +115,12 @@ sudo ./setup_usb_gadget.sh
 
 `HIDLOOM_USB_GADGET_SETUP_BACKEND=native`を指定した場合、wrapperは実行可能な
 `bin/hidloom-usb-gadget-fast`がなければfail closedします。
+
+Raspberry Pi OS early-initramfs実験では、systemd専用wrapperだけが
+`/run/hidloom-early/gadget-bound.json`と既存configfs gadgetを検査します。accepted manifest、
+package/profile/helper/identity/descriptor/configfsが完全一致する時はUDCをunbindせずadoptし、通常bootの
+fresh createまたはUDCが既に空のservice restart residueだけ既存backendへ進めます。bound状態の不一致は
+再作成せずfail closedします。rootの`setup_usb_gadget.sh`を直接実行する診断経路は明示的な再作成操作のままです。
 
 ## Verification
 

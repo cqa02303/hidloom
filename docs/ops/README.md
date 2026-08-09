@@ -12,6 +12,7 @@
 - [hidloom-license-review-runbook.md](hidloom-license-review-runbook.md): Debian/Python evidenceとBuildroot legal-info収集手順
 - [package-profile-split-plan.md](package-profile-split-plan.md): core package と device profile package の分離計画
 - [buildroot-fast-boot-experiment.md](buildroot-fast-boot-experiment.md): Buildroot / fast boot を別 image で試すための段階計画と測定 marker
+- [rpi-os-early-initramfs-experiment.md](rpi-os-early-initramfs-experiment.md): Raspberry Pi OSを維持したearly-initramfsの段階実験、handoff、rollback条件
 - [failure-patterns.md](failure-patterns.md): 再発しやすい実機失敗の検出、復旧、回帰確認メモ
 - [usb-gadget-fast-path-policy.md](usb-gadget-fast-path-policy.md): native USB gadget fast path と shell fallback の使い分け
 - [test-script-inventory.md](test-script-inventory.md): test script inventory
@@ -43,6 +44,7 @@
 - [repository-hygiene-policy.md](repository-hygiene-policy.md)
 - [hidloom-hidd-deep-test-plan.md](hidloom-hidd-deep-test-plan.md)
 - [buildroot-fast-boot-experiment.md](buildroot-fast-boot-experiment.md)
+- [rpi-os-early-initramfs-experiment.md](rpi-os-early-initramfs-experiment.md)
 - [failure-patterns.md](failure-patterns.md)
 - [usb-gadget-fast-path-policy.md](usb-gadget-fast-path-policy.md)
 - [script-safety-metadata.md](script-safety-metadata.md)

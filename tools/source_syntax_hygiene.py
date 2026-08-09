@@ -6,6 +6,7 @@ import argparse
 from collections import Counter
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -64,6 +65,7 @@ def run_parser(command: list[str], root: Path) -> str | None:
         cwd=root,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     if completed.returncode == 0:
@@ -77,6 +79,8 @@ def scan(root: Path, paths: list[str]) -> tuple[list[Finding], Counter[str]]:
     yaml_module = None
     node = shutil.which("node")
     shell_tools = {name: shutil.which(name) for name in ("bash", "sh")}
+    if os.name == "nt" and shell_tools["sh"] is None:
+        shell_tools["sh"] = shell_tools["bash"]
 
     for relative in paths:
         path = root / relative
@@ -133,7 +137,7 @@ def scan(root: Path, paths: list[str]) -> tuple[list[Finding], Counter[str]]:
             executable = shell_tools[parser]
             if executable is None:
                 findings.append(Finding("missing_parser", relative, f"{parser} not found"))
-            elif error := run_parser([executable, "-n", str(path)], root):
+            elif error := run_parser([executable, "-n", relative], root):
                 findings.append(Finding("shell_syntax", relative, error))
 
         if suffix == ".js":

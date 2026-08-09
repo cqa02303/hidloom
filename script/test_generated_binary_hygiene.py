@@ -115,6 +115,13 @@ def main() -> None:
     assert 'set -- "$@" "$BIN_DIR/$bin"' in deploy
     assert 'rsync -az --info=stats1 -- "$@"' in deploy
 
+    if os.name == "nt":
+        print(
+            "ok: generated binary hygiene removes retired outputs and bounds deploy "
+            "(POSIX deploy integration deferred to POSIX validation)"
+        )
+        return
+
     with tempfile.TemporaryDirectory() as temporary:
         fixture = Path(temporary)
         bin_dir = fixture / "rust-bin"

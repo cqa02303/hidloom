@@ -368,6 +368,26 @@ make release-deb-deploy RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=02
 `tools/package/deploy_github_release_deb.sh --tag TAG --device 02 --install --no-smoke`
 で呼びます。
 
+Pi Zero 2 Wのactualでは、dry-run合格後にscriptを直接呼び、read-only low-memory gateを
+APT直前へ組み込みます。
+
+```bash
+tools/package/deploy_github_release_deb.sh \
+  --tag TAG \
+  --host <device> \
+  --install \
+  --low-memory-preflight
+```
+
+`--low-memory-preflight`は低レベルhelperでは`--install --apt`、標準wrapperでは`--install`との
+組み合わせだけを受理し、download-only、dry-run、`dpkg -i` modeではsilent skipせず終了code 2で
+拒否します。package transfer完了後、remote helperのSHA-256をhost側と照合し、ownership preflightの
+後かつactual APTの直前に同じSSH shellで実行します。gateの終了codeが非0ならshellの`set -e`で停止し、
+APTと後続のprofile apply / unit switch / verifyは開始しません。合格時もAPT commandは
+`apt-get install -y <core> <profile>`の1本のままであり、core/profileを別transactionへ分割しません。
+profile applyは従来どおりAPT完了後の別commandです。このoptionはswapなし・極小swapも拒否するため、
+別memory classのdeviceへ自動適用せず、Pi Zero 2 Wで明示します。
+
 fresh OS や一時 IP の個体で標準 `DEVICE=01/02` にまだ入っていない時は、Make から
 explicit remote を渡します。
 

@@ -11,6 +11,7 @@ DRY_RUN=0
 INSTALL=0
 RUN_SMOKE=1
 KEEP=0
+LOW_MEMORY_PREFLIGHT=0
 
 usage() {
     cat <<'EOF'
@@ -29,6 +30,8 @@ Options:
   --dry-run              run apt dependency-aware dry-run and unit switch dry-run only
   --install              install package set, apply profile, switch units, and verify
   --no-smoke             with --install, run package verify without live smoke
+  --low-memory-preflight run the read-only low-memory gate immediately before
+                         apt-get; requires --install
   --keep                 keep the temporary release asset download directory
   -h, --help             show this help
 
@@ -76,6 +79,10 @@ while [ "$#" -gt 0 ]; do
             RUN_SMOKE=0
             shift
             ;;
+        --low-memory-preflight)
+            LOW_MEMORY_PREFLIGHT=1
+            shift
+            ;;
         --keep)
             KEEP=1
             shift
@@ -106,10 +113,19 @@ if [ "$DRY_RUN" -eq "$INSTALL" ]; then
     echo "select exactly one of --dry-run or --install" >&2
     exit 2
 fi
+if [ "$LOW_MEMORY_PREFLIGHT" -eq 1 ] && [ "$INSTALL" -ne 1 ]; then
+    echo "--low-memory-preflight requires --install" >&2
+    exit 2
+fi
 
 keep_arg=
 if [ "$KEEP" -eq 1 ]; then
     keep_arg="--keep"
+fi
+
+preflight_arg=
+if [ "$LOW_MEMORY_PREFLIGHT" -eq 1 ]; then
+    preflight_arg="--low-memory-preflight"
 fi
 
 if [ "$DRY_RUN" -eq 1 ]; then
@@ -127,7 +143,7 @@ fi
 
 echo "== release deb install =="
 # shellcheck disable=SC2086
-"$SCRIPT_DIR/install_github_release_deb.sh" --tag "$TAG" --repository "$REPOSITORY" --profile "$PROFILE" $REMOTE_ARG --install --apt $keep_arg
+"$SCRIPT_DIR/install_github_release_deb.sh" --tag "$TAG" --repository "$REPOSITORY" --profile "$PROFILE" $REMOTE_ARG --install --apt $preflight_arg $keep_arg
 echo
 echo "== package unit switch and restart =="
 # shellcheck disable=SC2086

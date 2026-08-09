@@ -261,6 +261,7 @@ def git_tracked_files(root: Path) -> tuple[list[str], dict[str, int]] | None:
             ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
             stderr=subprocess.DEVNULL,
             text=True,
+            encoding="utf-8",
         ).strip()
     except (OSError, subprocess.CalledProcessError):
         return None
@@ -290,6 +291,7 @@ def git_ignored_tracked_files(root: Path) -> list[str]:
             ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
             stderr=subprocess.DEVNULL,
             text=True,
+            encoding="utf-8",
         ).strip()
     except (OSError, subprocess.CalledProcessError):
         return []
@@ -342,6 +344,8 @@ def scan(
     paths: list[str],
     modes: dict[str, int],
     config: dict[str, Any],
+    *,
+    normalize_git_line_endings: bool = False,
 ) -> tuple[list[Finding], int]:
     findings = portable_path_findings(paths, config["portable_path_policy"])
     sizes: dict[str, int] = {}
@@ -413,6 +417,9 @@ def scan(
             size = len(content)
         else:
             content = path.read_bytes()
+            is_binary = any(matches(relative, pattern) for pattern in binary_path_globs)
+            if normalize_git_line_endings and not is_binary:
+                content = content.replace(b"\r\n", b"\n")
             size = len(content)
             if not modes[relative] & 0o111 and any(
                 matches(relative, pattern) for pattern in shell_path_globs
@@ -432,7 +439,7 @@ def scan(
                         "tracked executable source must start with #!",
                     )
                 )
-            if not any(matches(relative, pattern) for pattern in binary_path_globs):
+            if not is_binary:
                 if not content:
                     if not any(
                         matches(relative, pattern) for pattern in empty_file_allow_globs
@@ -562,7 +569,17 @@ def main() -> None:
     root = args.root.resolve()
     config = load_config(args.config.resolve())
     paths, modes, inventory = tracked_files(root)
-    findings, total_bytes = scan(root, paths, modes, config)
+    attributes = root / ".gitattributes"
+    normalize_git_line_endings = inventory == "git index" and attributes.is_file() and (
+        "* text=auto eol=lf" in attributes.read_text(encoding="utf-8").splitlines()
+    )
+    findings, total_bytes = scan(
+        root,
+        paths,
+        modes,
+        config,
+        normalize_git_line_endings=normalize_git_line_endings,
+    )
     findings.extend(
         Finding(
             "tracked_ignored_file",

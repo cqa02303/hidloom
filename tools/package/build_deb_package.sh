@@ -292,6 +292,7 @@ set -e
 
 if [ "$1" = remove ] && command -v systemctl >/dev/null 2>&1; then
     systemctl stop \
+        hidloom-early-input-handoff-finalize.service \
         matrixd.service \
         logicd-companion.service \
         hidloom-logicd-core.service \
@@ -302,7 +303,9 @@ if [ "$1" = remove ] && command -v systemctl >/dev/null 2>&1; then
         i2cd.service \
         ledd.service \
         btd.service \
-        viald.service >/dev/null 2>&1 || true
+        viald.service \
+        hidloom-usb-gadget.service \
+        hidloom-early-input-handoff-prepare.service >/dev/null 2>&1 || true
 fi
 
 exit 0

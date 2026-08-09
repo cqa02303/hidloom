@@ -246,6 +246,15 @@ script ごとの option と短い例は `tools/package/README.md` に置きま�
 version を同時に install し、`hidloom-profile <profile> --apply --backup --restart` で
 runtime 定義と service policy を反映します。
 
+Pi Zero 2 Wのactual直前は`package/low_memory_install_preflight.py`を実機上でread-only実行し、
+memory / swap、`dpkg --audit`、package process / lockのJSON gateを通します。
+
+```bash
+ssh <device> 'python3 -' < tools/package/low_memory_install_preflight.py
+```
+
+`ready=false`ならinstallを開始せず、swapを変更せずに原因を解消してから取り直します。
+
 標準キーボード用の例:
 
 ```bash
@@ -309,12 +318,165 @@ python3 tools/keycode_action_inventory.py --document --output docs/keycode/actio
 python3 tools/keycode_action_inventory.py --check --document
 ```
 
+## rpi_os_early_initramfs.py
+
+Raspberry Pi OSの既存initramfsを直接再packせず、uncompressed early-newcとzstd mainの境界へ
+HIDloom E1 overlay-newcをdeterministically挿入します。exact kernel、installed profile definition hash、USB identity、
+ARM64 static gadget helper、`libcomposite` / `usb_f_hid` ABI・dependency、production descriptorをmanifestへ固定し、
+元imageのprefix / suffixをbyte不変で検証します。出力は既定bootへ自動配置しません。
+
+例:
+
+```bash
+python3 tools/rpi_os_early_initramfs.py build \
+  --base <base-initramfs> --output <alternate-image> --manifest <early-image.json> \
+  --kernel-release <release> --source <commit> \
+  --profile-id keyboard-ver1 --profile-sha256 <installed-profile-json-sha256> \
+  --helper <arm64-static-helper> --libcomposite <libcomposite.ko.xz> \
+  --usb-f-hid <usb_f_hid.ko.xz> --identity-env <usb-identity.env>
+python3 tools/rpi_os_early_initramfs.py verify \
+  --base <base-initramfs> --image <alternate-image> --manifest <early-image.json>
+```
+
+E3 native early inputを含める場合は、次の9入力をall-or-noneで追加します。4 daemonは
+ARM64 static ELF、matrixd configはGPIO有効かつsocket
+`/dev/hidloom-early/matrix-events.sock`、GPIO moduleはexact kernel ABIでなければbuildを拒否します。
+runtime keymap/configと各binary/moduleのhashはimage manifestへ固定され、live socket/statusは
+`/dev/hidloom-early`、root移行後のready/PID evidenceは`/run/hidloom-early`へ分離されます。
+native build/verifyはinit-bottom hookとlauncherが呼ぶ16個の絶対command pathをbase initramfs内で解決し、
+symlink、cpio hardlinkの実payload、regular/executable modeまで確認します。`setsid`後はnumeric leaderと
+negative PGIDの成立をboundedに待ち、失敗cleanupではleader/process groupの両方が消えるまでendpointへ
+terminal reportを書きません。残存時は先にverified UDC unbindを行います。
+
+```bash
+python3 tools/rpi_os_early_initramfs.py build <E1 options> \
+  --hidd <arm64-static-hidloom-hidd> \
+  --outputd <arm64-static-hidloom-outputd> \
+  --logicd-core <arm64-static-hidloom-logicd-core> \
+  --matrixd <arm64-static-matrixd> \
+  --keymap <pinned-keymap.json> --keycodes <pinned-keycodes.json> \
+  --logicd-config <pinned-config.json> --matrixd-config <early-matrixd.json> \
+  --gpiomem <raspberrypi-gpiomem.ko.xz>
+```
+
+`rpi_os_early_native_smoke.py`は実GPIO/USBを使わず、上記ARM64 binaryを`qemu-aarch64`で
+`hidd -> outputd -> logicd-core -> matrixd`の順に起動します。startup release、modifier＋2-key overlap、
+JIS mainの`KC_RO`、US subの`KC_A`、最終pressed state 0とroute clearを自動確認します。
+
+```bash
+python3 tools/rpi_os_early_native_smoke.py \
+  --hidd <hidloom-hidd> --outputd <hidloom-outputd> \
+  --logicd-core <hidloom-logicd-core> --matrixd <matrixd> \
+  --keymap <keymap.json> --keycodes <keycodes.json> \
+  --logicd-config <config.json> --matrixd-config <matrixd.json>
+```
+
+詳細な段階計画、one-shot境界、rollbackは
+[Raspberry Pi OS early-initramfs experiment](../docs/ops/rpi-os-early-initramfs-experiment.md)を正とします。
+
+## rpi_os_early_input_handoff.py
+
+E3 native input chainから通常systemd input chainへrelease-safeに所有権を渡すE4 helperです。
+`prepare`はruntime contractと4 daemonのPID/starttime/executable inode/UIDを認証してpidfdへ固定します。
+さらに4 status PIDと固定topologyを照合し、pathname socketを`/proc/net/unix`のkernel inodeからprocess FDへ、
+hidg0/hidg2 character nodeをhidd FDへ結合してからmatrixを停止します。logicd-core state解放、
+core停止後の`broker_frames_sent == outputd frames_received == frames_to_usb == hidd frames_received`
+を確認します。その後にoutputdの両keyboard endpoint release、outputd停止、hiddの実zero writeを確認して
+hiddを停止します。これによりcontrol socketが未処理report datagramを追い越しても、古いnonzero reportが
+最終zeroの後へ流れません。`finalize`は通常hidd/outputd/core/matrixdのreadyを別に確認し、利用者が既に
+キーを押している状態と、まだreportを送っていないcoreの`broker.available=false`も正常なreadyとして扱います。
+通常側のsocket/endpointもstatus PID/executableとprocess FDへ結合してからcomplete証跡を書きます。
+通常成功するprepareはconfigfs/UDCを変更せず、mutation-free adoptに引き継ぎます。認証後のaction失敗では、
+認証済みpidfdで全early daemonを順序停止してからmain 9 bytes / US sub 8 bytesのexact terminal reportを書きます。
+全daemon終了または両writeを証明できない場合はverified UDC unbindに切り替えます。chain-staged discoveryまたは
+認証失敗は未認証PIDにsignalを送らずverified UDC unbindを行います。prepare / finalize / failure証跡は
+`/run/hidloom-early`へ0600・上書き不可で保存し、緊急復旧後はnormal USBを開始せず次回rebootで通常構成へ戻します。
+valid E3 markerがない通常bootでは両phaseとも`not-applicable`です。
+通常outputd、logicd-core、matrixdはprepareを`Requires=`かつ`After=`し、prepare失敗後にearly側と
+同時起動しないsystemd contractです。
+
+```bash
+sudo python3 -S tools/rpi_os_early_input_handoff.py prepare
+sudo python3 -S tools/rpi_os_early_input_handoff.py finalize
+```
+
+通常運用では直接実行せず、`hidloom-early-input-handoff-prepare.service`と
+`hidloom-early-input-handoff-finalize.service`のorderingに任せます。
+
+## rpi_os_early_gadget_adopt.py
+
+E1 manifestと通常systemdで稼働中のgadgetを照合し、package/profile/helper、USB identity、
+全HID descriptor、function/dev mapping、configfs static snapshotを含むaccepted manifestを`capture`します。
+`verify`はearly marker、runtime contract、accepted manifest、live gadgetの完全一致時だけread-only adoptを返します。
+markerなしでgadgetもないfresh boot、またはUDCが空で二重snapshotが不変のnormal restart residueだけを
+create-requiredとし、その他はconfigfsを変更せず拒否します。service stop時はwrapperがUDCをunbindした後、
+markerとruntime contract、stable-unboundを再検証してephemeral markerだけを削除し、次のstartを通常createへ戻します。
+`hidloom.configfs-usb-gadget.snapshot.v2`では、kernelがhost列挙時にEP0値へ正規化する
+`bMaxPacketSize0`だけを明示的なvolatile entryとします。regular fileかつ
+`0 / 8 / 9 / 16 / 32 / 64`のいずれかであることを初回・最終snapshotで検証し、それ以外のentry、
+UDC、function/dev mapping、descriptorは従来どおり完全一致を要求します。旧snapshot v1はfail closedで拒否するため、
+修正版導入時はaccepted manifestとE1/tryboot stageを再生成します。
+
+2026-08-06の`<keyboard-host>` corrected E2ではsnapshot v2のaccepted manifestからone-shot bootし、
+kernel / UDC正規化後のlive `bMaxPacketSize0=0x40`を許容しながら`status=adopted`、configfs mutation 0、
+UDC `configured`をpassしました。通常fallbackもearly markerなしで通常createへ戻りました。これにより
+`bMaxPacketSize0`以外の差分を緩和せず、bind前後の既知normalizationだけを扱う境界を実機で確認しています。
+
+```bash
+python3 tools/rpi_os_early_gadget_adopt.py capture --help
+python3 tools/rpi_os_early_gadget_adopt.py verify --help
+python3 tools/rpi_os_early_gadget_adopt.py clear-marker-after-unbind --help
+```
+
+## rpi_os_early_tryboot.py / rpi_os_early_tryboot_place.py
+
+`rpi_os_early_tryboot.py`は、完全な通常`config.txt` / `cmdline.txt`、accepted E1 image、
+exact alternate kernelからhost-only staging treeをdeterministically生成する。通常boot fileを上書きせず、
+`auto_initramfs=0`、alternate kernel/cmdline/initramfsを持つ完全な`tryboot.txt`を作り、独立`verify`で再検査する。
+
+`rpi_os_early_tryboot_place.py`はroot所有stageを実機へinstalled-but-disabledで配置する。
+board model、live kernel、通常boot input hash、危険なA/B・secure-boot file、空き容量をpreflightし、
+通常boot 4 fileをbackupしてalternate payloadをno-replaceで作成し、`tryboot.txt`を最後にpublishする。
+hostのdeep verifyが返した`placement_sha256`を必須pinとし、deviceではlarge payloadを展開せずstreaming照合する。
+activationやrebootは行わない。`install-disabled`後は必ず`verify-installed`を実行する。
+
+```bash
+python3 tools/rpi_os_early_tryboot.py stage --help
+python3 tools/rpi_os_early_tryboot.py verify --directory <stage-directory>
+sudo python3 tools/rpi_os_early_tryboot_place.py preflight --help
+sudo python3 tools/rpi_os_early_tryboot_place.py install-disabled --help
+sudo python3 tools/rpi_os_early_tryboot_place.py verify-installed --help
+```
+
+## rpi_os_early_boot_control.py
+
+E5で認定したexact source/kernel/profileのearly boot payloadをoptional Debian packageとして検証・制御する。
+package installはdisabledのままで、`enable`と`try-once`はfull source SHA確認を要求する。初回配置前に
+boot filesystem単位でpayload容量と32 MiB reserveを確認し、通常configをatomic backupする。
+`disable` / `rollback`はunknown config driftを上書きせず、packageが作成したfileだけを削除する。
+kernel postinstの`kernel-guard`は重いimage buildをせず、mismatch時のenabled configだけをnormalへ戻す。
+
+```bash
+python3 tools/rpi_os_early_boot_control.py build --payload-root <payload> --output <manifest.json>
+sudo hidloom-early-boot verify --live
+sudo hidloom-early-boot status
+sudo hidloom-early-boot enable --confirm-source <full-source-sha>
+sudo hidloom-early-boot try-once --confirm-source <full-source-sha> --reboot
+sudo hidloom-early-boot disable --reason operator
+sudo hidloom-early-boot rollback
+```
+
+build、Windows watcher付きactivation、remove/upgrade、cross-host rebuild手順は
+[Raspberry Pi OS early-initramfs experiment](../docs/ops/rpi-os-early-initramfs-experiment.md)を正とする。
+
 ## remote_boot_baseline_collect.py / boot_marker_baseline.py
 
 Raspberry Pi の boot marker を SSH 経由で回収し、`systemd-analyze` と
 keyboard input path の readiness timeline を同じ artifact にまとめます。
 summary では total boot だけでなく、`keyboard_ready`、`usb->input`、
-`hidd->input`、`input->ssh`、`input->network` を表示します。起動短縮では
+`hidd->input`、`input->ssh`、`input->network` を表示します。early-initramfs bootではさらに
+`early_ready`、gadget adopt時刻、UDC名/state、accepted manifest / placement receiptのhashと
+activation flagsを同じsample行へ残します。起動短縮では
 `systemd-analyze` の合計値より、まず `keyboard_ready` と `usb->input` を見ます。
 
 例:
@@ -832,6 +994,10 @@ python3 tools/perf_baseline.py --output /tmp/hidloom-perf-after.md --ps-samples 
 Raspberry Pi OS と Buildroot の高速起動比較に使う boot marker を Markdown にまとめる helper です。
 `systemctl show` の monotonic timestamp、boot journal、`/dev/hidg*`、任意で HTTP `/api/status` を採取し、
 boot-critical socket snapshot、`hidd-status.json` / `logicd-core-status.json` も採取します。
+`/run/hidloom-early`はentry数、深さ、file size、総read量を制限してsymlinkを追わずread-only snapshotし、
+canonical `gadget-bound.json`のschema、running kernel、accepted manifestのruntime contract hashとの一致を
+確認できた`ready_uptime_seconds`だけをtimelineへ追加します。configfsのUDC名とsysfs state、
+installed accepted manifest / tryboot receiptのSHA-256とactivation flagsも記録します。
 `hidg ready`、USB enumerate、`logicd ready`、`logicd-core ready`、`usable keyboard` の比較材料を残します。
 systemd や HTTP が無い環境でも、失敗した command は report に exit code と stderr を残して続行します。
 
@@ -847,7 +1013,9 @@ sudo -n python3 tools/boot_marker_baseline.py --output /tmp/hidloom-boot-sudo.md
 The report starts with `Readiness Timeline`, which combines systemd active timestamps and
 classified journal markers. Known marker kinds include USB gadget setup, HID broker startup,
 native/Python logic readiness, matrix scanner readiness, companion sockets, SSH listening, and
-NetworkManager/DHCP readiness. Lines that look boot-relevant but do not match a known rule are
+NetworkManager/DHCP readiness. An E1 runtime marker contributes `early-usb-ready` at its recorded
+uptime, and the systemd wrapper's mutation-free handoff contributes `usb-adopt`. Lines that look
+boot-relevant but do not match a known rule are
 kept as `journal-discovered` candidates so new marker types can be promoted later instead of
 being silently missed. By default the readable timeline is limited to the first 90 seconds of
 boot; raw command output still keeps the configured journal tail. Timeline extraction uses a
@@ -881,8 +1049,12 @@ python3 tools/remote_boot_baseline_collect.py operator@<keyboard-ip> \
 `build/artifacts/` は git 管理外なので、測定 report を repository 本体へ混ぜずに残せます。
 
 `summary.md` extracts key `Readiness Timeline` columns from each boot marker report:
-`usb`, `hidd`, `core`, `input`, `sockets`, `ssh`, and `network`. This keeps repeated samples
-comparable without opening every raw journal.
+`early`, `adopt`, `usb`, `hidd`, `core`, `input`, `sockets`, `ssh`, and `network`. It also carries
+the UDC name/state, accepted manifest hash, tryboot receipt hash, and receipt activation flags.
+Use `--sudo` for E2 evidence because the installed manifests are root-readable. This keeps repeated
+samples comparable without opening every raw journal. The SSH user's shell creates each report
+with umask `077` before the privileged helper writes to stdout; copy-out uses pipeline failure
+propagation and requires the expected non-empty report.
 
 The helper runs `ssh` / `scp` from the local Python process. If plain PowerShell `ssh` works
 but `remote_boot_baseline_collect.py` fails its SSH transport preflight, use a Python
@@ -901,6 +1073,45 @@ Linux USB host 側で Buildroot M1 / Raspberry Pi OS の enumerate event を Mar
 python3 tools/usb_enumeration_watch.py --duration 30 --output /tmp/hidloom-usb-enumeration-m1.md
 python3 tools/usb_enumeration_watch.py --duration 45 --include-kernel-log --output /tmp/hidloom-usb-enumeration-rpi-os.md
 ```
+
+## windows_usb_enumeration_watch.ps1
+
+Windows USB host側で、外部から開始したreboot中のcomposite HID列挙をread-only観測するPowerShell helperです。
+VID/PIDは必須引数で、`MI_00&COL01`、`MI_01`、`MI_02`がbaselineでpresent/OK、最初のdisconnect後に
+すべて再列挙され、その後disconnectせず最終snapshotでもreadyであることを確認します。
+`Get-PnpDevice -PresentOnly` snapshotとbounded `__InstanceOperationEvent` subscriptionだけを観測に使い、
+device/driver変更やrebootは行いません。subscriptionは`Win32_PnPEntity`全体を受け、PowerShell側で
+正規化したexact HID child prefixだけを判定に使います。USB parent、部分一致、別VID/PIDのeventは無視し、
+対象childのdeletion eventによりpoll間の短いremove/re-addも検出します。
+eventはdequeue順ではなく`TIME_CREATED`由来のevent生成時刻で`first_ready`との前後を判定し、
+queue上のdelivery遅延によるpost-ready切断への誤分類を抑えます。WMI intrinsic event自体の検出間隔は
+残るため、Windows runtime gateとPresentOnly snapshotを併用します。
+JSONとMarkdownは一つのtemporary directory内の`report.json` / `report.md`へ揃えてから、bundle directoryを
+一度だけatomic renameして公開し、既存bundleを上書きしません。
+Markdownへ出すinstance IDはmachine固有suffixを除いたprefixだけです。
+
+Windows PowerShell 5.1では変数名がcase-insensitiveなので、function parameter/local名に`$Pid`を使うと
+read-only自動変数`$PID`と衝突します。VID/PIDは`$VendorId` / `$ProductId`のように完全名で渡します。
+また`[Parameter(Mandatory)]`な`ArrayList` / event listはwatch開始直後に空であることが正常なので
+`AllowEmptyCollection`、空文字を行要素として持つMarkdown line listには`AllowEmptyString`が必要です。
+これらのbinding errorは`WATCHER_READY`前に発生するため、static fixtureに加えて実Windows runtime gateで確認します。
+
+generated operator wrapperではcolon直前のinterpolationを`${Mode}:`のように区切り、`Get-FileHash`だけを
+利用可能と仮定せず`.NET`の`System.Security.Cryptography.SHA256` fallbackでhelper hashを検証します。
+PnP snapshot/subscriptionはCodex `CodexSandboxOffline` contextで拒否される場合があるため、native Windowsの
+管理者PowerShellから実行します。sandboxでのPnP拒否をdevice不在やwatcher不合格として扱いません。
+parser、hash、binding、PnP permissionのいずれかで失敗した場合はtargetをrebootせず、新しいoutput prefixでやり直します。
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\windows_usb_enumeration_watch.ps1 `
+  -VendorId <VID> -ProductId <PID> -DurationSec 120 `
+  -OutputDirectory .\build\artifacts\usb-watch
+```
+
+baseline不足、initial disconnect後の再列挙なし、最初のready後のdisconnect、最終ready不足は非0で終了します。
+`WATCHER_READY`が表示されるまで、別terminalからtarget rebootを開始しません。
+rebootしない5秒runtime gateではexit 21 / `initial_disconnect_not_observed`が期待値で、baseline/final ready、
+`target_operation_before_ready_zero=true`、internal error空も同時に確認します。exit 21だけでは合格にしません。
 
 ## buildroot_m1_compare.py
 

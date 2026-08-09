@@ -190,7 +190,14 @@ def main() -> None:
     assert "HIDLOOM_USB_GADGET_START_DELAY_SEC" in usb_gadget
     assert 'sleep "${HIDLOOM_USB_GADGET_START_DELAY_SEC:-1}"' in usb_gadget
     assert "modprobe libcomposite" in usb_gadget
+    assert "ExecStart=@HIDLOOM_REPO_ROOT@/system/install/hidloom_usb_gadget_start.sh" in usb_gadget
+    assert (
+        "ExecStop=@HIDLOOM_REPO_ROOT@/system/install/hidloom_usb_gadget_start.sh --stop"
+        in usb_gadget
+    )
     assert "ExecStart=@HIDLOOM_REPO_ROOT@/bin/hidloom-hidd" in hidd
+    assert "Requires=hidloom-usb-gadget.service" in hidd
+    assert "After=hidloom-usb-gadget.service" in hidd
     assert "DefaultDependencies=no" in hidd
     assert "Conflicts=usbd.service" in hidd
     assert "After=tmp.mount" in hidd

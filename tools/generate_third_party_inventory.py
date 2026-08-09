@@ -40,6 +40,7 @@ def cargo_components() -> list[dict[str, Any]]:
             cwd=ROOT,
             check=True,
             text=True,
+            encoding="utf-8",
             capture_output=True,
         )
         metadata = json.loads(result.stdout)
@@ -239,8 +240,12 @@ def main() -> None:
     payload = inventory()
     args.json.parent.mkdir(parents=True, exist_ok=True)
     args.markdown.parent.mkdir(parents=True, exist_ok=True)
-    args.json.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    args.markdown.write_text(markdown(payload), encoding="utf-8")
+    args.json.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    args.markdown.write_text(markdown(payload), encoding="utf-8", newline="\n")
     print(
         f"generated third-party inventory: total={payload['summary']['total']} "
         f"review_required={payload['summary']['review_required']}"

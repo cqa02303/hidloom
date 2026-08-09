@@ -110,7 +110,11 @@ def main() -> None:
     args = parser.parse_args()
     root = args.root.resolve()
     output = args.output or root / "SBOM.cdx.json"
-    output.write_text(json.dumps(generate(root), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(generate(root), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     print(f"generated CycloneDX SBOM: {output}")
 
 

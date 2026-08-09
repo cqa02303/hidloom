@@ -195,8 +195,22 @@ def validate_export_manifest(source: Path) -> list[str]:
     return sorted(paths)
 
 
-def deterministic_tar(source: Path, destination: Path, arcname: str, paths: list[str]) -> None:
-    def normalize(info: tarfile.TarInfo) -> tarfile.TarInfo:
+def export_manifest_modes(source: Path) -> dict[str, int]:
+    manifest = load_json(source / "PUBLIC_EXPORT_MANIFEST.json")
+    return {
+        "PUBLIC_EXPORT_MANIFEST.json": 0o644,
+        **{str(item["path"]): int(item["mode"]) for item in manifest["files"]},
+    }
+
+
+def deterministic_tar(
+    source: Path,
+    destination: Path,
+    arcname: str,
+    paths: list[str],
+    modes: dict[str, int] | None = None,
+) -> None:
+    def normalize(info: tarfile.TarInfo, expected_mode: int | None = None) -> tarfile.TarInfo:
         info.uid = 0
         info.gid = 0
         info.uname = ""
@@ -205,7 +219,11 @@ def deterministic_tar(source: Path, destination: Path, arcname: str, paths: list
         if info.isdir():
             info.mode = 0o755
         elif info.isfile():
-            info.mode = 0o755 if info.mode & 0o111 else 0o644
+            info.mode = (
+                expected_mode
+                if expected_mode in {0o644, 0o755}
+                else (0o755 if info.mode & 0o111 else 0o644)
+            )
         elif info.issym() or info.islnk():
             info.mode = 0o777
         return info
@@ -222,7 +240,9 @@ def deterministic_tar(source: Path, destination: Path, arcname: str, paths: list
                     source / relative,
                     arcname=f"{arcname}/{relative}",
                     recursive=False,
-                    filter=normalize,
+                    filter=lambda info, expected=(modes or {}).get(relative): normalize(
+                        info, expected
+                    ),
                 )
         subprocess.run(
             ["zstd", "-19", "-T0", "--no-progress", "-f", str(tar_path), "-o", str(destination)],
@@ -659,7 +679,13 @@ def build(args: argparse.Namespace) -> None:
 
     prefix = f"hidloom-{version}"
     source_archive = output / f"{prefix}-source.tar.zst"
-    deterministic_tar(source, source_archive, f"hidloom-{version}", export_paths)
+    deterministic_tar(
+        source,
+        source_archive,
+        f"hidloom-{version}",
+        export_paths,
+        export_manifest_modes(source),
+    )
     raw_image = output / f"{prefix}-buildroot-m6.img"
     shutil.copy2(image, raw_image)
     compressed_image = output / f"{raw_image.name}.zst"

@@ -57,6 +57,18 @@ def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def canonical_export_content(content: bytes) -> bytes:
+    """Apply the repository LF policy without rewriting binary payloads."""
+
+    if b"\0" in content:
+        return content
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError:
+        return content
+    return text.replace("\r\n", "\n").encode("utf-8")
+
+
 def tracked_files(*, root: Path = ROOT) -> list[str]:
     result = subprocess.run(
         ["git", "ls-files", "-z"],
@@ -87,7 +99,51 @@ def worktree_files(*, root: Path = ROOT) -> list[str]:
     )
 
 
-def source_provenance(paths: list[str], *, root: Path = ROOT) -> dict[str, Any]:
+def canonical_source_modes(paths: list[str], *, root: Path = ROOT) -> dict[str, int]:
+    """Resolve portable source modes without trusting Windows chmod semantics."""
+
+    result = subprocess.run(
+        ["git", "ls-files", "--stage", "-z"],
+        cwd=root,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    tracked_modes: dict[str, int] = {}
+    for record in result.stdout.split(b"\0"):
+        if not record:
+            continue
+        metadata, raw_path = record.split(b"\t", 1)
+        raw_mode, _object_id, raw_stage = metadata.split()
+        if raw_stage != b"0":
+            continue
+        relative = raw_path.decode()
+        if raw_mode == b"100755":
+            tracked_modes[relative] = 0o755
+        elif raw_mode == b"120000":
+            tracked_modes[relative] = 0o777
+        else:
+            tracked_modes[relative] = 0o644
+
+    modes: dict[str, int] = {}
+    for relative in paths:
+        path = root / relative
+        if path.is_symlink():
+            modes[relative] = 0o777
+        elif relative in tracked_modes:
+            modes[relative] = tracked_modes[relative]
+        elif path.is_file():
+            modes[relative] = 0o755 if path.stat().st_mode & 0o111 else 0o644
+        else:
+            raise SystemExit(f"selected source path is missing: {relative}")
+    return modes
+
+
+def source_provenance(
+    paths: list[str],
+    *,
+    root: Path = ROOT,
+    modes: dict[str, int] | None = None,
+) -> dict[str, Any]:
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     tree = subprocess.check_output(
         ["git", "rev-parse", "HEAD^{tree}"], cwd=root, text=True
@@ -101,19 +157,19 @@ def source_provenance(paths: list[str], *, root: Path = ROOT) -> dict[str, Any]:
         check=True,
         stdout=subprocess.PIPE,
     ).stdout
+    resolved_modes = modes if modes is not None else canonical_source_modes(paths, root=root)
     digest = hashlib.sha256()
     for relative in paths:
         path = root / relative
         if path.is_symlink():
             content = os.readlink(path).encode()
             kind = "symlink"
-            mode = 0o777
         elif path.is_file():
-            content = path.read_bytes()
+            content = canonical_export_content(path.read_bytes())
             kind = "file"
-            mode = 0o755 if path.stat().st_mode & 0o111 else 0o644
         else:
             raise SystemExit(f"selected source path is missing: {relative}")
+        mode = resolved_modes[relative]
         header = f"{relative}\0{kind}\0{mode:o}\0{len(content)}\0".encode()
         digest.update(header)
         digest.update(content)
@@ -340,7 +396,12 @@ def validate_export_tree(
     ]
 
 
-def copy_tree(paths: list[str], destination: Path, replacements: list[dict[str, str]]) -> None:
+def copy_tree(
+    paths: list[str],
+    destination: Path,
+    replacements: list[dict[str, str]],
+    source_modes: dict[str, int],
+) -> None:
     for relative in paths:
         source = ROOT / relative
         target = destination / relative
@@ -349,17 +410,18 @@ def copy_tree(paths: list[str], destination: Path, replacements: list[dict[str, 
             target.symlink_to(os.readlink(source))
         else:
             shutil.copy2(source, target)
-            target.chmod(0o755 if source.stat().st_mode & 0o111 else 0o644)
+            target.chmod(source_modes[relative])
+            content = canonical_export_content(target.read_bytes())
             try:
-                text = target.read_text(encoding="utf-8")
+                text = content.decode("utf-8")
             except UnicodeDecodeError:
                 continue
             updated = text
             updated = updated.replace(str(ROOT), "/home/USERNAME/src/hidloom")
             for replacement in replacements:
                 updated = updated.replace(replacement["from"], replacement["to"])
-            if updated != text:
-                target.write_text(updated, encoding="utf-8")
+            if updated.encode("utf-8") != target.read_bytes():
+                target.write_text(updated, encoding="utf-8", newline="\n")
 
 
 def _source_target_is_selected(
@@ -657,7 +719,7 @@ def sanitize_public_documentation(
             output_lines.append(updated_line)
         updated = "".join(output_lines)
         if updated != text:
-            document.write_text(updated, encoding="utf-8")
+            document.write_text(updated, encoding="utf-8", newline="\n")
 
     orphaned = [
         {"path": path}
@@ -686,6 +748,7 @@ def sanitize_public_documentation(
     (destination / "PUBLIC_DOCUMENTATION_AUDIT.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     lines = [
         "# HIDloom Public Documentation Audit",
@@ -731,7 +794,7 @@ def sanitize_public_documentation(
     else:
         lines.append("- None")
     (destination / "PUBLIC_DOCUMENTATION_AUDIT.md").write_text(
-        "\n".join(lines) + "\n", encoding="utf-8"
+        "\n".join(lines) + "\n", encoding="utf-8", newline="\n"
     )
     findings = [
         Finding(
@@ -853,6 +916,7 @@ def write_report(
     (destination / "PUBLIC_EXPORT_REPORT.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     lines = [
         "# HIDloom Public Export Report",
@@ -882,10 +946,16 @@ def write_report(
             )
     else:
         lines.append("- None")
-    (destination / "PUBLIC_EXPORT_REPORT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (destination / "PUBLIC_EXPORT_REPORT.md").write_text(
+        "\n".join(lines) + "\n", encoding="utf-8", newline="\n"
+    )
 
 
-def write_file_manifest(destination: Path, provenance: dict[str, Any]) -> None:
+def write_file_manifest(
+    destination: Path,
+    provenance: dict[str, Any],
+    source_modes: dict[str, int],
+) -> None:
     entries = []
     for path in sorted(item for item in destination.rglob("*") if item.is_file() or item.is_symlink()):
         relative = path.relative_to(destination).as_posix()
@@ -896,10 +966,13 @@ def write_file_manifest(destination: Path, provenance: dict[str, Any]) -> None:
             kind = "symlink"
             mode = 0o777
         else:
-            path.chmod(0o755 if path.stat().st_mode & 0o111 else 0o644)
+            mode = source_modes.get(
+                relative,
+                0o755 if path.stat().st_mode & 0o111 else 0o644,
+            )
+            path.chmod(mode)
             content = path.read_bytes()
             kind = "file"
-            mode = path.stat().st_mode & 0o777
         entries.append(
             {
                 "path": relative,
@@ -918,6 +991,7 @@ def write_file_manifest(destination: Path, provenance: dict[str, Any]) -> None:
     manifest_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
+        newline="\n",
     )
     manifest_path.chmod(0o644)
 
@@ -952,7 +1026,8 @@ def main() -> None:
         )
     paths = [path for path in source_paths if selected(path, manifest)]
     selection_summary = source_selection_summary(source_paths, manifest)
-    provenance = source_provenance(paths)
+    source_modes = canonical_source_modes(paths)
+    provenance = source_provenance(paths, modes=source_modes)
     if not provenance["publishable"] and not args.allow_dirty_source:
         raise SystemExit(
             "source worktree is dirty; commit or clean all tracked and untracked changes, "
@@ -965,7 +1040,7 @@ def main() -> None:
         shutil.rmtree(destination)
     destination.mkdir(parents=True)
 
-    copy_tree(paths, destination, manifest.get("text_replacements", []))
+    copy_tree(paths, destination, manifest.get("text_replacements", []), source_modes)
     documentation_findings = sanitize_public_documentation(destination, manifest)
     findings = scan_text_files(destination, patterns)
     findings.extend(documentation_findings)
@@ -1016,7 +1091,7 @@ def main() -> None:
     )
     if tree_issues:
         raise SystemExit("public export output validation failed:\n- " + "\n- ".join(tree_issues))
-    write_file_manifest(destination, provenance)
+    write_file_manifest(destination, provenance, source_modes)
     tree_issues = validate_export_tree(
         destination,
         paths,

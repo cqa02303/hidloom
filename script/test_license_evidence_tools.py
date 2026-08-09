@@ -26,6 +26,7 @@ def main() -> None:
         evidence = json.loads((output / "LICENSE_EVIDENCE.json").read_text(encoding="utf-8"))
         assert evidence["schema"] == "hidloom.license-evidence.v1"
         assert evidence["scope"] == "host-observed-only"
+        assert set(evidence["host"]) == {"ID", "VERSION_ID", "PRETTY_NAME"}
         assert evidence["summary"]["debian_total"] == 21
         assert evidence["summary"]["python_total"] == 2
 

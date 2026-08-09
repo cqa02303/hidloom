@@ -49,7 +49,16 @@ struct Counters {
     invalid_frames: u64,
     forward_errors: u64,
     release_frames: u64,
+    release_errors: u64,
     ctrl_requests: u64,
+}
+
+#[derive(Default)]
+struct ReleaseAck {
+    attempted: u64,
+    delivered: u64,
+    errors: u64,
+    last_error: String,
 }
 
 struct RouterState {
@@ -114,7 +123,8 @@ fn load_config() -> Result<(Config, Target), String> {
         }
     }
     let target_raw = env_string("OUTPUTD_TARGET", "usb");
-    let target = parse_target(&target_raw).ok_or_else(|| format!("invalid OUTPUTD_TARGET: {target_raw}"))?;
+    let target =
+        parse_target(&target_raw).ok_or_else(|| format!("invalid OUTPUTD_TARGET: {target_raw}"))?;
     Ok((
         Config {
             report_socket: env_string("OUTPUTD_REPORT_SOCKET", "/tmp/hidloom_output_reports.sock"),
@@ -231,6 +241,7 @@ fn status_json(cfg: &Config, state: &RouterState, counters: &Counters) -> String
             "{{",
             "\"schema\":\"hidloom.outputd.status.v1\",",
             "\"process\":true,",
+            "\"pid\":{},",
             "\"target\":\"{}\",",
             "\"sockets\":{{",
             "\"report\":\"{}\",",
@@ -248,10 +259,12 @@ fn status_json(cfg: &Config, state: &RouterState, counters: &Counters) -> String
             "\"invalid_frames\":{},",
             "\"forward_errors\":{},",
             "\"release_frames\":{},",
+            "\"release_errors\":{},",
             "\"ctrl_requests\":{}",
             "}}",
             "}}\n"
         ),
+        std::process::id(),
         target_name(state.target),
         json_escape(&cfg.report_socket),
         json_escape(&cfg.ctrl_socket),
@@ -266,6 +279,7 @@ fn status_json(cfg: &Config, state: &RouterState, counters: &Counters) -> String
         counters.invalid_frames,
         counters.forward_errors,
         counters.release_frames,
+        counters.release_errors,
         counters.ctrl_requests
     )
 }
@@ -305,7 +319,8 @@ fn forward_bt_frame(path: &str, kind: u8, frame: &[u8]) -> Result<(), String> {
     };
     let payload_len = usize::from(frame[6]);
     let payload = &frame[PAYLOAD_OFFSET..PAYLOAD_OFFSET + payload_len];
-    let mut stream = UnixStream::connect(path).map_err(|err| format!("failed to connect to {path}: {err}"))?;
+    let mut stream =
+        UnixStream::connect(path).map_err(|err| format!("failed to connect to {path}: {err}"))?;
     stream
         .write_all(b"btd1")
         .and_then(|_| stream.write_all(&[frame_type, payload_len as u8]))
@@ -354,7 +369,8 @@ fn send_release_frames(
     old: Target,
     new: Target,
     counters: &mut Counters,
-) {
+) -> ReleaseAck {
+    let mut ack = ReleaseAck::default();
     let mut paths = Vec::new();
     for target in [old, new] {
         match target {
@@ -368,20 +384,46 @@ fn send_release_frames(
     for path in paths {
         for kind in [KIND_KEYBOARD, KIND_US_SUB_KEYBOARD] {
             let frame = null_keyboard_frame(kind);
-            let sent = if path == cfg.bt_socket.as_str() {
-                forward_bt_frame(path, kind, &frame).is_ok()
+            ack.attempted += 1;
+            let result = if path == cfg.bt_socket.as_str() {
+                forward_bt_frame(path, kind, &frame)
             } else {
-                forward_frame(socket, path, &frame).is_ok()
+                forward_frame(socket, path, &frame)
             };
-            if sent {
-                counters.release_frames += 1;
+            match result {
+                Ok(()) => {
+                    ack.delivered += 1;
+                    counters.release_frames += 1;
+                }
+                Err(err) => {
+                    ack.errors += 1;
+                    ack.last_error = err;
+                    counters.forward_errors += 1;
+                    counters.release_errors += 1;
+                }
             }
         }
     }
+    ack
+}
+
+fn release_ack_json(ack: &ReleaseAck) -> String {
+    format!(
+        "{{\"attempted\":{},\"delivered\":{},\"errors\":{}}}",
+        ack.attempted, ack.delivered, ack.errors
+    )
 }
 
 fn extract_target(line: &str) -> Option<Target> {
-    for alias in ["usb", "gadget", "uinput", "console", "bt", "bluetooth", "auto"] {
+    for alias in [
+        "usb",
+        "gadget",
+        "uinput",
+        "console",
+        "bt",
+        "bluetooth",
+        "auto",
+    ] {
         if line.contains(&format!("\"target\":\"{alias}\""))
             || line.contains(&format!("\"target\": \"{alias}\""))
         {
@@ -399,7 +441,10 @@ fn handle_ctrl_line(
     forwarder: &UnixDatagram,
 ) -> String {
     counters.ctrl_requests += 1;
-    if line.contains("\"status\"") || line.contains("\"t\":\"status\"") || line.contains("\"t\": \"status\"") {
+    if line.contains("\"status\"")
+        || line.contains("\"t\":\"status\"")
+        || line.contains("\"t\": \"status\"")
+    {
         return status_json(cfg, state, counters);
     }
     if line.contains("set_output_target") {
@@ -407,19 +452,41 @@ fn handle_ctrl_line(
             return "{\"result\":\"error\",\"error\":\"target_required\"}\n".to_string();
         };
         let old = state.target;
-        if old != target {
-            send_release_frames(forwarder, cfg, old, target, counters);
+        let release = if old != target {
+            send_release_frames(forwarder, cfg, old, target, counters)
+        } else {
+            ReleaseAck::default()
+        };
+        if release.errors == 0 {
+            state.target = target;
+            state.last_error.clear();
+            return format!(
+                "{{\"result\":\"ok\",\"target\":\"{}\",\"release\":{}}}\n",
+                target_name(state.target),
+                release_ack_json(&release)
+            );
         }
-        state.target = target;
-        state.last_error.clear();
+        state.last_error = release.last_error.clone();
         return format!(
-            "{{\"result\":\"ok\",\"target\":\"{}\"}}\n",
-            target_name(state.target)
+            "{{\"result\":\"error\",\"error\":\"release_delivery_failed\",\"target\":\"{}\",\"release\":{}}}\n",
+            target_name(state.target),
+            release_ack_json(&release)
         );
     }
     if line.contains("release_all") {
-        send_release_frames(forwarder, cfg, state.target, state.target, counters);
-        return "{\"result\":\"ok\"}\n".to_string();
+        let release = send_release_frames(forwarder, cfg, state.target, state.target, counters);
+        if release.errors == 0 {
+            state.last_error.clear();
+            return format!(
+                "{{\"result\":\"ok\",\"release\":{}}}\n",
+                release_ack_json(&release)
+            );
+        }
+        state.last_error = release.last_error.clone();
+        return format!(
+            "{{\"result\":\"error\",\"error\":\"release_delivery_failed\",\"release\":{}}}\n",
+            release_ack_json(&release)
+        );
     }
     "{\"result\":\"error\",\"error\":\"unknown_command\"}\n".to_string()
 }
@@ -483,7 +550,8 @@ fn run() -> Result<(), String> {
         .map_err(|err| format!("failed to bind {}: {err}", cfg.report_socket))?;
     let ctrl = bind_listener(&cfg.ctrl_socket, cfg.ctrl_socket_mode)
         .map_err(|err| format!("failed to bind {}: {err}", cfg.ctrl_socket))?;
-    let forwarder = UnixDatagram::unbound().map_err(|err| format!("failed to create forwarder: {err}"))?;
+    let forwarder =
+        UnixDatagram::unbound().map_err(|err| format!("failed to create forwarder: {err}"))?;
     let mut state = RouterState {
         target: initial_target,
         last_error: String::new(),
@@ -499,7 +567,14 @@ fn run() -> Result<(), String> {
                 match validate_frame(&frame[..size]) {
                     Ok(kind) => {
                         counters.frames_received += 1;
-                        forward_to_target(&forwarder, &cfg, &mut state, &mut counters, &frame, kind);
+                        forward_to_target(
+                            &forwarder,
+                            &cfg,
+                            &mut state,
+                            &mut counters,
+                            &frame,
+                            kind,
+                        );
                     }
                     Err(err) => {
                         counters.invalid_frames += 1;

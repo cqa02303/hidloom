@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 from public_export import (  # noqa: E402
     CANONICAL_GENERATED_OUTPUT_FILES,
     apply_warning_triage,
+    canonical_source_modes,
     explicitly_excluded,
     scan_text_files,
     selected,
@@ -25,6 +26,7 @@ from public_export import (  # noqa: E402
     tracked_files,
     validate_export_contract,
     validate_export_tree,
+    write_file_manifest,
     worktree_files,
 )
 
@@ -37,6 +39,7 @@ PRIVATE_OPERATIONAL_DOCUMENTS = frozenset(
         "docs/ops/boot-userspace-network-handoff.md",
         "docs/ops/real-device-next-start.md",
         "docs/ops/repository-layout-inventory.md",
+        "docs/ops/rpi-os-early-e3-final-fallback-handoff.md",
         "docs/ops/windows-hidloom-hidd-p3-handoff.md",
         "docs/ops/workflow-runbook.md",
     }
@@ -306,9 +309,30 @@ def main() -> None:
         subprocess.run(["git", "commit", "-qm", "fixture"], cwd=source, check=True)
         assert tracked_files(root=source) == ["tracked.txt"]
         assert worktree_files(root=source) == ["tracked.txt"]
+        assert canonical_source_modes(["tracked.txt"], root=source) == {
+            "tracked.txt": 0o644
+        }
+        subprocess.run(
+            ["git", "update-index", "--chmod=+x", "tracked.txt"],
+            cwd=source,
+            check=True,
+        )
+        assert canonical_source_modes(["tracked.txt"], root=source) == {
+            "tracked.txt": 0o755
+        }
+        subprocess.run(
+            ["git", "update-index", "--chmod=-x", "tracked.txt"],
+            cwd=source,
+            check=True,
+        )
         clean_provenance = source_provenance(["tracked.txt"], root=source)
         assert clean_provenance["mode"] == "clean-head"
         assert clean_provenance["publishable"] is True
+        tracked.write_bytes(b"clean\r\n")
+        assert (
+            source_provenance(["tracked.txt"], root=source)["selected_snapshot_sha256"]
+            == clean_provenance["selected_snapshot_sha256"]
+        )
         tracked.write_text("dirty\n", encoding="utf-8")
         dirty_provenance = source_provenance(["tracked.txt"], root=source)
         assert dirty_provenance["mode"] == "dirty-worktree"
@@ -325,6 +349,27 @@ def main() -> None:
         tracked.rename(replacement)
         assert tracked_files(root=source) == ["tracked.txt"]
         assert worktree_files(root=source) == ["replacement.txt", "untracked.txt"]
+
+    with tempfile.TemporaryDirectory() as tmp:
+        destination = Path(tmp)
+        (destination / "tracked-script.sh").write_bytes(b"#!/bin/sh\n")
+        write_file_manifest(
+            destination,
+            {"schema": "fixture"},
+            {"tracked-script.sh": 0o755},
+        )
+        mode_manifest = json.loads(
+            (destination / "PUBLIC_EXPORT_MANIFEST.json").read_text(encoding="utf-8")
+        )
+        assert mode_manifest["files"] == [
+            {
+                "path": "tracked-script.sh",
+                "kind": "file",
+                "mode": 0o755,
+                "size": 10,
+                "sha256": "a8076d3d28d21e02012b20eaf7dbf75409a6277134439025f282e368e3305abf",
+            }
+        ]
 
     with tempfile.TemporaryDirectory() as tmp:
         machine_fixture = Path(tmp) / ("build-" + "codex" + "001" + ".txt")
@@ -465,6 +510,10 @@ def main() -> None:
         assert (destination / "daemon").is_dir()
         assert (destination / "build" / "buildroot").is_dir()
         assert (destination / "kicad").is_dir()
+        assert not any(
+            b"\r\n" in path.read_bytes()
+            for path in destination.rglob("*.sh")
+        )
         assert not (destination / "codex_tasks").exists()
         assert not (destination / "kicad" / "OLD").exists()
         assert not (destination / "docs/CURRENT_STATUS.md").exists()
@@ -708,15 +757,21 @@ def main() -> None:
             )
         assert not any(destination.rglob("__pycache__"))
         for command in exported_checks:
+            invocation = (
+                ["bash", *command]
+                if os.name == "nt" and command[0].endswith(".sh")
+                else command
+            )
             checked = subprocess.run(
-                command,
+                invocation,
                 cwd=destination,
                 env=exported_environment,
                 capture_output=True,
                 text=True,
             )
             assert checked.returncode == 0, (
-                f"exported check failed: {command}\nstdout:\n{checked.stdout}\nstderr:\n{checked.stderr}"
+                f"exported check failed: {invocation}\n"
+                f"stdout:\n{checked.stdout}\nstderr:\n{checked.stderr}"
             )
         expected_paths = {
             "PUBLIC_EXPORT_MANIFEST.json",

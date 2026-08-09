@@ -105,6 +105,8 @@ def test_basic_report_mapping() -> None:
     assert status["counters"]["frames_received"] == 4
     assert status["counters"]["keyboard_reports"] == 1
     assert status["counters"]["us_sub_keyboard_reports"] == 1
+    assert status["counters"]["keyboard_zero_reports"] == 0
+    assert status["counters"]["us_sub_keyboard_zero_reports"] == 0
     assert status["counters"]["mouse_reports"] == 1
     assert status["counters"]["consumer_reports"] == 1
 
@@ -121,6 +123,25 @@ def test_startup_release_uses_endpoint_specific_report_shapes() -> None:
     assert status["counters"]["startup_release_reports"] == 2
     assert status["counters"]["keyboard_reports"] == 1
     assert status["counters"]["us_sub_keyboard_reports"] == 1
+    assert status["counters"]["keyboard_zero_reports"] == 1
+    assert status["counters"]["us_sub_keyboard_zero_reports"] == 1
+
+
+def test_successful_zero_report_counters_are_endpoint_specific() -> None:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        hidg0, hidg2, status = run_hidd(
+            Path(tmpdir),
+            [
+                encode_hid_report_request(KIND_KEYBOARD, bytes(8)),
+                encode_hid_report_request(KIND_US_SUB_KEYBOARD, bytes(8)),
+            ],
+            extra_env={"USBD_KEYBOARD_RELEASE_MERGE_WINDOW_SEC": "0"},
+        )
+    assert hidg0 == bytes.fromhex("010000000000000000")
+    assert hidg2 == bytes(8)
+    assert status["counters"]["startup_release_reports"] == 0
+    assert status["counters"]["keyboard_zero_reports"] == 1
+    assert status["counters"]["us_sub_keyboard_zero_reports"] == 1
 
 
 def test_startup_release_waits_for_late_endpoints() -> None:
@@ -413,6 +434,7 @@ def main() -> None:
     build_tool()
     test_basic_report_mapping()
     test_startup_release_uses_endpoint_specific_report_shapes()
+    test_successful_zero_report_counters_are_endpoint_specific()
     test_startup_release_waits_for_late_endpoints()
     test_startup_release_precedes_input_queued_before_endpoints()
     test_keyboard_release_merge()

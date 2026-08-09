@@ -1,0 +1,14 @@
+[Unit]
+Description=Verify HIDloom normal input chain after early-initramfs handoff
+Documentation=file://@HIDLOOM_REPO_ROOT@/docs/ops/rpi-os-early-initramfs-experiment.md
+After=hidloom-usb-gadget.service hidloom-hidd.service hidloom-outputd.service
+After=hidloom-logicd-core.service matrixd.service
+Before=shutdown.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+Group=root
+ExecStart=/usr/bin/python3 -S @HIDLOOM_REPO_ROOT@/tools/rpi_os_early_input_handoff.py finalize --normal-hidd-exe @HIDLOOM_REPO_ROOT@/bin/hidloom-hidd --normal-outputd-exe @HIDLOOM_REPO_ROOT@/bin/hidloom-outputd --normal-core-exe @HIDLOOM_REPO_ROOT@/bin/hidloom-logicd-core --normal-matrix-exe @HIDLOOM_REPO_ROOT@/daemon/matrixd/matrixd

@@ -6,12 +6,18 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import tarfile
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def file_record(root: Path, relative: str) -> dict[str, object]:
+def file_record(
+    root: Path,
+    relative: str,
+    *,
+    mode: int | None = None,
+) -> dict[str, object]:
     path = root / relative
     if path.is_symlink():
         content = os.readlink(path).encode()
@@ -23,9 +29,13 @@ def file_record(root: Path, relative: str) -> dict[str, object]:
         "path": relative,
         "kind": kind,
         "mode": (
-            0o777
-            if kind == "symlink"
-            else (0o755 if path.stat().st_mode & 0o111 else 0o644)
+            mode
+            if mode is not None
+            else (
+                0o777
+                if kind == "symlink"
+                else (0o755 if path.stat().st_mode & 0o111 else 0o644)
+            )
         ),
         "size": len(content),
         "sha256": hashlib.sha256(content).hexdigest(),
@@ -90,7 +100,14 @@ def main() -> None:
         manifest = {
             "schema": "hidloom.public-export-manifest.v2",
             "source_provenance": provenance,
-            "files": [file_record(source, relative) for relative in listed],
+            "files": [
+                file_record(
+                    source,
+                    relative,
+                    mode=0o755 if relative == "bin/hidloom-check" else None,
+                )
+                for relative in listed
+            ],
         }
         (source / "PUBLIC_EXPORT_MANIFEST.json").write_text(
             json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
@@ -127,6 +144,13 @@ def main() -> None:
         assert "hidloom-public/.github/dependabot.yml" in members
         assert "hidloom-public/PUBLIC_EXPORT_MANIFEST.json" in members
         assert not any("unlisted.tmp" in member for member in members)
+        uncompressed_tar = workspace / "one.tar"
+        run(["zstd", "-d", "-f", str(archives[0]), "-o", str(uncompressed_tar)])
+        with tarfile.open(uncompressed_tar, "r:") as archive:
+            member_modes = {member.name: member.mode for member in archive.getmembers()}
+        assert member_modes["hidloom-public/bin/hidloom-check"] == 0o755
+        assert member_modes["hidloom-public/README.md"] == 0o644
+        assert member_modes["hidloom-public/README.link"] == 0o777
         extracted = workspace / "extracted"
         extracted.mkdir()
         run(
@@ -142,12 +166,21 @@ def main() -> None:
         )
         root = extracted / "hidloom-public"
         assert (root / ".github/dependabot.yml").read_text(encoding="utf-8") == "version: 2\n"
-        assert (root / "bin/hidloom-check").stat().st_mode & 0o777 == 0o755
-        assert (root / "README.md").stat().st_mode & 0o777 == 0o644
+        if os.name != "nt":
+            assert (root / "bin/hidloom-check").stat().st_mode & 0o777 == 0o755
+            assert (root / "README.md").stat().st_mode & 0o777 == 0o644
         assert (root / "README.link").is_symlink()
         assert os.readlink(root / "README.link") == "README.md"
 
-        readme.chmod(0o755)
+        readme_record = next(
+            item for item in manifest["files"] if item["path"] == "README.md"
+        )
+        readme_record["mode"] = 0o666
+        (source / "PUBLIC_EXPORT_MANIFEST.json").write_text(
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
         bad_mode = run(
             [
                 "python3",
@@ -159,7 +192,12 @@ def main() -> None:
         )
         assert bad_mode.returncode != 0
         assert "mode:README.md" in bad_mode.stderr
-        readme.chmod(0o644)
+        readme_record["mode"] = 0o644
+        (source / "PUBLIC_EXPORT_MANIFEST.json").write_text(
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
 
         executable.unlink()
         failed = run(

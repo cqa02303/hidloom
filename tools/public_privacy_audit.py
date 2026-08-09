@@ -170,8 +170,12 @@ def main() -> None:
     payload = audit(root)
     json_path = args.json or root / "PUBLIC_PRIVACY_AUDIT.json"
     markdown_path = args.markdown or root / "PUBLIC_PRIVACY_AUDIT.md"
-    json_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    markdown_path.write_text(markdown(payload), encoding="utf-8")
+    json_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    markdown_path.write_text(markdown(payload), encoding="utf-8", newline="\n")
     print(json.dumps(payload["summary"], ensure_ascii=False))
     if not payload["ready"]:
         raise SystemExit(2)

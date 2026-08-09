@@ -88,7 +88,11 @@ def main() -> None:
     for profile_dir in PROFILE_DIRS:
         vial = build_touch_vial(profile_dir, base)
         out_path = profile_dir / "vial.json"
-        out_path.write_text(json.dumps(vial, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        out_path.write_text(
+            json.dumps(vial, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
         print(f"generated {out_path}")
 
 

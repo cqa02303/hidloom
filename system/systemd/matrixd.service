@@ -3,6 +3,9 @@ Description=Keyboard Matrix Scanner Daemon (matrixd)
 Documentation=file://@HIDLOOM_REPO_ROOT@/daemon/matrixd/README.md
 After=hidloom-logicd-core.service
 Requires=hidloom-logicd-core.service
+Requires=hidloom-early-input-handoff-prepare.service
+After=hidloom-early-input-handoff-prepare.service
+Wants=hidloom-early-input-handoff-finalize.service
 
 [Service]
 Type=simple
@@ -10,6 +13,9 @@ ExecStart=@HIDLOOM_REPO_ROOT@/daemon/matrixd/matrixd @HIDLOOM_REPO_ROOT@/config/
 WorkingDirectory=@HIDLOOM_REPO_ROOT@
 User=root
 Group=root
+Environment=MATRIXD_STATUS_PATH=/run/hidloom/matrixd-status.json
+RuntimeDirectory=hidloom
+RuntimeDirectoryPreserve=yes
 
 Nice=-20
 CPUSchedulingPolicy=fifo

@@ -223,7 +223,7 @@ def main():
 
     # テキストファイルにも保存
     output_file = json_file.replace('.json', '_final_report.txt')
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, 'w', encoding='utf-8', newline='\n') as f:
         f.write(report + "\n")
 
     print(f"\n最終レポートを保存しました: {output_file}")

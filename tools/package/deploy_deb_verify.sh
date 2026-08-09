@@ -146,6 +146,8 @@ run_ssh "
     echo
     echo 'systemd units:'
     for unit in \
+        hidloom-early-input-handoff-prepare.service \
+        hidloom-early-input-handoff-finalize.service \
         hidloom-hidd.service \
         hidloom-uidd.service \
         hidloom-outputd.service \
@@ -162,37 +164,222 @@ run_ssh "
         hidloom-network-late.timer
     do
         echo ===\$unit===
-        systemctl show -p FragmentPath -p UnitFileState -p ActiveState -p SubState -p NRestarts \"\$unit\"
+        systemctl show -p FragmentPath -p UnitFileState -p ActiveState -p SubState -p NRestarts -p Result -p ExecMainStatus \"\$unit\"
+        result=\$(systemctl show -p Result --value \"\$unit\")
+        if [ \"\$result\" = failed ]; then
+            echo \"error: systemd unit failed: \$unit\" >&2
+            exit 1
+        fi
     done
+    echo
+    echo 'matrixd and early-handoff status:'
+    sudo -n python3 - '$PROFILE' /usr/share/hidloom/profiles /run/hidloom /run/hidloom-early 10 <<'PY'
+# HIDLOOM_DEPLOY_RUNTIME_STATUS_CHECK_BEGIN
+import json
+from pathlib import Path
+import sys
+import time
+
+
+def load(path: Path) -> dict:
+    value = json.loads(Path(path).read_text(encoding='utf-8'))
+    if not isinstance(value, dict):
+        raise SystemExit(f'error: status is not an object: {path}')
+    return value
+
+
+profile_id = sys.argv[1]
+profile_root = Path(sys.argv[2])
+runtime_root = Path(sys.argv[3])
+root = Path(sys.argv[4])
+status_timeout = float(sys.argv[5])
+if status_timeout <= 0:
+    raise SystemExit('error: matrixd status timeout must be positive')
+profile = load(profile_root / profile_id / 'profile.json')
+if profile.get('id') != profile_id:
+    raise SystemExit(f'error: installed profile identity mismatch: {profile}')
+services = profile.get('services')
+if not isinstance(services, dict):
+    raise SystemExit(f'error: installed profile services are invalid: {profile}')
+enabled = services.get('enable', [])
+disabled = services.get('disable', [])
+masked = services.get('mask', [])
+if not all(isinstance(value, list) for value in (enabled, disabled, masked)):
+    raise SystemExit(f'error: installed profile service policy is invalid: {services}')
+
+matrix_unit = 'matrixd.service'
+if matrix_unit in enabled:
+    if matrix_unit in disabled or matrix_unit in masked:
+        raise SystemExit(f'error: installed profile has conflicting matrixd policy: {services}')
+    deadline = time.monotonic() + status_timeout
+    matrix = None
+    last_error = None
+    while True:
+        try:
+            candidate = load(runtime_root / 'matrixd-status.json')
+            logic = candidate.get('logic_socket', {})
+            if (
+                candidate.get('schema') == 'matrixd.status.v1'
+                and candidate.get('process') is True
+                and candidate.get('configured') is True
+                and candidate.get('gpio_ready') is True
+                and isinstance(logic, dict)
+                and logic.get('connected') is True
+            ):
+                matrix = candidate
+                break
+            matrix = candidate
+            last_error = None
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            last_error = f'{type(exc).__name__}: {exc}'
+        if time.monotonic() >= deadline:
+            raise SystemExit(
+                f'error: matrixd status did not become ready: last={matrix} error={last_error}'
+            )
+        time.sleep(0.05)
+    print(f'matrixd status: ready profile={profile_id}')
+elif matrix_unit in disabled or matrix_unit in masked:
+    print(f'matrixd status: not-applicable profile={profile_id}')
+else:
+    raise SystemExit(f'error: installed profile has no matrixd service policy: {services}')
+
+ready = root / 'e3-input.ready'
+prepared = root / 'e4-handoff.prepare.json'
+complete = root / 'e4-handoff.complete.json'
+if ready.exists():
+    prepare_value = load(str(prepared))
+    complete_value = load(str(complete))
+    if prepare_value.get('schema') != 'hidloom.rpi-os-early-input-handoff.prepare.v1' or prepare_value.get('status') != 'prepared':
+        raise SystemExit(f'error: E4 prepare evidence is incomplete: {prepare_value}')
+    if complete_value.get('schema') != 'hidloom.rpi-os-early-input-handoff.complete.v1' or complete_value.get('status') != 'complete':
+        raise SystemExit(f'error: E4 completion evidence is incomplete: {complete_value}')
+    print('early handoff status: complete')
+elif prepared.exists() or complete.exists():
+    raise SystemExit('error: E4 evidence exists without an E3 ready marker')
+else:
+    print('early handoff status: not-applicable normal boot')
+# HIDLOOM_DEPLOY_RUNTIME_STATUS_CHECK_END
+PY
 "
 
 if [ "$RUN_SMOKE" -eq 1 ]; then
     run_ssh "
         set -eu
+        cd /usr/lib/hidloom
+        native_owner_smoke=\$(python3 - '$PROFILE' /usr/share/hidloom/profiles <<'PY'
+# HIDLOOM_DEPLOY_NATIVE_SMOKE_POLICY_BEGIN
+import json
+from pathlib import Path
+import sys
+
+
+profile_id = sys.argv[1]
+profile_path = Path(sys.argv[2]) / profile_id / 'profile.json'
+profile = json.loads(profile_path.read_text(encoding='utf-8'))
+if not isinstance(profile, dict) or profile.get('id') != profile_id:
+    raise SystemExit(f'error: installed profile identity mismatch: {profile}')
+services = profile.get('services')
+if not isinstance(services, dict):
+    raise SystemExit(f'error: installed profile services are invalid: {profile}')
+
+
+def service_set(name: str):
+    value = services.get(name, [])
+    if not isinstance(value, list) or not all(isinstance(unit, str) for unit in value):
+        raise SystemExit(f'error: installed profile service policy is invalid: {services}')
+    return set(value)
+
+
+enabled = service_set('enable')
+blocked = service_set('disable') | service_set('mask')
+native_units = {
+    'hidloom-uidd.service',
+    'hidloom-outputd.service',
+    'hidloom-logicd-core.service',
+    'matrixd.service',
+}
+if native_units <= enabled and not (native_units & blocked):
+    print('required')
+elif native_units <= blocked and not (native_units & enabled):
+    print('skipped')
+else:
+    raise SystemExit(
+        f'error: installed profile has ambiguous native-owner smoke policy: {services}'
+    )
+# HIDLOOM_DEPLOY_NATIVE_SMOKE_POLICY_END
+PY
+        )
+        echo "native owner smoke policy: \$native_owner_smoke profile=$PROFILE"
         restore_output() {
             /usr/bin/hidloom-ctrl output auto || true
         }
-        trap restore_output EXIT HUP INT TERM
-        cd /usr/lib/hidloom
-        for socket_path in /tmp/matrix_events.sock /tmp/matrix_tap_events.sock /tmp/logicd_delegate_events.sock; do
-            ready=0
-            for _ in \$(seq 1 50); do
-                if [ -S \"\$socket_path\" ]; then
-                    ready=1
-                    break
-                fi
-                sleep 0.1
-            done
-            if [ \"\$ready\" -ne 1 ]; then
-                echo \"socket not ready: \$socket_path\" >&2
-                exit 1
-            fi
-        done
+        if [ "\$native_owner_smoke" = required ]; then
+            trap restore_output EXIT HUP INT TERM
+        fi
+        # A bound configfs gadget is not yet usable until the physical host has
+        # enumerated it and hidloom-hidd has completed both startup releases.
+        # Sending Unix datagrams earlier only queues smoke frames behind the
+        # blocking HID write, so fail before sending anything in that state.
+        python3 - <<'PY'
+import json
+from pathlib import Path
+import sys
+import time
+
+deadline = time.monotonic() + 10.0
+last = 'not checked'
+while time.monotonic() < deadline:
+    try:
+        udc = Path('/sys/kernel/config/usb_gadget/cqa02303v5/UDC').read_text().strip()
+        state = (Path('/sys/class/udc') / udc / 'state').read_text().strip()
+        status = json.loads(Path('/run/hidloom/hidd-status.json').read_text())
+        counters = status.get('counters', {})
+        endpoints = status.get('endpoints', {})
+        startup = counters.get('startup_release_reports', -1)
+        udc_label = udc if udc else 'unbound'
+        last = f'udc={udc_label} state={state} startup_release_reports={startup}'
+        if (
+            udc
+            and state in {'configured', 'suspended'}
+            and status.get('process') is True
+            and status.get('socket', {}).get('listening') is True
+            and endpoints.get('hidg0', {}).get('open') is True
+            and endpoints.get('hidg2', {}).get('open') is True
+            and isinstance(startup, int)
+            and startup >= 2
+        ):
+            print(f'hidd smoke readiness: {last}')
+            break
+    except (OSError, ValueError, TypeError) as exc:
+        last = f'{type(exc).__name__}: {exc}'
+    time.sleep(0.1)
+else:
+    print(f'error: hidd smoke not ready; no frames sent: {last}', file=sys.stderr)
+    raise SystemExit(1)
+PY
         python3 script/hidloom_hidd_live_smoke.py --delay 0.005 --malformed-count 1 --consumer-null-burst 3
-        python3 tools/logicd_core_native_owner_live_smoke.py --apply --json
-        restore_output
-        trap - EXIT HUP INT TERM
-        echo 'output status after restore:'
-        cat /run/hidloom/outputd-status.json
+        if [ \"\$native_owner_smoke\" = required ]; then
+            for socket_path in /tmp/matrix_events.sock /tmp/matrix_tap_events.sock /tmp/logicd_delegate_events.sock; do
+                ready=0
+                for _ in \$(seq 1 50); do
+                    if [ -S \"\$socket_path\" ]; then
+                        ready=1
+                        break
+                    fi
+                    sleep 0.1
+                done
+                if [ \"\$ready\" -ne 1 ]; then
+                    echo \"socket not ready: \$socket_path\" >&2
+                    exit 1
+                fi
+            done
+            python3 tools/logicd_core_native_owner_live_smoke.py --apply --json
+            restore_output
+            trap - EXIT HUP INT TERM
+            echo 'output status after restore:'
+            cat /run/hidloom/outputd-status.json
+        else
+            echo \"native owner smoke: skipped profile=$PROFILE policy=disabled-or-masked\"
+        fi
     "
 fi

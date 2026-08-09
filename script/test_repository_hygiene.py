@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -63,7 +64,19 @@ def main() -> None:
     for item in allow_groups:
         paths = [ROOT / relative for relative in item["paths"]]
         assert all(path.is_file() for path in paths)
-        assert len({path.read_bytes() for path in paths}) == 1
+        if (ROOT / ".git").exists():
+            contents = {
+                subprocess.check_output(
+                    ["git", "hash-object", path.relative_to(ROOT).as_posix()],
+                    cwd=ROOT,
+                    text=True,
+                    encoding="utf-8",
+                ).strip()
+                for path in paths
+            }
+        else:
+            contents = {path.read_bytes() for path in paths}
+        assert len(contents) == 1
         assert item["reason"].strip()
     policy = config["portable_path_policy"]
     direct_findings = portable_path_findings(
@@ -73,10 +86,26 @@ def main() -> None:
     assert any("maximum is 255" in item.detail for item in direct_findings)
     assert any("reserved on Windows/Git" in item.detail for item in direct_findings)
     assert any("not valid Unicode" in item.detail for item in direct_findings)
+    cross_platform_findings = portable_path_findings(
+        [
+            "Portable/README.md",
+            "portable/other.md",
+            "docs/CON.txt",
+            "docs/bad:name.txt",
+            "docs/trailing.",
+            "docs/cafe\u0301.md",
+        ],
+        policy,
+    )
+    assert any(item.kind == "portable_path_collision" for item in cross_platform_findings)
+    assert any("reserved on Windows/Git" in item.detail for item in cross_platform_findings)
+    assert any("invalid code point" in item.detail for item in cross_platform_findings)
+    assert any("Windows-trimmed character" in item.detail for item in cross_platform_findings)
+    assert any("not NFC-normalized" in item.detail for item in cross_platform_findings)
 
     with tempfile.TemporaryDirectory() as tmp:
-        fixture = Path(tmp) / "fixture"
-        fixture.mkdir()
+        fixture = Path(tmp) / "\u691c\u8a3c" / "fixture"
+        fixture.mkdir(parents=True)
         subprocess.run(["git", "init", "-q", str(fixture)], check=True)
         write(fixture / "src" / "main.py")
         for dirname in ("inbox", "running", "done", "failed"):
@@ -105,12 +134,13 @@ def main() -> None:
         write(fixture / "huge.bin", b"y" * 1048577)
         write(fixture / "case" / "duplicate-a.f3d", large_content)
         write(fixture / "case" / "duplicate-b.f3d", large_content)
-        write(fixture / "Portable" / "README.md")
-        write(fixture / "portable" / "other.md")
-        write(fixture / "docs" / "CON.txt")
-        write(fixture / "docs" / "bad:name.txt")
-        write(fixture / "docs" / "trailing.")
-        write(fixture / "docs" / "cafe\u0301.md")
+        if os.name != "nt":
+            write(fixture / "Portable" / "README.md")
+            write(fixture / "portable" / "other.md")
+            write(fixture / "docs" / "CON.txt")
+            write(fixture / "docs" / "bad:name.txt")
+            write(fixture / "docs" / "trailing.")
+            write(fixture / "docs" / "cafe\u0301.md")
         write(fixture / "long" / ("a" * 90) / (("b" * 90) + ".txt"))
         write(fixture / "content" / "empty.txt", b"")
         write(fixture / "content" / "crlf.txt", b"one\r\ntwo\r\n")
@@ -129,6 +159,17 @@ def main() -> None:
             b"[package]\nname='missing-lock'\nversion='0.1.0'\n",
         )
         subprocess.run(["git", "-C", str(fixture), "add", "-f", "."], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(fixture),
+                "update-index",
+                "--chmod=+x",
+                "content/bad-executable.py",
+            ],
+            check=True,
+        )
         dirty = run(fixture, check=False)
         assert dirty.returncode == 1
         output = dirty.stdout + dirty.stderr
@@ -156,8 +197,16 @@ def main() -> None:
             "executable_without_shebang: content/bad-executable.py",
             "non_executable_shell: content/non-executable.sh",
         ]:
+            if os.name == "nt" and finding in {
+                "portable_path_collision: Portable",
+                "nonportable_path: docs/CON.txt",
+                "nonportable_path: docs/bad:name.txt",
+                "nonportable_path: docs/trailing.",
+            }:
+                continue
             assert finding in output, finding
-        assert "component is not NFC-normalized" in output
+        if os.name != "nt":
+            assert "component is not NFC-normalized" in output
         assert "path uses 190 UTF-16 units; maximum is 180" in output
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -180,7 +229,9 @@ def main() -> None:
         ]
         config_path = Path(tmp) / "repository-hygiene.json"
         config_path.write_text(
-            json.dumps(fixture_config, indent=2) + "\n", encoding="utf-8"
+            json.dumps(fixture_config, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
         )
         allowed = run(fixture, check=True, config=config_path)
         assert "ok: repository hygiene" in allowed.stdout
@@ -230,7 +281,9 @@ def main() -> None:
             ],
         }
         (exported / "PUBLIC_EXPORT_MANIFEST.json").write_text(
-            json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
         )
         fallback = run(exported, check=True)
         assert "from PUBLIC_EXPORT_MANIFEST.json" in fallback.stdout
@@ -246,7 +299,9 @@ def main() -> None:
             }
         )
         (exported / "PUBLIC_EXPORT_MANIFEST.json").write_text(
-            json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
         )
         non_executable_export = run(exported, check=False)
         assert non_executable_export.returncode == 1
@@ -255,7 +310,9 @@ def main() -> None:
         )
         manifest["files"][-1]["mode"] = 0o755
         (exported / "PUBLIC_EXPORT_MANIFEST.json").write_text(
-            json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
         )
         executable_export = run(exported, check=True)
         assert "from PUBLIC_EXPORT_MANIFEST.json" in executable_export.stdout
@@ -269,7 +326,9 @@ def main() -> None:
             ]
         )
         (exported / "PUBLIC_EXPORT_MANIFEST.json").write_text(
-            json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+            json.dumps(manifest, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
         )
         nonportable_export = run(exported, check=False)
         assert nonportable_export.returncode == 1
