@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "ef7dbe0760ff49682ef573f67d2e75124df07706",
-    "base_tree": "2e516167150f52922c1d0b61e2280c9d8ef5229f",
-    "base_revision_count": 2058,
+    "base_commit": "a5065d1dc9b6010bb304753c8fde3dcf300e033d",
+    "base_tree": "5a1386d9f4ddfdbcacb386de1a2b12aedb044205",
+    "base_revision_count": 2059,
     "selected_path_count": 1271,
-    "selected_snapshot_sha256": "76a0c4f2da58575e4af8d64d871f1b748c779730d76e637ae228e2fe00619ebe"
+    "selected_snapshot_sha256": "5c9d0c64db94fdc6a8346619a455d767dba67eb6f60b9ff40215bd0f29b47e97"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
@@ -48,7 +48,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": ".github/workflows/public-ci.yml",
-      "line": 123,
+      "line": 124,
       "excerpt": "GH_TOKEN: ${{ github.token }}",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"

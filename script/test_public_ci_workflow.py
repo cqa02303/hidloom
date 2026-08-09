@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APT_PACKAGES = (
     "build-essential",
     "fakeroot",
+    "gcc-aarch64-linux-gnu",
     "python3-aiohttp",
     "python3-dbus-next",
     "python3-numpy",
@@ -100,6 +101,7 @@ def main() -> None:
     assert len(PUBLIC_PR_TESTS) == len(set(PUBLIC_PR_TESTS))
     assert set(PUBLIC_PR_TESTS) <= set(FULL_TESTS)
     assert REQUIRED_PUBLIC_PR_TESTS <= set(PUBLIC_PR_TESTS)
+    assert "script/test_rpi_os_early_initramfs_tool.py" in FULL_TESTS
 
     extended = jobs["extended"]
     expected_condition = (

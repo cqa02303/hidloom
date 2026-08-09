@@ -1,9 +1,9 @@
 # HIDloom Public Export Report
 
-- Source base commit: `ef7dbe0760ff49682ef573f67d2e75124df07706`
+- Source base commit: `a5065d1dc9b6010bb304753c8fde3dcf300e033d`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `76a0c4f2da58575e4af8d64d871f1b748c779730d76e637ae228e2fe00619ebe`
+- Selected source snapshot: `5c9d0c64db94fdc6a8346619a455d767dba67eb6f60b9ff40215bd0f29b47e97`
 - Files: 1271
 - Tracked source paths: 1339
 - Private-only paths: 68
@@ -16,7 +16,7 @@
 
 ## Findings
 
-- `warn` `credential_word` `.github/workflows/public-ci.yml:123` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
+- `warn` `credential_word` `.github/workflows/public-ci.yml:124` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
 - `warn` `credential_word` `CONTRIBUTING.md:60` `documentation_security_keyword` — `secret-bearing backup.`
 - `warn` `credential_word` `INSTALL.md:149` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
 - `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
