@@ -1345,11 +1345,19 @@
 - regression check: WindowsとLinuxで`script/test_license_evidence_tools.py`を実行し、schema、host field、Debian 21/Python 2のtotalを固定する。Linux focused validationでは実`dpkg-query`観測も維持し、Windowsのunobserved結果をLinux evidenceの代用にしない。
 - evidence: 2026-08-09 Windows execution hostのfull public exportでlocal environment hygiene通過後に検出した。host fallbackとcommand availabilityを明示し、LF固定evidenceを再生成した。
 
-## Public extended CI omits the ARM64 cross compiler required by the full suite
+## Public extended CI exposes late cross-host prerequisites in the full suite
 
-- symptom: public sync PRのrequired `validate`はpassするが、merge後`extended`のcanonical suiteが終盤の`script/test_rpi_os_early_initramfs_tool.py`で`required test command is missing: aarch64-linux-gnu-gcc`となり、locked Rust checksとdiff hygieneへ進めない。
-- cause: early-initramfs builder testをcanonical suiteへ追加した一方、public `extended`のUbuntu dependency listへARM64 GNU cross compilerを追加していなかった。`rustup target add aarch64-unknown-linux-musl`と`build-essential`は`aarch64-linux-gnu-gcc`を提供しないため、cross-build hostの既存packageがlocal validationで不足を隠した。
-- detect: merge後Public CIの最初のfailed testと`require_commands()`の不足名を確認し、test本体のfixture failureとrunner dependency不足を分ける。PR gateがgreenでも、`extended`のapt install listとcanonical suiteが要求するexternal commandを照合する。
-- recovery: public `extended`のapt installへUbuntu package `gcc-aarch64-linux-gnu`を追加する。失敗したpublic `main`を履歴改変せずfollow-up source sync PRで修正し、merge後runのfull suite、locked Rust checks、diff hygieneまでpassさせる。PID未割当中はRelease、tag、binary assetを作成しない。
-- regression check: `script/test_public_ci_workflow.py`で`script/test_rpi_os_early_initramfs_tool.py`がfull suiteに含まれることと、`gcc-aarch64-linux-gnu`が`extended` install blockにあることを同時に固定する。focused workflow test、early-initramfs tool test、public PR `validate`、merge後`extended`をpassさせる。
-- evidence: 2026-08-09 public PR #19 merge後run `31298701323`は`validate`を2分48秒でpassしたが、`extended` run job `93207883186`が17分31秒で上記missing commandにより失敗した。先行するpublic export/readiness/bootstrap/sync/policy testはすべてpassしており、最初の実failureはcross compiler preflightだった。
+- symptom: public sync PRのrequired `validate`はpassするが、`extended`のcanonical suiteが終盤で停止し、locked Rust checksとdiff hygieneへ進めない。順にmissing cross compiler、不完全main archive、`unmkinitramfs`展開先誤認、export後gadget identity不正を検出した。branch作成前のstandalone export suiteはhandoff/tryboot fixture modeを直してRust release buildまで進んだ後、watcher testが非公開checklistを読んで`FileNotFoundError`になった。
+- cause: early-initramfs testのUbuntu dependency/fixture/split展開、adopt fixtureのprivacy置換後validator適合を未考慮だった。`umask 0002` hostでは暗黙作成したsecure fixture rootが`0775`となり、production security checkが正しく拒否した。さらにWindows watcher testはpublicなtool fixture検証とprivate real-device checklist連携を一つにし、export policyが意図的に除外するdocをpublic cloneでも必須にしていた。production runtimeの欠陥ではない。
+- detect: Public CIまたはstandalone export suiteの最初のfailed testを確認し、missing command、`unmkinitramfs` stderr/path、export後identity、secure fixture mode、missing pathがexport contractのprivate除外かを分ける。recovery statusが`unbound`でもevidence fileがなければpayloadの`evidence_error`、placement処理前ならfixture root/file mode、doc不在なら`config/public-export.json`を確認する。
+- recovery: cross compiler、cpio parent、split `early2/`検証、`hidloom-fixture`を順に追加する。handoff fixtureは`0700`、tryboot root/fileは`0755`/`0644`を明示する。watcher testはprivate checkoutではchecklist内容を検証し、public cloneでは同pathがcanonical export contractで明示除外されていることを検証する。未merge失敗PRはcloseし、fresh sourceから再exportする。
+- regression check: workflow、initramfs、export後identity、handoff/tryboot modeをfocused testで固定する。watcher testはprivate doc存在時の`post-first-ready`連携と、不在時のstructured export exclusionを排他的に検証する。focused testは`umask 0002`、clean standalone export canonical suiteはGitHub相当`umask 0022`でpassさせ、public PR `validate`、branch/merge後`extended`もpassさせる。
+- evidence: 2026-08-09 public PR #19 run `31298701323`のjob `93207883186`はmissing compiler、PR #20 run `31299905422`のjob `93210899878`は不完全fixture、未mergePR #21 run `31300895654`のjob `93213364537`はsplit展開先、未mergePR #22 run `31302439786`のjob `93217288309`はexport後identityを検出した。PR #22 close後、source `9fd792ea` suiteはhandoff、`791e3ab6` suiteはtryboot mode、`ba44ff8c` suiteは両者を通過後にprivate checklist couplingを検出した。mode assertion追加時の`stat` import漏れもexport前に検出した。production image、Release、runtimeは変更していない。
+
+## Public sync selects a mismatched default SSH identity
+
+- symptom: approved public repositoryへfresh sync branchをpushする前のcloneが`identity_sign: private key contents do not match public`と`Permission denied (publickey)`で停止する。
+- cause: execution hostのdefault SSH identityはprivate/public pairが一致しない状態だった一方、GitHub CLIの既存git protocolはHTTPSで認証済みだった。sync helperとremote branchの不具合ではない。
+- detect: failed helper後にdestination worktreeが存在しないこと、`git ls-remote --heads`で予定branchが存在しないこと、`gh auth status`のactive accountとgit protocolを値非表示で確認する。SSH鍵内容やtokenをlogへ出さない。
+- recovery: SSH identityやcredential設定を変更せず、helperが許可する同じofficial repositoryのHTTPS URLと既存GitHub CLI credentialでfresh empty worktreeから再実行する。2026-08-09 runでは予定branch不在を確認後、同じexport manifestからnon-force pushへ復旧した。
+- regression check: execute前に選択protocolのread-only remote accessと予定branch不在を確認し、helperのapproved repository guard、empty worktree guard、remote branch overwrite拒否を維持する。認証失敗後に別repository、force push、credential再生成へ進まない。

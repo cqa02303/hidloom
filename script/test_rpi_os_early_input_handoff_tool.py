@@ -12,6 +12,7 @@ import select
 import shutil
 import signal
 import socket
+import stat
 import subprocess
 import tempfile
 import threading
@@ -1096,8 +1097,11 @@ def discovery_paths(root: Path) -> None:
     assert json.loads(result.stdout)["status"] == "not-applicable"
 
     racing = root / "race"
+    racing.mkdir(mode=0o700)
     live = racing / "live"
-    live.mkdir(parents=True, mode=0o700)
+    live.mkdir(mode=0o700)
+    assert stat.S_IMODE(racing.stat().st_mode) == 0o700
+    assert stat.S_IMODE(live.stat().st_mode) == 0o700
     (live / "chain-ready").touch(mode=0o600)
     recovery_udc = racing / "UDC"
     recovery_udc.write_text("fixture.udc\n", encoding="ascii")
@@ -1131,8 +1135,9 @@ def discovery_paths(root: Path) -> None:
     ] == "unbound"
 
     staged = root / "staged-transition"
+    staged.mkdir(mode=0o700)
     staged_live = staged / "live"
-    staged_live.mkdir(parents=True, mode=0o700)
+    staged_live.mkdir(mode=0o700)
     (staged_live / "chain-staged").touch(mode=0o600)
     staged_ready = staged / "ready.json"
     wait_args = argparse.Namespace(

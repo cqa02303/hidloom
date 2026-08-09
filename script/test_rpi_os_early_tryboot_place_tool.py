@@ -63,7 +63,7 @@ def directory_bytes(path: Path) -> dict[str, bytes]:
 
 def make_stage_template(work: Path, env: dict[str, str]) -> tuple[Path, Path]:
     source = work / "source"
-    source.mkdir()
+    source.mkdir(mode=0o755)
     image, manifest = fixture.build_e1_fixture(source, env)
     config = source / "config.txt"
     config.write_bytes(
@@ -82,12 +82,14 @@ def make_stage_template(work: Path, env: dict[str, str]) -> tuple[Path, Path]:
     payload += b"Linux version " + fixture.KERNEL.encode("ascii") + b"\0"
     kernel = source / "kernel8.img"
     kernel.write_bytes(gzip.compress(bytes(payload), mtime=0))
+    for path in (image, manifest, source / NORMAL_INITRAMFS, config, cmdline, kernel):
+        path.chmod(0o644)
     stage = work / "stage-template"
     fixture.run(
         fixture.stage_command(config, cmdline, image, manifest, kernel, stage), env
     )
     normal = work / "normal-template"
-    normal.mkdir()
+    normal.mkdir(mode=0o755)
     shutil.copy2(config, normal / config.name)
     shutil.copy2(cmdline, normal / cmdline.name)
     shutil.copy2(kernel, normal / kernel.name)
@@ -97,19 +99,21 @@ def make_stage_template(work: Path, env: dict[str, str]) -> tuple[Path, Path]:
 
 def make_case(work: Path, name: str, stage_template: Path, normal: Path) -> dict[str, Any]:
     case = work / name
-    case.mkdir()
+    case.mkdir(mode=0o755)
     stage = case / "stage"
     boot = case / "boot"
     shutil.copytree(stage_template, stage)
     shutil.copytree(normal, boot)
     rootfs = case / "rootfs"
-    rootfs.mkdir()
+    rootfs.mkdir(mode=0o755)
     accepted = rootfs / "early-boot"
     backups = case / "backups"
-    backups.mkdir()
+    backups.mkdir(mode=0o755)
     backup = backups / "before-e2"
     live = case / "live"
-    live.mkdir()
+    live.mkdir(mode=0o755)
+    for path in (case, stage, boot, rootfs, backups, live):
+        assert stat.S_IMODE(path.stat().st_mode) == 0o755
     model = live / "model"
     model.write_bytes(MODEL.encode() + b"\0")
     model.chmod(0o444)
@@ -192,7 +196,7 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="hidloom-e2-place-test-") as directory:
         work = Path(directory)
         fake_bin = work / "bin"
-        fake_bin.mkdir()
+        fake_bin.mkdir(mode=0o755)
         fixture.write_fake_modinfo(fake_bin)
         env = os.environ.copy()
         env["PATH"] = str(fake_bin) + os.pathsep + env["PATH"]

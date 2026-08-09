@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 import re
 
@@ -385,9 +386,7 @@ def main() -> None:
     runbook = (ROOT / "docs" / "ops" / "rpi-os-early-initramfs-experiment.md").read_text(
         encoding="utf-8"
     )
-    checklist = (ROOT / "docs" / "ops" / "real-device-test-checklist.md").read_text(
-        encoding="utf-8"
-    )
+    checklist_path = ROOT / "docs" / "ops" / "real-device-test-checklist.md"
     inventory = (ROOT / "docs" / "ops" / "test-script-inventory.md").read_text(
         encoding="utf-8"
     )
@@ -398,7 +397,13 @@ def main() -> None:
     assert "windows_usb_enumeration_watch.ps1" in runbook
     assert f"-VendorId {candidate_vid} -ProductId {candidate_pid}" in runbook
     assert "exact HID child" in runbook
-    assert "post-first-ready" in checklist
+    if checklist_path.is_file():
+        assert "post-first-ready" in checklist_path.read_text(encoding="utf-8")
+    else:
+        export_contract = json.loads(
+            (ROOT / "config" / "public-export.json").read_text(encoding="utf-8")
+        )
+        assert "docs/ops/real-device-test-checklist.md" in export_contract["exclude_globs"]
     assert "PnP instance operation" in inventory
 
     print("ok: Windows USB enumeration watcher static and fixture contract")

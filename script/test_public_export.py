@@ -507,6 +507,11 @@ def main() -> None:
         assert (destination / "script/test_public_repository_create.py").exists()
         assert (destination / "script/test_public_repository_bootstrap.py").exists()
         assert (destination / "script/test_public_repository_policy.py").exists()
+        adopt_fixture = (
+            destination / "script/test_rpi_os_early_gadget_adopt_tool.py"
+        ).read_text(encoding="utf-8")
+        assert 'FIXTURE_HOSTNAME = "hidloom-fixture"' in adopt_fixture
+        assert "<keyboard-host>" not in adopt_fixture
         assert (destination / "daemon").is_dir()
         assert (destination / "build" / "buildroot").is_dir()
         assert (destination / "kicad").is_dir()
