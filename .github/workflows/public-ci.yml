@@ -56,6 +56,7 @@ jobs:
           sudo apt-get install -y \
             build-essential \
             fakeroot \
+            gcc-aarch64-linux-gnu \
             python3-aiohttp \
             python3-dbus-next \
             python3-numpy \

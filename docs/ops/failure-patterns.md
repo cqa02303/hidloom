@@ -1344,3 +1344,12 @@
 - recovery: `/etc/os-release`がないhostはPython `platform`情報を同じ3 fieldへ記録する。`dpkg-query`がないhostでは全Debian entryを名前付き`observed=false`で保持し、PyPI観測と総component数を継続する。Linuxでは従来どおりcopyright fileを採取する。
 - regression check: WindowsとLinuxで`script/test_license_evidence_tools.py`を実行し、schema、host field、Debian 21/Python 2のtotalを固定する。Linux focused validationでは実`dpkg-query`観測も維持し、Windowsのunobserved結果をLinux evidenceの代用にしない。
 - evidence: 2026-08-09 Windows execution hostのfull public exportでlocal environment hygiene通過後に検出した。host fallbackとcommand availabilityを明示し、LF固定evidenceを再生成した。
+
+## Public extended CI omits the ARM64 cross compiler required by the full suite
+
+- symptom: public sync PRのrequired `validate`はpassするが、merge後`extended`のcanonical suiteが終盤の`script/test_rpi_os_early_initramfs_tool.py`で`required test command is missing: aarch64-linux-gnu-gcc`となり、locked Rust checksとdiff hygieneへ進めない。
+- cause: early-initramfs builder testをcanonical suiteへ追加した一方、public `extended`のUbuntu dependency listへARM64 GNU cross compilerを追加していなかった。`rustup target add aarch64-unknown-linux-musl`と`build-essential`は`aarch64-linux-gnu-gcc`を提供しないため、cross-build hostの既存packageがlocal validationで不足を隠した。
+- detect: merge後Public CIの最初のfailed testと`require_commands()`の不足名を確認し、test本体のfixture failureとrunner dependency不足を分ける。PR gateがgreenでも、`extended`のapt install listとcanonical suiteが要求するexternal commandを照合する。
+- recovery: public `extended`のapt installへUbuntu package `gcc-aarch64-linux-gnu`を追加する。失敗したpublic `main`を履歴改変せずfollow-up source sync PRで修正し、merge後runのfull suite、locked Rust checks、diff hygieneまでpassさせる。PID未割当中はRelease、tag、binary assetを作成しない。
+- regression check: `script/test_public_ci_workflow.py`で`script/test_rpi_os_early_initramfs_tool.py`がfull suiteに含まれることと、`gcc-aarch64-linux-gnu`が`extended` install blockにあることを同時に固定する。focused workflow test、early-initramfs tool test、public PR `validate`、merge後`extended`をpassさせる。
+- evidence: 2026-08-09 public PR #19 merge後run `31298701323`は`validate`を2分48秒でpassしたが、`extended` run job `93207883186`が17分31秒で上記missing commandにより失敗した。先行するpublic export/readiness/bootstrap/sync/policy testはすべてpassしており、最初の実failureはcross compiler preflightだった。
