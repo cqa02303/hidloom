@@ -26,9 +26,9 @@ def main() -> None:
     assert payload["schema"] == "hidloom.public-asset-provenance.v1"
     assert payload["ready"] is True
     assert payload["summary"] == {
-        "records": 8,
-        "assets": 49,
-        "declared": 49,
+        "records": 9,
+        "assets": 51,
+        "declared": 51,
         "missing_declarations": 0,
         "stale_declarations": 0,
         "invalid_records": 0,
@@ -40,6 +40,11 @@ def main() -> None:
     assert len(gallery["paths"]) == 14
     kicad = next(item for item in payload["records"] if item["id"] == "keyboard-kicad-designs")
     assert "KiCad Libraries License Exception" in kicad["upstream_material"]["license"]
+    pdfs = next(
+        item for item in payload["records"] if item["id"] == "keyboard-hardware-pdf-exports"
+    )
+    assert pdfs["evidence"]["generator"] == "tools/export_hardware_pdfs.py"
+    assert len(pdfs["paths"]) == 2
 
     with tempfile.TemporaryDirectory() as tmp:
         fixture = Path(tmp)
@@ -53,10 +58,13 @@ def main() -> None:
                 destination = fixture / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(ROOT / relative, destination)
-        for relative in ("tools/generate_hidloom_icons.py", "script/test_hidloom_icon_assets.py"):
-            destination = fixture / relative
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(ROOT / relative, destination)
+            evidence = record.get("evidence", {})
+            if evidence.get("type") == "reproducible-generator":
+                for key in ("generator", "test"):
+                    relative = evidence[key]
+                    destination = fixture / relative
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(ROOT / relative, destination)
         assert run(fixture).returncode == 0
         cache = fixture / "__pycache__/generated.pyc"
         cache.parent.mkdir()

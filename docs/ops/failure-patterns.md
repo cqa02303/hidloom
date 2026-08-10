@@ -17,6 +17,51 @@
 - evidence:
 ```
 
+## Windows zstd cannot reopen an active compliance tar tempfile
+
+- symptom: Buildroot compliance fixture generation reaches `zstd`, then fails with `Permission denied` for a temporary `.tar` even though the destination directory is writable.
+- likely cause: `normalized_tar()` kept a `NamedTemporaryFile` handle open while invoking `zstd` with that file's path. POSIX permits the second process to reopen the active file, but Windows file sharing rejects it.
+- detect: run `script/test_buildroot_compliance_bundle.py` or `script/test_public_release_readiness.py` on Windows with the canonical PyYAML and zstd dependencies. Distinguish an earlier `PyYAML is required` environment failure from the characteristic `zstd: ...tmp*.tar: Permission denied` sharing failure.
+- recovery: preserve the failed output and rerun after creating the tar at a path inside a temporary directory, closing `tarfile` completely, and only then invoking `zstd`. Do not weaken bundle determinism, checksum, compliance, or tamper gates.
+- regression check: require `script/test_buildroot_compliance_bundle.py` and `script/test_public_release_readiness.py` to pass on the Windows execution host, and retain the public Linux full regression / locked Rust / diff hygiene gate for the exported source.
+- evidence: 2026-08-09のWindows final closeoutでcanonical dependency PATHを設定後に再現した。temporary tar lifecycle修正後、deterministic compliance bundle / tamper gateはWindowsでpassし、archive formatとcompression argumentsは変更していない。
+
+## Windows decodes KiCad CLI progress with the legacy console code page
+
+- symptom: hardware PDF export starts KiCad successfully but its Python wrapper raises `UnicodeDecodeError` in a subprocess reader thread, then receives `stdout=None` before publishing any staged PDF.
+- likely cause: KiCad 10 emits UTF-8 localized progress while Windows Python uses the active legacy console encoding for `text=True` unless an encoding is explicit.
+- detect: run the PDF exporter from a non-ASCII checkout and distinguish a decode traceback in `_readerthread` from a nonzero KiCad exit or malformed PDF. Confirm final destinations are still absent because generation occurs in a temporary staging directory.
+- recovery: decode KiCad stdout/stderr as UTF-8 with strict errors and rerun the same generator. Do not replace decode failures, relax PDF validation, or publish a partially generated pair.
+- regression check: the fake KiCad fixture emits a non-ASCII UTF-8 completion line and must generate both PDFs, provenance, overwrite refusal, and forced replacement on Windows and POSIX.
+- evidence: 2026-08-10のWindows execution hostで最初のtracked PDF生成時に検出した。staging cleanup後も公開先PDFは未作成で、UTF-8境界修正を入れて同じsourceから再生成した。
+
+## Public name audit rejects exact KiCad hardware export filenames
+
+- symptom: a clean source-public export passes privacy/readiness locally, but public `validate` stops in `test_hidloom_name_audit.py` after adding generated hardware review PDFs.
+- likely cause: the immutable KiCad project identity was allowed inside `kicad/**`, while the generator and regression test referenced the same exact output filenames outside that directory and matched the retired software-name rule.
+- detect: run `tools/hidloom_name_audit.py` on the private source as a focused pre-sync check and inspect findings outside `kicad/**`; do not weaken the generic retired-name patterns.
+- recovery: allow only the three canonical hardware export filenames used by the generator, test, and provenance record. Keep arbitrary names with the same prefix blocked.
+- regression check: `script/test_hidloom_name_audit.py` accepts the three exact export names and rejects a nearby unreviewed PDF name.
+- evidence: public branch `sync/v0.1.0-68b856b67487` run `31393396336` failed at the required name audit before PR creation; the local focused reproduction returned the same six generator/test findings. Follow-up run `31393998832` passed that audit, then exposed untriaged public-export warnings for the exact `.gitignore` exception and this failure prose; the ignore path is now explicitly classified and the prose no longer repeats the literal.
+
+## New public helper is missing from the tools inventory
+
+- symptom: required public `validate` passes, but manual `extended` reaches the full regression suite and `test_tools_readme.py` rejects a newly added `tools/*.py` helper.
+- likely cause: focused validation covered the helper itself, source syntax, public export, and repository hygiene, but omitted the repository's manual-helper documentation inventory gate.
+- detect: whenever a non-private Python helper is added below `tools/`, run `script/test_tools_readme.py` before public sync in addition to the helper's own regression test.
+- recovery: add the helper name and its operator-facing boundary to `tools/README.md`; do not weaken the inventory scan or exclude a public helper.
+- regression check: `script/test_tools_readme.py` must discover every public `tools/**/*.py` file recursively and find either its relative path or basename in the README.
+- evidence: PR #25 manual Public CI run `31395381884` passed `validate` in 2m47s, then `extended` failed after 19m25s because `export_hardware_pdfs.py` had no tools inventory entry.
+
+## New regression test leaves test inventory counts stale
+
+- symptom: public `extended` passes the new helper's own regression and tools inventory, then `test_test_inventory_doc.py` rejects the documented test-file or canonical-suite count.
+- likely cause: a new `script/test_*.py` file and canonical suite entry were added without running the inventory-document gate in the same focused validation set.
+- detect: after adding or removing any regression file or canonical suite entry, run `script/test_test_inventory_doc.py` before public sync.
+- recovery: update both discovered counts and add an operator-readable inventory entry for the new test. Do not loosen count equality or omit the test from the canonical suite merely to satisfy the document.
+- regression check: `script/test_test_inventory_doc.py` derives both counts from source, validates suite reachability, and requires every otherwise orphaned test to be documented.
+- evidence: PR #26 manual Public CI run `31398433514` passed the new hardware PDF test and tools inventory, then failed at `test_test_inventory_doc.py` after about 20 minutes; the extended job limit remained 45 minutes, so this was not a timeout.
+
 ## Bounded Windows watcher appears stalled after the new boot is reachable
 
 - symptom: cold-boot runner logs a new boot ID, then prints nothing for several minutes, so the operator may interpret the run as hung and repeat the power cycle or start another runner.
@@ -1050,7 +1095,7 @@
 - detect: `tar --zstd -tvf`またはuncompressed tar memberのheader modeと展開後modeを分けて比較する。Windowsでheader `0755` / extracted `0666`ならarchive不良ではない。`.deb` fixtureはPOSIX hostでroot/`DEBIAN` `0755`、control `0644`とdpkg-deb stderrを確認する。
 - recovery: archive writerはpublic export manifestのcanonical `0644/0755/0777`をtar headerへ明示し、source filesystem modeを再推測しない。mode検証はtar memberを正本とし、POSIX展開testだけ`--same-permissions`後のmodeも確認する。fixture packageは全directoryを`0755`、control/payloadを`0644`へ正規化してからbuildする。
 - regression check: source archive、public release bundle、profile release bundle、release helper testをrestrictive umaskとWindowsで実行し、deterministic bytes、manifest限定file、tar member mode、fixture `.deb`生成を確認する。Windows verifierはmanifest modeの許可値とcontent hashを検査し、表現不能なNTFS execute bitを等値比較しない。
-- evidence: 2026-07-19、x86_64 build hostのcaller umask `0077`でarchive mode assertionとpublic release fixture `.deb`が順に停止した。2026-08-09にはWindowsでtar展開後のexecutableが`0666`となり、さらにwriterがsource filesystem modeからheaderを`0644`へ落とす経路を検出した。manifest modeからのheader生成とtar member検査へ変更した。
+- evidence: 2026-07-19、x86_64 build hostのcaller umask `0077`でarchive mode assertionとpublic release fixture `.deb`が順に停止した。2026-08-09にはWindowsでtar展開後のexecutableが`0666`となり、さらにwriterがsource filesystem modeからheaderを`0644`へ落とす経路を検出した。manifest modeからのheader生成とtar member検査へ変更した。同日のWindows final closeoutではrelease helperのtracked mode `100755`にもNTFS `stat()`を直接適用して停止したため、Git index modeを全hostの正本、filesystem execute bitをPOSIX追加checkとし、Windows help checkはrelative shell pathまたはcurrent Python interpreter経由へ分離した。
 
 ## Generated release Markdown is mistaken for repository documentation
 

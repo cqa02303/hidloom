@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 348 本程度あり、標準 canonical suite は 236 entrypoints を実行する。
+現在 `script/test_*.py` は 349 本程度あり、標準 canonical suite は 237 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints
@@ -205,6 +205,8 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
   - external avatar / faviconへ依存せず、HIDloom固有markのSVG / PNG / ICOを標準libraryだけで決定的に再生成できることを確認する。
 - `script/test_public_asset_inventory.py`
   - 公開対象の画像・CAD・KiCad・バイナリ資産が由来台帳に完全一致し、未登録資産を公開 gate が拒否することを確認する。
+- `script/test_hardware_pdf_exports.py`
+  - KiCad回路図・PCB review PDF、source/output checksum record、staged publish、既存output上書き拒否を固定する。
 - `script/test_public_reference_audit.py`
   - canonical public repository identityを固定し、旧private repository URL、owner配下の未承認repository、local repository remoteを公開 gate が拒否することを確認する。
 - `script/test_rust_lockfile_policy.py`

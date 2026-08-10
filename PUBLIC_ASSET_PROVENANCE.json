@@ -2,9 +2,9 @@
   "schema": "hidloom.public-asset-provenance.v1",
   "ready": true,
   "summary": {
-    "records": 8,
-    "assets": 49,
-    "declared": 49,
+    "records": 9,
+    "assets": 51,
+    "declared": 51,
     "missing_declarations": 0,
     "stale_declarations": 0,
     "invalid_records": 0
@@ -183,6 +183,30 @@
           "https://www.kicad.org/libraries/license/",
           "https://gitlab.com/kicad/libraries/kicad-footprints/-/raw/master/LICENSE.md",
           "https://gitlab.com/kicad/libraries/kicad-symbols/-/raw/master/LICENSE.md"
+        ]
+      }
+    },
+    {
+      "id": "keyboard-hardware-pdf-exports",
+      "category": "electrical-design-reference",
+      "provenance": "project-generated",
+      "license": "GPL-3.0-or-later",
+      "license_file": "LICENSE",
+      "review": "complete",
+      "paths": [
+        "kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf",
+        "kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf"
+      ],
+      "evidence": {
+        "type": "reproducible-generator",
+        "generator": "tools/export_hardware_pdfs.py",
+        "test": "script/test_hardware_pdf_exports.py"
+      },
+      "upstream_material": {
+        "description": "KiCad generated review output from the project-authored editable hardware design.",
+        "license": "CC-BY-SA-4.0 with KiCad Libraries License Exception",
+        "references": [
+          "https://www.kicad.org/libraries/license/"
         ]
       }
     }

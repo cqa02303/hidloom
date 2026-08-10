@@ -1,7 +1,7 @@
 # HIDloom Public Privacy Audit
 
 - Ready: `true`
-- Files scanned: 1276
+- Files scanned: 1282
 - Media files: 32
 - Blockers: 0
 
@@ -15,6 +15,16 @@
 - `daemon/http/static/favicon-32x32.png`: png
 - `daemon/http/static/hidloom-mark.svg`: svg
 - `docs/architecture/system-overview.svg`: svg
+- `docs/gallery/cqa02303v5/exhibition-keyboard-lineup.jpeg`: jpeg
+- `docs/gallery/cqa02303v5/finished-keyboard-front-view.jpeg`: jpeg
+- `docs/gallery/cqa02303v5/keyboard-oled-status-display-closeup.jpeg`: jpeg
+- `docs/gallery/cqa02303v5/keyboard-pcb-switch-matrix.jpeg`: jpeg
+- `docs/gallery/cqa02303v5/keyboard-pcb-with-rotary-encoder.jpeg`: jpeg
+- `docs/gallery/cqa02303v5/keyboard-pcb-with-switches-and-raspberry-pi-zero.jpeg`: jpeg
+- `docs/gallery/cqa02303v5/open-frame-keyboard-red-backlight.jpeg`: jpeg
+- `docs/gallery/cqa02303v5/prototype-keyboard-and-layout-display.jpeg`: jpeg
+- `docs/gallery/touchpanel/osoyoo43dsi.jpeg`: jpeg
+- `docs/gallery/touchpanel/waveshare88touch.jpeg`: jpeg
 - `docs/gallery/WebUI/01-keyboard-detailed-status.png`: png
 - `docs/gallery/WebUI/02-keyboard-compact-status.png`: png
 - `docs/gallery/WebUI/03-keymap-editor.png`: png
@@ -29,16 +39,6 @@
 - `docs/gallery/WebUI/12-interaction-combo-tap-dance-editor.png`: png
 - `docs/gallery/WebUI/13-settings-auth-and-text-send.png`: png
 - `docs/gallery/WebUI/14-settings-analog-stick-calibration.png`: png
-- `docs/gallery/cqa02303v5/exhibition-keyboard-lineup.jpeg`: jpeg
-- `docs/gallery/cqa02303v5/finished-keyboard-front-view.jpeg`: jpeg
-- `docs/gallery/cqa02303v5/keyboard-oled-status-display-closeup.jpeg`: jpeg
-- `docs/gallery/cqa02303v5/keyboard-pcb-switch-matrix.jpeg`: jpeg
-- `docs/gallery/cqa02303v5/keyboard-pcb-with-rotary-encoder.jpeg`: jpeg
-- `docs/gallery/cqa02303v5/keyboard-pcb-with-switches-and-raspberry-pi-zero.jpeg`: jpeg
-- `docs/gallery/cqa02303v5/open-frame-keyboard-red-backlight.jpeg`: jpeg
-- `docs/gallery/cqa02303v5/prototype-keyboard-and-layout-display.jpeg`: jpeg
-- `docs/gallery/touchpanel/osoyoo43dsi.jpeg`: jpeg
-- `docs/gallery/touchpanel/waveshare88touch.jpeg`: jpeg
 
 ## Findings
 
