@@ -231,6 +231,7 @@ def main() -> None:
             "**/*.ico",
             "**/*.jpg",
             "**/*.jpeg",
+            "**/*.pdf",
             "**/*.png",
         ],
         "empty_file_allow_globs": [
@@ -575,7 +576,7 @@ def main() -> None:
         assert privacy["summary"]["blockers"] == 0
         assert privacy["summary"]["media_files"] == 32
         assert assets["ready"] is True
-        assert assets["summary"]["assets"] == 49
+        assert assets["summary"]["assets"] == 51
         assert references["ready"] is True
         assert references["summary"]["blockers"] == 0
         assert references["public_repository"]["slug"] == "cqa02303/hidloom"

@@ -196,15 +196,19 @@
     {
       "pattern_id": "legacy_project_name",
       "path_globs": [
+        ".gitignore",
         "build/generated/README.md",
         "build/generated/pcb_analysis_sw_report.txt",
         "build/generators/analyze_kicad_matrix.py",
         "build/generators/analyze_kicad_pcb.py",
         "build/generators/analyze_kicad_pcb_led.py",
-        "script/test_kicad_generation.py"
+        "README.md",
+        "script/test_hardware_pdf_exports.py",
+        "script/test_kicad_generation.py",
+        "tools/export_hardware_pdfs.py"
       ],
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "pattern_id": "legacy_project_name",

@@ -19,6 +19,7 @@ touch kiosk healthをbuild host上で検証します。
 - `buildroot_source_prepare.py`
 - `collect_license_evidence.py`
 - `development_residue_hygiene.py`
+- `export_hardware_pdfs.py`
 - `generate_cyclonedx_sbom.py`
 - `generated_binary_hygiene.py`
 - `generate_hidloom_icons.py`
@@ -64,6 +65,10 @@ touch kiosk healthをbuild host上で検証します。
 
 `public_usb_identity.py`は現行private互換profileと将来のpublic正式profileを同じcontractで検査する。
 現行config/Vial定義とのdriftを拒否し、pid.codes merge evidenceが揃うまで正式profile bundleを生成しない。
+
+`export_hardware_pdfs.py`はKiCad sourceから回路図とPCB fabrication-layerのreview PDFを一時directoryへ
+生成し、両方のPDF構造とsource/output checksum recordを検証してから同時に公開する。PCB PDFは
+Gerber/Excellon manufacturing outputの代替ではない。
 
 `public_repository_create.py`はcanonical GitHub account、repositoryの404、`private=false`、説明、homepage、
 feature/merge設定、branch/tag 0を検査する。通常はnon-mutating plan/auditだけを行い、完全一致する

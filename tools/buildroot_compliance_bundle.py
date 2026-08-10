@@ -650,8 +650,12 @@ def normalized_tar(source: Path, destination: Path) -> None:
         info.mode = 0o755 if info.isdir() else 0o644
         return info
 
-    with tempfile.NamedTemporaryFile(dir=destination.parent, suffix=".tar") as tar_stream:
-        with tarfile.open(fileobj=tar_stream, mode="w", format=tarfile.PAX_FORMAT) as archive:
+    with tempfile.TemporaryDirectory(
+        dir=destination.parent,
+        prefix=".hidloom-compliance-tar-",
+    ) as temporary:
+        tar_path = Path(temporary) / "bundle.tar"
+        with tarfile.open(tar_path, mode="w", format=tarfile.PAX_FORMAT) as archive:
             root = tarfile.TarInfo(BUNDLE_ROOT)
             root.type = tarfile.DIRTYPE
             archive.addfile(normalize(root))
@@ -663,7 +667,6 @@ def normalized_tar(source: Path, destination: Path) -> None:
                     recursive=False,
                     filter=normalize,
                 )
-        tar_stream.flush()
         subprocess.run(
             [
                 "zstd",
@@ -671,7 +674,7 @@ def normalized_tar(source: Path, destination: Path) -> None:
                 "-T0",
                 "--no-progress",
                 "-f",
-                tar_stream.name,
+                str(tar_path),
                 "-o",
                 str(destination),
             ],

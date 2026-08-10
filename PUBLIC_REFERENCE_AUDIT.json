@@ -8,7 +8,7 @@
   },
   "published_release_tags": [],
   "summary": {
-    "files_scanned": 1246,
+    "files_scanned": 1250,
     "repository_references": 140,
     "public_repository_references": 49,
     "findings": 0,
@@ -44,150 +44,6 @@
       "line": 32,
       "slug": "nickcoutsos/keypos",
       "url": "https://github.com/nickcoutsos/keypos"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 10,
-      "slug": "cqa02303/hidloom",
-      "url": "https://github.com/cqa02303/hidloom.git"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 18,
-      "slug": "cqa02303/hidloom",
-      "url": "https://github.com/cqa02303/hidloom.git"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 81,
-      "slug": "libexpat/libexpat",
-      "url": "https://github.com/libexpat/libexpat"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 165,
-      "slug": "libffi/libffi",
-      "url": "https://github.com/libffi/libffi"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 193,
-      "slug": "besser82/libxcrypt",
-      "url": "https://github.com/besser82/libxcrypt"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 249,
-      "slug": "raspberrypi/linux",
-      "url": "https://github.com/raspberrypi/linux"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 389,
-      "slug": "pybind/pybind11",
-      "url": "https://github.com/pybind/pybind11"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 501,
-      "slug": "raspberrypi/firmware",
-      "url": "https://github.com/raspberrypi/firmware"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 585,
-      "slug": "tukaani-project/xz",
-      "url": "https://github.com/tukaani-project/xz"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 613,
-      "slug": "dtolnay/itoa",
-      "url": "https://github.com/dtolnay/itoa"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 640,
-      "slug": "burntsushi/memchr",
-      "url": "https://github.com/BurntSushi/memchr"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 667,
-      "slug": "dtolnay/proc-macro2",
-      "url": "https://github.com/dtolnay/proc-macro2"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 694,
-      "slug": "dtolnay/quote",
-      "url": "https://github.com/dtolnay/quote"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 721,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 748,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 775,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 802,
-      "slug": "serde-rs/json",
-      "url": "https://github.com/serde-rs/json"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 829,
-      "slug": "dtolnay/syn",
-      "url": "https://github.com/dtolnay/syn"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 856,
-      "slug": "dtolnay/unicode-ident",
-      "url": "https://github.com/dtolnay/unicode-ident"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 883,
-      "slug": "dtolnay/zmij",
-      "url": "https://github.com/dtolnay/zmij"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 1351,
-      "slug": "actions/cache",
-      "url": "https://github.com/actions/cache"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 1380,
-      "slug": "actions/checkout",
-      "url": "https://github.com/actions/checkout"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 1441,
-      "slug": "cqa02303/hidloom",
-      "url": "https://github.com/cqa02303/hidloom.git"
-    },
-    {
-      "path": "USB_GADGET_SETUP.md",
-      "line": 21,
-      "slug": "pidcodes/pidcodes.github.com",
-      "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "config/buildroot-toolchain-components.json",
@@ -292,12 +148,6 @@
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
-      "path": "daemon/http/static/README.md",
-      "line": 39,
-      "slug": "emilkowalski/skills",
-      "url": "https://github.com/emilkowalski/skills"
-    },
-    {
       "path": "daemon/http/static/index.html",
       "line": 21,
       "slug": "cqa02303/hidloom",
@@ -308,6 +158,12 @@
       "line": 81,
       "slug": "nickcoutsos/keypos",
       "url": "https://github.com/nickcoutsos/keypos"
+    },
+    {
+      "path": "daemon/http/static/README.md",
+      "line": 39,
+      "slug": "emilkowalski/skills",
+      "url": "https://github.com/emilkowalski/skills"
     },
     {
       "path": "daemon/http/static/remap_quick_keys.js",
@@ -515,7 +371,7 @@
     },
     {
       "path": "docs/ops/failure-patterns.md",
-      "line": 580,
+      "line": 616,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -640,6 +496,144 @@
       "url": "https://github.com/actions/checkout"
     },
     {
+      "path": "SBOM.cdx.json",
+      "line": 10,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 18,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 81,
+      "slug": "libexpat/libexpat",
+      "url": "https://github.com/libexpat/libexpat"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 165,
+      "slug": "libffi/libffi",
+      "url": "https://github.com/libffi/libffi"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 193,
+      "slug": "besser82/libxcrypt",
+      "url": "https://github.com/besser82/libxcrypt"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 249,
+      "slug": "raspberrypi/linux",
+      "url": "https://github.com/raspberrypi/linux"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 389,
+      "slug": "pybind/pybind11",
+      "url": "https://github.com/pybind/pybind11"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 501,
+      "slug": "raspberrypi/firmware",
+      "url": "https://github.com/raspberrypi/firmware"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 585,
+      "slug": "tukaani-project/xz",
+      "url": "https://github.com/tukaani-project/xz"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 613,
+      "slug": "dtolnay/itoa",
+      "url": "https://github.com/dtolnay/itoa"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 640,
+      "slug": "burntsushi/memchr",
+      "url": "https://github.com/BurntSushi/memchr"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 667,
+      "slug": "dtolnay/proc-macro2",
+      "url": "https://github.com/dtolnay/proc-macro2"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 694,
+      "slug": "dtolnay/quote",
+      "url": "https://github.com/dtolnay/quote"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 721,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 748,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 775,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 802,
+      "slug": "serde-rs/json",
+      "url": "https://github.com/serde-rs/json"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 829,
+      "slug": "dtolnay/syn",
+      "url": "https://github.com/dtolnay/syn"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 856,
+      "slug": "dtolnay/unicode-ident",
+      "url": "https://github.com/dtolnay/unicode-ident"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 883,
+      "slug": "dtolnay/zmij",
+      "url": "https://github.com/dtolnay/zmij"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1351,
+      "slug": "actions/cache",
+      "url": "https://github.com/actions/cache"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1380,
+      "slug": "actions/checkout",
+      "url": "https://github.com/actions/checkout"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1441,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
       "path": "script/test_fresh_install_docs.py",
       "line": 172,
       "slug": "cqa02303/hidloom",
@@ -707,13 +701,13 @@
     },
     {
       "path": "script/test_public_export.py",
-      "line": 644,
+      "line": 645,
       "slug": "cqa02303/hidloom",
       "url": "github.com/cqa02303/hidloom"
     },
     {
       "path": "script/test_public_release_bundle.py",
-      "line": 70,
+      "line": 86,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
@@ -854,6 +848,12 @@
       "line": 340,
       "slug": "vial-kb/vial-gui",
       "url": "https://github.com/vial-kb/vial-gui"
+    },
+    {
+      "path": "USB_GADGET_SETUP.md",
+      "line": 21,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     }
   ],
   "findings": []

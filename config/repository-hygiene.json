@@ -22,6 +22,7 @@
       "**/*.ico",
       "**/*.jpg",
       "**/*.jpeg",
+      "**/*.pdf",
       "**/*.png"
     ],
     "empty_file_allow_globs": [
@@ -128,7 +129,8 @@
   "large_file_threshold_bytes": 1048576,
   "large_file_allow_globs": [
     "case/*.f3d",
-    "kicad/**/*.kicad_pcb"
+    "kicad/**/*.kicad_pcb",
+    "kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf"
   ],
   "duplicate_file_threshold_bytes": 1,
   "duplicate_file_allow_groups": [
