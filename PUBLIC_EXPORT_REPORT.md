@@ -1,25 +1,30 @@
 # HIDloom Public Export Report
 
-- Source base commit: `85bffd48b2b626fa8edb9c774b7ca2b6d6d5a315`
+- Source base commit: `c30f354bbd9be906449222892acb69c6e42e4ad2`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `7dfe1e2bcd5e0ba2553f57214632be08a7c1e21fa0cf3d4198bcb8cc7f584d62`
-- Files: 1271
-- Tracked source paths: 1339
+- Selected source snapshot: `e55a7ff55313405f9c7b73e489f1987dce0871047e2e24dfe9224eac3cb783e3`
+- Files: 1277
+- Tracked source paths: 1345
 - Private-only paths: 68
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1129
+- Warnings: 1162
 - Untriaged warnings: 0
 - Action-required warnings: 17
 
 ## Findings
 
 - `warn` `credential_word` `.github/workflows/public-ci.yml:124` `implementation_security_keyword` — `GH_TOKEN: ${{ github.token }}`
+- `warn` `legacy_project_name` `.gitignore:11` `allowed_device_profile` — `!kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json`
 - `warn` `credential_word` `CONTRIBUTING.md:60` `documentation_security_keyword` — `secret-bearing backup.`
 - `warn` `credential_word` `INSTALL.md:149` `documentation_security_keyword` — ``pi` / `pi` です。長期利用前に password を変更してください。`
 - `warn` `credential_word` `LICENSE:340` `documentation_security_keyword` — `source code form), and must require no special password or key for`
+- `warn` `legacy_project_name` `README.md:14` `allowed_device_profile` — `- 回路図PDF: [cqa02303v5 schematic](kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf)`
+- `warn` `legacy_project_name` `README.md:15` `allowed_device_profile` — `- PCB fabrication-layer PDF: [cqa02303v5 fabrication layers](kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf)`
+- `warn` `legacy_project_name` `README.md:16` `allowed_device_profile` — `- 編集可能なhardware source: [KiCad project](kicad/cqa02303v5rpi/README.md)`
+- `warn` `legacy_project_name` `README.md:108` `allowed_device_profile` — `| `kicad/cqa02303v5rpi/` | 編集可能なKiCad hardware source、回路図・PCB review PDF |`
 - `warn` `credential_word` `SECURITY.md:10` `documentation_security_keyword` — `Do not open a public issue for an unpatched vulnerability, credential, private key, or device-specific secret.`
 - `warn` `credential_word` `SECURITY.md:37` `documentation_security_keyword` — `The current experimental M6 Buildroot image creates the local console account `pi` with the initial password `pi`.`
 - `warn` `linux_foundation_vid` `USB_GADGET_SETUP.md:8` `migration_documentation` — `現在の`config/default/config.json`にある`0x1d6b:0x0105`は、既存実機との互換確認と開発rehearsalだけに使う暫定値です。`
@@ -62,18 +67,21 @@
 - `warn` `legacy_project_name` `config/public-assets.json:163` `allowed_device_profile` — `"kicad/cqa02303v5rpi/led.kicad_sch",`
 - `warn` `legacy_project_name` `config/public-assets.json:164` `allowed_device_profile` — `"kicad/cqa02303v5rpi/mouse_sch.kicad_sch",`
 - `warn` `legacy_project_name` `config/public-assets.json:165` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
+- `warn` `legacy_project_name` `config/public-assets.json:189` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf",`
+- `warn` `legacy_project_name` `config/public-assets.json:190` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf"`
 - `warn` `credential_word` `config/public-export-deny-patterns.json:56` `implementation_security_keyword` — `"pattern": "(?i)\\b(?:password|passwd|secret|token|ssid|psk)\\b"`
 - `warn` `linux_foundation_vid` `config/public-export-deny-patterns.json:64` `scanner_definition` — `"pattern": "(?i)0x1d6b"`
 - `warn` `credential_word` `config/public-export.json:107` `implementation_security_keyword` — `"macro/examples/password.kml",`
-- `warn` `credential_word` `config/public-export.json:252` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:258` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:304` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:332` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:256` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:262` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:308` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:336` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:194` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:195` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:201` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
-- `warn` `legacy_project_name` `config/repository-hygiene.json:202` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:133` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf"`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:196` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:197` `allowed_device_profile` — `"kicad/cqa02303v5rpi/fabrication-toolkit-options.json"`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:203` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/other.kicad_sch",`
+- `warn` `legacy_project_name` `config/repository-hygiene.json:204` `allowed_device_profile` — `"kicad/cqa02303v5rpi/other.kicad_sch"`
 - `warn` `linux_foundation_vid` `daemon/btd/gatt_hid.py:94` `pid_codes_migration_required` — `_env_u16("HIDLOOM_USB_VENDOR_ID", 0x1D6B),`
 - `warn` `credential_word` `daemon/http/README.md:20` `security_implementation_keyword` — `| Basic 認証 | 全ページ、API、WebSocket を Basic 認証で保護。Settings から password を変更可能 |`
 - `warn` `credential_word` `daemon/http/README.md:112` `security_implementation_keyword` — `Basic 認証の初期値は `config/default/config.json` の `settings.http_basic_auth` から読みます。未設定時の初期値は user `admin`、password は node 名（`hostname` コマンドの出力）です。Settings タブから password を変更した場合は `HTTPD_BASIC_AUTH_FILE` の小`
@@ -207,14 +215,14 @@
 - `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:538` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:145` `documentation_security_keyword` — `- fixed candidate: source `0ebc76ddb`、core/profile `0.0.2043+git0ebc76ddb`、accepted manifest `f0eeb2eef76f0ba10439cd7690012c0d6de1948bb1f95c1e52b6e665a2a0a322`でsnapshot v2を再試験した。one-shot boot ID `7def`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:242` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:244` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:304` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
-- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:506` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:758` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:833` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:1278` `documentation_security_keyword` — `- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:172` `documentation_security_keyword` — `- fixed candidate: source `0ebc76ddb`、core/profile `0.0.2043+git0ebc76ddb`、accepted manifest `f0eeb2eef76f0ba10439cd7690012c0d6de1948bb1f95c1e52b6e665a2a0a322`でsnapshot v2を再試験した。one-shot boot ID `7def`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:269` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:271` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:331` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
+- `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:533` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:785` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:860` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:1305` `documentation_security_keyword` — `- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
@@ -638,6 +646,18 @@
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch:1180` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch:1262` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch:1372` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/README.md:1` `allowed_device_profile` — `# cqa02303v5rpi Hardware`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/README.md:8` `allowed_device_profile` — `- [Schematic PDF](cqa02303v5rpi-schematic.pdf) contains all four hierarchical`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/README.md:10` `allowed_device_profile` — `- [PCB fabrication-layer PDF](cqa02303v5rpi-pcb-fabrication-layers.pdf) contains`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:6` `allowed_device_profile` — `"path": "cqa02303v5rpi-pcb-fabrication-layers.pdf",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:11` `allowed_device_profile` — `"path": "cqa02303v5rpi-schematic.pdf",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:36` `allowed_device_profile` — `"project": "cqa02303v5rpi",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:44` `allowed_device_profile` — `"cqa02303v5rpi.kicad_pcb": {`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:45` `allowed_device_profile` — `"path": "cqa02303v5rpi.kicad_pcb",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:49` `allowed_device_profile` — `"cqa02303v5rpi.kicad_pro": {`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:50` `allowed_device_profile` — `"path": "cqa02303v5rpi.kicad_pro",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:54` `allowed_device_profile` — `"cqa02303v5rpi.kicad_sch": {`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json:55` `allowed_device_profile` — `"path": "cqa02303v5rpi.kicad_sch",`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:1316` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:3146` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb:4479` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi.kicad_sch")`
@@ -1036,6 +1056,10 @@
 - `warn` `credential_word` `script/test_boot_marker_baseline_tool.py:515` `test_fixture` — `assert not any(item.path.endswith("outside-secret.txt") for item in race_tree)`
 - `warn` `credential_word` `script/test_buildroot_fast_boot_assets.py:293` `test_fixture` — `assert 'filesystem_file(debugfs, rootfs, "/etc/passwd")' in m6_verify_text`
 - `warn` `credential_word` `script/test_current_status_doc.py:264` `test_fixture` — `assert config["settings"]["http_basic_auth"]["password"] == "__HOSTNAME__"`
+- `warn` `legacy_project_name` `script/test_hardware_pdf_exports.py:16` `allowed_device_profile` — `PROJECT = ROOT / "kicad" / "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `script/test_hardware_pdf_exports.py:18` `allowed_device_profile` — `"cqa02303v5rpi-schematic.pdf",`
+- `warn` `legacy_project_name` `script/test_hardware_pdf_exports.py:19` `allowed_device_profile` — `"cqa02303v5rpi-pcb-fabrication-layers.pdf",`
+- `warn` `legacy_project_name` `script/test_hardware_pdf_exports.py:21` `allowed_device_profile` — `PROVENANCE = "cqa02303v5rpi-hardware-pdf-exports.json"`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:128` `test_fixture` — `assert 'id="settings-current-password"' in index_html`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:129` `test_fixture` — `assert 'id="settings-new-password"' in index_html`
 - `warn` `credential_word` `script/test_http_interaction_ui_assets.py:130` `test_fixture` — `assert 'id="settings-confirm-password"' in index_html`
@@ -1076,9 +1100,9 @@
 - `warn` `credential_word` `script/test_logicd_wifi_manager.py:56` `test_fixture` — `assert status.ssid == "HomeAP"`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1371` `test_fixture` — `(root / "done" / "task-a.result.md").write_text("secret body should not return", encoding="utf-8")`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1383` `test_fixture` — `assert "secret body" not in encoded`
-- `warn` `credential_word` `script/test_public_export.py:250` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:253` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:256` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:251` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:254` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:257` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
 - `warn` `credential_word` `script/test_public_usb_identity.py:329` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:34` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`
@@ -1117,6 +1141,15 @@
 - `warn` `credential_word` `tools/development_residue_hygiene.py:123` `implementation_security_keyword` — `if token.type != tokenize.COMMENT:`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:125` `implementation_security_keyword` — `line_number, column = token.start`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:127` `implementation_security_keyword` — `comments[offset : offset + len(token.string)] = token.string`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:17` `allowed_device_profile` — `DEFAULT_PROJECT_DIR = ROOT / "kicad" / "cqa02303v5rpi"`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:19` `allowed_device_profile` — `SCHEMATIC_PDF = "cqa02303v5rpi-schematic.pdf"`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:20` `allowed_device_profile` — `PCB_PDF = "cqa02303v5rpi-pcb-fabrication-layers.pdf"`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:21` `allowed_device_profile` — `PROVENANCE_JSON = "cqa02303v5rpi-hardware-pdf-exports.json"`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:23` `allowed_device_profile` — `"cqa02303v5rpi.kicad_pro",`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:24` `allowed_device_profile` — `"cqa02303v5rpi.kicad_sch",`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:29` `allowed_device_profile` — `"cqa02303v5rpi.kicad_pcb",`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:177` `allowed_device_profile` — `str(project_dir / "cqa02303v5rpi.kicad_sch"),`
+- `warn` `legacy_project_name` `tools/export_hardware_pdfs.py:198` `allowed_device_profile` — `str(project_dir / "cqa02303v5rpi.kicad_pcb"),`
 - `warn` `credential_word` `tools/generate_third_party_inventory.py:81` `implementation_security_keyword` — `values.extend(token for token in lexer if re.fullmatch(r"[A-Za-z0-9_.+-]+", token))`
 - `warn` `linux_foundation_vid` `tools/hidloom_usb_gadget_fast/README.md:19` `pid_codes_migration_required` — `- `HIDLOOM_USB_VENDOR_ID` defaults to `0x1d6b``
 - `warn` `linux_foundation_vid` `tools/hidloom_usb_gadget_fast/hidloom_usb_gadget_fast.c:21` `pid_codes_migration_required` — `#define DEFAULT_VENDOR_ID "0x1d6b"`

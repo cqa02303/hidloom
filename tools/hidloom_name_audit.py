@@ -22,6 +22,12 @@ EXCLUDED_PATHS = {
 }
 RETIRED_PREFIX = "c" + "qa"
 RETIRED_OWNER = RETIRED_PREFIX + "02303"
+HARDWARE_PROJECT_NAME = RETIRED_OWNER + "v5rpi"
+ALLOWED_HARDWARE_EXPORT_NAMES = (
+    HARDWARE_PROJECT_NAME + "-hardware-pdf-exports.json",
+    HARDWARE_PROJECT_NAME + "-pcb-fabrication-layers.pdf",
+    HARDWARE_PROJECT_NAME + "-schematic.pdf",
+)
 FORBIDDEN = (
     re.compile(r"\b" + RETIRED_PREFIX + r"\b", re.IGNORECASE),
     re.compile(RETIRED_OWNER + "v5rpi", re.IGNORECASE),
@@ -60,7 +66,10 @@ def audit(root: Path) -> list[str]:
         except (UnicodeDecodeError, OSError):
             continue
         for line_number, line in enumerate(text.splitlines(), 1):
-            if "kicad" in line.lower() and RETIRED_OWNER + "v5rpi" in line.lower():
+            lowered = line.lower()
+            if "kicad" in lowered and HARDWARE_PROJECT_NAME in lowered:
+                continue
+            if any(name in lowered for name in ALLOWED_HARDWARE_EXPORT_NAMES):
                 continue
             if HARDWARE_DEVICE_TEMPLATE in line:
                 continue

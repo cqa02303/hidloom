@@ -85,7 +85,7 @@ def main() -> None:
         else:
             assert payload["documentation_summary"]["omitted_private_links"] == 0
             assert payload["documentation_summary"]["removed_private_navigation_lines"] == 0
-        assert payload["asset_summary"]["assets"] == 49
+        assert payload["asset_summary"]["assets"] == 51
         assert payload["checks"]["third_party_redistributed_complete"] is True
         assert payload["checks"]["github_actions_supply_chain_ready"] is True
         assert payload["github_actions_issues"] == []

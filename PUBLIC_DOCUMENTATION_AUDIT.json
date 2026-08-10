@@ -2,7 +2,7 @@
   "schema": "hidloom.public-documentation-audit.v2",
   "ready": true,
   "summary": {
-    "files_scanned": 249,
+    "files_scanned": 250,
     "public_docs": 198,
     "reachable_public_docs": 198,
     "omitted_private_links": 117,
@@ -11,11 +11,6 @@
     "orphaned_documents": 0
   },
   "omitted_private_links": [
-    {
-      "path": "FRESH_INSTALL.md",
-      "line": 212,
-      "target_type": "file"
-    },
     {
       "path": "daemon/i2cd/README.md",
       "line": 363,
@@ -30,81 +25,6 @@
       "path": "daemon/matrixd/README.md",
       "line": 399,
       "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 16,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 17,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 18,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 19,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 20,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 21,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 42,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 43,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 44,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 45,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 75,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 77,
-      "target_type": "directory"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 78,
-      "target_type": "directory"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 79,
-      "target_type": "directory"
-    },
-    {
-      "path": "docs/README.md",
-      "line": 80,
-      "target_type": "directory"
     },
     {
       "path": "docs/architecture/system-overview.md",
@@ -134,11 +54,6 @@
     {
       "path": "docs/daemon/native-fast-input-core-design.md",
       "line": 106,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/daemon/specs/README.md",
-      "line": 43,
       "target_type": "file"
     },
     {
@@ -262,6 +177,11 @@
       "target_type": "file"
     },
     {
+      "path": "docs/daemon/specs/README.md",
+      "line": 43,
+      "target_type": "file"
+    },
+    {
       "path": "docs/feature/sequence-engine-design.md",
       "line": 257,
       "target_type": "file"
@@ -294,6 +214,101 @@
     {
       "path": "docs/morse/wabun-kana-lock-ime-design.md",
       "line": 139,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/buildroot-fast-boot-experiment.md",
+      "line": 28,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
+      "line": 12,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/failure-patterns.md",
+      "line": 4,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
+      "line": 10,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 9,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 212,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 213,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 233,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 267,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 268,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 325,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 326,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 745,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 746,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 824,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 964,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 993,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 1184,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 1185,
       "target_type": "file"
     },
     {
@@ -407,101 +422,6 @@
       "target_type": "file"
     },
     {
-      "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 28,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
-      "line": 12,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/failure-patterns.md",
-      "line": 4,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
-      "line": 10,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 9,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 212,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 213,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 233,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 267,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 268,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 325,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 326,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 745,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 746,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 824,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 964,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 993,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 1184,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 1185,
-      "target_type": "file"
-    },
-    {
       "path": "docs/ops/release-channel-policy.md",
       "line": 102,
       "target_type": "file"
@@ -514,26 +434,6 @@
     {
       "path": "docs/ops/windows-ime-custom-hid-real-device-runbook.md",
       "line": 7,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 10,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 11,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 17,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 18,
       "target_type": "file"
     },
     {
@@ -582,6 +482,101 @@
       "target_type": "file"
     },
     {
+      "path": "docs/policy/README.md",
+      "line": 10,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 11,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 17,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 18,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 16,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 17,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 18,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 19,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 20,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 21,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 42,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 43,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 44,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 45,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 75,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 77,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 78,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 79,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 80,
+      "target_type": "directory"
+    },
+    {
       "path": "docs/research/device-side-codex-keyboard-extension-possibilities.md",
       "line": 11,
       "target_type": "file"
@@ -594,6 +589,11 @@
     {
       "path": "docs/research/windows-split-keyboard-identity.md",
       "line": 9,
+      "target_type": "file"
+    },
+    {
+      "path": "FRESH_INSTALL.md",
+      "line": 212,
       "target_type": "file"
     }
   ],
@@ -611,66 +611,6 @@
       "line": 399
     },
     {
-      "path": "docs/README.md",
-      "line": 16
-    },
-    {
-      "path": "docs/README.md",
-      "line": 17
-    },
-    {
-      "path": "docs/README.md",
-      "line": 18
-    },
-    {
-      "path": "docs/README.md",
-      "line": 19
-    },
-    {
-      "path": "docs/README.md",
-      "line": 20
-    },
-    {
-      "path": "docs/README.md",
-      "line": 21
-    },
-    {
-      "path": "docs/README.md",
-      "line": 42
-    },
-    {
-      "path": "docs/README.md",
-      "line": 43
-    },
-    {
-      "path": "docs/README.md",
-      "line": 44
-    },
-    {
-      "path": "docs/README.md",
-      "line": 45
-    },
-    {
-      "path": "docs/README.md",
-      "line": 75
-    },
-    {
-      "path": "docs/README.md",
-      "line": 77
-    },
-    {
-      "path": "docs/README.md",
-      "line": 78
-    },
-    {
-      "path": "docs/README.md",
-      "line": 79
-    },
-    {
-      "path": "docs/README.md",
-      "line": 80
-    },
-    {
       "path": "docs/architecture/system-overview.md",
       "line": 33
     },
@@ -681,10 +621,6 @@
     {
       "path": "docs/daemon/logicd-resolved-action-handler-split-design.md",
       "line": 27
-    },
-    {
-      "path": "docs/daemon/specs/README.md",
-      "line": 43
     },
     {
       "path": "docs/daemon/specs/matrixd/stability-docs.md",
@@ -715,12 +651,72 @@
       "line": 76
     },
     {
+      "path": "docs/daemon/specs/README.md",
+      "line": 43
+    },
+    {
       "path": "docs/hardware/new-board-config-guide.md",
       "line": 17
     },
     {
       "path": "docs/lighting/led-semantic-roles.md",
       "line": 242
+    },
+    {
+      "path": "docs/ops/buildroot-fast-boot-experiment.md",
+      "line": 28
+    },
+    {
+      "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
+      "line": 12
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 212
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 213
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 233
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 267
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 268
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 325
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 326
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 745
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 746
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 824
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 964
+    },
+    {
+      "path": "docs/ops/keyboard-mcp-server.md",
+      "line": 993
     },
     {
       "path": "docs/ops/README.md",
@@ -811,78 +807,6 @@
       "line": 74
     },
     {
-      "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 28
-    },
-    {
-      "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
-      "line": 12
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 212
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 213
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 233
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 267
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 268
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 325
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 326
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 745
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 746
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 824
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 964
-    },
-    {
-      "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 993
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 10
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 11
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 17
-    },
-    {
-      "path": "docs/policy/README.md",
-      "line": 18
-    },
-    {
       "path": "docs/policy/decisions-spec.md",
       "line": 15
     },
@@ -917,6 +841,82 @@
     {
       "path": "docs/policy/mcp-write-capable-tool-design.md",
       "line": 71
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 10
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 11
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 17
+    },
+    {
+      "path": "docs/policy/README.md",
+      "line": 18
+    },
+    {
+      "path": "docs/README.md",
+      "line": 16
+    },
+    {
+      "path": "docs/README.md",
+      "line": 17
+    },
+    {
+      "path": "docs/README.md",
+      "line": 18
+    },
+    {
+      "path": "docs/README.md",
+      "line": 19
+    },
+    {
+      "path": "docs/README.md",
+      "line": 20
+    },
+    {
+      "path": "docs/README.md",
+      "line": 21
+    },
+    {
+      "path": "docs/README.md",
+      "line": 42
+    },
+    {
+      "path": "docs/README.md",
+      "line": 43
+    },
+    {
+      "path": "docs/README.md",
+      "line": 44
+    },
+    {
+      "path": "docs/README.md",
+      "line": 45
+    },
+    {
+      "path": "docs/README.md",
+      "line": 75
+    },
+    {
+      "path": "docs/README.md",
+      "line": 77
+    },
+    {
+      "path": "docs/README.md",
+      "line": 78
+    },
+    {
+      "path": "docs/README.md",
+      "line": 79
+    },
+    {
+      "path": "docs/README.md",
+      "line": 80
     }
   ],
   "broken_links": [],
