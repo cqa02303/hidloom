@@ -36,8 +36,14 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
         owner = "c" + "qa" + "02303"
+        hardware_project = owner + "v5rpi"
         (root / "active.txt").write_text(
-            f"HIDloom\nhttps://github.com/{owner}/hidloom\n{owner}v5-02\n",
+            (
+                f"HIDloom\nhttps://github.com/{owner}/hidloom\n{owner}v5-02\n"
+                f"{hardware_project}-schematic.pdf\n"
+                f"{hardware_project}-pcb-fabrication-layers.pdf\n"
+                f"{hardware_project}-hardware-pdf-exports.json\n"
+            ),
             encoding="utf-8",
         )
         initialize(root)
@@ -47,13 +53,14 @@ def main() -> None:
         assert any(item.startswith("content:retired.txt:1:") for item in audit(root))
 
         (root / "retired.txt").write_text(
-            f"{owner}-keyboard\n/com/{owner}/btd\n",
+            f"{owner}-keyboard\n/com/{owner}/btd\n{hardware_project}-unreviewed.pdf\n",
             encoding="utf-8",
         )
         subprocess.run(["git", "add", "retired.txt"], cwd=root, check=True)
         violations = audit(root)
         assert any(item.startswith("content:retired.txt:1:") for item in violations)
         assert any(item.startswith("content:retired.txt:2:") for item in violations)
+        assert any(item.startswith("content:retired.txt:3:") for item in violations)
 
         archive = root / "docs" / "archive"
         archive.mkdir(parents=True)

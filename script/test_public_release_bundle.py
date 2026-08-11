@@ -19,6 +19,22 @@ sys.path.insert(0, str(ROOT / "script"))
 from test_buildroot_compliance_bundle import make_compliance_fixture  # noqa: E402
 
 
+def assert_tracked_executable(path: Path) -> None:
+    assert path.is_file() and not path.is_symlink()
+    relative = path.relative_to(ROOT).as_posix()
+    staged = subprocess.run(
+        ["git", "ls-files", "--stage", "--", relative],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    fields = staged.stdout.split()
+    assert fields and fields[0] == "100755", staged.stdout
+    if os.name != "nt":
+        assert path.stat().st_mode & 0o111
+
+
 def make_package(path: Path, package: str, version: str, depends: str | None = None) -> None:
     root = path.parent / f"root-{package}"
     control = root / "DEBIAN" / "control"
@@ -88,10 +104,29 @@ def assign_public_identity(export: Path) -> None:
 
 def main() -> None:
     wrapper = ROOT / "tools/package/build_zero2w_keyboard_release.sh"
-    assert wrapper.is_file() and wrapper.stat().st_mode & 0o111
-    syntax = subprocess.run(["sh", "-n", str(wrapper)], capture_output=True, text=True)
+    assert_tracked_executable(wrapper)
+    wrapper_argument = (
+        wrapper.relative_to(ROOT).as_posix() if os.name == "nt" else str(wrapper)
+    )
+    shell = "bash" if os.name == "nt" else "sh"
+    syntax = subprocess.run(
+        [shell, "-n", wrapper_argument],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
     assert syntax.returncode == 0, syntax.stderr
-    help_result = subprocess.run([str(wrapper), "--help"], capture_output=True, text=True)
+    wrapper_help_command = (
+        ["bash", wrapper_argument, "--help"]
+        if os.name == "nt"
+        else [str(wrapper), "--help"]
+    )
+    help_result = subprocess.run(
+        wrapper_help_command,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
     assert help_result.returncode == 0, help_result.stderr
     for phrase in (
         "Raspberry Pi Zero 2 W",
@@ -111,8 +146,17 @@ def main() -> None:
         (publisher, ("guarded draft GitHub Release", "--output-plan", "--execute")),
         (github_verifier, ("deeply verify", "--bundle", "--tag")),
     ):
-        assert helper.is_file() and helper.stat().st_mode & 0o111
-        help_result = subprocess.run([str(helper), "--help"], capture_output=True, text=True)
+        assert_tracked_executable(helper)
+        helper_help_command = (
+            [sys.executable, str(helper), "--help"]
+            if os.name == "nt"
+            else [str(helper), "--help"]
+        )
+        help_result = subprocess.run(
+            helper_help_command,
+            capture_output=True,
+            text=True,
+        )
         assert help_result.returncode == 0, help_result.stderr
         for phrase in phrases:
             assert phrase in help_result.stdout, phrase

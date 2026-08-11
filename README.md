@@ -11,6 +11,9 @@ HIDloomは、Linux SBCをprogrammable keyboard applianceとして動かすsoftwa
 - Raspberry Pi 4 touch panelを試す: [Touch Panel Package](docs/hardware/raspberry-pi-4-touch-panel-package.md)
 - 詳細ドキュメント目次: [docs/README.md](docs/README.md)
 - 画像ギャラリー: [docs/gallery/README.md](docs/gallery/README.md)
+- 回路図PDF: [cqa02303v5 schematic](kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf)
+- PCB fabrication-layer PDF: [cqa02303v5 fabrication layers](kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf)
+- 編集可能なhardware source: [KiCad project](kicad/cqa02303v5rpi/README.md)
 
 - メインターゲット: Raspberry Pi Zero 2 W
 - 開発・貢献手順: [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -102,6 +105,7 @@ root 直下は、導入入口と主要 daemon の位置を見失わないため�
 | `system/install/`, `system/systemd/` | install script 実体、systemd unit source |
 | `config/default/`, `config/boards/` | repository default config、board profile config |
 | `build/generated/`, `build/generators/` | tracked generated data、生成 helper |
+| `kicad/cqa02303v5rpi/` | 編集可能なKiCad hardware source、回路図・PCB review PDF |
 | `dev/mcp/keyboard/` | Codex / MCP read-only keyboard diagnostics server |
 | `tools/` | 実機操作、計測、手動 smoke helper |
 | `script/` | regression suite、install/systemd 直呼び helper、既存 live smoke 入口 |

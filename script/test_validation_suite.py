@@ -34,6 +34,7 @@ TESTS = [
     "script/test_public_buildroot_rebuild.py",
     "script/test_public_privacy_audit.py",
     "script/test_public_asset_inventory.py",
+    "script/test_hardware_pdf_exports.py",
     "script/test_public_documentation_audit.py",
     "script/test_public_community_health.py",
     "script/test_public_reference_audit.py",
