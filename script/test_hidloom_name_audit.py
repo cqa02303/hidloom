@@ -48,6 +48,9 @@ def main() -> None:
         )
         initialize(root)
         assert audit(root) == []
+        (root / "AGENTS.md").write_text(f"private checkout: {hardware_project}\n", encoding="utf-8")
+        subprocess.run(["git", "add", "AGENTS.md"], cwd=root, check=True)
+        assert audit(root) == []
         (root / "retired.txt").write_text("c" + "qa-hidd\n", encoding="utf-8")
         subprocess.run(["git", "add", "retired.txt"], cwd=root, check=True)
         assert any(item.startswith("content:retired.txt:1:") for item in audit(root))

@@ -1,12 +1,12 @@
 # HIDloom Public Export Report
 
-- Source base commit: `208a1264230489728796aac8fb3ec7ad84d999b0`
+- Source base commit: `5474297b559217bd919394ea4084e6b225e4b957`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `18aadf08640f21f96f956da9cc7a9a061bb18f042d6c50a88a731f35acbf704b`
+- Selected source snapshot: `135a821eea3e2fede7b0b5f91c5963cb58defec4c6be361da3deae743db1d88c`
 - Files: 1277
-- Tracked source paths: 1345
-- Private-only paths: 68
+- Tracked source paths: 1346
+- Private-only paths: 69
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
@@ -71,11 +71,11 @@
 - `warn` `legacy_project_name` `config/public-assets.json:190` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf"`
 - `warn` `credential_word` `config/public-export-deny-patterns.json:56` `implementation_security_keyword` — `"pattern": "(?i)\\b(?:password|passwd|secret|token|ssid|psk)\\b"`
 - `warn` `linux_foundation_vid` `config/public-export-deny-patterns.json:64` `scanner_definition` — `"pattern": "(?i)0x1d6b"`
-- `warn` `credential_word` `config/public-export.json:107` `implementation_security_keyword` — `"macro/examples/password.kml",`
-- `warn` `credential_word` `config/public-export.json:256` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:262` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:308` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:336` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:108` `implementation_security_keyword` — `"macro/examples/password.kml",`
+- `warn` `credential_word` `config/public-export.json:257` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:263` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:309` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:337` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:133` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:196` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
@@ -220,9 +220,9 @@
 - `warn` `credential_word` `docs/ops/failure-patterns.md:289` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
 - `warn` `credential_word` `docs/ops/failure-patterns.md:349` `documentation_security_keyword` — `- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。`
 - `warn` `linux_foundation_vid` `docs/ops/failure-patterns.md:551` `pid_codes_migration_required` — `- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:803` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:878` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
-- `warn` `credential_word` `docs/ops/failure-patterns.md:1323` `documentation_security_keyword` — `- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:812` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:887` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
+- `warn` `credential_word` `docs/ops/failure-patterns.md:1332` `documentation_security_keyword` — `- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
@@ -1100,9 +1100,9 @@
 - `warn` `credential_word` `script/test_logicd_wifi_manager.py:56` `test_fixture` — `assert status.ssid == "HomeAP"`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1371` `test_fixture` — `(root / "done" / "task-a.result.md").write_text("secret body should not return", encoding="utf-8")`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1383` `test_fixture` — `assert "secret body" not in encoded`
-- `warn` `credential_word` `script/test_public_export.py:251` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:254` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
-- `warn` `credential_word` `script/test_public_export.py:257` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:252` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:255` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
+- `warn` `credential_word` `script/test_public_export.py:258` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
 - `warn` `credential_word` `script/test_public_usb_identity.py:329` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:34` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`

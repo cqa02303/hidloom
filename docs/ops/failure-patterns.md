@@ -735,14 +735,23 @@
 - regression check: `script/test_public_community_health.py`で現行selected pathの未被覆を0件にし、root-only `*`がnested pathを誤って覆うと判定しないfixtureを維持する。PR templateとissue formの欠落・内容劣化もreadinessで拒否する。
 - evidence: 2026-07-14、従来filterが通常のroot文書、daemon、Buildroot、hardware sourceを覆っていないことを検出した。最初のprefix統合も個別includeの`bin/` 2 filesを漏らしたためfixtureで検出し、18個のroot/prefix patternへ統合した。
 
-## Unclassified tracked paths disappear from the public export
+## Unclassified tracked paths disappear from or block the public export
 
-- symptom: private repositoryへ新しいroot fileまたはprivate workflowを追加してもclean exportは成功するが、public treeへ入らず、private-onlyとして除外した記録も残らない。生成helperがcacheや未承認reportを置いた場合はmanifestへ黙って収録される。
-- likely cause: allowlistに一致したpathだけをcopyし、includeにもexcludeにも一致しないtracked pathを暗黙に無視する。manifest生成もdestinationの全fileを正本にするため、予定外の生成物を正当化してしまう。
+- symptom: private repositoryへ新しいroot file、project-local agent設定、private workflowを追加すると`unclassified-tracked-path:<path>`でclean exportが停止する。旧schemaではexportが成功してもpublic treeへ入らず、private-onlyとして除外した記録も残らなかった。生成helperがcacheや未承認reportを置いた場合はmanifestへ黙って収録される危険もある。
+- likely cause: tracked pathを追加した同じ変更で、`config/public-export.json`の明示include / exact private-only excludeを更新していない。旧実装はallowlistに一致したpathだけをcopyし、includeにもexcludeにも一致しないtracked pathを暗黙に無視していた。manifest生成もdestinationの全fileを正本にすると、予定外の生成物を正当化してしまう。
 - detect: `config/public-export.json` schema v2とGit indexを`tools/public_export.py`で照合し、`source_selection.unclassified_paths`、private-only件数、generated output exact setを確認する。
-- recovery: 公開すべきpathはincludeへ追加し、内部運用pathは具体的な`exclude_globs`へ分類する。生成物はcanonical 12 files以外を削除し、generatorの出力境界を修正する。広いroot除外やmanifestへの予定外file追加で通さない。
-- regression check: `script/test_public_export.py`で未分類tracked fixture、missing include、unsafe path、generated set drift、unexpected destination file/空directoryを拒否する。`script/test_public_release_readiness.py`はmanifest整合を維持したreport件数改ざんも`source_selection_ready=false`で拒否する。private treeはpublic 1180 / private-only 67 / generated 0、standalone public cloneはpublic 1180 / private-only 0 / generated 12へ完全分類する。
-- evidence: 2026-07-14、1247 tracked pathsのうち67件が非公開だったが、private workflow 3件、Copilot instruction、`AGENTS.md`の5件はallowlist外という理由だけで暗黙除外されていた。exact private-onlyへ分類し、export前後のfile set gateを追加した。
+- recovery: 公開すべきpathはincludeへ追加し、内部運用pathは具体的な`exclude_globs`へ分類する。project-local Codex担当設定は`.codex/config.toml`だけをexact private-onlyとし、将来の未審査fileまで隠す`.codex/**`は使わない。生成物はcanonical 12 files以外を削除し、generatorの出力境界を修正する。広いroot除外やmanifestへの予定外file追加で通さない。
+- regression check: `script/test_public_export.py`で`.codex/config.toml`のexact private-only分類、未分類tracked fixture、missing include、unsafe path、generated set drift、unexpected destination file/空directoryを検査する。`script/test_public_release_readiness.py`はmanifest整合を維持したreport件数改ざんも`source_selection_ready=false`で拒否する。private treeとstandalone public cloneの全tracked pathをpublic / private-only / canonical generatedのいずれか1つへ完全分類する。
+- evidence: 2026-07-14、1247 tracked pathsのうち67件が非公開だったが、private workflow 3件、Copilot instruction、`AGENTS.md`の5件はallowlist外という理由だけで暗黙除外されていた。exact private-onlyへ分類し、export前後のfile set gateを追加した。2026-08-27、project-local `.codex/config.toml`追加後のprivate clean HEAD `57ecd30277f6`で正規exportが`unclassified-tracked-path:.codex/config.toml`を検出して安全停止した。修正前の公開対象比較は既存failure文書1件だけだったが、exact excludeと回帰assert自体がexport toolingの機能改善となるため、ユーザー基準に従って修正後sourceを`source-public`同期対象とした。
+
+## Retired-name audit scans private-only project instructions
+
+- symptom: public export contractとfocused export testはpassするが、private PRの`test_hidloom_name_audit.py`が、`AGENTS.md`に必要な保存checkout名をretired software identifierとして検出して停止する。
+- likely cause: `AGENTS.md`は`config/public-export.json`でexact private-onlyだが、retired-name auditのactive source除外に同じ境界がなく、hardware repository名とretired software namespaceを区別できない。
+- detect: private HEADで`python3 tools/hidloom_name_audit.py`を実行し、`content:AGENTS.md:<line>:` findingと、対象語が実際のcheckout識別に限定されることを確認する。
+- recovery: `AGENTS.md`だけをretired-name auditのexact path除外へ追加する。hardware名を全sourceで許可したり、root Markdown全体やprivate-only glob全体を除外したりしない。
+- regression check: temporary Git fixtureへhardware repository名を含む`AGENTS.md`を追加してaudit passを固定し、同じfixtureの通常tracked fileにあるretired identifierは引き続き拒否する。
+- evidence: 2026-08-27、private PR #53のpush event `Public CI / validate` run `33075688692`が`content:AGENTS.md:6:`でfailした。local再現で同一findingを確認し、exact path除外とfixture追加後にfocused name audit、public PR gate、canonical public exportを再検証する。
 
 ## Clean canonical checkout accumulates ignored build output
 
@@ -1304,10 +1313,10 @@
 
 - symptom: public source archive testがcompression開始時に`FileNotFoundError: zstd`で停止する。source manifest、tar生成、Python runtimeは正常で、archive outputは完成していない。
 - cause: Windows hostとbundled workspace runtimeのPATHに`zstd.exe`がなく、release toolingが要求するexternal compressorを起動できない。Python標準libraryだけでは`.tar.zst` contractを満たさない。
-- detect: test前に`Get-Command zstd`または`zstd --version`を実行する。見つからない場合はarchive testを開始せずdependency不足として分ける。既存`.zst` artifactがあることをCLI availabilityの証明にしない。
-- recovery: system-wide installを必須にせず、official Zstandard releaseのpinned Win64 portable assetをignored validation directoryへ取得し、asset hashと`zstd --version`を記録する。そのtest processのPATHだけへbinary directoryを追加し、source archive testを省略せず再実行する。
-- regression check: source archiveのcreate、2回生成byte一致、decompress、tar member mode、manifest限定fileをportable CLIでpassさせる。CI/build hostは`zstd` preflightをrelease作業前に行う。
-- evidence: 2026-08-09 Windows execution hostではbundled runtimeにも`zstd`がなかった。official v1.5.7 Win64 ZIP SHA-256 `acb4e8111511749dc7a3ebedca9b04190e37a17afeb73f55d4425dbf0b90fad9`をignored directoryへ展開し、CLI v1.5.7をprocess-local PATHで使用した。
+- detect: test前に`Get-Command zstd`または`zstd --version`を実行する。見つからない場合はarchive testを開始せずdependency不足として分ける。既存`.zst` artifactがあることをCLI availabilityの証明にしない。`zstd`追加後に`tar --zstd`だけがexit 2なら、`Get-Command tar,bash,node,zstd`でPATH shadowingも確認する。
+- recovery: system-wide installを必須にせず、official Zstandard releaseのpinned Win64 portable assetをignored validation directoryへ取得し、asset hashと`zstd --version`を記録する。そのtest processのPATHだけへbinary directoryを追加し、source archive testを省略せず再実行する。shell syntax用にはGit `bin`の`bash.exe` fallbackを使い、Git `usr/bin`全体をSystem32より前へ置いて`tar.exe`まで差し替えない。
+- regression check: `tar`がWindows System32、`bash`がGit `bin`、`node`と`zstd`がpinned process-local runtimeを解決する状態で、source syntaxとsource archiveのcreate、2回生成byte一致、decompress、tar member mode、manifest限定fileをpassさせる。その後full public exportを完走する。CI/build hostは`zstd` preflightをrelease作業前に行う。
+- evidence: 2026-08-09 Windows execution hostではbundled runtimeにも`zstd`がなかった。official v1.5.7 Win64 ZIP SHA-256 `acb4e8111511749dc7a3ebedca9b04190e37a17afeb73f55d4425dbf0b90fad9`をignored directoryへ展開し、CLI v1.5.7をprocess-local PATHで使用した。2026-08-11のcloseoutではGit `usr/bin`を先頭へ置いた初回復旧がGit tarを選び`--zstd` exit 2となったため、Git `bin`だけを追加してSystem32 tarを保持し、focused archiveとfull public exportをpassした。
 
 ## Windows bash validation receives an unconverted native absolute path
 
