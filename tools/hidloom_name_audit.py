@@ -18,6 +18,7 @@ EXCLUDED_PREFIXES = (
     "codex_tasks/done/",
 )
 EXCLUDED_PATHS = {
+    "AGENTS.md",
     "config/publication-policy.json",
 }
 RETIRED_PREFIX = "c" + "qa"

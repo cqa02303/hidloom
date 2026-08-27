@@ -49,56 +49,6 @@
       "embedded_metadata": false
     },
     {
-      "path": "docs/gallery/cqa02303v5/exhibition-keyboard-lineup.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/cqa02303v5/finished-keyboard-front-view.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/cqa02303v5/keyboard-oled-status-display-closeup.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/cqa02303v5/keyboard-pcb-switch-matrix.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/cqa02303v5/keyboard-pcb-with-rotary-encoder.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/cqa02303v5/keyboard-pcb-with-switches-and-raspberry-pi-zero.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/cqa02303v5/open-frame-keyboard-red-backlight.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/cqa02303v5/prototype-keyboard-and-layout-display.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/touchpanel/osoyoo43dsi.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
-      "path": "docs/gallery/touchpanel/waveshare88touch.jpeg",
-      "type": "jpeg",
-      "exif": false
-    },
-    {
       "path": "docs/gallery/WebUI/01-keyboard-detailed-status.png",
       "type": "png",
       "sensitive_metadata_chunks": []
@@ -167,6 +117,56 @@
       "path": "docs/gallery/WebUI/14-settings-analog-stick-calibration.png",
       "type": "png",
       "sensitive_metadata_chunks": []
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/exhibition-keyboard-lineup.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/finished-keyboard-front-view.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-oled-status-display-closeup.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-pcb-switch-matrix.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-pcb-with-rotary-encoder.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/keyboard-pcb-with-switches-and-raspberry-pi-zero.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/open-frame-keyboard-red-backlight.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/cqa02303v5/prototype-keyboard-and-layout-display.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/touchpanel/osoyoo43dsi.jpeg",
+      "type": "jpeg",
+      "exif": false
+    },
+    {
+      "path": "docs/gallery/touchpanel/waveshare88touch.jpeg",
+      "type": "jpeg",
+      "exif": false
     }
   ],
   "findings": []

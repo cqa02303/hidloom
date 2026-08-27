@@ -72,6 +72,7 @@
     "SBOM.cdx.json"
   ],
   "exclude_globs": [
+    ".codex/config.toml",
     ".github/copilot-instructions.md",
     ".github/workflows/public-export-check.yml",
     ".github/workflows/public-sync.yml",

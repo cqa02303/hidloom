@@ -53,6 +53,7 @@ def main() -> None:
     assert manifest["initial_version"] == "0.1.0"
     assert ".env.example" in manifest["include_files"]
     assert "AUTHORS.md" in manifest["include_files"]
+    assert ".codex/config.toml" in manifest["exclude_globs"]
     assert "codex_tasks/**" in manifest["exclude_globs"]
     assert "docs/ops/real-device-test-checklist.md" in manifest["exclude_globs"]
     assert "docs/CURRENT_STATUS.md" in manifest["exclude_globs"]
