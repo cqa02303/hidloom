@@ -19,11 +19,14 @@ import sys
 from typing import Any
 
 
-SCHEMA = "hidloom.low-memory-install-preflight.v1"
+SCHEMA = "hidloom.low-memory-install-preflight.v2"
 MIB = 1024 * 1024
 DEFAULT_MIN_MEM_AVAILABLE_MIB = 128
 DEFAULT_MIN_SWAP_FREE_MIB = 256
 DEFAULT_MIN_SWAP_FREE_PERCENT = 75.0
+DEFAULT_STEADY_MIN_MEM_AVAILABLE_MIB = 96
+DEFAULT_STEADY_MIN_SWAP_FREE_PERCENT = 60.0
+DEFAULT_STEADY_MIN_COMBINED_HEADROOM_MIB = 384
 DEFAULT_LOCK_PATHS = (
     "/var/lib/dpkg/lock-frontend",
     "/var/lib/dpkg/lock",
@@ -83,6 +86,9 @@ def memory_check(
     min_mem_available_mib: int,
     min_swap_free_mib: int,
     min_swap_free_percent: float,
+    steady_min_mem_available_mib: int,
+    steady_min_swap_free_percent: float,
+    steady_min_combined_headroom_mib: int,
 ) -> dict[str, Any]:
     result: dict[str, Any] = {
         "ok": False,
@@ -91,6 +97,11 @@ def memory_check(
         "minimum_swap_free_mib": min_swap_free_mib,
         "minimum_swap_free_bytes": min_swap_free_mib * MIB,
         "minimum_swap_free_percent": min_swap_free_percent,
+        "steady_minimum_mem_available_bytes": steady_min_mem_available_mib * MIB,
+        "steady_minimum_swap_free_percent": steady_min_swap_free_percent,
+        "steady_minimum_combined_headroom_bytes": (
+            steady_min_combined_headroom_mib * MIB
+        ),
     }
     try:
         values = parse_meminfo(bounded_read_text(path))
@@ -104,24 +115,57 @@ def memory_check(
     minimum_swap_free_by_percent = math.ceil(
         swap_total * min_swap_free_percent / 100.0
     )
+    steady_minimum_swap_free_by_percent = math.ceil(
+        swap_total * steady_min_swap_free_percent / 100.0
+    )
+    combined_headroom = mem_available + swap_free
     mem_ok = mem_available >= min_mem_available_mib * MIB
     swap_free_mib_ok = swap_free >= min_swap_free_mib * MIB
     swap_free_percent_ok = swap_free >= minimum_swap_free_by_percent
     swap_ok = swap_free_mib_ok and swap_free_percent_ok
+    strict_ok = mem_ok and swap_ok
+    steady_mem_ok = mem_available >= steady_min_mem_available_mib * MIB
+    steady_swap_free_percent_ok = swap_free >= steady_minimum_swap_free_by_percent
+    steady_combined_headroom_ok = (
+        combined_headroom >= steady_min_combined_headroom_mib * MIB
+    )
+    steady_state_ok = (
+        steady_mem_ok
+        and swap_free_mib_ok
+        and steady_swap_free_percent_ok
+        and steady_combined_headroom_ok
+    )
+    admission_policy = (
+        "strict"
+        if strict_ok
+        else "steady_state_headroom"
+        if steady_state_ok
+        else None
+    )
     result.update(
         {
-            "ok": mem_ok and swap_ok,
+            "ok": strict_ok or steady_state_ok,
+            "admission_policy": admission_policy,
+            "strict_ok": strict_ok,
+            "steady_state_ok": steady_state_ok,
             "mem_available_bytes": mem_available,
             "mem_available_ok": mem_ok,
+            "steady_mem_available_ok": steady_mem_ok,
             "swap_total_bytes": swap_total,
             "swap_free_bytes": swap_free,
             "minimum_swap_free_by_percent_bytes": minimum_swap_free_by_percent,
+            "steady_minimum_swap_free_by_percent_bytes": (
+                steady_minimum_swap_free_by_percent
+            ),
             "swap_free_percent": (
                 round(swap_free * 100.0 / swap_total, 3) if swap_total else 100.0
             ),
             "swap_free_mib_ok": swap_free_mib_ok,
             "swap_free_percent_ok": swap_free_percent_ok,
             "swap_free_ok": swap_ok,
+            "steady_swap_free_percent_ok": steady_swap_free_percent_ok,
+            "combined_headroom_bytes": combined_headroom,
+            "steady_combined_headroom_ok": steady_combined_headroom_ok,
         }
     )
     return result
@@ -353,6 +397,33 @@ def parser() -> argparse.ArgumentParser:
         help=f"minimum free swap percentage; default {DEFAULT_MIN_SWAP_FREE_PERCENT:g}",
     )
     value.add_argument(
+        "--steady-min-mem-available-mib",
+        type=int,
+        default=DEFAULT_STEADY_MIN_MEM_AVAILABLE_MIB,
+        help=(
+            "steady-state minimum MemAvailable in MiB; default "
+            f"{DEFAULT_STEADY_MIN_MEM_AVAILABLE_MIB}"
+        ),
+    )
+    value.add_argument(
+        "--steady-min-swap-free-percent",
+        type=percentage,
+        default=DEFAULT_STEADY_MIN_SWAP_FREE_PERCENT,
+        help=(
+            "steady-state minimum free swap percentage; default "
+            f"{DEFAULT_STEADY_MIN_SWAP_FREE_PERCENT:g}"
+        ),
+    )
+    value.add_argument(
+        "--steady-min-combined-headroom-mib",
+        type=int,
+        default=DEFAULT_STEADY_MIN_COMBINED_HEADROOM_MIB,
+        help=(
+            "steady-state minimum MemAvailable plus SwapFree in MiB; default "
+            f"{DEFAULT_STEADY_MIN_COMBINED_HEADROOM_MIB}"
+        ),
+    )
+    value.add_argument(
         "--dpkg-audit-output",
         type=Path,
         help="read dpkg --audit output from a fixture instead of running dpkg",
@@ -390,6 +461,10 @@ def main(argv: list[str] | None = None) -> int:
         parser().error("--min-mem-available-mib must not be negative")
     if args.min_swap_free_mib < 0:
         parser().error("--min-swap-free-mib must not be negative")
+    if args.steady_min_mem_available_mib < 0:
+        parser().error("--steady-min-mem-available-mib must not be negative")
+    if args.steady_min_combined_headroom_mib < 0:
+        parser().error("--steady-min-combined-headroom-mib must not be negative")
     lock_paths = args.lock_path or [Path(path) for path in DEFAULT_LOCK_PATHS]
     checks = {
         "memory": memory_check(
@@ -397,6 +472,9 @@ def main(argv: list[str] | None = None) -> int:
             args.min_mem_available_mib,
             args.min_swap_free_mib,
             args.min_swap_free_percent,
+            args.steady_min_mem_available_mib,
+            args.steady_min_swap_free_percent,
+            args.steady_min_combined_headroom_mib,
         ),
         "package_processes": package_process_check(args.proc_root),
         "package_locks": package_lock_check(args.proc_locks, lock_paths),

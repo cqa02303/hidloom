@@ -7,22 +7,31 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import platform
 import shlex
 import socket
 import subprocess
+import sys
 import threading
 import time
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_SERVICES = ("matrixd", "logicd", "ledd", "httpd", "viald", "hidloom-hidd", "btd", "i2cd")
-PROCESS_NAMES = ("matrixd", "logicd", "ledd", "httpd", "viald", "hidloom-hidd", "btd", "i2cd")
+DEFAULT_SERVICES = (
+    "matrixd", "hidloom-logicd-core", "logicd-companion", "hidloom-hidd",
+    "hidloom-outputd", "logicd", "ledd", "httpd", "viald", "btd", "i2cd",
+)
+PROCESS_NAMES = (
+    "matrixd", "matrixd-trace", "hidloom-logicd-core", "logicd", "hidloom-hidd",
+    "hidloom-outputd", "ledd", "httpd", "viald", "btd", "i2cd",
+)
 DEFAULT_KEY_SOCKET = "/tmp/key_events.sock"
 DEFAULT_LEDD_SOCKET = "/tmp/ledd_events.sock"
 DEFAULT_CTRL_SOCKET = "/tmp/ctrl_events.sock"
+DEFAULT_TRACE_PATH = Path("/run/hidloom/matrixd-trace.jsonl")
 PRESS = 0x50
 RELEASE = 0x52
 RESTART_HINT_PATTERN = (
@@ -252,14 +261,14 @@ def fenced(text: str) -> str:
     return text.rstrip() if text.strip() else "(no output)"
 
 
-def file_snapshot(path: Path) -> dict[str, Any]:
+def file_snapshot(path: Path, *, text_limit: int = 20000) -> dict[str, Any]:
     if not path.exists():
         return {"path": str(path), "exists": False}
     try:
         data = path.read_bytes()
     except OSError as exc:
         return {"path": str(path), "exists": True, "error": str(exc)}
-    text = data.decode("utf-8", errors="replace") if path.is_file() and len(data) <= 20000 else ""
+    text = data.decode("utf-8", errors="replace") if path.is_file() and len(data) <= text_limit else ""
     return {
         "path": str(path),
         "exists": True,
@@ -267,6 +276,33 @@ def file_snapshot(path: Path) -> dict[str, Any]:
         "sha256": hashlib.sha256(data).hexdigest(),
         "text": text,
     }
+
+
+def rotated_trace_path(path: Path) -> Path:
+    if path.name.endswith(".jsonl"):
+        return path.with_name(path.name[:-6] + ".1.jsonl")
+    return Path(str(path) + ".1")
+
+
+def trace_snapshot(path: Path) -> dict[str, Any]:
+    info = file_snapshot(path, text_limit=4 * 1024 * 1024 + 1)
+    if not info.get("exists") or info.get("error") or not info.get("text"):
+        return info
+    invalid_lines = 0
+    schema_lines = 0
+    for line in info["text"].splitlines():
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            invalid_lines += 1
+            continue
+        if isinstance(record, dict) and record.get("schema") == "matrixd.trace.v1":
+            schema_lines += 1
+        else:
+            invalid_lines += 1
+    info["schema_lines"] = schema_lines
+    info["invalid_lines"] = invalid_lines
+    return info
 
 
 def default_output_path() -> Path:
@@ -282,6 +318,16 @@ def collect_commands(args: argparse.Namespace) -> list[CommandResult]:
     commands: list[tuple[str, list[str], float]] = [
         ("hostname", ["hostname"], 5.0),
         ("date", ["date", "-Is"], 5.0),
+        ("boot ID", ["cat", "/proc/sys/kernel/random/boot_id"], 5.0),
+        (
+            "package identity",
+            [
+                "sh", "-c",
+                "dpkg-query -W -f='${binary:Package} ${Version} ${Architecture} ${db:Status-Abbrev}\\n' "
+                "'hidloom*' 2>&1 || true",
+            ],
+            10.0,
+        ),
         ("uptime", ["uptime"], 5.0),
         ("system boots", ["journalctl", "--list-boots", "--no-pager"], 10.0),
         ("service active state", ["systemctl", "is-active", *DEFAULT_SERVICES], 10.0),
@@ -394,6 +440,7 @@ def render_report(
     ledd_result: LineMonitorResult,
     ctrl_snapshots: dict[str, dict[str, Any]],
     files: list[dict[str, Any]],
+    traces: list[dict[str, Any]],
 ) -> str:
     lines = [
         "# matrixd Diagnostics Snapshot",
@@ -436,9 +483,34 @@ def render_report(
         fenced("\n".join(ledd_result.samples)),
         "```",
         "",
-        "## File Snapshots",
-        "",
     ]
+    lines.extend(
+        [
+            "## Pre-incident Matrix Trace",
+            "",
+            "Rotated trace is shown before the current trace. Records contain only matrix coordinates,",
+            "raw/debounce state, confirmed P/R, timestamps, and dispatch outcomes.",
+            "",
+        ]
+    )
+    for info in traces:
+        lines.extend([f"### {info['path']}", "", f"- exists: `{info['exists']}`"])
+        if info.get("exists"):
+            if info.get("error"):
+                lines.extend([f"- error: `{info['error']}`", ""])
+                continue
+            lines.extend(
+                [
+                    f"- size: `{info['size']}`",
+                    f"- sha256: `{info['sha256']}`",
+                    f"- schema_lines: `{info.get('schema_lines', 0)}`",
+                    f"- invalid_lines: `{info.get('invalid_lines', 0)}`",
+                ]
+            )
+            if info.get("text"):
+                lines.extend(["", "```jsonl", info["text"].rstrip(), "```"])
+        lines.append("")
+    lines.extend(["## Configuration and Runtime Files", ""])
     for info in files:
         lines.extend(
             [
@@ -492,7 +564,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--key-socket", default=DEFAULT_KEY_SOCKET)
     parser.add_argument("--ledd-socket", default=DEFAULT_LEDD_SOCKET)
     parser.add_argument("--ctrl", default=DEFAULT_CTRL_SOCKET)
+    parser.add_argument("--trace-path", type=Path, default=DEFAULT_TRACE_PATH)
     return parser.parse_args()
+
+
+def write_private_report(output: Path, report: str) -> None:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(report)
+            stream.write("\n")
+    except BaseException:
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+        raise
 
 
 def main() -> None:
@@ -505,9 +594,18 @@ def main() -> None:
         file_snapshot(Path("/etc/systemd/system/matrixd.service")),
         file_snapshot(Path("/etc/systemd/system/logicd.service")),
         file_snapshot(Path("/etc/systemd/system/httpd.service")),
+        file_snapshot(Path("/run/hidloom/matrixd-status.json")),
+        file_snapshot(Path("/run/hidloom/logicd-core-status.json")),
+        file_snapshot(Path("/run/hidloom/hidd-status.json")),
+        file_snapshot(Path("/run/hidloom/outputd-status.json")),
+        file_snapshot(Path("/mnt/p3/device_profile.json")),
         file_snapshot(Path("/mnt/p3/script/KC_SH8.sh")),
         file_snapshot(Path("/mnt/p3/keymap.json")),
         file_snapshot(Path("/mnt/p3/led_state.json")),
+    ]
+    traces = [
+        trace_snapshot(rotated_trace_path(args.trace_path)),
+        trace_snapshot(args.trace_path),
     ]
     ctrl_snapshots = {
         "led_state": json_request(args.ctrl, {"t": "LED", "op": "vialrgb_get"}),
@@ -523,10 +621,13 @@ def main() -> None:
         ledd_result=ledd_result,
         ctrl_snapshots=ctrl_snapshots,
         files=files,
+        traces=traces,
     )
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(report + "\n", encoding="utf-8")
-    print(output)
+    if str(output) == "-":
+        sys.stdout.write(report + "\n")
+    else:
+        write_private_report(output, report)
+        print(output)
 
 
 if __name__ == "__main__":

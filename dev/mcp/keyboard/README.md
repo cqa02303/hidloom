@@ -125,6 +125,12 @@ This stdio server does not use MCP-level bearer token or OAuth authentication.
 Access is bounded by the OS user that can launch the process, Codex trusted
 project settings, and normal filesystem permissions.
 
+State-changing tools remain outside this server. The separately registered
+[`keyboard-write`](../keyboard_write/README.md) companion provides only a
+bounded matrix tap and single-position keymap change with dry-run plans,
+current keymap digest checks, exact dynamic confirmation, readback, and
+rollback.
+
 The server implements the minimum JSON-RPC methods used by MCP clients:
 
 - `initialize`

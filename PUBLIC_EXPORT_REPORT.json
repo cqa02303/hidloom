@@ -4,19 +4,19 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "5474297b559217bd919394ea4084e6b225e4b957",
-    "base_tree": "31682598370e82d3fe7d002beb194daa52980527",
-    "base_revision_count": 2082,
-    "selected_path_count": 1277,
-    "selected_snapshot_sha256": "135a821eea3e2fede7b0b5f91c5963cb58defec4c6be361da3deae743db1d88c"
+    "base_commit": "7f9c4078ba87bf149bb21f6053d350d70c3f77b8",
+    "base_tree": "b3da94d4a6684d13ff9f2c3b846cbb7c9e6e3d13",
+    "base_revision_count": 2095,
+    "selected_path_count": 1286,
+    "selected_snapshot_sha256": "2e7782e6d78dc97b355a2e438db38cad5c857cc13b357118fcdf591bf9eb5e26"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1277,
+  "file_count": 1286,
   "source_selection": {
-    "tracked_paths": 1346,
-    "public_source_paths": 1277,
+    "tracked_paths": 1355,
+    "public_source_paths": 1286,
     "private_only_paths": 69,
     "generated_output_paths": 0,
     "unclassified_paths": 0
@@ -24,9 +24,9 @@
   "finding_summary": {
     "warn:credential_word": {
       "implementation_security_keyword": 64,
-      "documentation_security_keyword": 81,
+      "documentation_security_keyword": 82,
       "security_implementation_keyword": 82,
-      "test_fixture": 54
+      "test_fixture": 56
     },
     "warn:legacy_project_name": {
       "allowed_device_profile": 853,
@@ -579,7 +579,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 337,
+      "line": 338,
       "excerpt": "\"reason\": \"reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -1425,7 +1425,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "dev/mcp/keyboard/README.md",
-      "line": 270,
+      "line": 276,
       "excerpt": "at this checkout's stdio command. It redacts environment values, bearer token",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1434,7 +1434,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "dev/mcp/keyboard/README.md",
-      "line": 301,
+      "line": 307,
       "excerpt": "returns values only for a small allowlist of non-secret operational flags, and",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1821,7 +1821,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
-      "line": 19,
+      "line": 20,
       "excerpt": "- SSH key、IP address、token、password、`.env` の値は docs に書かない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1830,7 +1830,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
-      "line": 78,
+      "line": 79,
       "excerpt": "- `env` / `env_vars` で bearer token や password を渡さない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1911,7 +1911,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 53,
+      "line": 54,
       "excerpt": "MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1920,7 +1920,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 81,
+      "line": 82,
       "excerpt": "| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1929,7 +1929,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 82,
+      "line": 83,
       "excerpt": "| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1938,7 +1938,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 102,
+      "line": 103,
       "excerpt": "この場合も認証は SSH key と remote user 権限で扱い、MCP server 自体には secret を持たせません。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1947,7 +1947,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 140,
+      "line": 141,
       "excerpt": "| [`get_http_status_summary`](#get_http_status_summary) | local HTTPS `/api/status` の health を要約 | `url`, `username`, `password`, `timeout_sec`, `verify_tls` | なし |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1956,7 +1956,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 763,
+      "line": 764,
       "excerpt": "local Codex CLI からこの MCP server を使える状態かを、secret を返さずに要約します。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1965,7 +1965,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 776,
+      "line": 777,
       "excerpt": "- bearer token env var 名",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1974,7 +1974,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 858,
+      "line": 859,
       "excerpt": "- 情報用 confirmation token と `REFLECT ...` phrase",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1983,7 +1983,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 900,
+      "line": 901,
       "excerpt": "- allowlist 済みの非 secret operational flag の値",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1992,8 +1992,17 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 1169,
+      "line": 1170,
       "excerpt": "- HTTP transport を採用する場合の bearer token / OAuth 設計:",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "docs/ops/keyboard-write-mcp-server.md",
+      "line": 41,
+      "excerpt": "fileで配置し、必要なCodex profileからだけ起動します。IP、SSH key、password、tokenは設定例やdocsへ",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
     },
@@ -2397,7 +2406,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 492,
+      "line": 508,
       "excerpt": "\"filename\": \"cqa02303v5rpi-01.kicad_pro\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2406,7 +2415,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 592,
+      "line": 608,
       "excerpt": "\"bom_export_filename\": \"cqa02303v5rpi.csv\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2415,7 +2424,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 791,
+      "line": 807,
       "excerpt": "\"filename\": \"cqa02303v5rpi-01.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2424,7 +2433,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 792,
+      "line": 808,
       "excerpt": "\"name\": \"cqa02303v5rpi-01\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2433,7 +2442,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 806,
+      "line": 822,
       "excerpt": "\"cqa02303v5rpi\"",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -9797,6 +9806,24 @@
       "path": "script/test_mcp_keyboard_server.py",
       "line": 1383,
       "excerpt": "assert \"secret body\" not in encoded",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "script/test_mcp_keyboard_write_server.py",
+      "line": 235,
+      "excerpt": "assert \"password\" not in serialized",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "script/test_mcp_keyboard_write_server.py",
+      "line": 236,
+      "excerpt": "assert \"token\" not in serialized",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
     },

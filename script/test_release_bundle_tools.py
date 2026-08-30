@@ -1209,6 +1209,8 @@ else:
             "After=hidloom-early-input-handoff-prepare.service\n"
             "Wants=hidloom-early-input-handoff-finalize.service\n"
             "[Service]\n"
+            "Environment=MATRIXD_EVENT_LOG_PATH=/run/hidloom/matrixd-trace.jsonl\n"
+            "Environment=MATRIXD_EVENT_LOG_MAX_BYTES=4194304\n"
             "ExecStart=@HIDLOOM_REPO_ROOT@/daemon/matrixd/matrixd\n",
             encoding="utf-8",
         )
@@ -1324,6 +1326,11 @@ else:
         for packaged_unit in (packaged_outputd_unit, packaged_core_unit, packaged_matrix_unit):
             assert "Requires=hidloom-early-input-handoff-prepare.service" in packaged_unit
             assert "After=hidloom-early-input-handoff-prepare.service" in packaged_unit
+        assert (
+            "Environment=MATRIXD_EVENT_LOG_PATH=/run/hidloom/matrixd-trace.jsonl"
+            in packaged_matrix_unit
+        )
+        assert "Environment=MATRIXD_EVENT_LOG_MAX_BYTES=4194304" in packaged_matrix_unit
         assert (
             "ExecStart=/usr/bin/python3 -S /usr/lib/hidloom/tools/rpi_os_early_input_handoff.py prepare"
             in packaged_prepare_unit

@@ -1,16 +1,16 @@
 # HIDloom Public Export Report
 
-- Source base commit: `5474297b559217bd919394ea4084e6b225e4b957`
+- Source base commit: `7f9c4078ba87bf149bb21f6053d350d70c3f77b8`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `135a821eea3e2fede7b0b5f91c5963cb58defec4c6be361da3deae743db1d88c`
-- Files: 1277
-- Tracked source paths: 1346
+- Selected source snapshot: `2e7782e6d78dc97b355a2e438db38cad5c857cc13b357118fcdf591bf9eb5e26`
+- Files: 1286
+- Tracked source paths: 1355
 - Private-only paths: 69
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1162
+- Warnings: 1165
 - Untriaged warnings: 0
 - Action-required warnings: 17
 
@@ -75,7 +75,7 @@
 - `warn` `credential_word` `config/public-export.json:257` `implementation_security_keyword` — `"reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"`
 - `warn` `credential_word` `config/public-export.json:263` `implementation_security_keyword` — `"reason": "credential words are validation fixtures; concrete token patterns remain blockers"`
 - `warn` `credential_word` `config/public-export.json:309` `implementation_security_keyword` — `"reason": "security documentation names credential concepts; concrete secret patterns remain blockers"`
-- `warn` `credential_word` `config/public-export.json:337` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"`
+- `warn` `credential_word` `config/public-export.json:338` `implementation_security_keyword` — `"reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"`
 - `warn` `legacy_project_name` `config/publication-policy.json:12` `scanner_definition` — `"cqa02303/cqa02303v5rpi"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:133` `allowed_device_profile` — `"kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf"`
 - `warn` `legacy_project_name` `config/repository-hygiene.json:196` `allowed_device_profile` — `"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json",`
@@ -169,8 +169,8 @@
 - `warn` `credential_word` `daemon/spid/README.md:125` `security_implementation_keyword` — `- Linux HID gadget は USB IN polling token を userspace callback として直接通知しない。`
 - `warn` `credential_word` `daemon/viald/README.md:122` `security_implementation_keyword` — `実行用 macro token へ変換します。`
 - `warn` `credential_word` `dev/mcp/keyboard/README.md:124` `documentation_security_keyword` — `This stdio server does not use MCP-level bearer token or OAuth authentication.`
-- `warn` `credential_word` `dev/mcp/keyboard/README.md:270` `documentation_security_keyword` — `at this checkout's stdio command. It redacts environment values, bearer token`
-- `warn` `credential_word` `dev/mcp/keyboard/README.md:301` `documentation_security_keyword` — `returns values only for a small allowlist of non-secret operational flags, and`
+- `warn` `credential_word` `dev/mcp/keyboard/README.md:276` `documentation_security_keyword` — `at this checkout's stdio command. It redacts environment values, bearer token`
+- `warn` `credential_word` `dev/mcp/keyboard/README.md:307` `documentation_security_keyword` — `returns values only for a small allowlist of non-secret operational flags, and`
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:2412` `implementation_security_keyword` — `"token": confirmation_token,`
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:2414` `implementation_security_keyword` — `"note": "The token is informational only; this read-only tool never accepts or executes confirmation.",`
 - `warn` `credential_word` `dev/mcp/keyboard/server.py:2938` `implementation_security_keyword` — `"auth_boundary": "stdio uses OS user, SSH, trusted-project, and filesystem permissions; no MCP bearer token or OAuth is used",`
@@ -213,8 +213,8 @@
 - `warn` `credential_word` `docs/macro/compatibility-plan.md:40` `documentation_security_keyword` — `-> daemon/logicd/macro.py token runner`
 - `warn` `credential_word` `docs/macro/kml-qmk-macro-keycode-design.md:137` `documentation_security_keyword` — `- script / system / connectivity / power / arbitrary C 相当 token の rejection。`
 - `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:538` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
-- `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:19` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
-- `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:78` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
+- `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:20` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
+- `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:79` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
 - `warn` `credential_word` `docs/ops/failure-patterns.md:190` `documentation_security_keyword` — `- fixed candidate: source `0ebc76ddb`、core/profile `0.0.2043+git0ebc76ddb`、accepted manifest `f0eeb2eef76f0ba10439cd7690012c0d6de1948bb1f95c1e52b6e665a2a0a322`でsnapshot v2を再試験した。one-shot boot ID `7def`
 - `warn` `credential_word` `docs/ops/failure-patterns.md:287` `documentation_security_keyword` — `- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca`
 - `warn` `credential_word` `docs/ops/failure-patterns.md:289` `documentation_security_keyword` — `- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up`
@@ -223,16 +223,17 @@
 - `warn` `credential_word` `docs/ops/failure-patterns.md:812` `documentation_security_keyword` — `- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。`
 - `warn` `credential_word` `docs/ops/failure-patterns.md:887` `documentation_security_keyword` — `- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。`
 - `warn` `credential_word` `docs/ops/failure-patterns.md:1332` `documentation_security_keyword` — `- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:53` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:81` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:102` `documentation_security_keyword` — `この場合も認証は SSH key と remote user 権限で扱い、MCP server 自体には secret を持たせません。`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:140` `documentation_security_keyword` — `| [`get_http_status_summary`](#get_http_status_summary) | local HTTPS `/api/status` の health を要約 | `url`, `username`, `password`, `timeout_sec`, `verify_tls` | なし |`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:763` `documentation_security_keyword` — `local Codex CLI からこの MCP server を使える状態かを、secret を返さずに要約します。`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:776` `documentation_security_keyword` — `- bearer token env var 名`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:858` `documentation_security_keyword` — `- 情報用 confirmation token と `REFLECT ...` phrase`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:900` `documentation_security_keyword` — `- allowlist 済みの非 secret operational flag の値`
-- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:1169` `documentation_security_keyword` — `- HTTP transport を採用する場合の bearer token / OAuth 設計:`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:54` `documentation_security_keyword` — `MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:82` `documentation_security_keyword` — `| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:83` `documentation_security_keyword` — `| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:103` `documentation_security_keyword` — `この場合も認証は SSH key と remote user 権限で扱い、MCP server 自体には secret を持たせません。`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:141` `documentation_security_keyword` — `| [`get_http_status_summary`](#get_http_status_summary) | local HTTPS `/api/status` の health を要約 | `url`, `username`, `password`, `timeout_sec`, `verify_tls` | なし |`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:764` `documentation_security_keyword` — `local Codex CLI からこの MCP server を使える状態かを、secret を返さずに要約します。`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:777` `documentation_security_keyword` — `- bearer token env var 名`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:859` `documentation_security_keyword` — `- 情報用 confirmation token と `REFLECT ...` phrase`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:901` `documentation_security_keyword` — `- allowlist 済みの非 secret operational flag の値`
+- `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:1170` `documentation_security_keyword` — `- HTTP transport を採用する場合の bearer token / OAuth 設計:`
+- `warn` `credential_word` `docs/ops/keyboard-write-mcp-server.md:41` `documentation_security_keyword` — `fileで配置し、必要なCodex profileからだけ起動します。IP、SSH key、password、tokenは設定例やdocsへ`
 - `warn` `credential_word` `docs/ops/performance-tuning-plan.md:62` `documentation_security_keyword` — `Linux HID gadget の `/dev/hidgX` は、USB host の IN polling token を userspace callback として直接通知する interface ではない。`
 - `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:605` `documentation_security_keyword` — `early token/treeはなく通常boot 4 hashは正しく、`keyboard_ready` 14.666秒、`usb->input` 0.686秒、`
 - `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:659` `documentation_security_keyword` — `通常rebootを1回実行し、fallback boot ID `c0e63dd9-5ce0-4c9d-b613-d2e72f6f00e4`、early token/treeなし、`
@@ -277,11 +278,11 @@
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:70858` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:71315` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pcb:71472` `allowed_device_profile` — `(sheetfile "cqa02303v5rpi-01.kicad_sch")`
-- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:492` `allowed_device_profile` — `"filename": "cqa02303v5rpi-01.kicad_pro",`
-- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:592` `allowed_device_profile` — `"bom_export_filename": "cqa02303v5rpi.csv",`
-- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:791` `allowed_device_profile` — `"filename": "cqa02303v5rpi-01.kicad_sch",`
-- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:792` `allowed_device_profile` — `"name": "cqa02303v5rpi-01",`
-- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:806` `allowed_device_profile` — `"cqa02303v5rpi"`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:508` `allowed_device_profile` — `"filename": "cqa02303v5rpi-01.kicad_pro",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:608` `allowed_device_profile` — `"bom_export_filename": "cqa02303v5rpi.csv",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:807` `allowed_device_profile` — `"filename": "cqa02303v5rpi-01.kicad_sch",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:808` `allowed_device_profile` — `"name": "cqa02303v5rpi-01",`
+- `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro:822` `allowed_device_profile` — `"cqa02303v5rpi"`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6207` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6289` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
 - `warn` `legacy_project_name` `kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_sch:6369` `allowed_device_profile` — `(project "cqa02303v5rpi-01"`
@@ -1100,6 +1101,8 @@
 - `warn` `credential_word` `script/test_logicd_wifi_manager.py:56` `test_fixture` — `assert status.ssid == "HomeAP"`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1371` `test_fixture` — `(root / "done" / "task-a.result.md").write_text("secret body should not return", encoding="utf-8")`
 - `warn` `credential_word` `script/test_mcp_keyboard_server.py:1383` `test_fixture` — `assert "secret body" not in encoded`
+- `warn` `credential_word` `script/test_mcp_keyboard_write_server.py:235` `test_fixture` — `assert "password" not in serialized`
+- `warn` `credential_word` `script/test_mcp_keyboard_write_server.py:236` `test_fixture` — `assert "token" not in serialized`
 - `warn` `credential_word` `script/test_public_export.py:252` `test_fixture` — `unknown.write_text("password\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_export.py:255` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_export.py:258` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`

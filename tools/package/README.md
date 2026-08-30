@@ -56,10 +56,13 @@ Pi Zero 2 WではAPT simulation後、actual直前にread-only low-memory gateを
 ssh <device> 'python3 -' < tools/package/low_memory_install_preflight.py
 ```
 
-既定は`MemAvailable >= 128 MiB`、`SwapFree >= 256 MiB`かつ`SwapTotalの75%`、`dpkg --audit`空、
-APT / dpkg / mandb processとpackage lock holderなしです。stdout JSONの`ready=true`と終了code 0を
-確認してからactualへ進みます。fail時は`swapoff`せずactualを開始せず、clean reboot後にcandidate checksum、
-package state、simulation、gateを取り直します。このtoolはpackage、service、lock、swapを変更しません。
+既定はcold / strict policyの`MemAvailable >= 128 MiB`、`SwapFree >= 256 MiB`かつ`SwapTotalの75%`、
+または長時間稼働向けsteady-state policyの`MemAvailable >= 96 MiB`、`SwapFree >= 256 MiB`かつ
+`SwapTotalの60%`、`MemAvailable + SwapFree >= 384 MiB`です。どちらも`dpkg --audit`空、APT / dpkg /
+mandb processとpackage lock holderなしを要求します。stdout JSONの`ready=true`、`admission_policy`、終了code 0を
+確認してからactualへ進みます。APT simulationは1回だけにし、その直後にstrictが不合格でもsteady-stateが
+合格ならrebootせず進めます。両policyがfailした場合は`swapoff`せずactualを開始せず、同じsimulationとgateを
+反復しません。このtoolはpackage、service、lock、swapを変更しません。
 
 標準キーボード用の流れ:
 

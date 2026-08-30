@@ -14,7 +14,17 @@ or hidloom-logicd-core. The default packaged configuration is
 .B -h, --help
 Show command help.
 .SH ENVIRONMENT
-\fBMATRIXD_EVENT_LOG_PATH\fR enables event logging for diagnostics.
+.TP
+.B MATRIXD_EVENT_LOG_PATH
+Enables privacy-bounded JSONL diagnostic tracing. The packaged service writes
+only to the RAM-backed \fB/run/hidloom/matrixd-trace.jsonl\fR ring.
+.TP
+.B MATRIXD_EVENT_LOG_MAX_BYTES
+Sets the per-file trace limit. The packaged service uses 4194304 bytes and
+retains one rotated file, for an 8 MiB total bound.
+.TP
+.B MATRIXD_STATUS_PATH
+Selects the runtime status JSON path, including trace and send-failure counters.
 .SH SEE ALSO
 .BR hidloom-matrixd (5),
 .BR logicd (8),

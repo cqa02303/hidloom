@@ -9,8 +9,9 @@ pull / commit / push などの状態変更は行いません。
 private workspace reference *(omitted from public export)* を参照します。
 実機で一時修正を試した後の標準的な戻し方は
 [real-device-experiment-workflow.md](real-device-experiment-workflow.md) にまとめます。
-状態変更を行う MCP tool を作る場合の別 server 設計は
-[../policy/mcp-write-capable-tool-design.md](../policy/mcp-write-capable-tool-design.md) に分けます。
+状態変更はこのserverへ追加せず、実装済みの別server
+[keyboard-write-mcp-server.md](keyboard-write-mcp-server.md)へ分離します。設計境界は
+[../policy/mcp-write-capable-tool-design.md](../policy/mcp-write-capable-tool-design.md)を正とします。
 
 ## 入口
 

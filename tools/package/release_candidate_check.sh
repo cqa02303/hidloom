@@ -249,6 +249,14 @@ validate_usb_gadget_service_integration() {
         "$integration_matrix_unit" \
         "Wants=hidloom-early-input-handoff-finalize.service" \
         "$integration_label matrixd"
+    require_unit_line \
+        "$integration_matrix_unit" \
+        "Environment=MATRIXD_EVENT_LOG_PATH=/run/hidloom/matrixd-trace.jsonl" \
+        "$integration_label matrixd"
+    require_unit_line \
+        "$integration_matrix_unit" \
+        "Environment=MATRIXD_EVENT_LOG_MAX_BYTES=4194304" \
+        "$integration_label matrixd"
     reject_file_text \
         "$integration_prepare_unit" \
         "ConditionPathExists" \

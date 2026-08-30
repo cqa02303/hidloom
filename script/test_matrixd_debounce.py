@@ -107,12 +107,88 @@ static void test_short_noise_is_ignored(void)
     expect_state("noise ignored", &key, 0);
 }
 
+static void test_six_ms_policy_filters_release_chatter(void)
+{
+    MatrixdDebounceKey key;
+    MatrixdDebounceEvent event;
+    matrixd_debounce_init(&key);
+
+    event = matrixd_debounce_step_time(&key, 1, 0, 6000);
+    expect_event("six ms press start", event, MATRIXD_DEBOUNCE_EVENT_NONE);
+    event = matrixd_debounce_step_time(&key, 1, 6000, 6000);
+    expect_event("six ms press commit", event, MATRIXD_DEBOUNCE_EVENT_PRESS);
+    matrixd_debounce_commit_event(&key, event);
+
+    expect_event("release chatter start", matrixd_debounce_step_time(&key, 0, 7000, 6000), MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("release chatter below policy", matrixd_debounce_step_time(&key, 0, 12500, 6000), MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("contact restored", matrixd_debounce_step_time(&key, 1, 12600, 6000), MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_state("release chatter suppressed", &key, 1);
+
+    expect_event("stable release start", matrixd_debounce_step_time(&key, 0, 13000, 6000), MATRIXD_DEBOUNCE_EVENT_NONE);
+    event = matrixd_debounce_step_time(&key, 0, 19000, 6000);
+    expect_event("stable release commit", event, MATRIXD_DEBOUNCE_EVENT_RELEASE);
+    matrixd_debounce_commit_event(&key, event);
+    expect_state("stable release accepted", &key, 0);
+}
+
+static void test_asymmetric_time_policy_and_repress_guard(void)
+{
+    MatrixdDebounceKey key;
+    MatrixdDebounceEvent event;
+    matrixd_debounce_init(&key);
+
+    expect_event("segmented press first high",
+        matrixd_debounce_step_time_policy(&key, 1, 0, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("segmented press high below threshold",
+        matrixd_debounce_step_time_policy(&key, 1, 4422, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("segmented press low",
+        matrixd_debounce_step_time_policy(&key, 0, 4500, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("segmented press second high",
+        matrixd_debounce_step_time_policy(&key, 1, 6000, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    event = matrixd_debounce_step_time_policy(&key, 1, 11000, 5000, 6000, 16000);
+    expect_event("segmented idle press accepted at five ms", event, MATRIXD_DEBOUNCE_EVENT_PRESS);
+    matrixd_debounce_commit_event_at(&key, event, 11000);
+
+    expect_event("release start",
+        matrixd_debounce_step_time_policy(&key, 0, 12000, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("release still below six ms",
+        matrixd_debounce_step_time_policy(&key, 0, 17999, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    event = matrixd_debounce_step_time_policy(&key, 0, 18000, 5000, 6000, 16000);
+    expect_event("release accepted at six ms", event, MATRIXD_DEBOUNCE_EVENT_RELEASE);
+    matrixd_debounce_commit_event_at(&key, event, 18000);
+
+    expect_event("guarded rebound press start",
+        matrixd_debounce_step_time_policy(&key, 1, 19000, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("five point five ms rebound rejected",
+        matrixd_debounce_step_time_policy(&key, 1, 24500, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_event("rebound returns low",
+        matrixd_debounce_step_time_policy(&key, 0, 24600, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    expect_state("guarded rebound suppressed", &key, 0);
+
+    expect_event("later press outside guard starts",
+        matrixd_debounce_step_time_policy(&key, 1, 35000, 5000, 6000, 16000),
+        MATRIXD_DEBOUNCE_EVENT_NONE);
+    event = matrixd_debounce_step_time_policy(&key, 1, 40000, 5000, 6000, 16000);
+    expect_event("later press accepted at five ms", event, MATRIXD_DEBOUNCE_EVENT_PRESS);
+}
+
 int main(void)
 {
     test_count_mode();
     test_time_mode_ignores_high_frequency_count();
     test_time_mode_variable_periods();
     test_short_noise_is_ignored();
+    test_six_ms_policy_filters_release_chatter();
+    test_asymmetric_time_policy_and_repress_guard();
     puts("ok: matrixd debounce helper");
     return 0;
 }

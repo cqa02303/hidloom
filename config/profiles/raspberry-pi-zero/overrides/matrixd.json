@@ -3,6 +3,8 @@
     "interval_us": 2000,
     "idle_interval_us": 4000,
     "deep_idle_interval_us": 8000,
-    "debounce_ms": 6
+    "debounce_ms": 6,
+    "press_debounce_ms": 5,
+    "repress_guard_ms": 16
   }
 }
