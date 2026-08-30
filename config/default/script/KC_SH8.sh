@@ -3,8 +3,8 @@
 # KC_SH8.sh — matrixd/input diagnostics snapshot
 #
 # キー取りこぼしや ghost が再発した直後に押すための診断採取スクリプトです。
-# 既定では 30 秒間 key_events / ledd_events を監視し、直近 10 分の journal、
-# matrixd 設定、systemd unit、process snapshot などを Markdown に保存します。
+# 既定ではRAM上のcurrent/rotated traceを先に取り込み、30秒間 key_events / ledd_eventsを
+# 監視して、直近10分のjournal、package/boot/statusをMarkdownへ一度だけ保存します。
 #
 # 配置先:
 #   SD カード P3 パーティション: /mnt/p3/script/KC_SH8.sh  (優先)
@@ -26,6 +26,7 @@ SINCE="${MATRIXD_DIAG_SINCE:-10 minutes ago}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="${OUT_DIR}/matrixd-diagnostics-KC_SH8-${STAMP}.md"
 
+umask 077
 mkdir -p "$OUT_DIR"
 hidloom-notify alert "MATRIX DIAG START" "$DURATION" 2>/dev/null || true
 

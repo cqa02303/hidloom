@@ -189,7 +189,7 @@ row と col を別 GPIO 群として指定する通常マトリクスは、次�
 ## Scan timing
 
 `config/default/matrixd.json` の `scan` で、全行 scan 後の `interval_us`、row drive 後の
-`settle_us`、row release 後の `post_row_settle_us`、`debounce_mode` / `debounce_ms` を設定します。
+`settle_us`、row release 後の `post_row_settle_us`、`debounce_mode`、press / release debounceを設定します。
 
 通常時は `interval_us` の scan rate を維持します。`idle_interval_us` /
 `deep_idle_interval_us` を設定すると、raw matrix に変化がない時間だけ scan 後の wait を
@@ -207,7 +207,9 @@ row と col を別 GPIO 群として指定する通常マトリクスは、次�
     "idle_after_ms": 100,
     "deep_idle_after_ms": 500,
     "debounce_mode": "time",
-    "debounce_ms": 5,
+    "debounce_ms": 6,
+    "press_debounce_ms": 5,
+    "repress_guard_ms": 16,
     "settle_us": 20,
     "post_row_settle_us": 2
   }
@@ -247,13 +249,15 @@ OUTPUT から INPUT に戻すだけにします。これにより、各 row ご�
 | mode | 意味 | 用途 |
 |---|---|---|
 | `count` | 連続して同じ raw を読んだ scan 回数で確定する既存互換方式 | 既存設定の互換維持 |
-| `time` | 同じ raw が `debounce_ms` 以上継続した時に確定する実時間方式 | 可変scan周期や高優先度scanで推奨 |
+| `time` | press / release別の安定時間を使う実時間方式 | 可変scan周期や高優先度scanで推奨 |
 
 既定は互換性のため `count` です。
 `count` では `debounce_count` が指定されていればそれを使い、0 の場合は `debounce_ms * 1000 / interval_us` から scan 回数を計算します。
 
-`time` では、デバウンス中に raw 確認回数が増えても `debounce_ms` 未満では press / release を確定しません。
-`interval_us` / `idle_interval_us` / `deep_idle_interval_us` による可変scan周期は維持しつつ、確定条件だけを実時間の安定継続へ寄せます。
+`time`では通常pressに`press_debounce_ms`、releaseに`debounce_ms`を使います。確定済みreleaseから
+`repress_guard_ms`以内に始まった同一keyのraw pressだけは、大きいrelease側閾値を使います。既定の
+`5 / 6 / 16 ms`は短い有効pressを拾いつつ、release直後に観測した約5.8ms以下の反跳を再pressとして
+確定しないための境界です。count modeとhiddのrelease merge意味論は変えません。
 
 推奨例:
 
@@ -261,7 +265,9 @@ OUTPUT から INPUT に戻すだけにします。これにより、各 row ご�
 {
   "scan": {
     "debounce_mode": "time",
-    "debounce_ms": 5
+    "debounce_ms": 6,
+    "press_debounce_ms": 5,
+    "repress_guard_ms": 16
   }
 }
 ```
@@ -289,6 +295,18 @@ logicd: keymap / layer / interaction / HID report
 現時点では `logicd.service` に RT 優先度設定はありません。実機なしでは変更せず、実機確認時に `logicd` の受信遅延や journal warning を確認してから見直します。
 
 ## systemd
+
+通常の`matrixd.service`は`MATRIXD_EVENT_LOG_PATH=/run/hidloom/matrixd-trace.jsonl`を設定し、
+確定eventだけでなくraw/debounce遷移と送信成否を`matrixd.trace.v1` JSONLへ記録します。
+scan processはnonblocking pipeへ最大2 KiBのrecordを投入するだけで、別のnon-RT writer processが
+RAM上のcurrent/rotated各4 MiBを管理します。queue fullまたはI/O error時は入力を継続し、
+`matrixd-status.json`の`diagnostic_trace` counterへ記録します。rotationはこの2つの専用traceだけを
+対象とし、他の`/run/hidloom` fileやjournalを削除しません。
+
+traceはmatrix座標と構造状態だけを含み、mapped keycode、文字列、HID payload、script内容、credentialを
+含みません。通常入力量では概ね30分以上のprehistoryを保持する想定ですが、入力密度が高い場合の保証時間は
+8 MiBの固定上限までです。RAM履歴はrebootで消えるため、症状連絡後はreboot前に
+[`matrixd incident snapshot runbook`](../../docs/ops/matrixd-incident-snapshot.md)で採取します。
 
 unit:
 

@@ -17,10 +17,12 @@ def main() -> None:
 
     source = (ROOT / "daemon" / "matrixd" / "matrixd.c").read_text(encoding="utf-8")
     assert "MATRIXD_EVENT_LOG_PATH" in source
-    assert "matrixd_log_event" in source
-    assert "matrixd_log_debounce" in source
+    assert "matrixd_trace_dispatch" in source
+    assert "matrixd_trace_debounce" in source
     assert "matrixd_debounce" in source
-    assert "matrixd_event" in source
+    assert "matrixd.trace.v1" in source
+    assert "queue_dropped" in source
+    assert "send_failures" in source
     assert "key_active_seen" in source
     assert "tap_socket_path" in source
     assert "TAP_CONNECT_RETRY_MS" in source
@@ -29,8 +31,8 @@ def main() -> None:
     assert "startup_quiet_until_us" in source
     assert 'getenv("MATRIXD_STATUS_PATH")' in source
     assert "matrixd.status.v1" in source
-    assert "write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 1)" in source
-    assert "write_runtime_status(status_path, &cfg, 0, 0, 0)" in source
+    assert "write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 1, &trace" in source
+    assert "write_runtime_status(status_path, &cfg, 0, 0, 0, &trace" in source
 
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / f"matrixd{sysconfig.get_config_var('EXE') or ''}"
@@ -46,6 +48,7 @@ def main() -> None:
                 str(ROOT / "daemon" / "matrixd"),
                 str(ROOT / "daemon" / "matrixd" / "matrixd.c"),
                 str(ROOT / "daemon" / "matrixd" / "debounce.c"),
+                str(ROOT / "daemon" / "matrixd" / "trace.c"),
                 "-o",
                 str(out),
             ],

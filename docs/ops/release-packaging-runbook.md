@@ -388,6 +388,13 @@ APTと後続のprofile apply / unit switch / verifyは開始しません。合�
 profile applyは従来どおりAPT完了後の別commandです。このoptionはswapなし・極小swapも拒否するため、
 別memory classのdeviceへ自動適用せず、Pi Zero 2 Wで明示します。
 
+memory判定はcold / strict policy（`MemAvailable >= 128 MiB`、`SwapFree >= 256 MiB`かつ75%）と、
+長時間稼働向けsteady-state headroom policy（`MemAvailable >= 96 MiB`、`SwapFree >= 256 MiB`かつ60%、
+`MemAvailable + SwapFree >= 384 MiB`）の二段階です。後者はAPT simulationがcacheをswapへ押し出した後も、
+実測上安全な絶対headroomが残る状態を扱います。stdoutの`checks.memory.admission_policy`を証跡へ残します。
+simulationは1回だけ行い、strictの75%未満だけを理由にrebootしません。両policyが不合格ならactualを開始せず、
+同じsimulation / gateを反復せずにprocess、memory推移、過去の失敗証跡を比較します。
+
 fresh OS や一時 IP の個体で標準 `DEVICE=01/02` にまだ入っていない時は、Make から
 explicit remote を渡します。
 

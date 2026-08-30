@@ -318,6 +318,7 @@
         "config/public-export-deny-patterns.json",
         "config/public-export.json",
         "dev/mcp/keyboard/server.py",
+        "dev/mcp/keyboard_write/server.py",
         "script/start_touch_panel_browser.sh",
         "system/install/setup_fresh_rpi.sh",
         "tools/btd_bluez_pairing_window.py",

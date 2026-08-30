@@ -1,6 +1,6 @@
 # Test Script Inventory
 
-更新日: 2026-08-08
+更新日: 2026-08-29
 
 `script/test_*.py` と周辺手動ツールの棚卸し方針です。現時点ではテストが多いこと自体を
 安全側とみなし、削除より分類を優先します。
@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 349 本程度あり、標準 canonical suite は 237 entrypoints を実行する。
+現在 `script/test_*.py` は 351 本程度あり、標準 canonical suite は 239 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints
@@ -494,6 +494,8 @@ MSYS Python に `aiohttp` が無い場合でも、純粋な payload / resolver h
   - public exportから意図的に除外したprivate文書へのlinkをplain textへ変換し、未知の欠落targetとroot READMEから到達できない`docs/**/*.md`をblockerにする境界を固定する。directory indexとcode fence内の偽navigationも検証する。
 - `script/test_mcp_keyboard_server.py`
   - `dev/mcp/keyboard/server.py` の portable target既定値、read-only tool schema、native owner service allowlist、package-first update guidance、代表 tool の smoke を固定する。
+- `script/test_mcp_keyboard_write_server.py`
+  - 別serverのdry-run既定、dynamic確認句、full keymap digest、tap allowlist、必須release、単一位置save/readback、失敗時rollback、credential非返却を固定する。
 - `script/test_codex_task_mailbox.py`
   - `tools/codex_task_mailbox.py` のtask/result JSON契約、CLI相互排他、公開manual command、on-demand directory、MCP mailbox summaryを固定する。
 
@@ -623,8 +625,10 @@ skip し、Python-owner rollback 中にだけ `--include-python-owner-smoke` で
 - `script/test_matrixd_scan_optimization.py`
 - `script/test_matrixd_debounce.py`
   - `matrixd/debounce.[ch]` の count / time debounce、可変scan周期、高頻度raw確認、送信成功後commit semantics を確認する。
+- `script/test_matrixd_trace.py`
+  - RAM traceの2×固定上限、root service/`0600`、JSONL schema、privacy、ordering、送信失敗、専用fileだけのrotationを確認する。
 - `script/test_matrixd_build.py`
-  - `matrixd.c` と `debounce.c` が実機なしの C build で壊れていないことを確認する。
+  - `matrixd.c`、`debounce.c`、`trace.c` が実機なしの C build で壊れていないことを確認する。
 - `script/test_i2cd_connectivity.py`
   - OLED connectivity icon row の output mode / Wi-Fi snapshot 変換を確認する。
   - Wi-Fi off / unavailable 非表示、powered 未接続 `wifi0` 通常表示、connected `wifi3` 反転表示を固定する。
@@ -664,6 +668,7 @@ skip し、Python-owner rollback 中にだけ `--include-python-owner-smoke` で
 
 ```bash
 python3 script/test_matrixd_debounce.py
+python3 script/test_matrixd_trace.py
 python3 script/test_matrixd_build.py
 python3 script/test_matrixd_scan_optimization.py
 python3 script/test_logicd_matrix_input_priority.py

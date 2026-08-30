@@ -93,6 +93,9 @@ def main() -> None:
     assert "--min-mem-available-mib" in help_result.stdout
     assert "--min-swap-free-mib" in help_result.stdout
     assert "--min-swap-free-percent" in help_result.stdout
+    assert "--steady-min-mem-available-mib" in help_result.stdout
+    assert "--steady-min-swap-free-percent" in help_result.stdout
+    assert "--steady-min-combined-headroom-mib" in help_result.stdout
 
     with tempfile.TemporaryDirectory(prefix="hidloom-memory-preflight-") as raw:
         root = Path(raw)
@@ -104,7 +107,7 @@ def main() -> None:
         result = run_tool(safe)
         assert result.returncode == 0, (result.stdout, result.stderr)
         payload = result_json(result)
-        assert payload["schema"] == "hidloom.low-memory-install-preflight.v1"
+        assert payload["schema"] == "hidloom.low-memory-install-preflight.v2"
         assert payload["ready"] is True
         assert payload["failures"] == []
         memory = payload["checks"]["memory"]
@@ -115,6 +118,9 @@ def main() -> None:
         assert memory["swap_free_percent"] == 80.0
         assert memory["swap_free_mib_ok"] is True
         assert memory["swap_free_percent_ok"] is True
+        assert memory["strict_ok"] is True
+        assert memory["steady_state_ok"] is True
+        assert memory["admission_policy"] == "strict"
         after = {
             path.name: path.read_bytes() for path in safe.iterdir() if path.is_file()
         }
@@ -143,27 +149,117 @@ def main() -> None:
         assert percent_exact_memory["swap_free_mib_ok"] is True
         assert percent_exact_memory["swap_free_percent_ok"] is True
 
-        low_memory = make_case(root, "low-memory")
+        steady_state = make_case(root, "steady-state")
         write_meminfo(
-            low_memory / "meminfo", available_mib=127, total_mib=400, free_mib=400
+            steady_state / "meminfo",
+            available_mib=110,
+            total_mib=415,
+            free_mib=291,
         )
-        result = run_tool(low_memory)
+        result = run_tool(steady_state)
+        assert result.returncode == 0, result.stdout
+        payload = result_json(result)
+        memory = payload["checks"]["memory"]
+        assert payload["ready"] is True
+        assert memory["strict_ok"] is False
+        assert memory["steady_state_ok"] is True
+        assert memory["admission_policy"] == "steady_state_headroom"
+        assert memory["combined_headroom_bytes"] == 401 * 1024 * 1024
+
+        post_simulation = make_case(root, "post-simulation")
+        write_meminfo(
+            post_simulation / "meminfo",
+            available_mib=132,
+            total_mib=415,
+            free_mib=279,
+        )
+        result = run_tool(post_simulation)
+        assert result.returncode == 0, result.stdout
+        memory = result_json(result)["checks"]["memory"]
+        assert memory["strict_ok"] is False
+        assert memory["steady_state_ok"] is True
+
+        steady_exact = make_case(root, "steady-exact")
+        write_meminfo(
+            steady_exact / "meminfo",
+            available_mib=96,
+            total_mib=480,
+            free_mib=288,
+        )
+        result = run_tool(steady_exact)
+        assert result.returncode == 0, result.stdout
+        memory = result_json(result)["checks"]["memory"]
+        assert memory["swap_free_percent"] == 60.0
+        assert memory["combined_headroom_bytes"] == 384 * 1024 * 1024
+        assert memory["steady_state_ok"] is True
+
+        below_steady_percent = make_case(root, "below-steady-percent")
+        write_meminfo(
+            below_steady_percent / "meminfo",
+            available_mib=200,
+            total_mib=500,
+            free_mib=299,
+        )
+        result = run_tool(below_steady_percent)
+        assert result.returncode == 1
+        memory = result_json(result)["checks"]["memory"]
+        assert memory["steady_swap_free_percent_ok"] is False
+
+        historical_oom = make_case(root, "historical-oom")
+        write_meminfo(
+            historical_oom / "meminfo",
+            available_mib=89,
+            total_mib=414,
+            free_mib=168,
+        )
+        result = run_tool(historical_oom)
         assert result.returncode == 1
         payload = result_json(result)
+        memory = payload["checks"]["memory"]
         assert payload["ready"] is False
         assert payload["failures"] == ["memory"]
-        assert payload["checks"]["memory"]["mem_available_ok"] is False
+        assert memory["strict_ok"] is False
+        assert memory["steady_state_ok"] is False
+        assert memory["admission_policy"] is None
+        assert memory["swap_free_mib_ok"] is False
 
-        low_swap = make_case(root, "low-swap")
+        low_steady_memory = make_case(root, "low-steady-memory")
         write_meminfo(
-            low_swap / "meminfo", available_mib=256, total_mib=400, free_mib=299
+            low_steady_memory / "meminfo",
+            available_mib=95,
+            total_mib=500,
+            free_mib=400,
         )
-        result = run_tool(low_swap)
+        result = run_tool(low_steady_memory)
         assert result.returncode == 1
-        payload = result_json(result)
-        assert payload["checks"]["memory"]["swap_free_ok"] is False
-        assert payload["checks"]["memory"]["swap_free_mib_ok"] is True
-        assert payload["checks"]["memory"]["swap_free_percent_ok"] is False
+        memory = result_json(result)["checks"]["memory"]
+        assert memory["steady_mem_available_ok"] is False
+
+        low_combined = make_case(root, "low-combined")
+        write_meminfo(
+            low_combined / "meminfo",
+            available_mib=96,
+            total_mib=400,
+            free_mib=256,
+        )
+        result = run_tool(low_combined)
+        assert result.returncode == 1
+        memory = result_json(result)["checks"]["memory"]
+        assert memory["steady_combined_headroom_ok"] is False
+
+        low_swap_floor = make_case(root, "low-swap-floor")
+        write_meminfo(
+            low_swap_floor / "meminfo",
+            available_mib=256,
+            total_mib=400,
+            free_mib=255,
+        )
+        result = run_tool(low_swap_floor)
+        assert result.returncode == 1
+        memory = result_json(result)["checks"]["memory"]
+        assert memory["swap_free_mib_ok"] is False
+        assert memory["strict_ok"] is False
+        assert memory["steady_state_ok"] is False
 
         threshold_override = make_case(root, "threshold-override")
         write_meminfo(

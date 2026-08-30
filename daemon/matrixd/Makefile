@@ -9,7 +9,7 @@
 CC      ?= gcc
 CFLAGS  := -std=c11 -Wall -Wextra -O2 -D_POSIX_C_SOURCE=200809L
 TARGET  := matrixd
-SRC     := matrixd.c debounce.c
+SRC     := matrixd.c debounce.c trace.c
 
 .PHONY: all clean install
 
