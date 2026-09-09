@@ -24,6 +24,11 @@ profile files を入れ、runtime definition と service policy は
 `hidloom-profile <profile> --apply --backup --restart` で `/mnt/p3` と systemd に反映します。
 core と profile は同じ version を同時に install します。
 
+WSLでWindows上のcheckoutからbuildする場合、bundleの `WORK_ROOT` とDebian builderの
+`--work-root` はLinux filesystem上の新しい作業ディレクトリへ向けます。DrvFSが権限を777として
+返す構成では、`chmod`だけではDebian control/payloadのmodeを保証できません。既存early-boot
+payloadを再梱包する時も元debをLinux側へ展開してmodeを保持し、出力debのfile/mode/hashを照合します。
+
 ## 実機 profile
 
 標準 helper の `--device` は次の実機を指します。
@@ -160,7 +165,12 @@ PID割当は要求しません。正式公開時は`--channel stable-public`で�
 Zero 2 W keyboard package、touch profile、Buildroot M6を同じReleaseへ載せる場合は、
 `build_zero2w_keyboard_release.sh`で作った統合bundleからGitHub Release planを生成する。
 既定はdry-runで、全asset checksum、対応source内verifier、正式USB identity、keyboard実機smoke、
-source commitと`HEAD`一致、clean worktree、`origin=cqa02303/hidloom`を確認し、tag/uploadは行わない。
+private sourceとpublic `HEAD`の内容対応、clean worktree、`origin=cqa02303/hidloom`を確認し、tag/uploadは行わない。
+
+plan v3はprivateの `source_commit` とpackage versionを来歴として保持し、別履歴のpublic `HEAD`を
+`public_target.commit` として扱う。immutable Git objectの全path・bytes・mode・kindをexport manifestと照合し、
+対応source archiveのsource commit/tree/snapshot/manifest hashと一致することを要求する。
+全assetと `RELEASE_MANIFEST.json` / `SHA256SUMS` のdigestもplanと確認句へ固定する。
 
 ```bash
 python3 tools/package/publish_public_release_bundle.py \
@@ -180,13 +190,17 @@ python3 tools/package/publish_public_release_bundle.py \
 python3 tools/package/publish_public_release_bundle.py \
   --bundle build/zero2w-keyboard-release \
   --execute \
-  --confirm 'CREATE DRAFT cqa02303/hidloom v0.1.0'
+  --confirm '<直前のplanが返したconfirmation全体>'
 ```
 
-helperは`internal-rc`を常に拒否します。既存Releaseと既存tagも拒否し、`gh release create --draft --prerelease --target <source-commit>`へ
+helperは`internal-rc`を常に拒否します。既存Releaseと既存tagも拒否し、APIの確認失敗を「存在しない」と扱いません。
+実行直前にHEAD・対応関係・assetを再検証し、`gh release create --draft --prerelease --target <public-target-commit>`へ
 `SHA256SUMS`掲載全assetを渡す。
 作成後は全assetを別directoryへdownloadし、対応source archive内の`public_release_bundle.py`で
-publication/hardware gateを含むdeep verifyを行う。公開済みまたはdraftをread-onlyで再確認する入口:
+publication/hardware gateを含むdeep verifyを行う。さらに実tag（lightweight/annotated）を解決してpublic commitを取得し、
+そのtreeを対応sourceと照合する。publisherの `--expected-plan` readbackはtargetと全asset digestも要求する。
+local `--bundle` 検証は既存bundle v5を維持し、remote target未照合を `public_target_verification=not-requested` と示す。
+公開済みまたはdraftをread-onlyで再確認する入口:
 
 ```bash
 python3 tools/package/verify_github_public_release_bundle.py \
@@ -336,12 +350,12 @@ package名、arm64 architecture、version、exact dependencyを検証してか�
 `sudo dpkg -i`と`hidloom-profile keyboard-ver1 --apply --backup --restart`まで進めます。
 この分割手順は dependency install を行わないため、fresh OS では通常、下の標準 flow を使います。
 
-install 後は、package unit restart と smoke を明示的に実行します。
+既存の `/etc` unitを移行する必要がある場合は、下の標準flowを使います。単独installerは互換性のため
+install後にprofileを適用しますが、標準flowは適用をunit移行後まで遅延させます。移行済みの環境で
+単独installerを使った後は、read-only verifyと必要なsmokeを実行します。
 
 ```bash
-make deb-unit-switch-01
 make deb-verify-smoke-01
-make deb-unit-switch-02
 make deb-verify-smoke-02
 ```
 
@@ -363,10 +377,22 @@ make release-deb-deploy RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=01
 make release-deb-deploy RELEASE_TAG=v0.0.<git_rev_count>+git<git_sha> DEVICE=02
 ```
 
-`release-deb-deploy` は `apt-get install` による dependency-aware install、package unit への switch / restart、
-`deb-verify --smoke` まで進めます。smoke を省く必要がある場合だけ、script を直接
+`release-deb-deploy` は次の順で実行します。
+
+1. 同version core/profileを一つの `apt-get install` transactionで導入する。
+2. installerの `--defer-profile-apply` により適用を保留し、既存unitのbackupとpackage unitへの移行・reloadを行う。
+3. 選択したprofileの `hidloom-profile <profile> --apply --backup --restart` を一度だけ実行する。
+4. profileを指定した `deb-verify --smoke` で確認する。
+
+unit移行で一律のdaemon再起動は行いません。touch/keyboardそれぞれのservice policyをprofile適用に任せます。
+`--defer-profile-apply` はsplit `--install` 専用で、単独installerの既定動作は維持します。
+smoke を省く必要がある場合だけ、script を直接
 `tools/package/deploy_github_release_deb.sh --tag TAG --device 02 --install --no-smoke`
 で呼びます。
+
+`--no-smoke` でもprofile-aware verifyは省きません。APT失敗ならunit移行以降、unit移行失敗ならprofile適用以降、
+profile適用失敗ならverify以降を実行しません。途中失敗のbackup・変更済み箇所・service操作を保持し、復旧時は
+runtime/overrideの復元とAPT導入済みbinaryのversionを別々に確認します。自動downgradeやrebootは行いません。
 
 Pi Zero 2 Wのactualでは、dry-run合格後にscriptを直接呼び、read-only low-memory gateを
 APT直前へ組み込みます。

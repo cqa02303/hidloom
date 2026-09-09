@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
+import tempfile
+from unittest.mock import patch
 import sys
 from pathlib import Path
 
@@ -99,7 +102,6 @@ async def main_async() -> None:
     led_save_cancels: list[str] = []
     logicd._cancel_led_state_save = lambda: led_save_cancels.append("cancel")  # type: ignore[assignment]
     logicd._load_led_state = lambda: logicd._runtime.led_state.update({"mode": 2, "speed": 64, "h": 1, "s": 2, "v": 3})  # type: ignore[assignment, attr-defined]
-    logicd._save_runtime_keymap = lambda: "/tmp/keymap.json"  # type: ignore[assignment]
     semantic_reloads: list[str] = []
     logicd._push_ledd_semantic_reload = lambda: semantic_reloads.append("reload")  # type: ignore[assignment]
     alerts: list[tuple[str, float]] = []
@@ -125,7 +127,9 @@ async def main_async() -> None:
     assert logicd._runtime.layers.layers_snapshot() == [{}]  # type: ignore[attr-defined]
 
     ok_remap = await request('{"t":"M","l":0,"r":1,"c":2,"a":"KC_A"}')
-    assert ok_remap[-1] == {"t": "M", "result": "ok"}
+    assert ok_remap[-1]["t"] == "M" and ok_remap[-1]["result"] == "ok"
+    assert ok_remap[-1]["runtime_applied"] is True
+    assert ok_remap[-1]["persisted"] is False
     assert logicd._runtime.layers.layers_snapshot()[0]["1,2"] == "KC_A"  # type: ignore[attr-defined]
 
     joystick = JoystickManager([JoystickBinding(
@@ -313,7 +317,8 @@ async def main_async() -> None:
 
 
 def main() -> None:
-    asyncio.run(main_async())
+    with tempfile.TemporaryDirectory() as runtime_directory, patch.dict(os.environ, {"HIDLOOM_RUNTIME_DIR": runtime_directory}):
+        asyncio.run(main_async())
     print("ok: logicd ctrl validation rejects malformed input")
 
 

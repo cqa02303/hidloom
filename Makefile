@@ -218,10 +218,10 @@ deb-unit-switch-dry-run-02:
 	tools/package/deploy_deb_unit_switch.sh --device 02 --dry-run
 
 deb-unit-switch-01:
-	tools/package/deploy_deb_unit_switch.sh --device 01 --restart
+	tools/package/deploy_deb_unit_switch.sh --device 01 --profile keyboard-ver1 --restart
 
 deb-unit-switch-02:
-	tools/package/deploy_deb_unit_switch.sh --device 02 --restart
+	tools/package/deploy_deb_unit_switch.sh --device 02 --profile keyboard-ver1 --restart
 
 deb-verify-01:
 	tools/package/deploy_deb_verify.sh --device 01

@@ -46,6 +46,7 @@ class SessiondService:
         self.session: PtyMirrorSession | None = None
         self.last_exit_reason = "idle"
         self.seen_session = False
+        self._output_lock = asyncio.Lock()
 
     async def start(self) -> None:
         path = Path(self.socket_path)
@@ -123,10 +124,11 @@ class SessiondService:
 
     @property
     def active(self) -> bool:
-        return bool(self.session is not None and self.session.active)
+        # Wire active includes buffered output after process exit. Only the
+        # output reader finishes the session after reaching PTY EOF.
+        return self.session is not None
 
     async def process_message(self, message: dict[str, Any]) -> list[dict[str, Any]]:
-        self._finalize_exited_session()
         message_type = message.get("type")
         if message_type == TYPE_START_PTY_MIRROR:
             return await self.start_session(message)
@@ -139,6 +141,9 @@ class SessiondService:
         if message_type == TYPE_POLL_PTY_OUTPUT:
             return await self.poll_output(message)
         if message_type == TYPE_PTY_STATUS:
+            if self.session is not None and not self.session.active and not self._output_lock.locked():
+                if self.session.probe_output_eof():
+                    self._finalize_exited_session()
             return [self.status_message()]
         raise ValueError(f"unsupported sessiond message type: {message_type!r}")
 
@@ -160,7 +165,6 @@ class SessiondService:
         return responses
 
     async def poll_output(self, message: dict[str, Any]) -> list[dict[str, Any]]:
-        self._finalize_exited_session()
         if not self.active or self.session is None:
             return [self.status_message()]
         max_bytes = _bounded_int(message.get("max_bytes", 8192), default=8192, lower=1, upper=65536)
@@ -168,8 +172,6 @@ class SessiondService:
         responses: list[dict[str, Any]] = []
         if text:
             responses.append(make_message("pty_text_stream", text=text))
-        if self.session is not None:
-            await asyncio.to_thread(self.session.wait, timeout=0.0)
         if self._finalize_exited_session():
             responses.append(self.status_message())
         return responses or [self.status_message(reason="poll")]
@@ -180,7 +182,6 @@ class SessiondService:
         writer.write(encode_message(self.status_message(reason="watch")))
         await writer.drain()
         while True:
-            self._finalize_exited_session()
             if not self.active or self.session is None:
                 writer.write(encode_message(self.status_message()))
                 await writer.drain()
@@ -188,6 +189,11 @@ class SessiondService:
             text = await self._read_available_session_text(max_bytes=max_bytes)
             if text:
                 writer.write(encode_message(make_message("pty_text_stream", text=text)))
+            if self._finalize_exited_session():
+                writer.write(encode_message(self.status_message()))
+                await writer.drain()
+                return
+            if text:
                 await writer.drain()
                 continue
             await asyncio.sleep(interval_ms / 1000.0)
@@ -195,6 +201,9 @@ class SessiondService:
     async def handle_key_input(self, message: dict[str, Any]) -> list[dict[str, Any]]:
         if not self.active or self.session is None:
             return [pty_status_message(False, reason="inactive")]
+        if not self.session.active:
+            # Old clients must continue polling while final output remains.
+            return [self.status_message(reason="draining")]
 
         written = 0
         input_bytes = b""
@@ -245,8 +254,6 @@ class SessiondService:
                 len(prompt_tail),
                 written,
             )
-            if self.session is not None:
-                await asyncio.to_thread(self.session.wait, timeout=0.05)
             finalized = self._finalize_exited_session()
             if prompt_tail and not finalized:
                 responses.append(make_message("pty_text_stream", text=prompt_tail, written=written))
@@ -281,14 +288,12 @@ class SessiondService:
             text = await self._drain_session_text(timeout=0.35, max_bytes=65536)
             if text:
                 responses.append(make_message("pty_text_stream", text=text, written=written))
-        if self.session is not None:
-            await asyncio.to_thread(self.session.wait, timeout=0.0)
         if self._finalize_exited_session():
             responses.append(self.status_message())
         return responses or [self.status_message(reason="input")]
 
     def _finalize_exited_session(self) -> bool:
-        if self.session is None or self.session.active:
+        if self.session is None or self.session.active or not self.session.output_eof:
             return False
         code = self.session.wait(timeout=0.0)
         self.session.close()
@@ -306,6 +311,8 @@ class SessiondService:
             if self.session.process is not None:
                 pid = self.session.process.pid
         message = pty_status_message(self.active, reason=reason or self.last_exit_reason, rows=rows, columns=columns)
+        message["process_active"] = bool(self.session is not None and self.session.active)
+        message["draining"] = self.active and not message["process_active"]
         if pid is not None:
             message["pid"] = pid
         return message
@@ -326,17 +333,36 @@ class SessiondService:
         return str(message.get("action", "")) in _COMMAND_COMMIT_ACTIONS and bool(message.get("is_press", True))
 
     async def _drain_session_text(self, *, timeout: float, max_bytes: int = 8192) -> str:
-        if self.session is None:
-            return ""
-        return await asyncio.to_thread(self.session.read_text_until_quiet, timeout=timeout, max_bytes=max_bytes)
+        # Keep one decoder owner, with nonblocking fd reads on this loop so
+        # stop/start cannot race an old background thread reading a reused fd.
+        async with self._output_lock:
+            session = self.session
+            if session is None:
+                return ""
+            loop = asyncio.get_running_loop()
+            deadline = loop.time() + max(0.0, timeout)
+            quiet_deadline = loop.time() + 0.05
+            chunks: list[str] = []
+            total = 0
+            while loop.time() < deadline and total < max_bytes and self.session is session:
+                result = session.read_available_result(max_bytes=min(4096, max_bytes - total))
+                chunks.append(session.decode_output(result))
+                total += len(result.data)
+                if result.eof:
+                    break
+                if result.data:
+                    quiet_deadline = loop.time() + 0.05
+                elif total and loop.time() >= quiet_deadline:
+                    break
+                await asyncio.sleep(0 if result.data else 0.01)
+            return "".join(chunks)
 
     async def _read_available_session_text(self, *, max_bytes: int = 8192) -> str:
-        if self.session is None:
-            return ""
-        data = await asyncio.to_thread(self.session.read_available, timeout=0.0, max_bytes=max_bytes)
-        if not data:
-            return ""
-        return data.decode("utf-8", errors="replace")
+        async with self._output_lock:
+            if self.session is None:
+                return ""
+            result = self.session.read_available_result(max_bytes=max_bytes)
+            return self.session.decode_output(result)
 
 
 def _bounded_int(value: object, *, default: int, lower: int, upper: int) -> int:

@@ -28,7 +28,8 @@ Options:
   --device 01|02         target known device
   --host USER@HOST       target explicit remote host
   --dry-run              run apt dependency-aware dry-run and unit switch dry-run only
-  --install              install package set, apply profile, switch units, and verify
+  --install              install package set, migrate units, apply profile once,
+                         and verify the selected profile
   --no-smoke             with --install, run package verify without live smoke
   --low-memory-preflight run the read-only low-memory gate immediately before
                          apt-get; requires --install
@@ -135,7 +136,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
     echo
     echo "== package unit switch dry-run =="
     # shellcheck disable=SC2086
-    "$SCRIPT_DIR/deploy_deb_unit_switch.sh" $REMOTE_ARG --dry-run
+    "$SCRIPT_DIR/deploy_deb_unit_switch.sh" $REMOTE_ARG --profile "$PROFILE" --dry-run --restart
     echo
     echo "release deb deploy dry-run complete: $TAG"
     exit 0
@@ -143,11 +144,11 @@ fi
 
 echo "== release deb install =="
 # shellcheck disable=SC2086
-"$SCRIPT_DIR/install_github_release_deb.sh" --tag "$TAG" --repository "$REPOSITORY" --profile "$PROFILE" $REMOTE_ARG --install --apt $preflight_arg $keep_arg
+"$SCRIPT_DIR/install_github_release_deb.sh" --tag "$TAG" --repository "$REPOSITORY" --profile "$PROFILE" $REMOTE_ARG --install --apt $preflight_arg --defer-profile-apply $keep_arg
 echo
-echo "== package unit switch and restart =="
+echo "== package unit migration and final profile application =="
 # shellcheck disable=SC2086
-"$SCRIPT_DIR/deploy_deb_unit_switch.sh" $REMOTE_ARG --restart
+"$SCRIPT_DIR/deploy_deb_unit_switch.sh" $REMOTE_ARG --profile "$PROFILE" --restart
 echo
 echo "== package verify =="
 verify_args=

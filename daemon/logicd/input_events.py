@@ -68,6 +68,9 @@ class InputEventContext:
     pty_mirror_output_queue: asyncio.Queue | None = None
     pty_mirror_output_task: asyncio.Task | None = None
     core_key_event_fn: Callable[[str, bool, tuple[int, int] | None, str | None], Any] | None = None
+    core_key_event_owned_fn: Callable[[str, bool, tuple[int, int] | None, str | None, object], Any] | None = None
+    pressed_matrix_owners: dict[object, set[tuple[int, int]]] = field(default_factory=dict)
+    output_transition_fn: Callable[[], Any] | None = None
 
 
 async def dispatch_action_event(
@@ -76,11 +79,12 @@ async def dispatch_action_event(
     ctx: InputEventContext,
     matrix_key: tuple[int, int] | None = None,
     source: str | None = None,
+    owner: object = None,
 ) -> None:
     """Expand wrapper/alias actions and dispatch concrete action steps."""
     steps = expand_action_event(action, is_press)
     for idx, step in enumerate(steps):
-        await handle_resolved_action(step.action, step.is_press, ctx, matrix_key=matrix_key, source=source)
+        await handle_resolved_action(step.action, step.is_press, ctx, matrix_key=matrix_key, source=source, owner=owner)
         if idx + 1 < len(steps):
             await asyncio.sleep(_EXPANDED_ACTION_STEP_GAP_SEC)
 
@@ -96,11 +100,16 @@ async def _send_core_key_event_if_available(
     ctx: InputEventContext,
     matrix_key: tuple[int, int] | None,
     source: str | None,
+    owner: object,
 ) -> bool:
+    core_key_event_owned_fn = getattr(ctx, "core_key_event_owned_fn", None)
     core_key_event_fn = getattr(ctx, "core_key_event_fn", None)
-    if core_key_event_fn is None or not _is_core_keyboard_action(action):
+    if (core_key_event_owned_fn is None and core_key_event_fn is None) or not _is_core_keyboard_action(action):
         return False
-    result = core_key_event_fn(action, is_press, matrix_key, source)
+    if core_key_event_owned_fn is not None:
+        result = core_key_event_owned_fn(action, is_press, matrix_key, source, owner)
+    else:
+        result = core_key_event_fn(action, is_press, matrix_key, source)
     if inspect.isawaitable(result):
         await result
     return True
@@ -143,6 +152,7 @@ async def _dispatch_interaction_events(resolved_events: list[Any], ctx: InputEve
             ctx,
             matrix_key=matrix_key,
             source=resolved.source,
+            owner=getattr(resolved, "owner", "matrix"),
         )
         next_event = resolved_events[idx + 1] if idx + 1 < len(resolved_events) else None
         gap_sec = _resolved_event_gap_sec(resolved, next_event)
@@ -197,11 +207,11 @@ async def process_interaction_tick(ctx: InputEventContext) -> None:
     await _dispatch_interaction_events(resolved_events, ctx)
 
 
-async def process_matrix_event(event: tuple, ctx: InputEventContext) -> None:
+async def process_matrix_event(event: tuple, ctx: InputEventContext, owner: object = "matrix", action: str | None = None) -> None:
     kind, row, col = event
     is_press = kind == "P"
 
-    if ctx.encoders.handles(row, col):
+    if owner == "matrix" and action is None and ctx.encoders.handles(row, col):
         encoder_result = ctx.encoders.process(row, col, is_press)
         if encoder_result == "invalid":
             log.warning("encoder transition ignored: row=%d col=%d press=%s", row, col, is_press)
@@ -210,7 +220,11 @@ async def process_matrix_event(event: tuple, ctx: InputEventContext) -> None:
         return
 
     key = (row, col)
-    already_pressed = key in ctx.pressed_matrix
+    if owner == "matrix":
+        pressed = ctx.pressed_matrix
+    else:
+        pressed = ctx.pressed_matrix_owners.setdefault(owner, set())
+    already_pressed = key in pressed
     if is_press and already_pressed:
         log.debug("duplicate matrix press ignored: row=%d col=%d", row, col)
         return
@@ -218,15 +232,20 @@ async def process_matrix_event(event: tuple, ctx: InputEventContext) -> None:
         log.debug("stray matrix release ignored: row=%d col=%d", row, col)
         return
     if is_press:
-        ctx.pressed_matrix.add(key)
+        pressed.add(key)
     else:
-        ctx.pressed_matrix.discard(key)
+        pressed.discard(key)
+        if owner != "matrix" and not pressed:
+            ctx.pressed_matrix_owners.pop(owner, None)
 
     ctx.push_ledd_key_event(row, col, is_press)
 
     now = time.monotonic()
     feedback_start = _morse_feedback_count(ctx)
-    resolved_events = ctx.interactions.on_key(row, col, is_press, now)
+    if owner == "matrix" and action is None:
+        resolved_events = ctx.interactions.on_key(row, col, is_press, now)
+    else:
+        resolved_events = ctx.interactions.on_key(row, col, is_press, now, owner=owner, action=action)
     resolved_events.extend(ctx.interactions.on_tick(now))
     _push_morse_oled_alerts(ctx, feedback_start)
     await _dispatch_interaction_events(resolved_events, ctx, row, col)
@@ -239,10 +258,11 @@ async def handle_encoder_event(event: EncoderEvent, ctx: InputEventContext) -> N
         event.name, event.direction, event.row, event.col, action,
     )
     ctx.push_ledd_key_event(event.row, event.col, True)
-    await dispatch_action_event(action, True, ctx)
+    owner = object()
+    await dispatch_action_event(action, True, ctx, owner=owner)
     await asyncio.sleep(0.030)
     ctx.push_ledd_key_event(event.row, event.col, False)
-    await dispatch_action_event(action, False, ctx)
+    await dispatch_action_event(action, False, ctx, owner=owner)
 
 
 def _clear_layer_lock_for_output_switch(ctx: InputEventContext) -> None:
@@ -265,8 +285,7 @@ async def _clear_key_locks_for_output_switch(ctx: InputEventContext) -> None:
     clear_key_locks = getattr(ctx.interactions, "clear_key_locks", None)
     if not callable(clear_key_locks):
         return
-    for event in clear_key_locks(reason="output_switch"):
-        await dispatch_action_event(event.action, event.is_press, ctx)
+    await _dispatch_interaction_events(list(clear_key_locks(reason="output_switch")), ctx)
 
 
 async def _clear_held_interactions_for_output_switch(
@@ -278,8 +297,8 @@ async def _clear_held_interactions_for_output_switch(
     clear_held_keys = getattr(ctx.interactions, "clear_held_keys", None)
     if not callable(clear_held_keys):
         return
-    for event in clear_held_keys(reason="output_switch", exclude_actions=(action,)):
-        await dispatch_action_event(event.action, event.is_press, ctx)
+    await _dispatch_interaction_events(list(clear_held_keys(reason="output_switch", exclude_actions=(action,))), ctx)
+    getattr(ctx, "pressed_matrix_owners", {}).clear()
     if matrix_key is None:
         ctx.pressed_matrix.clear()
     else:
@@ -448,6 +467,13 @@ async def _handle_pty_mirror_background_stop(
 ) -> None:
     reason = str(status.get("reason") or getattr(pty_mirror, "last_reason", "") or "exit")
     log.info("PTY mirror background stop detected reason=%s", reason)
+    if reason.startswith("exit:"):
+        queue = getattr(pty_mirror, "output_dispatch_queue", None)
+        if queue is not None:
+            await queue.join()
+        # A newly started mirror owns its own cleanup after the old tail drains.
+        if getattr(pty_mirror, "active", False):
+            return
     await _cancel_pty_mirror_output_queue(ctx)
     await _set_pty_mirror_capture(ctx, False)
     stop_output_polling = getattr(pty_mirror, "stop_output_polling", None)
@@ -463,7 +489,12 @@ async def handle_resolved_action(
     ctx: InputEventContext,
     matrix_key: tuple[int, int] | None = None,
     source: str | None = None,
+    owner: object = None,
 ) -> None:
+    set_layer_owner = getattr(ctx.layers, "set_event_owner", None)
+    if set_layer_owner:
+        row, col = matrix_key if matrix_key is not None else (None, None)
+        set_layer_owner(owner, row, col)
     pty_mirror = getattr(ctx, "pty_mirror", None)
     if (
         pty_mirror is not None
@@ -574,6 +605,10 @@ async def handle_resolved_action(
         text_plans = result.get("text_plans")
         mirror_stopped = result.get("active") is False
         if mirror_stopped:
+            if str(result.get("reason") or "").startswith("exit:"):
+                queue = getattr(pty_mirror, "output_dispatch_queue", None)
+                if queue is not None:
+                    await queue.join()
             await _cancel_pty_mirror_output_queue(ctx)
             stop_output_polling = getattr(pty_mirror, "stop_output_polling", None)
             if callable(stop_output_polling):
@@ -593,6 +628,9 @@ async def handle_resolved_action(
             return
 
     if is_press and action in _OUTPUT_SWITCH_ACTIONS:
+        transition = getattr(ctx, "output_transition_fn", None)
+        if transition is not None:
+            await transition()
         await _clear_key_locks_for_output_switch(ctx)
         await _clear_held_interactions_for_output_switch(ctx, action, matrix_key)
         clear_shortcuts = getattr(ctx.interactions, "clear_runtime_shortcuts", None)
@@ -646,10 +684,16 @@ async def handle_resolved_action(
     if action == "KC_BT" and is_press:
         await _prepare_bt_output(ctx)
 
-    if await _send_core_key_event_if_available(action, is_press, ctx, matrix_key, source):
+    if await _send_core_key_event_if_available(action, is_press, ctx, matrix_key, source, owner):
         return
 
-    await ctx.macros.handle(action, is_press)
+    handle_owned = getattr(ctx.macros, "handle_owned", None)
+    if callable(handle_owned):
+        # Position separates equal usages from two keys within one source.
+        identity = (owner, matrix_key) if matrix_key is not None else owner
+        await handle_owned(action, is_press, source=identity)
+    else:
+        await ctx.macros.handle(action, is_press)
 
 
 def _handle_lock_led_overlay(action: str, is_press: bool, ctx: InputEventContext) -> None:
@@ -771,7 +815,7 @@ async def handle_joystick_key_event(event: JoystickKeyEvent, ctx: InputEventCont
         event.row, event.col, event.action,
     )
     ctx.push_ledd_key_event(event.row, event.col, event.is_press)
-    await dispatch_action_event(event.action, event.is_press, ctx)
+    await dispatch_action_event(event.action, event.is_press, ctx, owner=("joystick", event.name, event.direction))
 
 
 def handle_joystick_mouse_event(event: JoystickMouseEvent, ctx: InputEventContext) -> None:

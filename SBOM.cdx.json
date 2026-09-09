@@ -2,12 +2,12 @@
   "$schema": "https://cyclonedx.org/schema/bom-1.7.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
-  "serialNumber": "urn:uuid:be7f7675-79de-548c-89b7-8b2c07fd9f82",
+  "serialNumber": "urn:uuid:7a3a6240-a92e-5ae0-a8cb-38354a776ba2",
   "version": 1,
   "metadata": {
     "component": {
       "type": "application",
-      "bom-ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%407f9c4078ba87bf149bb21f6053d350d70c3f77b8",
+      "bom-ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40c9b5165ef7f77702f4ba767fd353699a52240486",
       "name": "HIDloom",
       "version": "0.1.0",
       "licenses": [
@@ -15,11 +15,11 @@
           "expression": "GPL-3.0-or-later"
         }
       ],
-      "purl": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%407f9c4078ba87bf149bb21f6053d350d70c3f77b8",
+      "purl": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40c9b5165ef7f77702f4ba767fd353699a52240486",
       "properties": [
         {
           "name": "hidloom:source-base-commit",
-          "value": "7f9c4078ba87bf149bb21f6053d350d70c3f77b8"
+          "value": "c9b5165ef7f77702f4ba767fd353699a52240486"
         },
         {
           "name": "hidloom:source-mode",
@@ -27,7 +27,7 @@
         },
         {
           "name": "hidloom:source-snapshot-sha256",
-          "value": "2e7782e6d78dc97b355a2e438db38cad5c857cc13b357118fcdf591bf9eb5e26"
+          "value": "c5613a69246aca5e1193373c71043f30325b8a2a26b9974160b9194ac08d6863"
         },
         {
           "name": "hidloom:device-profiles",
@@ -653,6 +653,33 @@
     },
     {
       "type": "library",
+      "bom-ref": "third-party:cargo:memchr:2.8.3",
+      "group": "cargo",
+      "name": "memchr",
+      "version": "2.8.3",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/BurntSushi/memchr"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "Unlicense OR MIT"
+        }
+      ],
+      "purl": "pkg:cargo/memchr@2.8.3"
+    },
+    {
+      "type": "library",
       "bom-ref": "third-party:cargo:proc-macro2:1.0.106",
       "group": "cargo",
       "name": "proc-macro2",
@@ -677,6 +704,33 @@
         }
       ],
       "purl": "pkg:cargo/proc-macro2@1.0.106"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:proc-macro2:1.0.107",
+      "group": "cargo",
+      "name": "proc-macro2",
+      "version": "1.0.107",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/proc-macro2"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/proc-macro2@1.0.107"
     },
     {
       "type": "library",
@@ -707,6 +761,33 @@
     },
     {
       "type": "library",
+      "bom-ref": "third-party:cargo:quote:1.0.47",
+      "group": "cargo",
+      "name": "quote",
+      "version": "1.0.47",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/quote"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/quote@1.0.47"
+    },
+    {
+      "type": "library",
       "bom-ref": "third-party:cargo:serde:1.0.228",
       "group": "cargo",
       "name": "serde",
@@ -731,6 +812,33 @@
         }
       ],
       "purl": "pkg:cargo/serde@1.0.228"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:serde:1.0.229",
+      "group": "cargo",
+      "name": "serde",
+      "version": "1.0.229",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/serde"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde@1.0.229"
     },
     {
       "type": "library",
@@ -761,6 +869,33 @@
     },
     {
       "type": "library",
+      "bom-ref": "third-party:cargo:serde_core:1.0.229",
+      "group": "cargo",
+      "name": "serde_core",
+      "version": "1.0.229",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/serde"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde_core@1.0.229"
+    },
+    {
+      "type": "library",
       "bom-ref": "third-party:cargo:serde_derive:1.0.228",
       "group": "cargo",
       "name": "serde_derive",
@@ -785,6 +920,33 @@
         }
       ],
       "purl": "pkg:cargo/serde_derive@1.0.228"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:serde_derive:1.0.229",
+      "group": "cargo",
+      "name": "serde_derive",
+      "version": "1.0.229",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/serde"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde_derive@1.0.229"
     },
     {
       "type": "library",
@@ -815,6 +977,33 @@
     },
     {
       "type": "library",
+      "bom-ref": "third-party:cargo:serde_json:1.0.151",
+      "group": "cargo",
+      "name": "serde_json",
+      "version": "1.0.151",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/serde-rs/json"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/serde_json@1.0.151"
+    },
+    {
+      "type": "library",
       "bom-ref": "third-party:cargo:syn:2.0.118",
       "group": "cargo",
       "name": "syn",
@@ -839,6 +1028,33 @@
         }
       ],
       "purl": "pkg:cargo/syn@2.0.118"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:syn:3.0.5",
+      "group": "cargo",
+      "name": "syn",
+      "version": "3.0.5",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/syn"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT OR Apache-2.0"
+        }
+      ],
+      "purl": "pkg:cargo/syn@3.0.5"
     },
     {
       "type": "library",
@@ -893,6 +1109,33 @@
         }
       ],
       "purl": "pkg:cargo/zmij@1.0.21"
+    },
+    {
+      "type": "library",
+      "bom-ref": "third-party:cargo:zmij:1.0.23",
+      "group": "cargo",
+      "name": "zmij",
+      "version": "1.0.23",
+      "properties": [
+        {
+          "name": "hidloom:license-review",
+          "value": "complete"
+        },
+        {
+          "name": "hidloom:inventory-source",
+          "value": "https://github.com/dtolnay/zmij"
+        },
+        {
+          "name": "hidloom:distribution-scope",
+          "value": "linked-binary"
+        }
+      ],
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:cargo/zmij@1.0.23"
     },
     {
       "type": "library",
@@ -1438,7 +1681,7 @@
   ],
   "dependencies": [
     {
-      "ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%407f9c4078ba87bf149bb21f6053d350d70c3f77b8",
+      "ref": "pkg:github/cqa02303/hidloom@0.1.0?vcs_url=git%2Bhttps://github.com/cqa02303/hidloom.git%40c9b5165ef7f77702f4ba767fd353699a52240486",
       "dependsOn": [
         "third-party:buildroot:busybox:1.38.0",
         "third-party:buildroot:expat:2.8.1",
@@ -1462,15 +1705,24 @@
         "third-party:buildroot:xz:5.8.3",
         "third-party:cargo:itoa:1.0.18",
         "third-party:cargo:memchr:2.8.2",
+        "third-party:cargo:memchr:2.8.3",
         "third-party:cargo:proc-macro2:1.0.106",
+        "third-party:cargo:proc-macro2:1.0.107",
         "third-party:cargo:quote:1.0.45",
+        "third-party:cargo:quote:1.0.47",
         "third-party:cargo:serde:1.0.228",
+        "third-party:cargo:serde:1.0.229",
         "third-party:cargo:serde_core:1.0.228",
+        "third-party:cargo:serde_core:1.0.229",
         "third-party:cargo:serde_derive:1.0.228",
+        "third-party:cargo:serde_derive:1.0.229",
         "third-party:cargo:serde_json:1.0.150",
+        "third-party:cargo:serde_json:1.0.151",
         "third-party:cargo:syn:2.0.118",
+        "third-party:cargo:syn:3.0.5",
         "third-party:cargo:unicode-ident:1.0.24",
         "third-party:cargo:zmij:1.0.21",
+        "third-party:cargo:zmij:1.0.23",
         "third-party:debian:build-essential:distribution-selected",
         "third-party:debian:cargo:distribution-selected",
         "third-party:debian:fbterm:distribution-selected",
@@ -1587,7 +1839,15 @@
       "dependsOn": []
     },
     {
+      "ref": "third-party:cargo:memchr:2.8.3",
+      "dependsOn": []
+    },
+    {
       "ref": "third-party:cargo:proc-macro2:1.0.106",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:proc-macro2:1.0.107",
       "dependsOn": []
     },
     {
@@ -1595,7 +1855,15 @@
       "dependsOn": []
     },
     {
+      "ref": "third-party:cargo:quote:1.0.47",
+      "dependsOn": []
+    },
+    {
       "ref": "third-party:cargo:serde:1.0.228",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:serde:1.0.229",
       "dependsOn": []
     },
     {
@@ -1603,7 +1871,15 @@
       "dependsOn": []
     },
     {
+      "ref": "third-party:cargo:serde_core:1.0.229",
+      "dependsOn": []
+    },
+    {
       "ref": "third-party:cargo:serde_derive:1.0.228",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:serde_derive:1.0.229",
       "dependsOn": []
     },
     {
@@ -1611,7 +1887,15 @@
       "dependsOn": []
     },
     {
+      "ref": "third-party:cargo:serde_json:1.0.151",
+      "dependsOn": []
+    },
+    {
       "ref": "third-party:cargo:syn:2.0.118",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:syn:3.0.5",
       "dependsOn": []
     },
     {
@@ -1620,6 +1904,10 @@
     },
     {
       "ref": "third-party:cargo:zmij:1.0.21",
+      "dependsOn": []
+    },
+    {
+      "ref": "third-party:cargo:zmij:1.0.23",
       "dependsOn": []
     },
     {

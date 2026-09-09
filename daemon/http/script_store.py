@@ -15,6 +15,7 @@ _REPO_ROOT = _HERE.parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from daemon.logicd.runtime_json import load_json
 from hidloom_paths import default_config_dir, default_config_file, runtime_script_dir as default_runtime_script_dir
 from script_metadata import analyze_script_safety
 
@@ -43,7 +44,7 @@ def configure_paths(config_json: Path, default_script_dir: Path, fallback_script
 def script_dirs() -> list[Path]:
     script_dirs: list[Path] = []
     try:
-        cfg = json.loads(CONFIG_JSON.read_text(encoding="utf-8"))
+        cfg = load_json(CONFIG_JSON)
         configured_dir = cfg.get("settings", {}).get("script_dir")
         if configured_dir:
             script_dirs.append(Path(configured_dir))
@@ -57,7 +58,7 @@ def script_dirs() -> list[Path]:
 
 def runtime_script_dir() -> Path:
     try:
-        cfg = json.loads(CONFIG_JSON.read_text(encoding="utf-8"))
+        cfg = load_json(CONFIG_JSON)
         configured_dir = cfg.get("settings", {}).get("script_dir")
         if configured_dir:
             return Path(configured_dir)

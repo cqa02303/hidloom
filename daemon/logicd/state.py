@@ -67,6 +67,7 @@ class LogicdRuntime:
     state: HidState = field(default_factory=HidState)
     layers: Any = field(default_factory=_default_layer_manager)
     interactions: Any = None
+    keymap_coordinator: Any = None
     macros: Any = None
     bt_manager: Any = field(default_factory=_default_bt_manager)
     bt_passkey: Any = field(default_factory=_default_bt_passkey)
@@ -79,6 +80,7 @@ class LogicdRuntime:
     current_i2cd_mode: str = "uinput"
     current_output_target: str = "auto"
     pressed_matrix: set[tuple[int, int]] = field(default_factory=set)
+    pressed_matrix_owners: dict[object, set[tuple[int, int]]] = field(default_factory=dict)
     observed_pressed_matrix: set[tuple[int, int]] = field(default_factory=set)
     encoders: Any = field(default_factory=_default_encoder_manager)
     joysticks: Any = field(default_factory=_default_joystick_manager)

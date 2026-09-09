@@ -6,7 +6,7 @@ BIN := $(BUILD_DIR)/hidloom-outputd
 
 all: $(BIN)
 
-$(BIN): src/main.rs Cargo.toml Cargo.lock
+$(BIN): src/main.rs src/readiness.rs Cargo.toml Cargo.lock
 	cargo build --release --locked
 
 install: $(BIN)

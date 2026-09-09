@@ -13,6 +13,7 @@ INSTALL=0
 APT=0
 KEEP=0
 LOW_MEMORY_PREFLIGHT=0
+DEFER_PROFILE_APPLY=0
 
 usage() {
     cat <<'EOF'
@@ -32,6 +33,8 @@ Options:
   --host USER@HOST       target explicit remote host for remote install
   --dry-run              run remote install simulation/check
   --install              install both packages and apply the profile
+  --defer-profile-apply  with split --install, leave final profile application to
+                         the deployment wrapper after unit migration
   --apt                  use apt-get for dependency-aware dry-run/install
   --low-memory-preflight run the read-only low-memory gate immediately before
                          apt-get; requires --install --apt
@@ -88,6 +91,10 @@ while [ "$#" -gt 0 ]; do
             INSTALL=1
             shift
             ;;
+        --defer-profile-apply)
+            DEFER_PROFILE_APPLY=1
+            shift
+            ;;
         --apt)
             APT=1
             shift
@@ -111,6 +118,11 @@ while [ "$#" -gt 0 ]; do
             ;;
     esac
 done
+
+if [ "$DEFER_PROFILE_APPLY" -eq 1 ] && [ "$INSTALL" -ne 1 ]; then
+    echo "--defer-profile-apply requires --install" >&2
+    exit 2
+fi
 
 if [ "$LOW_MEMORY_PREFLIGHT" -eq 1 ] && { [ "$INSTALL" -ne 1 ] || [ "$APT" -ne 1 ]; }; then
     echo "--low-memory-preflight requires --install --apt" >&2
@@ -353,6 +365,11 @@ else
     LEGACY_VERSION=$(dpkg-deb -f "$LEGACY_PACKAGE" Version)
 fi
 
+if [ "$DEFER_PROFILE_APPLY" -eq 1 ] && [ "$MODE" != split ]; then
+    echo "--defer-profile-apply requires split packages" >&2
+    exit 2
+fi
+
 if [ "$DRY_RUN" -eq 0 ] && [ "$INSTALL" -eq 0 ]; then
     cat <<EOF
 release package download ok
@@ -461,7 +478,7 @@ ssh "$REMOTE" "
             echo 'dpkg install:'
             sudo dpkg -i $remote_packages
         fi
-        if [ '$MODE' = split ]; then
+        if [ '$MODE' = split ] && [ '$DEFER_PROFILE_APPLY' -eq 0 ]; then
             sudo hidloom-profile '$PROFILE' --apply --backup --restart
         fi
     else
@@ -478,7 +495,11 @@ ssh "$REMOTE" "
 "
 
 if [ "$INSTALL" -eq 1 ]; then
-    echo "remote release package install complete: $REMOTE ($MODE)"
+    if [ "$DEFER_PROFILE_APPLY" -eq 1 ]; then
+        echo "packages installed; profile application pending: $REMOTE ($PROFILE)"
+    else
+        echo "remote release package install complete: $REMOTE ($MODE)"
+    fi
 else
     echo "remote release package dry-run complete: $REMOTE ($MODE)"
 fi

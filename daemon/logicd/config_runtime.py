@@ -229,53 +229,58 @@ def _with_usb_split_keyboard_switch(
 ) -> Callable[[bytes], None]:
     """Route reports between the JIS main keyboard and the US sub keyboard."""
     us_sub_key_active = False
-    primary_key_active = False
-    primary_modifier_mirror_active = False
-    zenkaku_hankaku_active = False
-
-    def primary_modifier_report(report: bytes) -> bytes:
-        return bytes([report[0] if report else 0, 0, 0, 0, 0, 0, 0, 0])
+    primary_last = bytes(8)
+    sub_last = bytes(8)
 
     def write(report: bytes) -> None:
-        nonlocal us_sub_key_active, primary_key_active, primary_modifier_mirror_active, zenkaku_hankaku_active
+        nonlocal us_sub_key_active, primary_last, sub_last
+        key_routes = getattr(report, "key_routes", None)
         report = bytes(report)
-        if route == "all":
+        if route == "all" and key_routes is None:
             if _report_is_internal_zenkaku_hankaku(report):
                 us_sub_write(_clear_report_reserved_byte(report))
                 return
             us_sub_write(report)
             return
-        if route == "jis_special_us_default":
-            if _report_is_internal_zenkaku_hankaku(report):
-                primary_key_active = False
-                primary_modifier_mirror_active = bool(report[0])
-                us_sub_key_active = False
-                zenkaku_hankaku_active = True
-                primary_write(_clear_report_reserved_byte(report))
-                return
-            if report == bytes(8) and zenkaku_hankaku_active:
-                zenkaku_hankaku_active = False
-                primary_modifier_mirror_active = False
-                primary_write(report)
-                return
-            zenkaku_hankaku_active = False
-            if _report_has_jis_special_on_main_key(report):
-                primary_key_active = True
-                primary_modifier_mirror_active = bool(report[0])
-                us_sub_key_active = False
-                primary_write(report)
-                return
-            if primary_key_active:
-                primary_key_active = False
-                primary_modifier_mirror_active = bool(report[0])
-                primary_write(primary_modifier_report(report))
-                if report == bytes(8):
-                    return
-            elif primary_modifier_mirror_active:
-                primary_modifier_mirror_active = bool(report[0])
-                primary_write(primary_modifier_report(report))
-            primary_key_active = False
-            us_sub_write(report)
+        if route == "jis_special_us_default" or (route == "all" and key_routes is not None):
+            # HidState retains the press action separately from the HID usage:
+            # GRV and ZKHK can own the same global slot on different endpoints.
+            if key_routes is None:
+                zkhk = _report_is_internal_zenkaku_hankaku(report)
+                key_routes = tuple((key, zkhk and key == 0x35) for key in report[2:8] if key)
+            def on_main(key: int, zkhk: bool) -> bool:
+                return zkhk or (route == "jis_special_us_default" and key in JIS_SPECIAL_ON_MAIN_USAGES)
+
+            main_keys = {key for key, zkhk in key_routes if on_main(key, zkhk)}
+            sub_keys = {key for key, zkhk in key_routes if not on_main(key, zkhk)}
+            modifier = report[0] if report else 0
+            main_report = bytes([modifier, 0, *(key if key in main_keys else 0 for key in report[2:8])])
+            sub_report = bytes([modifier, 0, *(key if key in sub_keys else 0 for key in report[2:8])])
+
+            def send_main(payload: bytes) -> None:
+                nonlocal primary_last
+                if payload != primary_last:
+                    primary_write(payload)
+                    primary_last = payload
+
+            def send_sub(payload: bytes) -> None:
+                nonlocal sub_last
+                if payload != sub_last:
+                    us_sub_write(payload)
+                    sub_last = payload
+
+            if modifier != primary_last[0] or modifier != sub_last[0]:
+                # Across separate HID devices, finish old key releases before
+                # removing their modifiers, and mirror new modifiers before
+                # either endpoint starts a new key (including synthetic taps).
+                main_retained = bytes(key if key in main_report[2:] else 0 for key in primary_last[2:])
+                sub_retained = bytes(key if key in sub_report[2:] else 0 for key in sub_last[2:])
+                send_main(bytes([primary_last[0], 0]) + main_retained)
+                send_sub(bytes([sub_last[0], 0]) + sub_retained)
+                send_main(bytes([modifier, 0]) + main_retained)
+                send_sub(bytes([modifier, 0]) + sub_retained)
+            send_main(main_report)
+            send_sub(sub_report)
             return
         if _report_has_split_keyboard_switch_key(report):
             us_sub_key_active = True

@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any, Awaitable, Callable
 
+from daemon.logicd.runtime_json import load_json
 from aiohttp import web
 
 from i2cd.icons import default_icon_payload
@@ -29,7 +30,7 @@ def _i2cd_settings(i2cd_json: Path) -> tuple[dict[str, int], str]:
     fallback_display = {"width": 64, "height": 128}
     fallback_socket = "/tmp/i2c_events.sock"
     try:
-        config = json.loads(i2cd_json.read_text(encoding="utf-8"))
+        config = load_json(i2cd_json)
     except (OSError, ValueError, json.JSONDecodeError):
         return fallback_display, fallback_socket
     oled = config.get("oled") if isinstance(config, dict) else None

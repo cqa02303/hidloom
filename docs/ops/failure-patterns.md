@@ -17,6 +17,14 @@
 - evidence:
 ```
 
+## Installed package is current while a late-started service still runs old code
+
+- symptom: package version/hash and service active checks pass after an update, but a late-started service retains its pre-update PID/start time.
+- likely cause: a disabled unit can be active through the late-start policy while remaining outside the profile's enabled-service restart list. Installed Python files do not replace modules already loaded by its running process.
+- detect: compare all active HIDloom process start times with package application, and compare native `/proc/<pid>/exe` hashes with installed/package bytes. Record enable/mask/active state before acting; `NRestarts=0` alone does not prove candidate code is running.
+- recovery: within the authorized update scope, check dependent connections and recovery state, then restart only the identified stale services once while retaining their enable/mask policy. Verify fresh process identity and health without repeating APT/profile application or rebooting.
+- regression check: after the correction, compare PID/start time/restart counters across the final input test and recheck native running/installed/package identity. Keep host receipt separate from package/process evidence.
+
 ## Windows zstd cannot reopen an active compliance tar tempfile
 
 - symptom: Buildroot compliance fixture generation reaches `zstd`, then fails with `Permission denied` for a temporary `.tar` even though the destination directory is writable.

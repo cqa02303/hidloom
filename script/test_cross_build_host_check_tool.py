@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
+import shlex
 import subprocess
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 HELPER = ROOT / "tools" / "cross_build_host_check.sh"
@@ -23,11 +26,51 @@ def run_command(command: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def active_sysroot_fixture() -> None:
+    """An overridden/linked toolchain may live outside the default rustup home."""
+    with tempfile.TemporaryDirectory(prefix="hidloom-rustup-check-") as directory:
+        root = Path(directory)
+        commands = root / "bin"
+        commands.mkdir()
+        sysroot = root / "selected toolchain"
+        linker = sysroot / "lib/rustlib/x86_64-unknown-linux-gnu/bin/rust-lld"
+        linker.parent.mkdir(parents=True)
+
+        def executable(path: Path, content: str) -> None:
+            path.write_text("#!/bin/sh\n" + content, encoding="utf-8")
+            path.chmod(0o755)
+
+        executable(linker, "exit 0\n")
+        executable(commands / "rustc", "case \"$*\" in\n"
+            "  -Vv) printf 'host: x86_64-unknown-linux-gnu\\n' ;;\n"
+            f"  '--print sysroot') printf '%s\\n' {shlex.quote(str(sysroot))} ;;\n"
+            "  *) exit 2 ;;\nesac\n")
+        executable(commands / "rustup", "case \"$*\" in\n"
+            f"  'show active-toolchain') printf '%s\\n' {shlex.quote('fixture-' + root.name)} ;;\n"
+            "  'target list --installed') printf 'aarch64-unknown-linux-musl\\n' ;;\n"
+            "  *) exit 2 ;;\nesac\n")
+        for name in ("cargo", "rsync", "ssh"):
+            executable(commands / name, "exit 0\n")
+        env = dict(os.environ, PATH=str(commands) + os.pathsep + os.environ.get("PATH", ""),
+                   RUSTUP_HOME=str(root / "isolated-rustup"), HIDLOOM_RPI_RUST_TARGET="aarch64-unknown-linux-musl")
+        result = subprocess.run(["sh", str(HELPER), "--no-ssh"], cwd=ROOT,
+                                env=env, capture_output=True, text=True, check=False)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert f"ok: rust-lld {linker}" in result.stdout
+        # Keep the negative gate: a real missing linker must still fail.
+        linker.unlink()
+        missing = subprocess.run(["sh", str(HELPER), "--no-ssh"], cwd=ROOT,
+                                 env=env, capture_output=True, text=True, check=False)
+        assert missing.returncode != 0, missing.stdout + missing.stderr
+        assert "missing: rust-lld under active rustup toolchain" in missing.stdout
+
+
 def main() -> None:
     assert HELPER.exists(), HELPER
     assert SYNC_HELPER.exists(), SYNC_HELPER
     assert BUILD_HELPER.exists(), BUILD_HELPER
     assert MAKEFILE.exists(), MAKEFILE
+    active_sysroot_fixture()
 
     syntax = run_command(["sh", "-n", str(HELPER)])
     assert syntax.returncode == 0, syntax.stderr

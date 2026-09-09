@@ -74,11 +74,14 @@ scp build/packages/hidloom-core_<version>_arm64.deb \
   <device>:/tmp/
 ssh <device> 'sudo apt-get install -y \
   /tmp/hidloom-core_<version>_arm64.deb \
-  /tmp/hidloom-profile-keyboard-ver1_<version>_arm64.deb && \
-  sudo hidloom-profile keyboard-ver1 --apply --backup --restart'
-tools/package/deploy_deb_unit_switch.sh --device 01 --restart
-tools/package/deploy_deb_verify.sh --device 01 --profile keyboard-ver1 --smoke
+  /tmp/hidloom-profile-keyboard-ver1_<version>_arm64.deb'
+tools/package/deploy_deb_unit_switch.sh --host <device> --profile keyboard-ver1 --restart
+tools/package/deploy_deb_verify.sh --host <device> --profile keyboard-ver1 --smoke
 ```
+
+unit switchの `--restart --profile` は、移行・reload後に選択profileを一度だけ適用します。
+一律のservice再起動はしません。GitHub Release用標準wrapperもinstallerの適用を遅延し、
+同じAPT→unit移行→profile適用→verifyの順で実行します。失敗時のbackupと復旧範囲はrunbookを参照してください。
 
 legacy checkout へ展開する互換 mode の安全確認:
 

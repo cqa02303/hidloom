@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import shutil
@@ -12,6 +13,7 @@ import tempfile
 import threading
 import time
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_DIR = ROOT / "tools" / "package"
@@ -35,6 +37,36 @@ APPLY = PACKAGE_DIR / "apply_release_bundle.sh"
 DEPLOY = PACKAGE_DIR / "deploy_release_bundle.sh"
 ROLLBACK = PACKAGE_DIR / "rollback_release_bundle.sh"
 DEPLOY_ROLLBACK = PACKAGE_DIR / "deploy_release_rollback.sh"
+
+
+def check_public_tag_collision() -> None:
+    spec = importlib.util.spec_from_file_location("public_publisher_collision_fixture", PUBLISH_PUBLIC_RELEASE_BUNDLE)
+    publisher = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(publisher)
+    repository, tag, commit = "cqa02303/hidloom", "vfixture", "a" * 40
+    calls = []
+
+    def fake_run(command, **kwargs):
+        calls.append(command)
+        if command[:3] == ["gh", "repo", "view"]:
+            return subprocess.CompletedProcess(command, 0, json.dumps({"nameWithOwner": repository, "visibility": "PUBLIC"}), "")
+        if command[:3] == ["gh", "api", f"repos/{repository}/commits/{commit}"]:
+            return subprocess.CompletedProcess(command, 0, commit, "")
+        if command == ["gh", "api", f"repos/{repository}/releases/tags/{tag}"]:
+            return subprocess.CompletedProcess(command, 1, "", "HTTP 404")
+        if command == ["gh", "api", f"repos/{repository}/git/ref/tags/{tag}"]:
+            return subprocess.CompletedProcess(command, 0, "{}", "")
+        raise AssertionError(f"unexpected publication call: {command}")
+
+    with patch.object(publisher, "run", side_effect=fake_run), patch.object(publisher.shutil, "which", return_value="fixture-gh"):
+        try:
+            publisher.online_preflight({"schema": publisher.PLAN_SCHEMA, "ready": True,
+                                        "repository": repository, "tag": tag, "public_target": {"commit": commit}})
+        except SystemExit as error:
+            assert str(error) == f"Git tag already exists: {tag}", error
+        else:
+            raise AssertionError("existing public Git tag must reject release creation")
+    assert calls[-1] == ["gh", "api", f"repos/{repository}/git/ref/tags/{tag}"]
 
 
 def run_command(
@@ -352,8 +384,8 @@ def main() -> None:
     assert "tools/package/deploy_deb_package.sh --device 01 --install --apt" in make_dry.stdout
     assert "tools/package/deploy_deb_unit_switch.sh --device 02 --dry-run" in make_dry.stdout
     assert "tools/package/deploy_deb_unit_switch.sh --device 01 --dry-run" in make_dry.stdout
-    assert "tools/package/deploy_deb_unit_switch.sh --device 02 --restart" in make_dry.stdout
-    assert "tools/package/deploy_deb_unit_switch.sh --device 01 --restart" in make_dry.stdout
+    assert "tools/package/deploy_deb_unit_switch.sh --device 02 --profile keyboard-ver1 --restart" in make_dry.stdout
+    assert "tools/package/deploy_deb_unit_switch.sh --device 01 --profile keyboard-ver1 --restart" in make_dry.stdout
     assert "tools/package/deploy_deb_verify.sh --device 02" in make_dry.stdout
     assert "tools/package/deploy_deb_verify.sh --device 01" in make_dry.stdout
     assert "tools/package/deploy_deb_verify.sh --device 02 --smoke" in make_dry.stdout
@@ -558,7 +590,7 @@ def main() -> None:
     assert "release-channel-not-stable-public" in public_publish_text
     assert "CREATE DRAFT" in public_publish_text
     assert "origin-is-not-public-repository" in public_publish_text
-    assert "Git tag already exists" in public_publish_text
+    check_public_tag_collision()
     assert "verify_github_public_release_bundle.py" in public_publish_text
 
     public_verify_text = VERIFY_GITHUB_PUBLIC_RELEASE_BUNDLE.read_text(encoding="utf-8")
@@ -934,7 +966,8 @@ else:
     switch_text = SWITCH_DEB_UNITS.read_text(encoding="utf-8")
     assert "will-backup-remove" in switch_text
     assert "missing-package-unit" in switch_text
-    assert "restarted package-managed services" in switch_text
+    assert 'hidloom-profile "$PROFILE" --apply --backup --restart' in switch_text
+    assert "systemctl restart $restart_units" not in switch_text
     assert "/var/backups/hidloom/systemd-pre-deb" in switch_text
     assert "rollback: copy" in switch_text
 

@@ -43,7 +43,11 @@
 | `usb` | broker frame を `hidloom-hidd` へ送る |
 | `uinput` | broker frame を `hidloom-uidd` へ送る |
 | `bt` | broker frame を `btd1` frame へ変換して `btd` へ送る |
-| `auto` | USB ready なら `usb`、そうでなければ `uinput` を選ぶ。Bluetooth fallback は暗黙に含めない |
+| `auto` | 自分のgadgetが接続されたUDCとfreshなhidd状態でUSB readinessを確認する。物理detachが確認でき、uiddもreadyの場合に限り `uinput` へ移る。列挙中・suspend・状態不明は `unavailable` とし、Bluetooth fallbackは含めない |
+
+statusの `target` は要求された選択を保持し、`effective_target` が実際の配送先を示す。`auto` の判定は500ms間隔、hidd/uidd statusの有効期間は1500ms。USB復帰は連続2回のreadyを要求し、USBへのneutral成功前は新しい入力を送らない。切替時に保持していたsnapshotを再送せず、再押下から入力する。
+
+readinessの検査対象は `OUTPUTD_GADGET_UDC_PATH`、`OUTPUTD_UDC_ROOT`、`OUTPUTD_HIDD_STATUS_PATH`、`OUTPUTD_UIDD_STATUS_PATH` で隔離できる。単なるsocket存在、他gadgetのUDC、古いstatusはreadyの証拠にしない。
 
 ## 実装時に守る条件
 
@@ -51,6 +55,9 @@
 - `KC_BT` は companion 内の旧 Python `OutputRouter` だけを切り替える状態へ戻さない。native hot path の target 変更として `hidloom-outputd` control socket へ届くことを確認する。
 - target unavailable を silent success にしない。status / counter / warning で観測可能にする。
 - report 種別を混同しない。keyboard、US-sub keyboard、mouse、consumer を target ごとの形式へ正しく配送する。
+- keyboardとUS-sub keyboardはそれぞれのsnapshotを保持する。uiddでは両者を合成してからLinux key差分を作り、BTでは合成した一つのkeyboard reportを送る。片方のreleaseで他方の保持を解除しない。
+- neutralはUSBのkeyboard/sub/mouse/consumer、uinputのkeyboard/sub、BTのkeyboard/mouse/consumerへ送る。部分失敗は失敗したtarget・report種別を記録し、切替成功とは応答しない。`release_confirmation: ipc_delivery_only` はIPC配送を示し、相手hostが解放を受け取った保証ではない。
+- control clientはnonblockingでread/write量・buffer・接続数を制限する。idle clientや改行前の部分入力、読まないclientによってreport loopを待たせない。
 - `bt` target では broker frame から `btd1` protocol への変換を壊さない。
 - `auto` に Bluetooth fallback を暗黙追加しない。BT は明示 `KC_BT` / `target=bt` の扱いに留める。
 - control socket schema を変更する場合は `logicd-companion` と test を同じ変更で更新する。

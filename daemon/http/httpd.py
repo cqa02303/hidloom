@@ -136,6 +136,7 @@ from vil_api import (
     vil_import_response,
 )
 from hidloom_paths import default_config_dir, default_config_file, runtime_file
+from logicd.runtime_json import mutable_path, effective_source
 
 _STATIC_DIR = _HERE / "static"
 _CONF_DIR = default_config_dir(_REPO_ROOT)
@@ -452,11 +453,11 @@ async def _query_logicd_interaction_status() -> Optional[Dict[str, Any]]:
 
 
 async def handle_interaction_get(request: web.Request) -> web.Response:
-    return await interaction_get_response(CONFIG_JSON, VIAL_JSON)
+    return await interaction_get_response(mutable_path(CONFIG_JSON), VIAL_JSON)
 
 
 async def handle_interaction_put(request: web.Request) -> web.Response:
-    return await interaction_put_response(request, CONFIG_JSON, VIAL_JSON)
+    return await interaction_put_response(request, mutable_path(CONFIG_JSON), VIAL_JSON)
 
 
 async def handle_interaction_validate(request: web.Request) -> web.Response:
@@ -468,7 +469,7 @@ async def handle_interaction_runtime_status(request: web.Request) -> web.Respons
 
 
 def _sync_script_store_config() -> None:
-    sync_script_store_config(CONFIG_JSON, DEFAULT_SCRIPT_DIR, FALLBACK_SCRIPT_DIR)
+    sync_script_store_config(mutable_path(CONFIG_JSON), DEFAULT_SCRIPT_DIR, FALLBACK_SCRIPT_DIR)
 
 
 def _iter_script_entries() -> list[Dict[str, Any]]:
@@ -511,7 +512,7 @@ async def handle_status(request: web.Request) -> web.Response:
         _query_logicd_layers,
         hid_device=HID_DEVICE,
         query_interaction_status=_query_logicd_interaction_status,
-        config_json=CONFIG_JSON,
+        config_json=mutable_path(CONFIG_JSON),
     )
 
 
@@ -536,7 +537,7 @@ async def handle_bluetooth_host_forget(request: web.Request) -> web.Response:
 
 
 async def handle_settings_get(request: web.Request) -> web.Response:
-    return await settings_get_response(HTTP_BASIC_AUTH_USERNAME, CONFIG_JSON, I2CD_JSON)
+    return await settings_get_response(HTTP_BASIC_AUTH_USERNAME, mutable_path(CONFIG_JSON), mutable_path(I2CD_JSON))
 
 
 async def handle_settings_http_auth(request: web.Request) -> web.Response:
@@ -555,27 +556,27 @@ async def handle_settings_http_auth(request: web.Request) -> web.Response:
 
 
 async def handle_settings_send_strings(request: web.Request) -> web.Response:
-    return await settings_send_strings_response(request, CONFIG_JSON)
+    return await settings_send_strings_response(request, mutable_path(CONFIG_JSON))
 
 
 async def handle_settings_analog_stick_calibration(request: web.Request) -> web.Response:
-    return await settings_analog_stick_calibration_response(request, I2CD_JSON)
+    return await settings_analog_stick_calibration_response(request, mutable_path(I2CD_JSON))
 
 
 async def handle_oled_get(request: web.Request) -> web.Response:
     del request
-    return oled_get_response(OLED_CUSTOMIZATION_JSON, I2CD_JSON)
+    return oled_get_response(OLED_CUSTOMIZATION_JSON, mutable_path(I2CD_JSON))
 
 
 async def handle_oled_put(request: web.Request) -> web.Response:
-    response = await oled_put_response(request, OLED_CUSTOMIZATION_JSON, I2CD_JSON)
+    response = await oled_put_response(request, OLED_CUSTOMIZATION_JSON, mutable_path(I2CD_JSON))
     if response.status < 400:
         _audit_log(request, "oled_customization_update", result="ok")
     return response
 
 
 async def handle_oled_reset(request: web.Request) -> web.Response:
-    response = await oled_reset_response(OLED_CUSTOMIZATION_JSON, I2CD_JSON)
+    response = await oled_reset_response(OLED_CUSTOMIZATION_JSON, mutable_path(I2CD_JSON))
     if response.status < 400:
         _audit_log(request, "oled_customization_reset", result="ok")
     return response
@@ -718,7 +719,7 @@ async def handle_vil_export(request: web.Request) -> web.Response:
         query_logicd_layers=_query_logicd_layers,
         vial_json=VIAL_JSON,
         keymap_json=KEYMAP_JSON,
-        config_json=CONFIG_JSON,
+        config_json=mutable_path(CONFIG_JSON),
     )
 
 
@@ -728,7 +729,7 @@ async def handle_vil_import(request: web.Request) -> web.Response:
         send_ctrl_command=_send_ctrl_command,
         vial_json=VIAL_JSON,
         keymap_json=KEYMAP_JSON,
-        config_json=CONFIG_JSON,
+        config_json=mutable_path(CONFIG_JSON),
         audit_log=_audit_log,
     )
 
@@ -752,7 +753,8 @@ async def handle_system_shutdown(request: web.Request) -> web.Response:
 
 
 async def handle_ws(request: web.Request) -> web.WebSocketResponse:
-    return await handle_ws_response(request, ws_clients=_ws_clients, process_message=_process_ws_message, log=log)
+    return await handle_ws_response(request, ws_clients=_ws_clients, process_message=_process_ws_message,
+                                    source_socket_path=CTRL_EVENTS_SOCK, log=log)
 
 
 async def _process_ws_message(raw: str) -> None:
@@ -790,11 +792,11 @@ def create_app() -> web.Application:
     app.router.add_post("/api/interaction/validate", handle_interaction_validate)
     app.router.add_get("/api/interaction/runtime-status", handle_interaction_runtime_status)
     register_interaction_builder_ux_route(app)
-    register_interaction_inspector_route(app, CONFIG_JSON, VIAL_JSON)
-    register_conditional_layer_inspector_route(app, CONFIG_JSON, _query_logicd_active_layers)
-    register_morse_inspector_route(app, CONFIG_JSON, VIAL_JSON)
+    register_interaction_inspector_route(app, mutable_path(CONFIG_JSON), VIAL_JSON)
+    register_conditional_layer_inspector_route(app, mutable_path(CONFIG_JSON), _query_logicd_active_layers)
+    register_morse_inspector_route(app, mutable_path(CONFIG_JSON), VIAL_JSON)
     register_morse_feedback_route(app, _send_ctrl_command)
-    register_text_send_safety_route(app, CONFIG_JSON)
+    register_text_send_safety_route(app, mutable_path(CONFIG_JSON))
     register_touch_panel_flick_route(app, _send_ctrl_command)
     app.router.add_get("/api/scripts", handle_scripts_list)
     app.router.add_get("/api/scripts/{keycode}", handle_script_get)

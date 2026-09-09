@@ -7,8 +7,9 @@ those rules stay out of LayerManager and MacroExecutor.
 from __future__ import annotations
 
 import heapq
+import copy
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Iterable
 
 from .action_expansion import space_cadet_tap_hold
@@ -98,6 +99,7 @@ class ResolvedActionEvent:
     row: int | None = None
     col: int | None = None
     source: str = "matrix"
+    owner: object = "matrix"
 
 
 @dataclass(frozen=True)
@@ -345,16 +347,49 @@ class InteractionEngine:
         self.repeat_history: str | None = None
         self.tap_dance_state: dict[str, TapDanceState] = {}
         self._tap_dance_generation = 0
-        self.pressed: dict[tuple[int, int], KeyState] = {}
+        self._owners: dict[object, InteractionEngine] = {}
+        self._owner: object = "matrix"
+        self._pressed: dict[tuple[int, int], KeyState] = {}
         self._cleared_release_keys: set[tuple[int, int]] = set()
         self.timers: list[InteractionTimer] = []
         self.morse_feedback_events: list[dict[str, Any]] = []
+
+    @property
+    def pressed(self):
+        return {**self._pressed, **{(owner, *key): state for owner, engine in self._owners.items() for key, state in engine._pressed.items()}}
+
+    def _for_owner(self, owner):
+        if owner == self._owner:
+            return self
+        if owner not in self._owners:
+            child = copy.copy(self)
+            child._owner = owner
+            child._owners = {}
+            child._pressed = {}
+            child._cleared_release_keys = set()
+            child.timers = []
+            child.tap_dance_state = {}
+            child.key_locks = KeyLockState()
+            child.morse_runtimes = {name: MorseBehaviorRuntime(definition) for name, definition in self.morse_behaviors.items()}
+            child.morse_feedback_events = []
+            self._owners[owner] = child
+        return self._owners[owner]
+
+    def clear_owner(self, owner):
+        engine = self if owner == self._owner else self._owners.pop(owner, None)
+        if engine is None:
+            return []
+        return [replace(event, owner=owner) for event in [*engine.clear_key_locks(reason="source_end"), *engine.clear_held_keys(reason="source_end")]]
+
+    def has_pending_context(self):
+        return bool(self._pressed or self.timers or self.tap_dance_state or self.caps_word_active or self.key_locks.active_actions() or any(child.has_pending_context() for child in self._owners.values()))
 
     def reset(self, layers: Any | None = None) -> list[ResolvedActionEvent]:
         """Clear transient interaction state after keymap/config reload."""
         if layers is not None:
             self.layers = layers
-        events = self.clear_key_locks(reason="reset")
+        events = [event for owner in list(self._owners) for event in self.clear_owner(owner)]
+        events.extend(self.clear_key_locks(reason="reset"))
         events.extend(self.clear_held_keys(reason="reset"))
         self.timers.clear()
         self.tap_dance_state.clear()
@@ -383,7 +418,7 @@ class InteractionEngine:
         events: list[ResolvedActionEvent] = []
         excluded = set(exclude_actions)
         kept: dict[tuple[int, int], KeyState] = {}
-        for state in list(self.pressed.values()):
+        for state in list(self._pressed.values()):
             action = self._state_host_action(state)
             key = (state.row, state.col)
             if action in excluded:
@@ -397,8 +432,9 @@ class InteractionEngine:
                     row=state.row,
                     col=state.col,
                     source=reason,
+                    owner=self._owner,
                 ))
-        self.pressed = kept
+        self._pressed = kept
         self.timers.clear()
         self.tap_dance_state.clear()
         return events
@@ -417,9 +453,9 @@ class InteractionEngine:
 
     def next_timer_due(self) -> float | None:
         """Return the earliest pending interaction timer deadline."""
-        if not self.timers:
-            return None
-        return self.timers[0].due
+        deadlines = [self.timers[0].due] if self.timers else []
+        deadlines.extend(due for child in self._owners.values() if (due := child.next_timer_due()) is not None)
+        return min(deadlines) if deadlines else None
 
     def _schedule_hold_timeout(self, key: tuple[int, int], due: float, press_time: float) -> None:
         self._push_timer(InteractionTimer(
@@ -490,7 +526,7 @@ class InteractionEngine:
     def _event(self, action: str, is_press: bool, row: int | None, col: int | None, source: str = "matrix") -> ResolvedActionEvent:
         if is_press:
             self._record_repeat_history(action)
-        return ResolvedActionEvent(action=action, is_press=is_press, row=row, col=col, source=source)
+        return ResolvedActionEvent(action=action, is_press=is_press, row=row, col=col, source=source, owner=self._owner)
 
     def _tap_events(self, tap_action: str, row: int | None, col: int | None, source: str = "matrix") -> list[ResolvedActionEvent]:
         return [
@@ -500,7 +536,7 @@ class InteractionEngine:
 
     def _active_actions(self) -> set[str]:
         active: set[str] = set()
-        for state in self.pressed.values():
+        for state in self._pressed.values():
             if state.suppressed:
                 continue
             if state.combo_action is not None:
@@ -621,7 +657,7 @@ class InteractionEngine:
     def _suppress_key_override_triggers(self, triggers: Iterable[str]) -> list[ResolvedActionEvent]:
         events: list[ResolvedActionEvent] = []
         for trigger in triggers:
-            for state in self.pressed.values():
+            for state in self._pressed.values():
                 if self._state_active_action(state) != trigger:
                     continue
                 state.override_suppression_count += 1
@@ -633,7 +669,7 @@ class InteractionEngine:
     def _restore_key_override_triggers(self, triggers: Iterable[str]) -> list[ResolvedActionEvent]:
         events: list[ResolvedActionEvent] = []
         for trigger in triggers:
-            for state in self.pressed.values():
+            for state in self._pressed.values():
                 if self._state_active_action(state) != trigger or state.override_suppression_count <= 0:
                     continue
                 state.override_suppression_count -= 1
@@ -703,7 +739,7 @@ class InteractionEngine:
         tap_hold_action = self._tap_dance_tap_hold_action(name)
         if prev is not None and prev.count == 1 and tap_hold_action is not None:
             self.tap_dance_state.pop(name, None)
-            self.pressed[key] = KeyState(
+            self._pressed[key] = KeyState(
                 row=row,
                 col=col,
                 action=f"TD({name})",
@@ -718,7 +754,7 @@ class InteractionEngine:
             return []
 
         hold_action = self._tap_dance_hold_action(name)
-        self.pressed[key] = KeyState(
+        self._pressed[key] = KeyState(
             row=row,
             col=col,
             action=f"TD({name})",
@@ -762,6 +798,9 @@ class InteractionEngine:
 
         layer_m = _LAYER_HOLD_RE.match(state.hold_action)
         if layer_m:
+            set_owner = getattr(self.layers, "set_event_owner", None)
+            if set_owner:
+                set_owner(self._owner, state.row, state.col)
             self.layers.momentary_on(int(layer_m.group(1)))
         return [self._event(state.hold_action, True, state.row, state.col)]
 
@@ -801,7 +840,7 @@ class InteractionEngine:
                 events.extend(self._activate_due_morse(timer))
                 continue
             if timer.kind == "combo_source" and timer.key is not None:
-                state = self.pressed.get(timer.key)
+                state = self._pressed.get(timer.key)
                 if (
                     state is not None
                     and state.hold_action is None
@@ -814,7 +853,7 @@ class InteractionEngine:
                 continue
             if timer.kind != "hold" or timer.key is None:
                 continue
-            state = self.pressed.get(timer.key)
+            state = self._pressed.get(timer.key)
             if (
                 state is None
                 or state.hold_action is None
@@ -830,7 +869,7 @@ class InteractionEngine:
         if not self.hold_on_other_key_press:
             return []
         events: list[ResolvedActionEvent] = []
-        for key, state in list(self.pressed.items()):
+        for key, state in list(self._pressed.items()):
             if key == current_key:
                 continue
             if state.hold_action is not None and not state.hold_sent and not state.suppressed:
@@ -838,17 +877,17 @@ class InteractionEngine:
         return events
 
     def _try_activate_combo(self, current_key: tuple[int, int], now: float) -> list[ResolvedActionEvent]:
-        pressed_keys = set(self.pressed)
+        pressed_keys = set(self._pressed)
         candidates = [combo for combo in self.combos if current_key in combo.keys and combo.keys <= pressed_keys]
         if not candidates:
             return []
         combo = max(candidates, key=lambda item: len(item.keys))
-        press_times = [self.pressed[key].press_time for key in combo.keys]
+        press_times = [self._pressed[key].press_time for key in combo.keys]
         if max(press_times) - min(press_times) > self.combo_term:
             return []
         events: list[ResolvedActionEvent] = []
         for key in combo.keys:
-            state = self.pressed[key]
+            state = self._pressed[key]
             if state.normal_sent:
                 events.append(self._event(state.action, False, state.row, state.col))
                 state.normal_sent = False
@@ -859,22 +898,39 @@ class InteractionEngine:
         events.append(self._event(combo.action, True, row, col, source="combo"))
         return events
 
-    def on_key(self, row: int, col: int, is_press: bool, now: float) -> list[ResolvedActionEvent]:
+    def on_key(self, row: int, col: int, is_press: bool, now: float, *, owner="matrix", action=None) -> list[ResolvedActionEvent]:
+        engine = self._for_owner(owner)
+        events = []
+        if is_press:
+            for other in (self, *self._owners.values()):
+                if other is not engine:
+                    events.extend(replace(event, owner=other._owner) for event in other._activate_interrupted_holds((-1, -1)))
+        set_owner = getattr(self.layers, "set_event_owner", None)
+        if set_owner:
+            set_owner(owner, row, col)
+        events.extend(replace(event, owner=owner) for event in engine._on_key(row, col, is_press, now, action=action))
+        return events
+
+    def _on_key(self, row: int, col: int, is_press: bool, now: float, *, action=None) -> list[ResolvedActionEvent]:
         """Return action events for a physical matrix event."""
         key = (row, col)
+        authoritative_action = action
         events: list[ResolvedActionEvent] = []
 
         if is_press:
+            if key in self._pressed:
+                return []
             self._cleared_release_keys.discard(key)
             events.extend(self._activate_due_timers(now))
-            action = self.layers.get_action(row, col)
+            resolved_action = self.layers.get_action(row, col) if action is None else action
+            action = resolved_action
             self._consume_oneshot_if_needed(action)
             action, override_suppressed_triggers = self._resolve_key_override(action)
             action = self._apply_mod_morph(action)
             action = self._normalize_control_action(action)
             control_events = self._control_action_events(action, row, col)
             if control_events is not None:
-                self.pressed[key] = KeyState(
+                self._pressed[key] = KeyState(
                     row=row,
                     col=col,
                     action=action,
@@ -887,10 +943,10 @@ class InteractionEngine:
                 return [*self._suppress_key_override_triggers(override_suppressed_triggers), *control_events]
             action = self._apply_caps_word(action)
             tap_hold = self._parse_tap_hold(action)
-            original_action = self.layers.get_action(row, col)
+            original_action = resolved_action
             if tap_hold is not None:
                 tap_action, hold_action = tap_hold
-                self.pressed[key] = KeyState(
+                self._pressed[key] = KeyState(
                     row=row,
                     col=col,
                     action=action,
@@ -903,7 +959,7 @@ class InteractionEngine:
                 )
                 self._schedule_hold_timeout(key, now + self.tapping_term, now)
             else:
-                self.pressed[key] = KeyState(
+                self._pressed[key] = KeyState(
                     row=row,
                     col=col,
                     action=action,
@@ -921,11 +977,11 @@ class InteractionEngine:
             events.extend(self._activate_interrupted_holds(key))
             if tap_hold is not None:
                 return events
-            if events:
+            if events and authoritative_action is None:
                 action = self._apply_key_override(self.layers.get_action(row, col))
                 action = self._apply_mod_morph(action)
                 action = self._apply_caps_word(self._normalize_control_action(action))
-                current_state = self.pressed.get(key)
+                current_state = self._pressed.get(key)
                 if current_state is not None:
                     current_state.action = action
                     current_state.original_action = action
@@ -942,24 +998,22 @@ class InteractionEngine:
             if self._is_combo_source_key(key):
                 self._schedule_combo_source_timeout(key, now + self.combo_term)
                 return events
-            state = self.pressed.get(key)
+            state = self._pressed.get(key)
             if state is not None:
                 state.normal_sent = True
             events.extend(self._suppress_key_override_triggers(override_suppressed_triggers))
             events.append(self._event(action, True, row, col))
             return events
 
-        state = self.pressed.pop(key, None)
+        state = self._pressed.pop(key, None)
         if state is None:
             if key in self._cleared_release_keys:
                 self._cleared_release_keys.discard(key)
                 return events
-            action = self.layers.get_action(row, col)
-            events.append(self._event(action, False, row, col))
             return events
 
         if state.combo_action is not None:
-            if not any(other.combo_action == state.combo_action for other in self.pressed.values()):
+            if not any(other.combo_action == state.combo_action for other in self._pressed.values()):
                 events.append(self._event(state.combo_action, False, row, col, source="combo"))
             return events
 
@@ -1003,4 +1057,7 @@ class InteractionEngine:
 
     def on_tick(self, now: float) -> list[ResolvedActionEvent]:
         """Return timeout-generated action events."""
-        return self._activate_due_timers(now)
+        events = self._activate_due_timers(now)
+        for owner, child in self._owners.items():
+            events.extend(replace(event, owner=owner) for event in child.on_tick(now))
+        return events

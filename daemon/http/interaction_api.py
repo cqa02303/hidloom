@@ -21,6 +21,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 from logicd.action_expansion import canonical_aliases_snapshot, modifier_wrappers_snapshot, shifted_aliases_snapshot
 from logicd.interaction_config import validate_interaction_settings
+from logicd.runtime_json import atomic_write_json, load_json
 
 
 def _matrix_in_range_from_vial(vial_json: Path) -> Callable[[int, int], bool]:
@@ -41,7 +42,7 @@ def _matrix_in_range_from_vial(vial_json: Path) -> Callable[[int, int], bool]:
 
 def _load_config(config_json: Path) -> dict[str, Any]:
     try:
-        data = json.loads(config_json.read_text(encoding="utf-8"))
+        data = load_json(config_json)
     except FileNotFoundError:
         return {"settings": {}}
     if not isinstance(data, dict):
@@ -53,21 +54,7 @@ def _load_config(config_json: Path) -> dict[str, Any]:
 
 
 def _atomic_write_json(path: Path, data: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
-    fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=str(path.parent))
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fp:
-            fp.write(text)
-            fp.flush()
-            os.fsync(fp.fileno())
-        os.replace(tmp_name, path)
-    finally:
-        try:
-            os.unlink(tmp_name)
-        except FileNotFoundError:
-            pass
-
+    atomic_write_json(path, data)
 
 async def _run_systemctl(*args: str) -> dict[str, Any]:
     command = ["systemctl", *args]

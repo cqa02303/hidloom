@@ -164,6 +164,7 @@ def main() -> None:
     assert module_spec and module_spec.loader
     publisher_module = importlib.util.module_from_spec(module_spec)
     module_spec.loader.exec_module(publisher_module)
+    original_which = publisher_module.shutil.which
     publisher_module.shutil.which = lambda command: f"/fixture/{command}"
 
     def fake_online_run(command: list[str], **_: object) -> subprocess.CompletedProcess[str]:
@@ -174,8 +175,8 @@ def main() -> None:
             return subprocess.CompletedProcess(command, 0, output, "")
         if command[:2] == ["gh", "api"] and "/commits/" in command[2]:
             return subprocess.CompletedProcess(command, 0, "a" * 40 + "\n", "")
-        if command[:3] == ["gh", "release", "view"]:
-            return subprocess.CompletedProcess(command, 1, "", "not found")
+        if command[:2] == ["gh", "api"] and "/releases/tags/" in command[2]:
+            return subprocess.CompletedProcess(command, 1, "", "HTTP 404")
         if command[:2] == ["gh", "api"] and "/git/ref/tags/" in command[2]:
             return subprocess.CompletedProcess(command, 0, "{}\n", "")
         raise AssertionError(command)
@@ -184,8 +185,11 @@ def main() -> None:
     try:
         publisher_module.online_preflight(
             {
+                "schema": "hidloom.public-release-publish-plan.v3",
+                "ready": True,
                 "repository": "cqa02303/hidloom",
-                "source_commit": "a" * 40,
+                "source_commit": "b" * 40,
+                "public_target": {"commit": "a" * 40},
                 "tag": "vfixture",
             }
         )
@@ -193,6 +197,7 @@ def main() -> None:
         assert str(error) == "Git tag already exists: vfixture"
     else:
         raise AssertionError("existing Git tag must block draft creation")
+    publisher_module.shutil.which = original_which
 
     with tempfile.TemporaryDirectory() as tmp:
         workspace = Path(tmp)
@@ -611,6 +616,7 @@ def main() -> None:
         assert local_verified.returncode == 0, local_verified.stdout + local_verified.stderr
         local_result = json.loads(local_verified.stdout)
         assert local_result["asset_count"] == len(list(release_with_touch.iterdir()))
+        assert local_result["public_target_verification"] == "not-requested"
         assert local_result["hardware_smoke"]["status"] == "pass"
         assert local_result["touch_hardware_smoke"] == {
             "status": "pending",
@@ -684,6 +690,33 @@ def main() -> None:
         assert publishable_created.returncode == 0, (
             publishable_created.stdout + publishable_created.stderr
         )
+        # The public export is committed into a genuinely independent history.
+        # The private source SHA is deliberately absent from this object database.
+        subprocess.run(["git", "init", "--quiet", str(export)], check=True)
+        # This earlier archive-exclusion fixture is intentionally a local build output.
+        (export / ".git/info/exclude").write_text("/build/unlisted-build-output.bin\n")
+        for key, value in (("user.name", "Release fixture"), ("user.email", "fixture@localhost"),
+                           ("core.autocrlf", "false")):
+            subprocess.run(["git", "-C", str(export), "config", key, value], check=True)
+        subprocess.run(["git", "-C", str(export), "remote", "add", "origin", "https://github.com/cqa02303/hidloom.git"], check=True)
+        export_manifest = json.loads((export / "PUBLIC_EXPORT_MANIFEST.json").read_text())
+        export_paths = ["PUBLIC_EXPORT_MANIFEST.json", *[entry["path"] for entry in export_manifest["files"]]]
+        subprocess.run(["git", "-C", str(export), "add", "--", *export_paths], check=True)
+        subprocess.run(["git", "-C", str(export), "commit", "--quiet", "-m", "Independent audited public export fixture"], check=True)
+        public_commit = subprocess.check_output(["git", "-C", str(export), "rev-parse", "HEAD"], text=True).strip()
+        assert public_commit != source_commit
+        assert subprocess.run(["git", "-C", str(export), "cat-file", "-e", source_commit], capture_output=True).returncode != 0
+        ready_plan_path = workspace / "READY_PUBLIC_PLAN.json"
+        ready_planned = subprocess.run(
+            [sys.executable, str(export / "tools/package/publish_public_release_bundle.py"),
+             "--bundle", str(publishable), "--tag", "vfixture", "--output-plan", str(ready_plan_path), "--require-ready"],
+            cwd=export, capture_output=True, text=True,
+        )
+        assert ready_planned.returncode == 0, ready_planned.stdout + ready_planned.stderr
+        ready_plan = json.loads(ready_plan_path.read_text())
+        assert ready_plan["source_commit"] == source_commit
+        assert ready_plan["public_target"]["commit"] == public_commit
+        assert ready_plan["command"][ready_plan["command"].index("--target") + 1] == public_commit
         fake_bin = workspace / "fake-bin"
         fake_bin.mkdir()
         fake_gh = fake_bin / "gh"
@@ -711,16 +744,35 @@ elif arguments[:2] == ["release", "download"]:
     for path in source.iterdir():
         if path.is_file():
             shutil.copy2(path, destination / path.name)
+elif arguments[0] == "api" and "/git/ref/tags/" in arguments[1]:
+    print(json.dumps({"ref": "refs/tags/vfixture", "object": {
+        "type": "commit", "sha": os.environ["HIDLOOM_FAKE_PUBLIC_COMMIT"]}}))
 else:
     raise SystemExit(f"unsupported fake gh command: {arguments}")
 """,
             encoding="utf-8",
         )
         fake_gh.chmod(0o755)
+        fake_git = fake_bin / "git"
+        fake_git.write_text("""#!/usr/bin/env python3
+import os
+import subprocess
+import sys
+args = sys.argv[1:]
+if "fetch" in args:
+    assert args[-2] == "https://github.com/cqa02303/hidloom.git", args
+    assert args[-1] == os.environ["HIDLOOM_FAKE_PUBLIC_COMMIT"], args
+    args[-2] = os.environ["HIDLOOM_FAKE_PUBLIC_CHECKOUT"]
+raise SystemExit(subprocess.call([os.environ["HIDLOOM_REAL_GIT"], *args]))
+""", encoding="utf-8")
+        fake_git.chmod(0o755)
         downloaded = workspace / "downloaded-release"
         environment = dict(os.environ)
         environment["PATH"] = f"{fake_bin}:{environment['PATH']}"
         environment["HIDLOOM_FAKE_RELEASE_DIR"] = str(publishable)
+        environment["HIDLOOM_FAKE_PUBLIC_COMMIT"] = public_commit
+        environment["HIDLOOM_FAKE_PUBLIC_CHECKOUT"] = str(export)
+        environment["HIDLOOM_REAL_GIT"] = shutil.which("git") or "git"
         remote_verified = subprocess.run(
             [
                 str(export / "tools/package/verify_github_public_release_bundle.py"),
@@ -730,6 +782,8 @@ else:
                 "cqa02303/hidloom",
                 "--dir",
                 str(downloaded),
+                "--expected-plan",
+                str(ready_plan_path),
             ],
             cwd=export,
             env=environment,
@@ -744,6 +798,9 @@ else:
         assert remote_result["hardware_smoke"]["status"] == "pass"
         assert remote_result["touch_hardware_smoke"]["status"] == "pass"
         assert remote_result["release_channel"]["selected"] == "stable-public"
+        assert remote_result["public_target_verification"] == "passed"
+        assert remote_result["public_target"]["commit"] == public_commit
+        assert remote_result["source_commit"] == source_commit
         write_export_json(export, "config/public-usb-identity.json", original_identity)
 
         mismatched_provenance = json.loads(build_provenance.read_text(encoding="utf-8"))

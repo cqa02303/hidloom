@@ -1,5 +1,7 @@
 # matrixd Incident Snapshot Runbook
 
+現在の採用判断: [ADR](../policy/adr/0020-bounded-ram-input-trace.md)。
+
 通常使用中のキー重複、固着、欠落を後から調べるための採取手順です。`matrixd`は通常時、
 `/run/hidloom/matrixd-trace.jsonl`と`matrixd-trace.1.jsonl`だけへ構造traceを循環保存します。
 各fileは4 MiB、合計は最大8 MiBで、root所有・`0600`です。保存先はRAMなのでmicroSDへの

@@ -19,6 +19,7 @@ if str(_REPO_ROOT) not in sys.path:
 if str(_DAEMON_ROOT) not in sys.path:
     sys.path.insert(0, str(_DAEMON_ROOT))
 
+from logicd.runtime_json import atomic_write_json, load_json
 from viald.dynamic_protocol import vial_macros_from_buffer
 from viald.keycode_codec import KeycodeCodec
 from viald.protocol_defs import DEFAULT_MACRO_BUFFER_SIZE, DEFAULT_MACRO_COUNT
@@ -37,7 +38,7 @@ def apply_vial_macro_buffer(config_json: Path, encoded_buffer: str) -> VialMacro
     macros decoded from the imported buffer.
     """
     try:
-        cfg = json.loads(config_json.read_text(encoding="utf-8"))
+        cfg = load_json(config_json)
         macro_buffer = base64.b64decode(encoded_buffer.encode("ascii"), validate=True)
     except (OSError, json.JSONDecodeError) as exc:
         raise RuntimeError(f"macro import failed: {exc}") from exc
@@ -61,5 +62,5 @@ def apply_vial_macro_buffer(config_json: Path, encoded_buffer: str) -> VialMacro
         **{key: value for key, value in existing_macros.items() if not str(key).startswith("VIAL")},
         **decoded_macros,
     }
-    config_json.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(config_json, cfg)
     return VialMacroImportResult(macro_count=len(decoded_macros), buffer_size=len(macro_buffer))

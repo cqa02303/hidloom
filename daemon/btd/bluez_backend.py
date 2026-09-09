@@ -1092,16 +1092,22 @@ def _int8(value: int) -> int:
     return value - 256 if value >= 128 else value
 
 
+def _keyboard_usage_is_repeatable(code: int) -> bool:
+    # Keyboard-page ordinary/keypad usages only: exclude no-event, errors,
+    # reserved ranges, modifier usages, and keys whose press toggles a lock.
+    return (0x04 <= code <= 0xA4 or 0xB0 <= code <= 0xDD) and code not in {0x39, 0x47, 0x53}
+
+
 def _keyboard_report_has_repeatable_key(report: bytes) -> bool:
     if len(report) < 8:
         return False
-    return any(code for code in report[2:8])
+    return any(_keyboard_usage_is_repeatable(code) for code in report[2:8])
 
 
 def _keyboard_repeat_release_report(report: bytes) -> bytes:
     if len(report) < 8:
         return bytes(8)
-    return bytes([report[0], 0, 0, 0, 0, 0, 0, 0])
+    return bytes([report[0], 0, *(0 if _keyboard_usage_is_repeatable(code) else code for code in report[2:8])])
 
 
 def _uint8(value: int) -> int:

@@ -1,6 +1,6 @@
 # Test Script Inventory
 
-更新日: 2026-08-29
+更新日: 2026-09-07
 
 `script/test_*.py` と周辺手動ツールの棚卸し方針です。現時点ではテストが多いこと自体を
 安全側とみなし、削除より分類を優先します。
@@ -16,7 +16,7 @@
 
 ## 現在の主要回帰テスト
 
-現在 `script/test_*.py` は 351 本程度あり、標準 canonical suite は 239 entrypoints を実行する。
+現在 `script/test_*.py` は 367 本程度あり、標準 canonical suite は 256 entrypoints を実行する。
 すべてを常に同じ重さで扱わず、目的別 suite で使い分ける。
 
 ### Suite entrypoints

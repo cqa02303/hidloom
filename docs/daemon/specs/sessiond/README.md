@@ -25,6 +25,8 @@
 
 - session owner を一意にする。
 - PTY close / process exit を UI が区別できる形で伝える。
+- `active` はprocess実行中だけでなくPTY出力のdrain中もtrueとする。補助field `process_active` と `draining` で状態を区別し、PTY EOFとUTF-8 decoderの末尾処理が終わるまで完了を通知しない。
+- 自然終了時は最後のtextをinactiveより先に配送し、logicd側の送信queueもdrainする。明示的なstop・escape・interruptでは従来どおり残りの送信をcancelする。
 - control sequence を壊さない。
 - runaway output で input daemon を阻害しない。
 - high-volume PTY output は HID / text send 経路を詰まらせないよう chunking / cancellation 方針を維持する。
@@ -35,6 +37,7 @@
 - session create / close。
 - process exit。
 - high-volume output。
+- 大量出力直後のprocess終了、UTF-8境界をまたぐ末尾、自然終了後のclient queue drain (`script/test_sessiond_output_drain.py`)。
 - logicd client reconnect。
 - HID text transport focus / receiver unavailable。
 

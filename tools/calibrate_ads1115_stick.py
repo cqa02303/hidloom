@@ -17,6 +17,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from daemon.logicd.runtime_json import atomic_write_json, effective_source, load_json
 from i2cd.ads1115 import ADS1115Reader, normalize_stick, parse_analog_stick_config, read_stick_volts  # noqa: E402
 
 
@@ -44,7 +45,7 @@ class PhaseCalibration:
 
 def _load_config(path: Path) -> dict[str, Any]:
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = load_json(path)
     except FileNotFoundError as exc:
         raise SystemExit(f"config not found: {path}") from exc
     if not isinstance(data, dict):
@@ -223,9 +224,10 @@ def _print_stats(stats: StickStats) -> None:
 def _write_config(path: Path, cfg: dict[str, Any], *, backup: bool) -> None:
     if backup:
         backup_path = path.with_suffix(path.suffix + ".bak")
-        shutil.copy2(path, backup_path)
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(effective_source(path), backup_path)
         print(f"backup: {backup_path}")
-    path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(path, cfg)
     print(f"updated: {path}")
 
 
@@ -315,7 +317,7 @@ def run_phase_calibration(
     )
     payload = phase_payload(stats)
     if write:
-        _write_config(config_path, apply_phase_calibration(cfg, stats), backup=backup)
+        _write_config(config_path, apply_phase_calibration(_load_config(config_path), stats), backup=backup)
         payload["written"] = True
         payload["config"] = str(config_path)
     else:

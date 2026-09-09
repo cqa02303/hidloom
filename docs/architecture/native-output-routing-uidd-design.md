@@ -1,5 +1,7 @@
 # Native Output Routing And uidd Design
 
+現在の採用判断: [ADR](../policy/adr/0002-output-device-owners.md)。この文書の過去の段階・初期案とは区別する。
+
 作成日: 2026-06-22
 
 更新日: 2026-06-25

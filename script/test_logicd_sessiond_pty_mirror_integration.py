@@ -97,7 +97,7 @@ async def _run() -> None:
             for action in ("KC_P", "KC_W", "KC_D", "KC_ENTER"):
                 await handle_resolved_action(action, True, ctx)
                 await handle_resolved_action(action, False, ctx)
-            await _drain_pty_output(ctx)
+            await _wait_for_macro_event(ctx, macros, ("KC_ENTER", True))
             assert mirror.text_plan_count >= 1
             assert any(action == "KC_ENTER" and is_press for action, is_press in macros.events)
 
@@ -110,12 +110,14 @@ async def _run() -> None:
             assert mirror.last_reason == "exit:0"
             assert mirror.sent_key_actions >= 5
         finally:
+            # Close the watch client before awaiting Server.wait_closed(), which
+            # waits for active clients on Python 3.12 even on a failed assertion.
+            await service.close()
             server_task.cancel()
             try:
                 await server_task
             except asyncio.CancelledError:
                 pass
-            await service.close()
 
 
 def main() -> None:

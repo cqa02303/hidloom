@@ -10,6 +10,8 @@ import socket
 import stat
 import sys
 import time
+import uuid
+import re
 from pathlib import Path
 from typing import Any, Callable, TextIO
 
@@ -178,6 +180,7 @@ def get_control_status(
     errors: list[str] = []
     live: dict[str, Any] = {}
     pressed: dict[str, Any] = {}
+    ownership: dict[str, Any] = {}
     digest: str | None = None
     try:
         digest = _bounded_regular_file_sha256(keymap_path)
@@ -187,12 +190,13 @@ def get_control_status(
     try:
         live = _live_keymap(query_ctrl)
         pressed = _pressed_state(query_ctrl)
+        ownership = _owner_context(query_ctrl)
     except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
         errors.append(str(exc))
     readiness = keyboard_read.get_output_readiness_summary(include_systemctl=True, include_http_status=False)
     return {
         "ok": not errors and bool(readiness.get("ok")),
-        "mode": "guarded_write_companion_status",
+        "mode": "guarded_write_owner_status",
         "server": {"name": SERVER_NAME, "version": SERVER_VERSION},
         "keymap": {
             "path": str(keymap_path),
@@ -203,7 +207,8 @@ def get_control_status(
         "matrix": {"pressed": pressed.get("pressed", [])},
         "output_target": live.get("output_target"),
         "readiness": readiness,
-        "write_capabilities": ["bounded_matrix_tap", "single_position_keymap_change"],
+        "ownership": ownership,
+        "write_capabilities": ownership.get("capabilities", []),
         "blocked_capabilities": [
             "arbitrary_shell",
             "whole_keymap_overwrite",
@@ -234,8 +239,19 @@ def plan_keymap_change(
     live = _live_keymap(query_ctrl)
     matrix = _pressed_state(query_ctrl)
     before = _action_at(live["layers"], layer, row, col)
+    try:
+        ownership = _owner_context(query_ctrl)
+        owner_error = None
+    except Exception as exc:
+        ownership, owner_error = {}, str(exc)
     phrase = _keymap_confirmation(layer, row, col, before, normalized, digest)
+    if ownership:
+        phrase += _owner_confirmation_suffix(ownership)
     blockers: list[str] = []
+    if owner_error:
+        blockers.append("executing_owner_unavailable")
+    elif not ownership.get("persisted"):
+        blockers.append("owner_save_pending")
     if matrix.get("pressed"):
         blockers.append("matrix_not_idle")
     if live["layers"] != persisted:
@@ -249,6 +265,7 @@ def plan_keymap_change(
         "before": {"layer": layer, "row": row, "col": col, "action": before},
         "after": {"layer": layer, "row": row, "col": col, "action": normalized},
         "no_change": before == normalized,
+        "ownership": ownership,
         "blockers": blockers,
         "confirmation_phrase": phrase,
         "apply_requirements": [
@@ -282,109 +299,53 @@ def apply_keymap_change(
     if plan["no_change"]:
         return {**plan, "ok": True, "executed": False, "blocker": None, "result": "already_current"}
 
-    before = plan["before"]["action"]
-    normalized = plan["after"]["action"]
-    remap = query_ctrl({"t": "M", "l": layer, "r": row, "c": col, "a": normalized})
-    if remap.get("result") != "ok":
-        return {**plan, "ok": False, "executed": True, "blocker": "remap_failed", "remap": remap}
+    ownership = plan["ownership"]
+    operation_id = "mcp-map:" + hashlib.sha256(confirm.encode()).hexdigest()
+    request = {"t": "KEYMAP_COMPARE_APPLY", "l": layer, "r": row, "c": col,
+               "a": plan["after"]["action"], "operation_id": operation_id,
+               "expected_sha256": expected_sha256,
+               "expected_coordinator_epoch": ownership["coordinator_epoch"],
+               "expected_runtime_revision": ownership["runtime_revision"],
+               "expected_owner": ownership["owner"]}
     try:
-        save = query_ctrl({"t": "S"})
+        result = query_ctrl(request)
     except Exception as exc:
-        return {
-            **plan,
-            "ok": False,
-            "executed": True,
-            "blocker": "save_failed",
-            "remap": remap,
-            "save_error": f"{type(exc).__name__}: {exc}",
-            "rollback": _rollback_keymap_change(layer, row, col, before, query_ctrl, keymap_path),
-        }
-    if save.get("result") != "ok":
-        return {
-            **plan,
-            "ok": False,
-            "executed": True,
-            "blocker": "save_failed",
-            "remap": remap,
-            "save": save,
-            "rollback": _rollback_keymap_change(layer, row, col, before, query_ctrl, keymap_path),
-        }
-
-    try:
-        live_after = _live_keymap(query_ctrl)
-        live_action = _action_at(live_after["layers"], layer, row, col)
-        persisted_action = _action_at(_persisted_layers(keymap_path), layer, row, col)
-        after_digest = _bounded_regular_file_sha256(keymap_path)
-    except Exception as exc:
-        return {
-            **plan,
-            "ok": False,
-            "mode": "write",
-            "executed": True,
-            "blocker": "readback_failed",
-            "remap": remap,
-            "save": {key: value for key, value in save.items() if key != "path"},
-            "readback_error": f"{type(exc).__name__}: {exc}",
-            "rollback": _rollback_keymap_change(layer, row, col, before, query_ctrl, keymap_path),
-        }
-    verified = live_action == normalized and persisted_action == normalized and after_digest != plan["keymap_sha256"]
-    rollback = (
-        {"attempted": False, "action": before, "confirmation_required": True}
-        if verified
-        else _rollback_keymap_change(layer, row, col, before, query_ctrl, keymap_path)
-    )
-    return {
-        **plan,
-        "ok": verified,
-        "mode": "write",
-        "executed": True,
-        "blocker": None if verified else "readback_mismatch",
-        "remap": remap,
-        "save": {key: value for key, value in save.items() if key != "path"},
-        "readback": {
-            "live_action": live_action,
-            "persisted_action": persisted_action,
-            "keymap_sha256": after_digest,
-        },
-        "rollback": rollback,
-    }
+        # A partial apply may have happened. No unconditional remap/rollback.
+        return {**plan, "ok": False, "executed": None, "blocker": "apply_outcome_unknown",
+                "operation_id": operation_id, "error": str(exc),
+                "rollback": {"attempted": False, "confirmation_required": True}}
+    verified = False
+    readback = {}
+    if result.get("result") == "ok" and result.get("persisted"):
+        try:
+            readback = {"live_action": _action_at(_live_keymap(query_ctrl)["layers"], layer, row, col),
+                        "persisted_action": _action_at(_persisted_layers(keymap_path), layer, row, col),
+                        "keymap_sha256": _bounded_regular_file_sha256(keymap_path)}
+            verified = readback["live_action"] == readback["persisted_action"] == plan["after"]["action"]
+        except Exception as exc:
+            readback = {"error": str(exc)}
+    return {**plan, "ok": verified, "mode": "write", "executed": result.get("runtime_applied"),
+            "blocker": None if verified else "apply_or_readback_unconfirmed", "apply": result,
+            "operation_id": operation_id, "readback": readback,
+            "rollback": {"attempted": False, "action": plan["before"]["action"],
+                         "confirmation_required": True, "policy": "create a fresh conditional plan; never overwrite an intervening mutation"}}
 
 
-def _rollback_keymap_change(
-    layer: int,
-    row: int,
-    col: int,
-    action: str,
-    query_ctrl: CtrlQuery,
-    keymap_path: Path,
-) -> dict[str, Any]:
-    evidence: dict[str, Any] = {
-        "attempted": True,
-        "restored_action": action,
-        "verified": False,
-        "errors": [],
-    }
-    try:
-        evidence["remap"] = query_ctrl({"t": "M", "l": layer, "r": row, "c": col, "a": action})
-    except Exception as exc:
-        evidence["errors"].append(f"remap: {type(exc).__name__}: {exc}")
-        return evidence
-    try:
-        evidence["save"] = query_ctrl({"t": "S"})
-    except Exception as exc:
-        evidence["errors"].append(f"save: {type(exc).__name__}: {exc}")
-    try:
-        live_action = _action_at(_live_keymap(query_ctrl)["layers"], layer, row, col)
-        persisted_action = _action_at(_persisted_layers(keymap_path), layer, row, col)
-        evidence["readback"] = {
-            "live_action": live_action,
-            "persisted_action": persisted_action,
-            "keymap_sha256": _bounded_regular_file_sha256(keymap_path),
-        }
-        evidence["verified"] = live_action == action and persisted_action == action
-    except Exception as exc:
-        evidence["errors"].append(f"readback: {type(exc).__name__}: {exc}")
-    return evidence
+def _owner_context(query_ctrl, row=None, col=None):
+    command = {"t": "CONTROL_OWNER"}
+    if row is not None:
+        command.update(row=row, col=col)
+    state = query_ctrl(command)
+    if state.get("result") != "ok" or not isinstance(state.get("owner"), dict):
+        raise RuntimeError("executing owner unavailable or inconsistent")
+    return state
+
+
+def _owner_confirmation_suffix(state):
+    owner = state["owner"]
+    stamp = {"coordinator_epoch": state.get("coordinator_epoch"), "runtime_revision": state.get("runtime_revision"),
+             **{key: owner.get(key) for key in ("owner_epoch", "keymap_revision", "layer_revision", "output_revision")}}
+    return " OWNER " + hashlib.sha256(json.dumps(stamp, sort_keys=True).encode()).hexdigest()[:16]
 
 
 def plan_key_tap(
@@ -393,99 +354,82 @@ def plan_key_tap(
     *,
     keymap_path: Path = DEFAULT_RUNTIME_KEYMAP,
     query_ctrl: CtrlQuery = _query_ctrl,
+    _nonce: str | None = None,
 ) -> dict[str, Any]:
     _validate_position(row, col)
     digest = _bounded_regular_file_sha256(keymap_path)
+    persisted = _persisted_layers(keymap_path)
     live = _live_keymap(query_ctrl)
     matrix = _pressed_state(query_ctrl)
     action, active_layers = _effective_action(live, row, col)
-    blockers: list[str] = []
-    if matrix.get("pressed"):
-        blockers.append("matrix_not_idle")
+    blockers = []
+    try:
+        ownership = _owner_context(query_ctrl, row, col)
+    except Exception:
+        ownership = {}
+        blockers.append("executing_owner_unavailable")
+    owner = ownership.get("owner", {})
+    if live["layers"] != persisted:
+        blockers.append("live_keymap_has_unpersisted_changes")
+    if ownership and not ownership.get("persisted"):
+        blockers.append("owner_save_pending")
+    if "guarded_tap" not in owner.get("capabilities", []):
+        blockers.append("guarded_tap_unsupported")
+    if owner.get("effective_action") != action:
+        blockers.append("executing_owner_action_mismatch")
+    if not owner.get("idle", False) or matrix.get("pressed"):
+        blockers.append("owner_not_idle")
     if live.get("output_target") != "auto":
         blockers.append("output_target_not_auto")
     if action not in SAFE_TAP_ACTIONS:
         blockers.append("unsafe_action")
-    return {
-        "ok": not blockers,
-        "mode": "dry_run",
-        "executed": False,
-        "row": row,
-        "col": col,
-        "effective_action": action,
-        "active_layers": active_layers,
-        "output_target": live.get("output_target"),
-        "keymap_sha256": digest,
-        "safe_action_allowlist": sorted(SAFE_TAP_ACTIONS),
-        "blockers": blockers,
-        "confirmation_phrase": _tap_confirmation(row, col, action, digest),
-        "operator_check": "focus a safe host input field before confirming the tap",
-        "release_policy": "one release is always attempted; one bounded retry is used only if post-state remains pressed",
-    }
+    phrase = _tap_confirmation(row, col, action, digest)
+    if ownership:
+        phrase += _owner_confirmation_suffix(ownership)
+    phrase += " NONCE:" + (_nonce or uuid.uuid4().hex)
+    return {"ok": not blockers, "mode": "dry_run", "executed": False, "row": row, "col": col,
+            "effective_action": action, "active_layers": active_layers, "output_target": live.get("output_target"),
+            "keymap_sha256": digest, "ownership": ownership, "blockers": blockers,
+            "safe_action_allowlist": sorted(SAFE_TAP_ACTIONS), "confirmation_phrase": phrase,
+            "operator_check": "focus a safe host input field before confirming the tap",
+            "release_policy": "executing owner schedules source-scoped release independently of this process"}
 
 
-def send_key_tap(
-    row: int,
-    col: int,
-    *,
-    expected_sha256: str,
-    confirm: str,
-    hold_ms: int = 30,
-    keymap_path: Path = DEFAULT_RUNTIME_KEYMAP,
-    query_ctrl: CtrlQuery = _query_ctrl,
-    send_event: EventSender = _send_matrix_event,
-    sleep: Callable[[float], None] = time.sleep,
-) -> dict[str, Any]:
-    plan = plan_key_tap(row, col, keymap_path=keymap_path, query_ctrl=query_ctrl)
+def send_key_tap(row, col, *, expected_sha256, confirm, hold_ms=30, keymap_path=DEFAULT_RUNTIME_KEYMAP,
+                 query_ctrl=_query_ctrl, send_event=_send_matrix_event, sleep=time.sleep):
+    nonce = re.search(r" NONCE:([0-9a-f]{32})$", confirm)
+    plan = plan_key_tap(row, col, keymap_path=keymap_path, query_ctrl=query_ctrl,
+                        _nonce=nonce.group(1) if nonce else None)
     if not plan.get("ok"):
         return plan
     if expected_sha256 != plan["keymap_sha256"]:
-        return {**plan, "ok": False, "executed": False, "blockers": ["keymap_digest_changed"]}
+        return {**plan, "ok": False, "blockers": ["keymap_digest_changed"]}
     if confirm != plan["confirmation_phrase"]:
-        return {**plan, "ok": False, "executed": False, "blockers": ["confirmation_mismatch"]}
-    if not MIN_HOLD_MS <= int(hold_ms) <= MAX_HOLD_MS:
-        return {**plan, "ok": False, "executed": False, "blockers": ["hold_ms_out_of_range"]}
-
-    press = f"P{row:X}{col:X}\n"
-    release = f"R{row:X}{col:X}\n"
-    error: str | None = None
-    release_errors: list[str] = []
-    release_attempts = 0
+        return {**plan, "ok": False, "blockers": ["confirmation_mismatch"]}
+    if type(hold_ms) is not int or not MIN_HOLD_MS <= hold_ms <= MAX_HOLD_MS:
+        return {**plan, "ok": False, "blockers": ["hold_ms_out_of_range"]}
+    ownership, owner = plan["ownership"], plan["ownership"]["owner"]
+    operation_id = "mcp-tap:" + hashlib.sha256(confirm.encode()).hexdigest()
+    request = {"t": "GUARDED_TAP", "operation_id": operation_id, "expected_sha256": expected_sha256,
+               "expected_coordinator_epoch": ownership["coordinator_epoch"], "expected_runtime_revision": ownership["runtime_revision"],
+               "expected_owner_epoch": owner["owner_epoch"], "expected_keymap_revision": owner["keymap_revision"],
+               "expected_layer_revision": owner["layer_revision"], "row": row, "col": col,
+               "expected_action": plan["effective_action"], "hold_ms": hold_ms}
+    if "output_revision" in owner:
+        request["expected_output_revision"] = owner["output_revision"]
     try:
-        send_event(press)
-        sleep(int(hold_ms) / 1000.0)
-    except Exception as exc:  # release still belongs in finally
-        error = f"{type(exc).__name__}: {exc}"
-    finally:
-        release_attempts += 1
+        outcome = query_ctrl(request)
+    except Exception:
         try:
-            send_event(release)
+            outcome = query_ctrl({"t": "GUARDED_OPERATION", "operation_id": operation_id})
+            outcome = outcome.get("operation", outcome)
         except Exception as exc:
-            release_errors.append(f"{type(exc).__name__}: {exc}")
-
-    post = _pressed_state(query_ctrl)
-    target_pressed = [row, col] in post.get("pressed", [])
-    if target_pressed:
-        release_attempts += 1
-        try:
-            send_event(release)
-        except Exception as exc:
-            release_errors.append(f"{type(exc).__name__}: {exc}")
-        post = _pressed_state(query_ctrl)
-
-    clear = [row, col] not in post.get("pressed", [])
-    ok = error is None and not release_errors and clear
-    return {
-        **plan,
-        "ok": ok,
-        "mode": "write",
-        "executed": True,
-        "hold_ms": int(hold_ms),
-        "press_error": error,
-        "release_attempts": release_attempts,
-        "release_errors": release_errors,
-        "post_state": {"pressed": post.get("pressed", []), "target_clear": clear},
-    }
+            return {**plan, "ok": False, "executed": None, "operation_id": operation_id,
+                    "blockers": ["operation_outcome_unknown_do_not_replay"], "error": str(exc)}
+    return {**plan, "ok": outcome.get("result") == "ok", "mode": "write", "operation_id": operation_id,
+            "executed": outcome.get("result") == "ok" if outcome.get("result") != "unknown" else None,
+            "hold_ms": hold_ms, "owner_result": outcome,
+            "blockers": [] if outcome.get("result") == "ok" else ["owner_guard_rejected_or_unknown"]}
 
 
 TOOLS: dict[str, dict[str, Any]] = {
