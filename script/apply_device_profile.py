@@ -3,14 +3,18 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
+import re
 from pathlib import Path
+import shlex
 import shutil
 import stat
 import subprocess
 import sys
 import time
+import uuid
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -25,6 +29,14 @@ SYSTEMD_ETC_DIR = Path(environment_value("SYSTEMD_ETC_DIR", "/etc/systemd/system
 SCHEMA = "cqa02303v5.device-profile.v1"
 READY_SOCKET_TIMEOUT_SEC = 15.0
 READY_SOCKET_POLL_SEC = 0.1
+DROPIN_NAME = "10-hidloom-device-profile.conf"
+DROPIN_HEADER = "# Managed by hidloom-profile; sha256="
+# Exact output of the original touch profile, retained after its package removal.
+LEGACY_DROPINS = {
+    "logicd.service": '[Unit]\nWants=\nWants=dev-hidg0.device\n\n[Service]\nEnvironment="LOGICD_MATRIX_ROWS=16"\nEnvironment="LOGICD_MATRIX_COLS=16"\nEnvironment="LOGICD_OUTPUTS=auto"\n',
+    "httpd.service": "[Unit]\nAfter=\nAfter=logicd.service\nWants=\nWants=logicd.service\n",
+    "viald.service": "[Unit]\nAfter=\nAfter=hidloom-usb-gadget.service logicd.service\n",
+}
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -32,10 +44,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.tmp")
-    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    os.replace(tmp, path)
+    atomic_content(path, (json.dumps(payload, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
 
 
 def profile_locations(profile_dir: Path) -> list[tuple[str, Path, Path]]:
@@ -82,7 +91,25 @@ def source_path(base_dir: Path, value: str) -> Path:
 
 
 def backup_path(path: Path, timestamp: str) -> Path:
-    return path.with_name(f"{path.name}.bak.{timestamp}")
+    candidate = path.with_name(f"{path.name}.bak.{timestamp}")
+    suffix = 1
+    while candidate.exists() or candidate.is_symlink():
+        candidate = path.with_name(f"{path.name}.bak.{timestamp}.{suffix}")
+        suffix += 1
+    return candidate
+
+
+def atomic_content(path: Path, data: bytes, mode: int = 0o644) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+    try:
+        with temporary.open("xb") as stream:
+            stream.write(data)
+        os.chmod(temporary, mode)
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
 
 
 def copy_file(src: Path, dst: Path, *, dry_run: bool, backup: bool, timestamp: str) -> None:
@@ -96,8 +123,7 @@ def copy_file(src: Path, dst: Path, *, dry_run: bool, backup: bool, timestamp: s
     dst.parent.mkdir(parents=True, exist_ok=True)
     if dst.exists() and backup:
         shutil.copy2(dst, backup_path(dst, timestamp))
-    shutil.copy2(src, dst)
-    os.chmod(dst, 0o644)
+    atomic_content(dst, src.read_bytes())
     print(f"copied {src} -> {dst}")
 
 
@@ -146,24 +172,116 @@ def render_dropin(unit: str, spec: dict[str, Any]) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-def write_dropins(profile: dict[str, Any], *, dry_run: bool) -> None:
+def planned_dropins(profile: dict[str, Any]) -> dict[Path, str]:
     dropins = profile.get("dropins", {})
     if not isinstance(dropins, dict):
         raise SystemExit("profile dropins must be an object")
+    desired = {}
     for unit, spec in dropins.items():
+        if not re.fullmatch(r"[A-Za-z0-9_@.+-]+\.(service|timer|socket|target)", unit):
+            raise SystemExit(f"invalid drop-in unit: {unit}")
         if not isinstance(spec, dict):
             raise SystemExit(f"drop-in spec must be an object: {unit}")
         content = render_dropin(unit, spec)
-        path = SYSTEMD_ETC_DIR / f"{unit}.d" / "10-hidloom-device-profile.conf"
+        path = SYSTEMD_ETC_DIR / f"{unit}.d" / DROPIN_NAME
+        desired[path] = DROPIN_HEADER + hashlib.sha256(content.encode()).hexdigest() + "\n" + content
+    return desired
+
+
+def owned_dropins(desired: dict[Path, str]) -> list[Path]:
+    existing = set(SYSTEMD_ETC_DIR.glob(f"*.d/{DROPIN_NAME}")) | set(desired)
+    owned = []
+    for path in sorted(existing):
+        if path.parent.is_symlink() or path.is_symlink():
+            raise SystemExit(f"profile drop-in symlink conflict: {path}")
+        if not path.exists():
+            continue
+        if not path.is_file():
+            raise SystemExit(f"profile drop-in is not a regular file: {path}")
+        content = path.read_text(encoding="utf-8")
+        header, separator, body = content.partition("\n")
+        managed = separator and header == DROPIN_HEADER + hashlib.sha256(body.encode()).hexdigest()
+        legacy = content == LEGACY_DROPINS.get(path.parent.name.removesuffix(".d"))
+        if not managed and not legacy:
+            raise SystemExit(f"unrecognized profile drop-in; preserve and inspect: {path}")
+        owned.append(path)
+    return owned
+
+
+def write_dropins(profile: dict[str, Any], *, dry_run: bool, backup: bool = False,
+                  timestamp: str = "", plan: tuple[dict[Path, str], list[Path]] | None = None) -> None:
+    desired, owned = plan if plan is not None else (planned_dropins(profile), [])
+    if plan is None:
+        owned = owned_dropins(desired)
+    unchanged = {path for path in owned if path in desired
+                 and path.read_bytes() == desired[path].encode("utf-8")
+                 and stat.S_IMODE(path.stat().st_mode) == 0o644}
+    for path in owned:
+        if path in unchanged:
+            continue
+        if backup:
+            saved = backup_path(path, timestamp)
+            print(f"backup {path} -> {saved}")
+            if not dry_run:
+                shutil.copy2(path, saved)
+        if path not in desired:
+            print(f"remove-dropin {path}")
+            if not dry_run:
+                path.unlink()
+    for path, content in desired.items():
+        if path in unchanged:
+            continue
         if dry_run:
             print(f"write-dropin {path}")
             for line in content.splitlines():
                 print(f"  {line}")
             continue
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
-        os.chmod(path, 0o644)
+        atomic_content(path, content.encode("utf-8"))
         print(f"wrote drop-in {path}")
+
+
+def validate_profile(profile_id: str, profile: dict[str, Any], base_dir: Path,
+                     runtime_dir: Path) -> tuple[dict[Path, str], list[Path]]:
+    if not re.fullmatch(r"[A-Za-z0-9.+-]+", profile_id):
+        raise SystemExit(f"invalid profile id: {profile_id}")
+    destinations = set()
+    for section in ("runtime_files", "config_files"):
+        files = profile.get(section, {})
+        if not isinstance(files, dict):
+            raise SystemExit(f"{section} must be an object")
+        for destination, source in files.items():
+            if not isinstance(destination, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+", destination) or destination in (".", "..", "device_profile.json"):
+                raise SystemExit(f"invalid runtime destination: {destination!r}")
+            if destination in destinations:
+                raise SystemExit(f"duplicate runtime destination: {destination}")
+            destinations.add(destination)
+            src = source_path(base_dir, str(source))
+            if not src.is_file() or src.is_symlink():
+                raise SystemExit(f"missing or invalid profile source file: {src}")
+            dst = runtime_dir / destination
+            if dst.is_symlink() or (dst.exists() and not dst.is_file()):
+                raise SystemExit(f"runtime destination conflict: {dst}")
+    if runtime_dir.is_symlink() or (runtime_dir.exists() and not runtime_dir.is_dir()):
+        raise SystemExit(f"runtime directory conflict: {runtime_dir}")
+    for dst in (runtime_dir / "flick.json", runtime_dir / "device_profile.json"):
+        if dst.is_symlink() or (dst.exists() and not dst.is_file()):
+            raise SystemExit(f"runtime destination conflict: {dst}")
+    services = profile.get("services", {})
+    if not isinstance(services, dict):
+        raise SystemExit("profile services must be an object")
+    groups = {}
+    for group in ("enable", "disable", "mask"):
+        values = services.get(group, [])
+        if not isinstance(values, list) or any(not isinstance(v, str) or not re.fullmatch(r"[A-Za-z0-9_@.+-]+\.(service|timer|socket|target)", v) for v in values):
+            raise SystemExit(f"invalid service list: {group}")
+        groups[group] = set(values)
+    if groups["enable"] & (groups["disable"] | groups["mask"]):
+        raise SystemExit("profile cannot enable disabled or masked services")
+    sockets = services.get("ready_sockets", [])
+    if not isinstance(sockets, list) or any(not isinstance(v, str) or not Path(v).is_absolute() for v in sockets):
+        raise SystemExit("service ready socket must be absolute")
+    desired = planned_dropins(profile)
+    return desired, owned_dropins(desired)
 
 
 def systemctl(args: list[str], *, dry_run: bool) -> None:
@@ -207,6 +325,48 @@ def warn_shadowed_units(units: list[str]) -> None:
             print(f"warning: {unit} is shadowed by {path}; package unit may not be active", file=sys.stderr)
 
 
+def file_fingerprint(path: Path) -> tuple[Any, ...] | None:
+    if path.is_symlink():
+        return ("symlink", os.readlink(path))
+    if not path.exists():
+        return None
+    if not path.is_file():
+        return ("nonregular",)
+    return ("file", stat.S_IMODE(path.stat().st_mode), hashlib.sha256(path.read_bytes()).hexdigest())
+
+
+def report_partial_apply(before: dict[Path, tuple[Any, ...] | None],
+                         backups_before: set[Path], progress: dict[str, Any], error: BaseException) -> None:
+    """Report bounded file recovery, without claiming a device-wide rollback."""
+    print(f"profile apply incomplete; failed phase: {progress['phase']}: {error}", file=sys.stderr)
+    commands = []
+    for path, original in sorted(before.items()):
+        current = file_fingerprint(path)
+        if current != original:
+            print(f"changed-path: {path}", file=sys.stderr)
+        backups = sorted(set(path.parent.glob(path.name + ".bak.*")) - backups_before)
+        for saved in backups:
+            valid = file_fingerprint(saved) == original
+            print(f"backup {'verified' if valid else 'unverified'}: {saved}", file=sys.stderr)
+        valid_backups = [saved for saved in backups if original is not None and file_fingerprint(saved) == original]
+        if current != original:
+            if valid_backups:
+                commands.append(["sudo", "cp", "-p", "--", str(valid_backups[0]), str(path)])
+            elif original is None:
+                commands.append(["sudo", "rm", "--", str(path)])
+            else:
+                print(f"manual recovery required; no verified backup for: {path}", file=sys.stderr)
+    for operation in progress["services"]:
+        print(f"service-operation: {operation}", file=sys.stderr)
+    print("Recovery: inspect the partial state, then restore the prior file bytes/modes with:", file=sys.stderr)
+    for command in commands:
+        print("  " + shlex.join(command), file=sys.stderr)
+    print("  sudo systemctl daemon-reload", file=sys.stderr)
+    print("Then inspect the prior profile marker and restore its service policy using the profile runbook; "
+          "this does not restore service state or downgrade packages automatically.", file=sys.stderr)
+    print("Check installed versions: dpkg-query -W 'hidloom-core' 'hidloom-profile-*'", file=sys.stderr)
+
+
 def apply_profile(
     profile_id: str,
     profile: dict[str, Any],
@@ -217,6 +377,37 @@ def apply_profile(
     backup: bool,
     restart: bool,
 ) -> None:
+    dropin_plan = validate_profile(profile_id, profile, base_dir, runtime_dir)
+    paths = {runtime_dir / str(name) for section in ("runtime_files", "config_files")
+             for name in profile.get(section, {})}
+    paths.update((runtime_dir / "flick.json", runtime_dir / "device_profile.json"))
+    paths.update(dropin_plan[0])
+    paths.update(dropin_plan[1])
+    before = {path: file_fingerprint(path) for path in paths}
+    backups_before = {saved for path in paths for saved in path.parent.glob(path.name + ".bak.*")}
+    progress: dict[str, Any] = {"phase": "prepare-runtime-directory", "services": []}
+    try:
+        _apply_profile(profile_id, profile, base_dir, runtime_dir=runtime_dir, dry_run=dry_run,
+                       backup=backup, restart=restart, dropin_plan=dropin_plan, progress=progress)
+    except (OSError, subprocess.CalledProcessError, SystemExit) as error:
+        if not dry_run:
+            try:
+                report_partial_apply(before, backups_before, progress, error)
+            except OSError as report_error:
+                print(f"partial-state inspection also failed: {report_error}; retain all backups and inspect "
+                      f"the failed phase {progress['phase']} manually", file=sys.stderr)
+        raise
+
+
+def _apply_profile(profile_id: str, profile: dict[str, Any], base_dir: Path, *,
+                   runtime_dir: Path, dry_run: bool, backup: bool, restart: bool,
+                   dropin_plan: tuple[dict[Path, str], list[Path]], progress: dict[str, Any]) -> None:
+    def service(arguments: list[str]) -> None:
+        progress["phase"] = "systemctl " + " ".join(arguments)
+        progress["services"].append(progress["phase"] + " (attempted)")
+        systemctl(arguments, dry_run=dry_run)
+        progress["services"][-1] = progress["phase"] + " (completed)"
+
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     runtime_files = profile.get("runtime_files", {})
     config_files = profile.get("config_files", {})
@@ -225,6 +416,7 @@ def apply_profile(
 
     runtime_dir.mkdir(parents=True, exist_ok=True) if not dry_run else None
     for dest_name, src_name in runtime_files.items():
+        progress["phase"] = f"copy:{runtime_dir / str(dest_name)}"
         copy_file(
             source_path(base_dir, str(src_name)),
             runtime_dir / str(dest_name),
@@ -233,8 +425,10 @@ def apply_profile(
             timestamp=timestamp,
         )
     if "flick.json" not in runtime_files:
+        progress["phase"] = f"remove:{runtime_dir / 'flick.json'}"
         remove_runtime_file(runtime_dir / "flick.json", dry_run=dry_run, backup=backup, timestamp=timestamp)
     for dest_name, src_name in config_files.items():
+        progress["phase"] = f"copy:{runtime_dir / str(dest_name)}"
         copy_file(
             source_path(base_dir, str(src_name)),
             runtime_dir / str(dest_name),
@@ -250,13 +444,8 @@ def apply_profile(
         "selected_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "selected_by": "script/apply_device_profile.py",
     }
-    if dry_run:
-        print(f"write-marker {runtime_dir / 'device_profile.json'}")
-    else:
-        write_json(runtime_dir / "device_profile.json", marker)
-        print(f"wrote {runtime_dir / 'device_profile.json'}")
-
-    write_dropins(profile, dry_run=dry_run)
+    progress["phase"] = "reconcile-dropins"
+    write_dropins(profile, dry_run=dry_run, backup=backup, timestamp=timestamp, plan=dropin_plan)
 
     services = profile.get("services", {})
     enable = list(services.get("enable", [])) if isinstance(services, dict) else []
@@ -271,30 +460,37 @@ def apply_profile(
         if not path.is_absolute():
             raise SystemExit(f"service ready socket must be absolute: {path}")
     warn_shadowed_units([*enable, *disable, *mask])
-    systemctl(["daemon-reload"], dry_run=dry_run)
+    service(["daemon-reload"])
     if enable:
-        systemctl(["unmask", *enable], dry_run=dry_run)
+        service(["unmask", *enable])
     if disable:
-        systemctl(["disable", *disable], dry_run=dry_run)
+        service(["disable", *disable])
         if restart:
-            systemctl(["stop", *disable], dry_run=dry_run)
+            service(["stop", *disable])
     if mask:
-        systemctl(["mask", *mask], dry_run=dry_run)
+        service(["mask", *mask])
         if restart:
-            systemctl(["stop", *mask], dry_run=dry_run)
+            service(["stop", *mask])
     if enable:
-        systemctl(["enable", *enable], dry_run=dry_run)
+        service(["enable", *enable])
     if restart and enable:
-        systemctl(["restart", *enable], dry_run=dry_run)
+        service(["restart", *enable])
     final_stop = [*disable, *mask]
     if restart and final_stop:
-        systemctl(["stop", *final_stop], dry_run=dry_run)
+        service(["stop", *final_stop])
     if restart and ready_sockets:
         if dry_run:
             for path in ready_sockets:
                 print(f"wait-socket {path}")
         else:
+            progress["phase"] = "readiness"
             wait_for_sockets(ready_sockets)
+    if dry_run:
+        print(f"write-marker {runtime_dir / 'device_profile.json'}")
+    else:
+        progress["phase"] = "write-marker"
+        write_json(runtime_dir / "device_profile.json", marker)
+        print(f"wrote {runtime_dir / 'device_profile.json'}")
 
 
 def main() -> None:

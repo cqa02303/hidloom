@@ -33,8 +33,14 @@ class LayerManager:
         self._conditional: Set[int] = set()
         self._conditional_rules: list[dict[str, Any]] = []
         self._default_layer: int = 0
+        self._event_owner = None
+        self._momentary_sources = {}
+
+    def set_event_owner(self, owner, row, col):
+        self._event_owner = (owner, row, col) if owner is not None else None
 
     def load(self, layers_config: List[Dict[str, str]]) -> None:
+        self._momentary_sources.clear()
         if not layers_config:
             self._layers = [{}]
             self._default_layer = 0
@@ -56,6 +62,12 @@ class LayerManager:
 
     def _valid_layer(self, layer: int) -> bool:
         return 0 <= layer < len(self._layers)
+
+    def replace_layers(self, layers_config: List[Dict[str, str]]) -> None:
+        """Apply mappings for future presses without clearing active/held actions."""
+        self._layers = [dict(layer) for layer in layers_config] or [{}]
+        self._prune_invalid_active_layers()
+        self._recompute_conditional_layers()
 
     def _prune_invalid_active_layers(self) -> None:
         self._momentary = {layer for layer in self._momentary if self._valid_layer(layer)}
@@ -154,11 +166,16 @@ class LayerManager:
         if not self._valid_layer(layer):
             log.warning("Ignoring momentary layer outside configured range: %d", layer)
             return
+        if self._event_owner is not None:
+            self._momentary_sources[self._event_owner] = layer
         self._momentary.add(layer)
         self._recompute_conditional_layers()
 
     def momentary_off(self, layer: int) -> None:
-        self._momentary.discard(layer)
+        if self._event_owner is not None:
+            self._momentary_sources.pop(self._event_owner, None)
+        if layer not in self._momentary_sources.values():
+            self._momentary.discard(layer)
         self._recompute_conditional_layers()
 
     def toggle(self, layer: int) -> None:
@@ -176,6 +193,7 @@ class LayerManager:
             log.warning("Ignoring target layer outside configured range: %d", layer)
             return
         self._momentary.clear()
+        self._momentary_sources.clear()
         self._toggled.clear()
         self._locked.clear()
         self.oneshot_clear()
@@ -189,6 +207,7 @@ class LayerManager:
             return
         self._default_layer = layer
         self._momentary.clear()
+        self._momentary_sources.clear()
         self._locked.clear()
         self.oneshot_clear()
         self._recompute_conditional_layers()

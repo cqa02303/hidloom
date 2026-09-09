@@ -85,7 +85,7 @@ def main() -> None:
     interaction_js = (ROOT / "daemon" / "http" / "static" / "interaction_panel.js").read_text(encoding="utf-8")
     interaction_css = (ROOT / "daemon" / "http" / "static" / "interaction_panel.css").read_text(encoding="utf-8")
     assert "from interaction_inspector import register_interaction_inspector_route" in httpd
-    assert "register_interaction_inspector_route(app, CONFIG_JSON, VIAL_JSON)" in httpd
+    assert "register_interaction_inspector_route(app, mutable_path(CONFIG_JSON), VIAL_JSON)" in httpd
     assert 'fetch("/api/interaction/inspector")' in interaction_js
     assert "flattenInteractionInspectorWarnings" in interaction_js
     assert "interaction-inspector-rows" in interaction_js

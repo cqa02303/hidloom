@@ -6,9 +6,11 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shutil
+import subprocess
+import tempfile
 from typing import Any
 
 
@@ -121,10 +123,13 @@ def verification_issues(verification: dict[str, Any]) -> list[str]:
 
 
 def safe_relative(value: str) -> Path:
-    relative = Path(value)
-    if relative.is_absolute() or not relative.parts or ".." in relative.parts:
+    relative = PurePosixPath(value)
+    if (
+        relative.is_absolute() or not relative.parts or ".." in relative.parts
+        or relative.as_posix() != value or "\\" in value or ":" in value or "\0" in value
+    ):
         raise SystemExit(f"unsafe public export manifest path: {value}")
-    return relative
+    return Path(*relative.parts)
 
 
 def entry_content(path: Path, kind: str) -> bytes:
@@ -240,6 +245,89 @@ def materialize(root: Path, destination: Path) -> dict[str, Any]:
             shutil.copy2(source, target)
     shutil.copy2(root / MANIFEST_NAME, destination / MANIFEST_NAME)
     return verification
+
+
+def verify_git_commit(repository: Path, commit: str) -> dict[str, str]:
+    """Verify immutable committed export bytes, exact path set and Git modes."""
+    if not HEX40_RE.fullmatch(commit):
+        raise SystemExit("public target must be a full commit SHA")
+
+    def git(*arguments: str) -> bytes:
+        result = subprocess.run(["git", "-C", str(repository), *arguments], capture_output=True)
+        if result.returncode:
+            raise SystemExit("cannot inspect public Git object: " + result.stderr.decode(errors="replace").strip())
+        return result.stdout
+
+    resolved = git("rev-parse", "--verify", commit + "^{commit}").decode().strip()
+    if resolved != commit:
+        raise SystemExit("public target is not a commit object")
+    tree = git("rev-parse", commit + "^{tree}").decode().strip()
+    entries: dict[str, tuple[str, str]] = {}
+    for record in git("ls-tree", "-rz", "--full-tree", commit).split(b"\0"):
+        if not record:
+            continue
+        header, raw_path = record.split(b"\t", 1)
+        mode, kind, oid = header.decode().split()
+        path = raw_path.decode("utf-8")
+        safe_relative(path)
+        if kind != "blob" or mode not in {"100644", "100755", "120000"}:
+            raise SystemExit(f"unsupported public Git entry: {path}")
+        entries[path] = (mode, oid)
+    if MANIFEST_NAME not in entries or entries[MANIFEST_NAME][0] != "100644":
+        raise SystemExit("public commit lacks a regular export manifest")
+    manifest_bytes = git("cat-file", "blob", entries[MANIFEST_NAME][1])
+    try:
+        manifest = json.loads(manifest_bytes)
+        files = manifest["files"]
+        listed = [str(item["path"]) for item in files]
+    except (KeyError, TypeError, ValueError) as error:
+        raise SystemExit("invalid committed export manifest") from error
+    if MANIFEST_NAME in listed or len(listed) != len(set(listed)) or set(entries) != set(listed) | {MANIFEST_NAME}:
+        raise SystemExit("public Git tree differs from exact export path set")
+    if REPORT_NAME not in listed:
+        raise SystemExit("public Git manifest does not cover export report")
+    with tempfile.TemporaryDirectory(prefix="hidloom-public-commit-") as temporary:
+        stage = Path(temporary)
+        (stage / MANIFEST_NAME).write_bytes(manifest_bytes)
+        for item in files:
+            relative = safe_relative(str(item["path"]))
+            mode, oid = entries[str(item["path"])]
+            expected = {("file", 0o644): "100644", ("file", 0o755): "100755", ("symlink", 0o777): "120000"}.get((item.get("kind"), item.get("mode")))
+            if mode != expected:
+                raise SystemExit(f"committed export mode/kind mismatch: {relative}")
+            content = git("cat-file", "blob", oid)
+            path = stage / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if mode == "120000":
+                target = content.decode("utf-8")
+                safe_relative(target)
+                path.symlink_to(target)
+            else:
+                path.write_bytes(content)
+                path.chmod(0o755 if mode == "100755" else 0o644)
+        verified = verify(stage)
+        if not verified["ready"]:
+            raise SystemExit("committed public export failed verification: " + ", ".join(verification_issues(verified)))
+    return {"commit": commit, "tree": tree, **export_source_identity(verified)}
+
+
+def export_source_identity(verified: dict[str, Any]) -> dict[str, str]:
+    """Identity shared by a verified archive export and committed public export."""
+    provenance = verified["source_provenance"]
+    return {
+        "export_manifest_sha256": verified["manifest"]["sha256"],
+        "source_commit": provenance["base_commit"],
+        "source_tree": provenance["base_tree"],
+        "source_snapshot_sha256": provenance["selected_snapshot_sha256"],
+    }
+
+
+def bind_release_source(mapping: dict[str, str], source: dict[str, Any]) -> None:
+    for mapped, bundled in (("source_commit", "commit"), ("source_tree", "tree"),
+                            ("source_snapshot_sha256", "snapshot_sha256"),
+                            ("export_manifest_sha256", "export_manifest_sha256")):
+        if not source.get(bundled) or mapping.get(mapped) != source[bundled]:
+            raise SystemExit(f"public target does not match release source: {bundled}")
 
 
 def main() -> None:

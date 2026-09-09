@@ -99,7 +99,7 @@ def main() -> None:
         assert payload["development_residue_issues"] == []
         assert payload["checks"]["source_selection_ready"] is True
         assert payload["source_selection_issues"] == []
-        assert payload["third_party_summary"]["total"] == 56
+        assert payload["third_party_summary"]["total"] == 65
         assert payload["checks"]["buildroot_source_audit_ready"] is True
         assert payload["binary_distribution_ready"] is False
         assert payload["binary_distribution_status"] == "compliance-bundle-required"

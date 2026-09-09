@@ -1,5 +1,7 @@
 # Package / device profile split plan
 
+現在の採用判断: [ADR](../policy/adr/0014-core-profile-packages.md)。この文書の過去の段階・初期案とは区別する。
+
 更新日: 2026-07-06
 
 この文書は runtime core と keyboard / device profile を分離した時の計画と完了条件を残す。

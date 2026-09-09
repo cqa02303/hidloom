@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,6 +62,16 @@ def assert_m6_post_build_normalizes_getty(post_build: Path) -> None:
             assert active == [
                 "tty1::respawn:/sbin/getty -L tty1 0 vt100 # HIDloom M6 HDMI console"
             ]
+        modules = ("delegate_protocol", "input_session", "keymap_coordinator", "runtime_json")
+        staged_root = target / "usr/share/hidloom"
+        for module in modules:
+            relative = Path("daemon/logicd") / (module + ".py")
+            assert (staged_root / relative).read_bytes() == (ROOT / relative).read_bytes()
+        environment["PYTHONPATH"] = os.pathsep.join((str(staged_root), str(staged_root / "daemon")))
+        environment["PYTHONNOUSERSITE"] = "1"
+        environment["PYTHONDONTWRITEBYTECODE"] = "1"
+        subprocess.run([sys.executable, "-c", "; ".join(f"import logicd.{module}" for module in modules)],
+                       cwd=temporary, env=environment, check=True)
 
 
 def assert_m6_embedded_partition_hash_guard() -> None:

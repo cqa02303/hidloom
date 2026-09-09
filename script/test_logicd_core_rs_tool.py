@@ -694,7 +694,14 @@ def test_ctrl_matrix_delegate_all_routes_keys_to_companion() -> None:
             conn, _addr = delegate.accept()
             with conn:
                 conn.settimeout(2.0)
-                assert conn.recv(4) == b"P00\n"
+                received=conn.makefile("rb").readline()
+                message=json.loads(received)
+                assert message["t"]=="delegate_event" and message["protocol"]==2
+                assert (message["source"],message["row"],message["col"],message["is_press"])==(0,0,0,True)
+                assert message["resolve_context"] is True and message["action"] is None
+                conn.sendall(json.dumps({"t":"delegate_ack", "protocol":2,
+                    **{key:message[key] for key in ("event_id","owner_epoch","keymap_revision","layer_revision")},
+                    "layer_ops":[],"key_events":[],"context_active":False,"next_tick_ms":None}).encode()+b"\n")
             try:
                 broker.recv(128)
             except (TimeoutError, socket.timeout):

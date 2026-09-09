@@ -115,37 +115,85 @@ def _is_keyboard_key(code: int) -> bool:
     return 0 < code < _MOD_MIN and code < _MOUSE_MIN
 
 
+class KeyboardStateReport(bytes):
+    """Eight wire bytes plus in-process action ownership for split routing."""
+
+    def __new__(cls, payload: bytes, key_routes: tuple[tuple[int, bool], ...]):
+        result = super().__new__(cls, payload)
+        result.key_routes = key_routes
+        return result
+
+
 class HidState:
     """Tracks pressed keys and builds 8-byte HID keyboard reports."""
 
     def __init__(self) -> None:
         self._mod = 0
         self._keys: List[int] = []
+        self._owners: dict[tuple[object, int], int] = {}
+        self._mod_owners: set[tuple[object, int]] = set()
+        self._extra_mods: dict[object, int] = {}
 
-    def press(self, code: int) -> None:
+    def press(self, code: int, *, source: object = None) -> None:
         if code == 0:
             return
         if _is_modifier(code):
-            # modifier keycode 0xE0-0xE7 → modifier byte のビット位置
-            # bit = 1 << (code - 0xE0)  ← MOD_LCTRL 等の定数と同じ算術関係
-            self._mod |= 1 << (code - _MOD_MIN)
-        elif _is_keyboard_key(code) and code not in self._keys and len(self._keys) < 6:
-            self._keys.append(code)
+            self._mod_owners.add((source, code))
+            self._refresh_mod()
+        else:
+            usage = 0x35 if code == 997 else code  # KC_ZKHK shares GRV's usage.
+            if _is_keyboard_key(usage) and (usage in self._keys or len(self._keys) < 6):
+                self._owners[(source, code)] = usage
+                if usage not in self._keys:
+                    self._keys.append(usage)
         # マウス/ホイール系 (code >= _MOUSE_MIN) はキーボードレポートでは無視
 
-    def release(self, code: int) -> None:
+    def release(self, code: int, *, source: object = None) -> None:
         if code == 0:
             return
         if _is_modifier(code):
-            self._mod &= ~(1 << (code - _MOD_MIN)) & 0xFF
-        elif _is_keyboard_key(code) and code in self._keys:
-            self._keys.remove(code)
+            self._mod_owners.discard((source, code))
+            self._refresh_mod()
+        else:
+            usage = self._owners.pop((source, code), None)
+            if usage is not None and usage not in self._owners.values():
+                self._keys.remove(usage)
 
-    def set_mod_bits(self, bits: int) -> None:
-        self._mod |= bits
+    def set_mod_bits(self, bits: int, *, source: object = None) -> None:
+        self._extra_mods[source] = self._extra_mods.get(source, 0) | (bits & 0xFF)
+        self._refresh_mod()
 
-    def clear_mod_bits(self, bits: int) -> None:
-        self._mod &= ~bits & 0xFF
+    def clear_mod_bits(self, bits: int, *, source: object = None) -> None:
+        remaining = self._extra_mods.get(source, 0) & ~bits & 0xFF
+        if remaining:
+            self._extra_mods[source] = remaining
+        else:
+            self._extra_mods.pop(source, None)
+        self._refresh_mod()
+
+    def _refresh_mod(self) -> None:
+        self._mod = 0
+        for _source, code in self._mod_owners:
+            self._mod |= 1 << (code - _MOD_MIN)
+        for bits in self._extra_mods.values():
+            self._mod |= bits
+
+    def release_source(self, source: object) -> bool:
+        """Remove one invocation's ownership without releasing other inputs."""
+        changed = False
+        for owner, code in list(self._owners):
+            if owner == source:
+                self.release(code, source=source)
+                changed = True
+        for owner, code in list(self._mod_owners):
+            if owner == source:
+                self.release(code, source=source)
+                changed = True
+        if source in self._extra_mods:
+            self._extra_mods.pop(source)
+            self._refresh_mod()
+            changed = True
+        return changed
 
     @property
     def mod(self) -> int:
@@ -155,10 +203,14 @@ class HidState:
     def release_all(self) -> None:
         self._mod = 0
         self._keys.clear()
+        self._owners.clear()
+        self._mod_owners.clear()
+        self._extra_mods.clear()
 
     def build(self) -> bytes:
         keys = (self._keys + [0, 0, 0, 0, 0, 0])[:6]
-        return bytes([self._mod, 0x00] + keys)
+        routes = tuple(dict.fromkeys((usage, code == 997) for (_source, code), usage in self._owners.items()))
+        return KeyboardStateReport(bytes([self._mod, 0x00] + keys), routes)
 
     def write(self, fd: int) -> None:
         """Write 8-byte report to /dev/hidg0 file descriptor."""

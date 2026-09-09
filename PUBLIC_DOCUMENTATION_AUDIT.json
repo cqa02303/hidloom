@@ -2,11 +2,11 @@
   "schema": "hidloom.public-documentation-audit.v2",
   "ready": true,
   "summary": {
-    "files_scanned": 253,
-    "public_docs": 200,
-    "reachable_public_docs": 200,
-    "omitted_private_links": 118,
-    "removed_private_navigation_lines": 81,
+    "files_scanned": 277,
+    "public_docs": 224,
+    "reachable_public_docs": 224,
+    "omitted_private_links": 122,
+    "removed_private_navigation_lines": 85,
     "broken_links": 0,
     "orphaned_documents": 0
   },
@@ -43,11 +43,6 @@
     },
     {
       "path": "docs/README.md",
-      "line": 18,
-      "target_type": "file"
-    },
-    {
-      "path": "docs/README.md",
       "line": 19,
       "target_type": "file"
     },
@@ -63,7 +58,7 @@
     },
     {
       "path": "docs/README.md",
-      "line": 42,
+      "line": 22,
       "target_type": "file"
     },
     {
@@ -83,13 +78,13 @@
     },
     {
       "path": "docs/README.md",
-      "line": 75,
+      "line": 46,
       "target_type": "file"
     },
     {
       "path": "docs/README.md",
-      "line": 77,
-      "target_type": "directory"
+      "line": 76,
+      "target_type": "file"
     },
     {
       "path": "docs/README.md",
@@ -104,6 +99,11 @@
     {
       "path": "docs/README.md",
       "line": 80,
+      "target_type": "directory"
+    },
+    {
+      "path": "docs/README.md",
+      "line": 81,
       "target_type": "directory"
     },
     {
@@ -133,7 +133,7 @@
     },
     {
       "path": "docs/daemon/native-fast-input-core-design.md",
-      "line": 106,
+      "line": 108,
       "target_type": "file"
     },
     {
@@ -408,7 +408,7 @@
     },
     {
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 28,
+      "line": 37,
       "target_type": "file"
     },
     {
@@ -419,6 +419,11 @@
     {
       "path": "docs/ops/failure-patterns.md",
       "line": 4,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/failure-patterns.md",
+      "line": 27,
       "target_type": "file"
     },
     {
@@ -503,12 +508,12 @@
     },
     {
       "path": "docs/ops/keyboard-write-mcp-server.md",
-      "line": 96,
+      "line": 114,
       "target_type": "file"
     },
     {
       "path": "docs/ops/release-channel-policy.md",
-      "line": 102,
+      "line": 104,
       "target_type": "file"
     },
     {
@@ -542,33 +547,48 @@
       "target_type": "file"
     },
     {
-      "path": "docs/policy/decisions-spec.md",
-      "line": 15,
+      "path": "docs/policy/adr/0019-asymmetric-time-debounce.md",
+      "line": 31,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/adr/README.md",
+      "line": 40,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/adr/README.md",
+      "line": 41,
       "target_type": "file"
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 16,
+      "line": 21,
       "target_type": "file"
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 179,
+      "line": 22,
       "target_type": "file"
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 204,
+      "line": 185,
       "target_type": "file"
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 205,
+      "line": 210,
       "target_type": "file"
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 206,
+      "line": 211,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 212,
       "target_type": "file"
     },
     {
@@ -625,10 +645,6 @@
     },
     {
       "path": "docs/README.md",
-      "line": 18
-    },
-    {
-      "path": "docs/README.md",
       "line": 19
     },
     {
@@ -641,7 +657,7 @@
     },
     {
       "path": "docs/README.md",
-      "line": 42
+      "line": 22
     },
     {
       "path": "docs/README.md",
@@ -657,11 +673,11 @@
     },
     {
       "path": "docs/README.md",
-      "line": 75
+      "line": 46
     },
     {
       "path": "docs/README.md",
-      "line": 77
+      "line": 76
     },
     {
       "path": "docs/README.md",
@@ -674,6 +690,10 @@
     {
       "path": "docs/README.md",
       "line": 80
+    },
+    {
+      "path": "docs/README.md",
+      "line": 81
     },
     {
       "path": "docs/architecture/system-overview.md",
@@ -817,11 +837,15 @@
     },
     {
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 28
+      "line": 37
     },
     {
       "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
       "line": 13
+    },
+    {
+      "path": "docs/ops/failure-patterns.md",
+      "line": 27
     },
     {
       "path": "docs/ops/keyboard-mcp-server.md",
@@ -873,7 +897,7 @@
     },
     {
       "path": "docs/ops/keyboard-write-mcp-server.md",
-      "line": 96
+      "line": 114
     },
     {
       "path": "docs/policy/README.md",
@@ -892,28 +916,40 @@
       "line": 18
     },
     {
-      "path": "docs/policy/decisions-spec.md",
-      "line": 15
+      "path": "docs/policy/adr/0019-asymmetric-time-debounce.md",
+      "line": 31
+    },
+    {
+      "path": "docs/policy/adr/README.md",
+      "line": 40
+    },
+    {
+      "path": "docs/policy/adr/README.md",
+      "line": 41
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 16
+      "line": 21
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 179
+      "line": 22
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 204
+      "line": 185
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 205
+      "line": 210
     },
     {
       "path": "docs/policy/decisions-spec.md",
-      "line": 206
+      "line": 211
+    },
+    {
+      "path": "docs/policy/decisions-spec.md",
+      "line": 212
     },
     {
       "path": "docs/policy/documentation-policy.md",

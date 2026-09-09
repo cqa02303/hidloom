@@ -721,7 +721,7 @@ def main() -> None:
     assert '"hid_broker": hidd_status(hidd_env=hidd_env, logicd_env=logicd_env),' in status_api_source
     assert '"usbd": usbd_status(usbd_env=usbd_env, hidd_env=hidd_env, logicd_env=logicd_env),' in status_api_source
     assert '"text_send": text_send_status(config_json),' in (ROOT / "daemon" / "http" / "status_api.py").read_text(encoding="utf-8")
-    assert "config_json=CONFIG_JSON" in httpd_py
+    assert "config_json=mutable_path(CONFIG_JSON)" in httpd_py
     assert "def _proc_cmdlines()" in system_api_py
     assert "def _systemd_active_statuses()" in system_api_py
     assert "return {name: systemd.get(name, fallback[name])" in system_api_py

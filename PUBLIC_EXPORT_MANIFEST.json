@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "7f9c4078ba87bf149bb21f6053d350d70c3f77b8",
-    "base_tree": "b3da94d4a6684d13ff9f2c3b846cbb7c9e6e3d13",
-    "base_revision_count": 2095,
-    "selected_path_count": 1286,
-    "selected_snapshot_sha256": "2e7782e6d78dc97b355a2e438db38cad5c857cc13b357118fcdf591bf9eb5e26"
+    "base_commit": "c9b5165ef7f77702f4ba767fd353699a52240486",
+    "base_tree": "7c03bd7a79f48b0e8aaaea7174a1be1481ada77c",
+    "base_revision_count": 2110,
+    "selected_path_count": 1333,
+    "selected_snapshot_sha256": "c5613a69246aca5e1193373c71043f30325b8a2a26b9974160b9194ac08d6863"
   },
   "files": [
     {
@@ -155,8 +155,8 @@
       "path": "Makefile",
       "kind": "file",
       "mode": 420,
-      "size": 12708,
-      "sha256": "1b019bf109677ff4298c776c654ac3f790abd2e8d7a54d10972615bfa8a6fbd9"
+      "size": 12756,
+      "sha256": "dd4997138c8dd7efa1f5e246802818c2e61bd0756b408c2264b9442cfcd56071"
     },
     {
       "path": "PUBLIC_ASSET_PROVENANCE.json",
@@ -176,57 +176,57 @@
       "path": "PUBLIC_DOCUMENTATION_AUDIT.json",
       "kind": "file",
       "mode": 420,
-      "size": 19212,
-      "sha256": "17788d8329360a641d9fa3e6acaa3207f8f0cc324f254b3b1d287d7142ba8fc8"
+      "size": 19966,
+      "sha256": "7c9b4bd74f82e7489a50ecf92cbe2f18406078d7c114c12d7ffe8dd0e789de52"
     },
     {
       "path": "PUBLIC_DOCUMENTATION_AUDIT.md",
       "kind": "file",
       "mode": 420,
-      "size": 13119,
-      "sha256": "f4658cef74ade524604b5fc26db3b93e955586809395dd9680b8cbf231d55ad1"
+      "size": 13661,
+      "sha256": "459e9b731b24008ebf0d9407ad635265bdb0e8d0648e66e3f4933fa977423fac"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.json",
       "kind": "file",
       "mode": 420,
-      "size": 419196,
-      "sha256": "8fc3b90c9c728b53aa043181ba6647a10099c900b6e99e0a9b5c5a43a428e8ef"
+      "size": 420100,
+      "sha256": "fbe8ddf11de92a3e8ec73098d4123a556959a71af4bb38f3d511d9480f061405"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
-      "size": 172605,
-      "sha256": "c1345fe3015f06a312bf6ffbfc2280c6861dfe1435ace88f1900f6934de0e4b7"
+      "size": 173049,
+      "sha256": "a75a119a815f5dcc6f559c00f8c89c60206ed55f71c0c2d13c0573d4e722d892"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
       "kind": "file",
       "mode": 420,
       "size": 4456,
-      "sha256": "45f8ce6fe76fd96088a2c814603c57bfbf13b0cb315ab7c0ad2b1c0f1924b02d"
+      "sha256": "05486165f560ef6ed07d0dc41da5db982423765e53adf722026bfe4baf3dad5d"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.md",
       "kind": "file",
       "mode": 420,
       "size": 2011,
-      "sha256": "3e6811e76b484fbe58830f051aecebeb2c5426b05848d5c9055c78c023feda18"
+      "sha256": "0d9e715341d86fc9d42837448ab6eef674edda2899e1f516bf2bf2fb552882db"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.json",
       "kind": "file",
       "mode": 420,
-      "size": 24039,
-      "sha256": "3cc71e1a72fc65d1cc71e4576293b984db9e78b722da39af9cbc9b7a0f13507f"
+      "size": 29734,
+      "sha256": "679bebefc380a6ee51b24fbb7fef885fd35d2c8b7441093178bf44fa8b4a7c95"
     },
     {
       "path": "PUBLIC_REFERENCE_AUDIT.md",
       "kind": "file",
       "mode": 420,
       "size": 266,
-      "sha256": "c1e9aad25d38f96cf71001f7cab34a8efd990994e1708f9ffe6086f1438e5d20"
+      "sha256": "3bad24943f6033d9a2bf286fd0065d5a6c099c9f08e7441483647cdb75373344"
     },
     {
       "path": "README.md",
@@ -246,8 +246,8 @@
       "path": "SBOM.cdx.json",
       "kind": "file",
       "mode": 420,
-      "size": 46590,
-      "sha256": "39174f099098c72c931ea9a389128d71818dc6288135f3ee2a72115afa00b927"
+      "size": 53626,
+      "sha256": "e3324ea95c439c1f5d93e47ca8a043831700b26d556acd2ab4d0c87ad4fff2fc"
     },
     {
       "path": "SECURITY.md",
@@ -274,8 +274,8 @@
       "path": "THIRD_PARTY_NOTICES.md",
       "kind": "file",
       "mode": 420,
-      "size": 6689,
-      "sha256": "019bc76ff6eb9ff113375ff420079f09e1432289c5a416d2c818fdf1df57410d"
+      "size": 7364,
+      "sha256": "e3c993d4037256b33b3671f1a374a8eff680aab6ad9ce7c6127791598d84075f"
     },
     {
       "path": "USB_GADGET_SETUP.md",
@@ -1373,8 +1373,8 @@
       "path": "daemon/btd/bluez_backend.py",
       "kind": "file",
       "mode": 420,
-      "size": 48666,
-      "sha256": "e6a1df2e9776b9f722a21b7d2c9fa89ad45bc159d947fcc9f0d325b63b83377e"
+      "size": 49059,
+      "sha256": "fed46f5ae6f016fbaa939ca8553c0d450e8aefd6f4ba31b2e5c2ef62e3ad4d9d"
     },
     {
       "path": "daemon/btd/bluez_dbus_plan.py",
@@ -1457,15 +1457,15 @@
       "path": "daemon/http/httpd.py",
       "kind": "file",
       "mode": 420,
-      "size": 30602,
-      "sha256": "7302d1756156375647f5a5de85c32de91408bb7e7bbcadd9302b2e1d329fefd5"
+      "size": 30976,
+      "sha256": "c58093e0021705cbbda275fe7132f263515d14073a38f424c22ca13b7ac002e7"
     },
     {
       "path": "daemon/http/interaction_api.py",
       "kind": "file",
       "mode": 420,
-      "size": 10921,
-      "sha256": "130900f1d0990b1164fe5e30d7a4d44fedbe36b7b07d40526f4f276bc1607794"
+      "size": 10478,
+      "sha256": "f2ce3f294abf9d9c357c25a9d2b1235439ba06dbfe11ff2b117a651c3f2c9d61"
     },
     {
       "path": "daemon/http/interaction_builder_ux.py",
@@ -1590,8 +1590,8 @@
       "path": "daemon/http/oled_api.py",
       "kind": "file",
       "mode": 420,
-      "size": 4560,
-      "sha256": "45e541e8336e034b2243390ec2a00c83c5ffc958372cee03b57871ee01469349"
+      "size": 4580,
+      "sha256": "ce4cc56fdb73115b3912948e7c37814453c0f2eaa7e10df7a12021f0501269c5"
     },
     {
       "path": "daemon/http/script_runner.py",
@@ -1604,8 +1604,8 @@
       "path": "daemon/http/script_store.py",
       "kind": "file",
       "mode": 420,
-      "size": 6289,
-      "sha256": "7d8899dbb4af04103ea81da05ce7a2505aa519207e4d3914d7bed7a981830bbc"
+      "size": 6280,
+      "sha256": "cbf4666c4acdd0e6c22022946509693453e7475282d469996ee3fde8c9038757"
     },
     {
       "path": "daemon/http/scripts_api.py",
@@ -1639,8 +1639,8 @@
       "path": "daemon/http/socket_bridge.py",
       "kind": "file",
       "mode": 420,
-      "size": 5128,
-      "sha256": "9ecfb1a8db1bfee252d4f8afacf9a76ce00998c1d1408486bfecef49ecef7c99"
+      "size": 10113,
+      "sha256": "13d5322bad7857e448170232750102b03b84f359b82bc8cd7cfcac18d8d3a28a"
     },
     {
       "path": "daemon/http/static/README.md",
@@ -1940,8 +1940,8 @@
       "path": "daemon/http/text_send_safety_api.py",
       "kind": "file",
       "mode": 420,
-      "size": 3390,
-      "sha256": "2e313b45e3d212d0523e03f00bb2c48fb824f8d27c7398c78a1fac3df8f7d04d"
+      "size": 3403,
+      "sha256": "4e51e9f7f076f2f3817ff7e3e2398062ae61f012e6686e9e0598c10cea854d93"
     },
     {
       "path": "daemon/http/touch_panel_flick_api.py",
@@ -1954,8 +1954,8 @@
       "path": "daemon/http/vil_api.py",
       "kind": "file",
       "mode": 420,
-      "size": 4367,
-      "sha256": "d8542a186770b592f1e98578623d196b8095317ea9cbc7d78c531eca086adc27"
+      "size": 4441,
+      "sha256": "5c7e499d9bd05275bcddefb16976caf1bd7266ae185b1f725f78f3aec12a5459"
     },
     {
       "path": "daemon/http/vil_apply.py",
@@ -1968,8 +1968,8 @@
       "path": "daemon/http/vil_macro_import.py",
       "kind": "file",
       "mode": 420,
-      "size": 2626,
-      "sha256": "8576880d41ac136475b1f85e39b213b62cfa1898ec0a2192282b73d5da9e41e5"
+      "size": 2599,
+      "sha256": "d09d678c9da598044b92726e1caad848e1844d5d6270bb311ccdd2d5656be9fd"
     },
     {
       "path": "daemon/http/vil_response.py",
@@ -2304,8 +2304,8 @@
       "path": "daemon/logicd/config_runtime.py",
       "kind": "file",
       "mode": 420,
-      "size": 24806,
-      "sha256": "791fff5a9ece72f24ea6ffbfef17e3fc79f3770403b189d4f79a1e20ee51f88a"
+      "size": 25489,
+      "sha256": "740f5e939f37c103529dc7abd67a26db5cc2974ce7c75fb0f3130f518421be4c"
     },
     {
       "path": "daemon/logicd/connections.py",
@@ -2318,8 +2318,8 @@
       "path": "daemon/logicd/ctrl.py",
       "kind": "file",
       "mode": 420,
-      "size": 11461,
-      "sha256": "b02428a3dad643282d8eaac368b5f93abddc6a7e05cdaa7149eace73b04585fe"
+      "size": 12509,
+      "sha256": "4c04eddc0013c94f3a5f688b81bbf739994f7a157106dc2757a9023c9d24f9f4"
     },
     {
       "path": "daemon/logicd/ctrl_common.py",
@@ -2332,8 +2332,8 @@
       "path": "daemon/logicd/ctrl_keymap.py",
       "kind": "file",
       "mode": 420,
-      "size": 8387,
-      "sha256": "bc8127898b7e3c2a2a1e932ad4b9b76af7bbf8cec5505269c5914ecf20867cfa"
+      "size": 8547,
+      "sha256": "0e9869793e82619c7500b8513736214d9044eee58a74169b0e0b39f9aed9b9e0"
     },
     {
       "path": "daemon/logicd/ctrl_led.py",
@@ -2355,6 +2355,13 @@
       "mode": 420,
       "size": 1745,
       "sha256": "ffc261722c4573832c34c0040699a31c474c84343db4247e6a0dc5318e92d4d5"
+    },
+    {
+      "path": "daemon/logicd/delegate_protocol.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 10824,
+      "sha256": "0889c581a8c9d4fc9065f81539dcf6dfc64c5c9766e975533717eb080a18124b"
     },
     {
       "path": "daemon/logicd/dynamic_macro_leader.py",
@@ -2388,8 +2395,8 @@
       "path": "daemon/logicd/hid_report.py",
       "kind": "file",
       "mode": 420,
-      "size": 11235,
-      "sha256": "716598feff9dbebf0d751c2f2e15f6df919705f39e491ecdef4ebf274a11d9b6"
+      "size": 13383,
+      "sha256": "2caabe9dabcd6c7013f9e9475b31bd40921134f491eec944eb486b5adb5c310c"
     },
     {
       "path": "daemon/logicd/host_led_output.py",
@@ -2416,8 +2423,15 @@
       "path": "daemon/logicd/input_events.py",
       "kind": "file",
       "mode": 420,
-      "size": 30424,
-      "sha256": "19a3d3551ceb4e98ed680484bdceea327b91c04b41b1c35a0efe25e26770ac33"
+      "size": 32820,
+      "sha256": "4fe7b200553094fef5a48edcd67a09d095ba1afea35432ca2e83cd75e1241d47"
+    },
+    {
+      "path": "daemon/logicd/input_session.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 7398,
+      "sha256": "477538e1596a8d5e860564ec8f8139c9ad41457f70225b1fbbfe4dd348a1be5b"
     },
     {
       "path": "daemon/logicd/interaction_config.py",
@@ -2430,15 +2444,15 @@
       "path": "daemon/logicd/interaction_engine.py",
       "kind": "file",
       "mode": 420,
-      "size": 40273,
-      "sha256": "c975b8f0bd1fbd5387b7a622aa09095aba9ae650d588d2d52f85c7563492258e"
+      "size": 43268,
+      "sha256": "7f3a74df0e06fce400d8183c6a5fef94a89b994cc7ae7b766bff1839d43b87d7"
     },
     {
       "path": "daemon/logicd/joystick.py",
       "kind": "file",
       "mode": 420,
-      "size": 8635,
-      "sha256": "d2b30daab2788221c52260cd1b670537bd9ffb8066f7ab27c1ea71182ce2c338"
+      "size": 8768,
+      "sha256": "54ced246d11192ffa4e8c487b6c560cb0fb70f0730f8906eb4ab336336112dec"
     },
     {
       "path": "daemon/logicd/key_event_pipeline.py",
@@ -2458,8 +2472,15 @@
       "path": "daemon/logicd/keymap.py",
       "kind": "file",
       "mode": 420,
-      "size": 11180,
-      "sha256": "df50c699f8e7e65816167add0093c771f9927b33f356a1f176611449d755e5cf"
+      "size": 12093,
+      "sha256": "23a9228916bdc63f3b87e06a33bf3a26a1c765ddfe23e45ef8afb90402e47287"
+    },
+    {
+      "path": "daemon/logicd/keymap_coordinator.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 12688,
+      "sha256": "ffdc5f24217bd5cfc57b0527f32500cc2ad5780dfa16d45add1d7667635c0950"
     },
     {
       "path": "daemon/logicd/keymap_store.py",
@@ -2493,15 +2514,15 @@
       "path": "daemon/logicd/logicd.py",
       "kind": "file",
       "mode": 420,
-      "size": 41792,
-      "sha256": "5c725fe7608dbafce4c07eaeaed656a21d11c24a64960f9858259b6c24e501cd"
+      "size": 45956,
+      "sha256": "53c5bd7a7318d2b2bb7eef8d6359a3aaa608080a71ac92bdd139697950aa039b"
     },
     {
       "path": "daemon/logicd/macro.py",
       "kind": "file",
       "mode": 420,
-      "size": 20421,
-      "sha256": "c1df3c025b388a7cbd233ea1a7593ca2a23f11e501ca0ba6dfc051f5a9d25f5a"
+      "size": 23611,
+      "sha256": "9f2071d4149f3e5c14771c40c1b5aa10850ea3c434f42073221bc1f0a5ce3f94"
     },
     {
       "path": "daemon/logicd/macro_integration.py",
@@ -2514,8 +2535,8 @@
       "path": "daemon/logicd/matrix_pipeline.py",
       "kind": "file",
       "mode": 420,
-      "size": 2123,
-      "sha256": "6fb7d22304565478c0c03e01d3a77b6f565f8df0bbc001d4f17b84aa028bd04b"
+      "size": 2288,
+      "sha256": "a915cd2d0a91e8a5ffdd89b549d8e95d29c2977ca264888c79ad49ed73a0fcda"
     },
     {
       "path": "daemon/logicd/mod_morph.py",
@@ -2630,6 +2651,13 @@
       "sha256": "0943e009830283cf8b0f4d2eea0006963a276a43eae3d9512ea0c6b1f8ab8889"
     },
     {
+      "path": "daemon/logicd/runtime_json.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 1681,
+      "sha256": "cf94c5daad7edfac39b015b8e94a4148390fb738e176a0c6b08fd50813e01f58"
+    },
+    {
       "path": "daemon/logicd/runtime_notifications.py",
       "kind": "file",
       "mode": 420,
@@ -2710,8 +2738,8 @@
       "path": "daemon/logicd/state.py",
       "kind": "file",
       "mode": 420,
-      "size": 3426,
-      "sha256": "aa42b215d6f73e7e31012616988218f11b70f37efd891b6dca72cce066f92505"
+      "size": 3553,
+      "sha256": "8a0878dbbfbeaf8833022ffb03d8a43186a56c107d050ba76d79b9793280b660"
     },
     {
       "path": "daemon/logicd/text_send_runner.py",
@@ -2871,15 +2899,15 @@
       "path": "daemon/sessiond/pty_mirror.py",
       "kind": "file",
       "mode": 420,
-      "size": 12064,
-      "sha256": "baee00232065bf3e2e3c1073a9eaa02dfc90619a935b780fe156ed20f98fe138"
+      "size": 14186,
+      "sha256": "bc9f97239167f19293fe4206e398b4a05d59f00fdc6be3590107e0a6704d0846"
     },
     {
       "path": "daemon/sessiond/sessiond.py",
       "kind": "file",
       "mode": 420,
-      "size": 17449,
-      "sha256": "b6bda9495e281b70897cd1052dd0a0af219c437d40c23cbf90ab5a0764f3e0cb"
+      "size": 18858,
+      "sha256": "5ba4e9fb7a9b92db5b21fb7f4651afc74f6a74246717d2ba9a6dc49eb27ddc9f"
     },
     {
       "path": "daemon/spid/README.md",
@@ -3053,8 +3081,8 @@
       "path": "dev/mcp/keyboard_write/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 1293,
-      "sha256": "3d3eb3dc9258f69f3432083d985fb587e958cb0ee0268b4808820a5e49d50c56"
+      "size": 1921,
+      "sha256": "641bb2e016c6d45da9a3f2dd5edfa9ae8a7317141589badbae464103beb38aa2"
     },
     {
       "path": "dev/mcp/keyboard_write/__init__.py",
@@ -3067,22 +3095,22 @@
       "path": "dev/mcp/keyboard_write/server.py",
       "kind": "file",
       "mode": 420,
-      "size": 25837,
-      "sha256": "4532655dea61dc4d381ab43eefe73b1234fcb34253ef1f1fa2a30266fc61955a"
+      "size": 26287,
+      "sha256": "a4abe15e665ad25e563433848465ffe51065d05d3be2a07dc4d22782fa70d2b0"
     },
     {
       "path": "docs/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 4839,
-      "sha256": "23e20549ec31cb7a1da82849273ceea01cabb5b916eb121487389e6e58cdfd2a"
+      "size": 4939,
+      "sha256": "f1c9c1b4276f3481fba4fa5c2b4762298eac2515e86c92f69a984d1f3129f2ea"
     },
     {
       "path": "docs/architecture/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 721,
-      "sha256": "1685457b05fa0c6bc1f8fd83c6f5e1431cd651702dd48829281a6fd96abc1016"
+      "size": 838,
+      "sha256": "02e2d6a4cd96e320bc9b924031beaaaf93b5aeae59e0412a1ac6746a6c4b6a76"
     },
     {
       "path": "docs/architecture/module-structure.md",
@@ -3095,8 +3123,8 @@
       "path": "docs/architecture/native-output-routing-uidd-design.md",
       "kind": "file",
       "mode": 420,
-      "size": 10602,
-      "sha256": "1965fbb75b0c3813d291bb0af8484030315a867a4084e17533be0ff7ac0022cd"
+      "size": 10742,
+      "sha256": "044c44fb5a351b62e76e252dcca84a7eea2b3041ea3030c605287d87313e4d0b"
     },
     {
       "path": "docs/architecture/single-source-architecture.md",
@@ -3249,8 +3277,8 @@
       "path": "docs/daemon/native-fast-input-core-design.md",
       "kind": "file",
       "mode": 420,
-      "size": 53004,
-      "sha256": "77a6b2bce9db1011d2d445b3794de027351762e0bca0cf50e23d2643b2641822"
+      "size": 53141,
+      "sha256": "7071ca8e17e3e2a260326f1e44bf09875b47ca7bbb6148dbd800d48c9fcc2264"
     },
     {
       "path": "docs/daemon/specs/README.md",
@@ -3403,8 +3431,8 @@
       "path": "docs/daemon/specs/logicd-core-rs/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 3156,
-      "sha256": "5d736d342536fd454962193339fada0e8f372dae99a927dd19a3a1cd35234917"
+      "size": 5207,
+      "sha256": "51b7f0abe5fb4ad6ec5882d3920e959c1acc49943b53d7ff00e703f8df18692f"
     },
     {
       "path": "docs/daemon/specs/logicd-core-rs/m0-implementation-spec.md",
@@ -3494,8 +3522,8 @@
       "path": "docs/daemon/specs/outputd/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 4695,
-      "sha256": "6b50abd31bc46fc369f4cf02a30e992e806a68f61d8ce8a462883b3e05d5d647"
+      "size": 6246,
+      "sha256": "a86f9bb03f5a128863bf4ac26ea2a174901e09e8055b5a1e9070cf3cbeaeb67d"
     },
     {
       "path": "docs/daemon/specs/service-helpers/README.md",
@@ -3508,8 +3536,8 @@
       "path": "docs/daemon/specs/sessiond/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 2009,
-      "sha256": "b547d48e85be9b9045ed9131291fe3f1beaff2b7f2245dd9119ffeed8943205c"
+      "size": 2597,
+      "sha256": "b5a742e4f0669d45685538abaa1741f1b775538309f0cccf0fdf310198da9067"
     },
     {
       "path": "docs/daemon/specs/sessiond/pty-terminal-mirror-design.md",
@@ -4523,8 +4551,8 @@
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
       "kind": "file",
       "mode": 420,
-      "size": 38607,
-      "sha256": "39d06fafdc6deb60c0ffa9a23fcab7069e7fdfbd53228fb2aeeac223dec715ff"
+      "size": 39899,
+      "sha256": "fd937976488450332629922b7c735949130dbb5d2d8abbf4ea9bdd07912050c1"
     },
     {
       "path": "docs/ops/buildroot-m6-legal-summary.json",
@@ -4544,8 +4572,8 @@
       "path": "docs/ops/failure-patterns.md",
       "kind": "file",
       "mode": 420,
-      "size": 266627,
-      "sha256": "a8b32388631cebb257b19fcbbdd75d42f04a05c53dc08749b44539412680af60"
+      "size": 267862,
+      "sha256": "c1e8fcd66f066ebd60d9c9d1223a6ac94321f68ef4737f23956b0865b57c2960"
     },
     {
       "path": "docs/ops/hidloom-hidd-deep-test-plan.md",
@@ -4607,22 +4635,22 @@
       "path": "docs/ops/keyboard-write-mcp-server.md",
       "kind": "file",
       "mode": 420,
-      "size": 4747,
-      "sha256": "fe189b43446abf949b00e189753c4f1522d6d7582bc300913a22326c0417b252"
+      "size": 6281,
+      "sha256": "74fda17b11e5dbbd1ab2170185e4e64598b0d9906ebe6d7877b78f0ea05e3f94"
     },
     {
       "path": "docs/ops/matrixd-incident-snapshot.md",
       "kind": "file",
       "mode": 420,
-      "size": 3122,
-      "sha256": "956e0dde6efae3b696b65d86af8b3c3716fd931a5c2ccf54cfe8370dd05e5e86"
+      "size": 3202,
+      "sha256": "4c670f2b296b3d329c41e8c3a4caf5b6e1ca362cf8540fdfa319b2010940fc87"
     },
     {
       "path": "docs/ops/package-profile-split-plan.md",
       "kind": "file",
       "mode": 420,
-      "size": 11330,
-      "sha256": "3aebae78b39e09c9a884a9a3cc905e3686deb1e592fc2d9d34c759d57a0f8bdd"
+      "size": 11471,
+      "sha256": "956938ecc2f9965818015d3b714d6f23ee9bbffbaae17828081df9e1d99822e5"
     },
     {
       "path": "docs/ops/performance-tuning-plan.md",
@@ -4663,15 +4691,15 @@
       "path": "docs/ops/release-channel-policy.md",
       "kind": "file",
       "mode": 420,
-      "size": 4811,
-      "sha256": "c569a3559ed61db7c0a48412615f21574c89506f42027d70fef2222e1234160a"
+      "size": 4884,
+      "sha256": "64b89eb49cb087fe3c4b62338c30d322390aeddb20166e86890ce8610827036a"
     },
     {
       "path": "docs/ops/release-packaging-runbook.md",
       "kind": "file",
       "mode": 420,
-      "size": 34258,
-      "sha256": "3db8c0a362c16ae53204aafd86165724298ac303ee39bf1baa2d090dd3854e2e"
+      "size": 36862,
+      "sha256": "5d3b3c415a23b5cc1b3ecae7a3c12a9c3ccbe62ef888eaebfcd5d34d36e43df3"
     },
     {
       "path": "docs/ops/repository-hygiene-policy.md",
@@ -4699,14 +4727,14 @@
       "kind": "file",
       "mode": 420,
       "size": 52225,
-      "sha256": "74898e9e0d4eee2eeb83914f5eb7efd4bafb4560dd67b767f3cc37fbe71cb412"
+      "sha256": "3a2884df0872707e702d837a9827f9f6b806b697ec98c10abdb4dd1cae6606cb"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
       "kind": "file",
       "mode": 420,
-      "size": 20619,
-      "sha256": "fc6d44db44bf0725b5cb908ab1e474ae3664ed9f7dd2e08b4d63d278abd51951"
+      "size": 22915,
+      "sha256": "c6ba1d608cef8d952b64ffecfea542748cc25219a7192b9ac5bb8ecbb3d40e55"
     },
     {
       "path": "docs/ops/usb-gadget-fast-path-policy.md",
@@ -4726,22 +4754,190 @@
       "path": "docs/policy/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 1115,
-      "sha256": "2c8b62bc188cb1d59471c36914ce3cd96933a36e93a141a85dfb7da50d1df401"
+      "size": 1234,
+      "sha256": "afd382074736528f55ea0839b07c35c0c8baa448f545abdd014325120c264462"
+    },
+    {
+      "path": "docs/policy/adr/0001-native-input-core.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1527,
+      "sha256": "868067f137cf144aae3ff6bb4ba579be6ab314243d09b34062fa72b07e71abe7"
+    },
+    {
+      "path": "docs/policy/adr/0002-output-device-owners.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1507,
+      "sha256": "6e2b6ce6585dce46e1e9556d6fbf9b4014b4dd04a339360e8cf027a4e7cf04b7"
+    },
+    {
+      "path": "docs/policy/adr/0003-shared-action-definitions.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1393,
+      "sha256": "164b922941d33f57aa1ef14055d98e2be79f015b4fb2135de10c4d739857e7a6"
+    },
+    {
+      "path": "docs/policy/adr/0004-runtime-keymap-owner.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1570,
+      "sha256": "8209a7672547e52daad2237e1bba128a1860fbaf580bdf2e2d8986b3535d536b"
+    },
+    {
+      "path": "docs/policy/adr/0005-ble-advertisement.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1152,
+      "sha256": "5d72820ee2715181d374b69d37b3a9fca84af0d5f1c5afd331b7755e67208f50"
+    },
+    {
+      "path": "docs/policy/adr/0006-bluetooth-output-control.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1392,
+      "sha256": "996eb193963d917ea9c7c576ff2f45d3d35c5036be9f301ce41afeaa5952a747"
+    },
+    {
+      "path": "docs/policy/adr/0007-ble-report-pacing.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1264,
+      "sha256": "6b2c092eb6109316faaa2960b7f6e766f18c2c94a47543f00a6ef4f53ff47dd3"
+    },
+    {
+      "path": "docs/policy/adr/0008-ble-reconnect-readiness.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1258,
+      "sha256": "4b4eef3290871ebc08177ea03f795b88662490466e165bbe131ee073e1c4d42e"
+    },
+    {
+      "path": "docs/policy/adr/0009-status-intent-and-runtime.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1202,
+      "sha256": "a72f1151a9232dcea837b655087933c2c0bd3dccf26ce50cf0a3a6e7a11695c3"
+    },
+    {
+      "path": "docs/policy/adr/0010-http-auth-override.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1221,
+      "sha256": "85fea147a61bfa1665873d73e15d19a61221ad4a7463987d623c8644c7f21483"
+    },
+    {
+      "path": "docs/policy/adr/0011-http-network-boundary.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1203,
+      "sha256": "ceefbd6fb5472c0e9479295e8912c17b49dca2e69500c5251f0b640f40194b0f"
+    },
+    {
+      "path": "docs/policy/adr/0012-vial-layout-authority.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1352,
+      "sha256": "8782ffae224c8be091b6eaec843e63f78f031304535738be438091ea8f83a5c0"
+    },
+    {
+      "path": "docs/policy/adr/0013-windows-jis-us-split.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1407,
+      "sha256": "25942796f14707092c5335136df8d10bdae19511206dcb720337638b9e948ef2"
+    },
+    {
+      "path": "docs/policy/adr/0014-core-profile-packages.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1334,
+      "sha256": "8fc7a77e7b80a738943c180a04dffa379ceb306825f6da007b2b13f08c124856"
+    },
+    {
+      "path": "docs/policy/adr/0015-buildroot-appliance-boundary.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1430,
+      "sha256": "99b961a1c1439600a7399d5d3fab912b870fe511217fc55f43c86648eb1a374a"
+    },
+    {
+      "path": "docs/policy/adr/0016-clean-public-export.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1454,
+      "sha256": "1618a352900463fb83548bc22407fa9a4a220421aa3c0c09c865603e0391e80d"
+    },
+    {
+      "path": "docs/policy/adr/0017-release-channels.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1402,
+      "sha256": "27be45614bd661349e7edb958898c0c3be6baaf0b9f09968feaef9c36827fbdf"
+    },
+    {
+      "path": "docs/policy/adr/0018-separate-write-mcp.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1543,
+      "sha256": "9d950a09cf83d5ac0079543f0c85591646ad359ac861ca4fcf0031fdf576b05e"
+    },
+    {
+      "path": "docs/policy/adr/0019-asymmetric-time-debounce.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1549,
+      "sha256": "62ca8995c3fe08b8ba74ca9d14438417d187005e732a065087dc1aefca3f6299"
+    },
+    {
+      "path": "docs/policy/adr/0020-bounded-ram-input-trace.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1388,
+      "sha256": "c09b789aba1b05b4323ec7d0afbce9cef5a70b2513b058a02d31a6bd109e0d94"
+    },
+    {
+      "path": "docs/policy/adr/0021-package-memory-admission.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1650,
+      "sha256": "c008e44a1086cf98d6c9681e70b01d02f6d1f2dd0a179c7aaa90c0c8702d2635"
+    },
+    {
+      "path": "docs/policy/adr/0024-native-owner-transactions.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 5055,
+      "sha256": "65ec15f30d40972ac721b002d1bd99d82c8186692c8c9e3e691f0931b8a87f54"
+    },
+    {
+      "path": "docs/policy/adr/README.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 6397,
+      "sha256": "557cd4fa7e8b324ab1f413e896f53430babd7480be3f89ce4b6678ff30e47f65"
+    },
+    {
+      "path": "docs/policy/adr/template.md",
+      "kind": "file",
+      "mode": 420,
+      "size": 1316,
+      "sha256": "2ab6f0fee835f0a99332dcd5dcd8ec4e156ce1df7dea71270b7f70bb1831878a"
     },
     {
       "path": "docs/policy/decisions-spec.md",
       "kind": "file",
       "mode": 420,
-      "size": 13008,
-      "sha256": "b3c35f6dfae703cd8a9cc2e2b28164875a42ef13545eb9135e1b24a0809e94b3"
+      "size": 13637,
+      "sha256": "4aa8d479b417cc70c43ebff7b3f81b7099d82645fba21bd8bc0f0667beff26f5"
     },
     {
       "path": "docs/policy/documentation-policy.md",
       "kind": "file",
       "mode": 420,
-      "size": 11159,
-      "sha256": "a785d1d7193707ee4de8ac9ccd20f1483e36b3cb34b187b811343dcb1d1fb8ca"
+      "size": 14863,
+      "sha256": "2bb01647e0f01d77662c71518297d123ad546feae9cdbbcc55cdf54bcf99882e"
     },
     {
       "path": "docs/policy/http-mcp-transport-design.md",
@@ -5062,8 +5258,8 @@
       "path": "script/apply_device_profile.py",
       "kind": "file",
       "mode": 493,
-      "size": 12927,
-      "sha256": "ddcd492f8488b7e848fd2f0eda6271716e7edb7d67e5b37b21eb4fce14936029"
+      "size": 23264,
+      "sha256": "ea99203ec4c696f2ead3c4185ab430eef0ff4f37f84fd8d0290916efee282dbd"
     },
     {
       "path": "script/apply_power_shed.sh",
@@ -5209,8 +5405,8 @@
       "path": "script/suite_runner.py",
       "kind": "file",
       "mode": 420,
-      "size": 3466,
-      "sha256": "7175e67190987c771263cc29ab84b2bb9494490cb4609b9b87c450053230cf3e"
+      "size": 4464,
+      "sha256": "0d3df8ab007706b3125b9e7b3cb163890e2ecfb43ea7c0530992eaa9f71051be"
     },
     {
       "path": "script/test_action_expansion.py",
@@ -5335,8 +5531,8 @@
       "path": "script/test_btd_bluez_backend.py",
       "kind": "file",
       "mode": 420,
-      "size": 20816,
-      "sha256": "4eab1766e78883a6b0b33e476e1681213fe412e6153ad5e26184a06aacb02ab1"
+      "size": 25148,
+      "sha256": "2fe7436e3e902d490b0829fba9b812513a51c779afa14b725c816f3f365f0613"
     },
     {
       "path": "script/test_btd_bluez_dbus_plan.py",
@@ -5426,8 +5622,8 @@
       "path": "script/test_buildroot_fast_boot_assets.py",
       "kind": "file",
       "mode": 420,
-      "size": 19763,
-      "sha256": "bf7e845cce18ce1c3d874da0aca27c5ac1cb5e1199131bbd5e2f97477b8391f4"
+      "size": 20480,
+      "sha256": "0fbac4b958bb102d688328881fda774dbe3f450055735332e4d585100f2869a8"
     },
     {
       "path": "script/test_buildroot_legal_summary.py",
@@ -5479,11 +5675,18 @@
       "sha256": "d021610511f1ec97fa4109eab435ae6eacfaf4f034befaf001b84f52842f1f60"
     },
     {
+      "path": "script/test_control_owner_sessions.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 13600,
+      "sha256": "67cfa271ccfe3bf5c9bb2805368b2682895e0b9879c3dac55b1703bd4491011b"
+    },
+    {
       "path": "script/test_cross_build_host_check_tool.py",
       "kind": "file",
       "mode": 420,
-      "size": 3604,
-      "sha256": "300f7aee89e10c5f28569f1898c5b8c01968ad1421e7e8d9fd885e3516ea3e1a"
+      "size": 5876,
+      "sha256": "1b206b8f91fd25e31fc735dbed6a11ccd2299db6ae483058db4282078f52f795"
     },
     {
       "path": "script/test_current_status_doc.py",
@@ -5540,6 +5743,13 @@
       "mode": 420,
       "size": 2702,
       "sha256": "038e194333f3e1df1429b9b7879b6633c02820652ff32559598e2e0928eefd4a"
+    },
+    {
+      "path": "script/test_device_profile_reconciliation.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 12687,
+      "sha256": "87881105099d471a78d0ceec7de950202188689b72a557a90be6b3fc91f7142c"
     },
     {
       "path": "script/test_digitizer_haptic_steno_feature_design_doc.py",
@@ -5657,8 +5867,8 @@
       "path": "script/test_hidloom_outputd_tool.py",
       "kind": "file",
       "mode": 420,
-      "size": 18020,
-      "sha256": "7f5cb06ba55f59e45573fcd1f3f2634ca3778bc5b3eae2676a4cd282df6aeeda"
+      "size": 30795,
+      "sha256": "d25e7cec77a8387c5f575aa4ecd4291402e5cfdeca40dd8c3d1cdccbae336a28"
     },
     {
       "path": "script/test_hidloom_paths.py",
@@ -5685,8 +5895,8 @@
       "path": "script/test_hidloom_uidd_tool.py",
       "kind": "file",
       "mode": 420,
-      "size": 7448,
-      "sha256": "bd0b95c9569cbd1773eb769bbebf18a1c029ef670c9f9aad95720c07aca89e5a"
+      "size": 9131,
+      "sha256": "e41e877f3698f6acc34eda198d043e7da7e03f3963d4dc1ec097c2e1e71d54f5"
     },
     {
       "path": "script/test_host_profile_status.py",
@@ -5708,6 +5918,13 @@
       "mode": 493,
       "size": 4763,
       "sha256": "7637e91d4ff2cd293e77c81b691b2a21c18a84465ca3555724af6f2980cdd631"
+    },
+    {
+      "path": "script/test_http_input_session.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 6425,
+      "sha256": "4356a91fcb3e2ab8e6f5936afcc7a99da98f8229083b391303abdf122d5532ff"
     },
     {
       "path": "script/test_http_interaction_api.py",
@@ -5787,6 +6004,13 @@
       "sha256": "7b0cda4dfc8828009494160c8318a0aa88f376300e1b54cb61e574d92faba0ee"
     },
     {
+      "path": "script/test_http_native_input_session.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 2810,
+      "sha256": "a6e865154f11568c8385bb9546cfa328a028e2a2202ae550039eaa66b488ee7e"
+    },
+    {
       "path": "script/test_http_remap_categories.py",
       "kind": "file",
       "mode": 420,
@@ -5799,6 +6023,13 @@
       "mode": 420,
       "size": 2375,
       "sha256": "01733c81923ec96a4929afeebd8c026fc5f528f168e21ccc01f4e0b6e0ac3bcd"
+    },
+    {
+      "path": "script/test_http_runtime_config.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 3953,
+      "sha256": "4bed3f1aae7da0f082e638f7ff8c8c393f3e1760be3f01421911420ec791e57d"
     },
     {
       "path": "script/test_http_script_check_run.py",
@@ -5860,8 +6091,8 @@
       "path": "script/test_http_system_status.py",
       "kind": "file",
       "mode": 420,
-      "size": 37332,
-      "sha256": "6f114b9a39ef02ab1ce36bde799edb23e33ff9eff28050fd676de8dd9b76e954"
+      "size": 37346,
+      "sha256": "eca4dcf1bfa41f850d6c2713e33fefb415977bb971a0c378cf5c4954c03c8f20"
     },
     {
       "path": "script/test_http_ui_assets.py",
@@ -6000,8 +6231,8 @@
       "path": "script/test_interaction_inspector.py",
       "kind": "file",
       "mode": 420,
-      "size": 4278,
-      "sha256": "66cb53a7cdd7c3763efa15c30ad6749ea1d676a5123d612be7c8adc5dd35e75e"
+      "size": 4292,
+      "sha256": "0e1391c6245c061e4cc081b6a3d33e2d9a8a82846d4055d737640ceaebe73013"
     },
     {
       "path": "script/test_interaction_inspector_summary.py",
@@ -6018,11 +6249,18 @@
       "sha256": "a221c49e32120cc97baeb4f19053657867c807986b9f72d4af1a600cf75efaa8"
     },
     {
+      "path": "script/test_interaction_source_identity.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 1532,
+      "sha256": "81d71191f7dbdc3dbeabab8d7e0d1cd7cae0cd20f81ee50a891e665d3d9cfd3a"
+    },
+    {
       "path": "script/test_jis_zenkaku_hankaku_routing.py",
       "kind": "file",
       "mode": 420,
-      "size": 3792,
-      "sha256": "9c0d19bdba2530469803cc979a1ad3d3e486e017e51a41ba3a8fb599fdff546d"
+      "size": 3995,
+      "sha256": "47be90ea0e2d9d1a3cd8c067430e9d0ebd72c6096c9dcbccedfa369e2ed2fc8f"
     },
     {
       "path": "script/test_key_lock_state.py",
@@ -6072,6 +6310,20 @@
       "mode": 420,
       "size": 7367,
       "sha256": "8069cbfd0f4107cf052599d320f66f90f64ce2095a08d9026943ecef65280c31"
+    },
+    {
+      "path": "script/test_keymap_coordinator.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 10184,
+      "sha256": "9d3a7153efed09206136b7aa5e881b8eb3155e06c90cd756c9f3b123f7135ac8"
+    },
+    {
+      "path": "script/test_keymap_coordinator_native.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 4561,
+      "sha256": "b777a054a1443793bf3468c994e67d2ccd8aed0b1d1b6e78ddf43c522b4b0f70"
     },
     {
       "path": "script/test_kicad_generation.py",
@@ -6329,8 +6581,8 @@
       "path": "script/test_logicd_core_rs_tool.py",
       "kind": "file",
       "mode": 420,
-      "size": 56171,
-      "sha256": "4873e32665cd373034c51778aa8ac02827027d054848ead67d80f959048ed261"
+      "size": 56802,
+      "sha256": "ab29c2e8f2f86a7408485d759297cdd172538ba9832cec799db3b746db4192e2"
     },
     {
       "path": "script/test_logicd_ctrl_spid.py",
@@ -6343,8 +6595,8 @@
       "path": "script/test_logicd_ctrl_validation.py",
       "kind": "file",
       "mode": 420,
-      "size": 15953,
-      "sha256": "2234556517a8b24d6d3ea37a52440d47b04ad211f18360c3d60d52f6b6f0fddc"
+      "size": 16169,
+      "sha256": "96d28b9ce78208dd618a43ad3e0daff50ffd5d673eef0ba679feb1f99fc3858c"
     },
     {
       "path": "script/test_logicd_daemon_status.py",
@@ -6399,8 +6651,8 @@
       "path": "script/test_logicd_joystick.py",
       "kind": "file",
       "mode": 420,
-      "size": 8036,
-      "sha256": "8785eef0b1581547b0a3cde096f315c4c0df26e660a94fd7137fc779fc43756c"
+      "size": 9428,
+      "sha256": "25f568584ee523f80c5e34d2c4568177cd6a5492b076adb85a94015ec1e053f5"
     },
     {
       "path": "script/test_logicd_ledd_semantic_roles_snapshot.py",
@@ -6420,8 +6672,8 @@
       "path": "script/test_logicd_matrix_event_processing_boundary.py",
       "kind": "file",
       "mode": 420,
-      "size": 2609,
-      "sha256": "f96bc9c2c756bce764d98fa8e4208c67551b6135d6a91b8fee0d248d9a3843bb"
+      "size": 2725,
+      "sha256": "e0e6bca95934ec59898a9535de35cadad33dcdee7862d8cd45fe8496fad1e878"
     },
     {
       "path": "script/test_logicd_matrix_input_priority.py",
@@ -6476,8 +6728,8 @@
       "path": "script/test_logicd_pty_mirror_runtime.py",
       "kind": "file",
       "mode": 420,
-      "size": 33921,
-      "sha256": "fe531a3ff7981d46f7b3f2383eea20802921885c8584dfa534a35212c3345c48"
+      "size": 34235,
+      "sha256": "a98f2a36605e3bf01dcf44fe87dcc7f1760ae61e2822634557fc2b9093c09bf0"
     },
     {
       "path": "script/test_logicd_pty_terminal_text.py",
@@ -6518,8 +6770,8 @@
       "path": "script/test_logicd_sessiond_pty_mirror_integration.py",
       "kind": "file",
       "mode": 420,
-      "size": 4744,
-      "sha256": "f400e520cc7b7dfe74b9b1c79f76a49d122455a54d2087ade724963c455fb5bf"
+      "size": 4939,
+      "sha256": "f84d4553f64bdceff5381e859fccbd075fd0ed20552f982285c27cbdaca88a91"
     },
     {
       "path": "script/test_logicd_socket_env_overrides.py",
@@ -6700,8 +6952,15 @@
       "path": "script/test_mcp_keyboard_write_server.py",
       "kind": "file",
       "mode": 420,
-      "size": 13139,
-      "sha256": "75743d76b15f46b3429ceca039e8615e4e77aa38ff4970339d5411a4ecd00980"
+      "size": 15697,
+      "sha256": "87c1fa302ad1d01907d526d34214af8f94342de54ed8a9333677a092bd9e65d5"
+    },
+    {
+      "path": "script/test_mcp_native_owner.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 6280,
+      "sha256": "86271cd2000b1a4879117ffbd13220d9f2bfe8047e1e9d037eecafea50ef93d2"
     },
     {
       "path": "script/test_midi_audio_output_design_doc.py",
@@ -6791,8 +7050,8 @@
       "path": "script/test_morse_inspector.py",
       "kind": "file",
       "mode": 420,
-      "size": 7780,
-      "sha256": "c526949f2c620e5f43cbf14fe596b90a8d7106f70da3cca2dc61c53363902c34"
+      "size": 7794,
+      "sha256": "b30fe33f72a7665b89a738f660c7d2cd7b2a3d5d0b3592075c225e45d3574525"
     },
     {
       "path": "script/test_morse_interaction_config.py",
@@ -6830,11 +7089,32 @@
       "sha256": "98a9e42ee12b8d659cca5b6b5e9e57e4174d17989aae01f12a7d64eeb48c96a1"
     },
     {
+      "path": "script/test_native_delegate_ack_ownership.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 3950,
+      "sha256": "effead70fd804f7e976c8eac10db88c916bfe203814a3b161284df7c97280e75"
+    },
+    {
+      "path": "script/test_native_delegate_backlog.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 3697,
+      "sha256": "20caafb69f53c27ee43ee63d07736a3c6520fbd0b16b40caec2441f4878ab963"
+    },
+    {
       "path": "script/test_native_outputd_ctrl.py",
       "kind": "file",
       "mode": 420,
       "size": 1721,
       "sha256": "437a930295bd290d7c636efd965129ce8c57337ecf4dbd6fb7b41b1d90fe226e"
+    },
+    {
+      "path": "script/test_native_owner_protocol.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 17547,
+      "sha256": "a61f648fcb3b175af030740a9ed398efb97e4972c3a276d349fb6f4bbdfce4b5"
     },
     {
       "path": "script/test_oled_alert_ascii.py",
@@ -6928,6 +7208,13 @@
       "sha256": "25b078d99a63ba3170743577296a14a63fdb8488883fefe431220170c89b5789"
     },
     {
+      "path": "script/test_profile_deploy_order.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 12562,
+      "sha256": "aa8b3a154083295b44e3b1da27dc732ad52b4d131c5cbf0ffc25b1bb3dc3b31c"
+    },
+    {
       "path": "script/test_profile_release_bundle.py",
       "kind": "file",
       "mode": 493,
@@ -6938,8 +7225,8 @@
       "path": "script/test_pty_mirror_remote_suite.py",
       "kind": "file",
       "mode": 420,
-      "size": 981,
-      "sha256": "d730de5a682a4a4c6140af1b03302945d1d7fef746e5831147bb77a60d6d8864"
+      "size": 1025,
+      "sha256": "cfac94a737e604c1b3cb4d574a19b1b594dde655235a5b5ad28306c348d9da43"
     },
     {
       "path": "script/test_public_asset_inventory.py",
@@ -6981,7 +7268,7 @@
       "kind": "file",
       "mode": 493,
       "size": 38365,
-      "sha256": "618ca50471baa0dbcc0a7c6338888cb8672b75ee052630fc01afb8bdbe6e5014"
+      "sha256": "69a731cc3955efd4d4f51e8248d147547e70343cc96fe2c2523f711ea68d109b"
     },
     {
       "path": "script/test_public_export_bundle.py",
@@ -7008,15 +7295,22 @@
       "path": "script/test_public_release_bundle.py",
       "kind": "file",
       "mode": 493,
-      "size": 33978,
-      "sha256": "3c8ddec9eb7424b8d1989f365cba09c85367bc3a82411a83bac1dee2addbe93d"
+      "size": 37792,
+      "sha256": "a5e89a2f672857bde136cc1d134d937560b0a42cdbf65fa35713effa123c91db"
+    },
+    {
+      "path": "script/test_public_release_mapping.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 20716,
+      "sha256": "f3ab6418ebc42d482bda6298209631cbc8751ceb538fe98119182a6cdf097318"
     },
     {
       "path": "script/test_public_release_readiness.py",
       "kind": "file",
       "mode": 420,
       "size": 28422,
-      "sha256": "6a077f77a9a83f057c7e78c399f1199159546fa8d9a650d31f2081fe6b98a923"
+      "sha256": "84d3055fa6a39e659492b8d7f237b67d8e5aa3e7be09f084e7e6dc83d503e8f5"
     },
     {
       "path": "script/test_public_repository_bootstrap.py",
@@ -7061,6 +7355,13 @@
       "sha256": "5b24791233b345c6c36261be0841192767a2446cf9aa3534bb510c158fb2d61e"
     },
     {
+      "path": "script/test_python_keyboard_route_ownership.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 9875,
+      "sha256": "81f9b0e1bac66c6400b3b068a3b8d46948d80c24e6a4495dd4cd70eb6e879182"
+    },
+    {
       "path": "script/test_qmk_alias_completion_design_doc.py",
       "kind": "file",
       "mode": 420,
@@ -7099,8 +7400,8 @@
       "path": "script/test_release_bundle_tools.py",
       "kind": "file",
       "mode": 420,
-      "size": 70842,
-      "sha256": "9f0b945ad117af7cd1d6fd854690fe41078d8ae08a0bb1b82fb67a80d22b0b64"
+      "size": 72760,
+      "sha256": "889a85b6040ae4461f372cb584f90afec6c5b7c94004ec970f072ebbcdabddf4"
     },
     {
       "path": "script/test_remote_boot_baseline_collect_tool.py",
@@ -7271,6 +7572,13 @@
       "sha256": "ae5fb5536698d70ff24ff5d87cbcbb095d1aaef82ca46e1fc60bba4fab71b9e5"
     },
     {
+      "path": "script/test_sessiond_output_drain.py",
+      "kind": "file",
+      "mode": 420,
+      "size": 8774,
+      "sha256": "b7607470696992e1aada09b3177dd801b27acbd64a4d24a85ac9349243661f9a"
+    },
+    {
       "path": "script/test_sessiond_protocol.py",
       "kind": "file",
       "mode": 420,
@@ -7365,8 +7673,8 @@
       "path": "script/test_text_send_safety.py",
       "kind": "file",
       "mode": 420,
-      "size": 23900,
-      "sha256": "d9c92be8b59ed1c8ccbad6b87d66862455d658769e8e9f7bb8e139ded59f76d7"
+      "size": 23914,
+      "sha256": "0776f00aa988712a05db9964c9a1456666e2e246fa356bb663c056c09af59e9e"
     },
     {
       "path": "script/test_text_send_smoke_sequence.py",
@@ -7379,8 +7687,8 @@
       "path": "script/test_third_party_inventory.py",
       "kind": "file",
       "mode": 420,
-      "size": 3233,
-      "sha256": "3e700067cb2eb5826ad4d55ec40073ad4faa0b210789631c32a12edd2bf48e6c"
+      "size": 3885,
+      "sha256": "d9566be8eae0d9dc2949869217f9dc920e2f44422042ab1eb2af2b773d9e3a50"
     },
     {
       "path": "script/test_tools_readme.py",
@@ -7484,15 +7792,15 @@
       "path": "script/test_validation_suite.py",
       "kind": "file",
       "mode": 420,
-      "size": 12240,
-      "sha256": "a2759275f87594b48b3c4e8c5915a0886c9916f1201545208e8a42251e64c8f8"
+      "size": 13017,
+      "sha256": "88f89865b31b3150664121e797dc66933b915a607a0d59dc08cf8da61264a509"
     },
     {
       "path": "script/test_validation_suite_isolation.py",
       "kind": "file",
       "mode": 493,
-      "size": 3513,
-      "sha256": "f5213cf1c683cd27c8249e7c61db07bc6bcec85f1745668a392ef779b564bf0f"
+      "size": 5308,
+      "sha256": "36ceeeb03f888688cc988f8312e604368b68f25325a6fa2dcffcd335b35b9977"
     },
     {
       "path": "script/test_vial_advanced_macro_compatibility_design_doc.py",
@@ -8030,8 +8338,8 @@
       "path": "tools/buildroot_m6_import_smoke.py",
       "kind": "file",
       "mode": 493,
-      "size": 1590,
-      "sha256": "2e0c33901dca366d47e4519021c02afbb8640ade49934a696cb4f5a78ba22a77"
+      "size": 1710,
+      "sha256": "b9a6e3fdf8648c74bed918752a294510478f957180d8fa291c533a3c25f56523"
     },
     {
       "path": "tools/buildroot_m6_runtime_smoke.py",
@@ -8044,8 +8352,8 @@
       "path": "tools/buildroot_m6_verify.py",
       "kind": "file",
       "mode": 493,
-      "size": 9901,
-      "sha256": "f4e32e830623f9e744566f482a4964482c46a7b4cb4c2bbd120e6cff5d538c8b"
+      "size": 10185,
+      "sha256": "2ad1bf934ba85ee321c2fd863310153c931c24045b994d7a7149656f18885ef3"
     },
     {
       "path": "tools/buildroot_source_prepare.py",
@@ -8058,8 +8366,8 @@
       "path": "tools/calibrate_ads1115_stick.py",
       "kind": "file",
       "mode": 493,
-      "size": 18419,
-      "sha256": "1b12c69ae6b485959f10168e18376c7bc81f48359af8f555d07b177843792b6e"
+      "size": 18519,
+      "sha256": "188d612eeee881cab663d7f94b3f4a7a58f5b1e18be20a51ca3b77b8e931effe"
     },
     {
       "path": "tools/codex_task_mailbox.py",
@@ -8079,8 +8387,8 @@
       "path": "tools/cross_build_host_check.sh",
       "kind": "file",
       "mode": 493,
-      "size": 4651,
-      "sha256": "64933b1401cb1581d976e6eeef4454ca61bb09692c24ff148f3f469f68c90800"
+      "size": 4617,
+      "sha256": "6bfc517843496a50acd296d18fe8d64095c8872aad07eefcacd9a6325f4a9c57"
     },
     {
       "path": "tools/demo/__init__.py",
@@ -8219,8 +8527,8 @@
       "path": "tools/hidloom_logicd_core/Makefile",
       "kind": "file",
       "mode": 420,
-      "size": 496,
-      "sha256": "c3086006a609df2898b433298290beff988298466417829ebe1b428a7999ef74"
+      "size": 505,
+      "sha256": "ff63e055473c4404571a9f9aa16ea4f879329ae955807fae238d8cedfc1d6e55"
     },
     {
       "path": "tools/hidloom_logicd_core/build.sh",
@@ -8230,11 +8538,25 @@
       "sha256": "ca628123ebd58a0082c69459b33f70d386e980f8a86d7a6d6ba28e48a94984c9"
     },
     {
+      "path": "tools/hidloom_logicd_core/src/delegate.rs",
+      "kind": "file",
+      "mode": 420,
+      "size": 30976,
+      "sha256": "7949c2ffa89055066bebf081f5e628fd80233c17247c257b667b788d2985c5c7"
+    },
+    {
       "path": "tools/hidloom_logicd_core/src/main.rs",
       "kind": "file",
       "mode": 420,
-      "size": 87889,
-      "sha256": "db9cdb3c7cdf3e465584315a6386a6f646ee27da150f872bfb86708b4eb23cd4"
+      "size": 122403,
+      "sha256": "4b3820a201707469eb74ab9d247e4391b3840e2387ab048f252e7069651fab09"
+    },
+    {
+      "path": "tools/hidloom_logicd_core/src/owner_protocol.rs",
+      "kind": "file",
+      "mode": 420,
+      "size": 9242,
+      "sha256": "851a2d246d36393b71059eaf0ea253b5c9f56bf04a41e606e616b77b877b2c25"
     },
     {
       "path": "tools/hidloom_name_audit.py",
@@ -8247,22 +8569,22 @@
       "path": "tools/hidloom_outputd/Cargo.lock",
       "kind": "file",
       "mode": 420,
-      "size": 159,
-      "sha256": "818b4b0b96133b4977b2f925edfe3f900b83f620632d2fd7b384bd6f370d1ec0"
+      "size": 2645,
+      "sha256": "93b3ba453f8da1577483a257f74fdfbd1ce829bb66c40e4985f2faf68a300d85"
     },
     {
       "path": "tools/hidloom_outputd/Cargo.toml",
       "kind": "file",
       "mode": 420,
-      "size": 133,
-      "sha256": "4c3ff20ebf72e6f2fb76ded5ff3cc2f63408531da50f024437e9b7f88cc0cd9d"
+      "size": 168,
+      "sha256": "7988d66f2244cd149e63ebafe73aad6f219aa2630159416a8f64d02be69c39e0"
     },
     {
       "path": "tools/hidloom_outputd/Makefile",
       "kind": "file",
       "mode": 420,
-      "size": 388,
-      "sha256": "513a6df2265cd440be26b8fa449e8c1f95315e611a9d7e14d8956635d2a84bfd"
+      "size": 405,
+      "sha256": "9353178b323e5eeda355954895bd8816a535dcd36211039a83c903ab0315ba0f"
     },
     {
       "path": "tools/hidloom_outputd/build.sh",
@@ -8275,8 +8597,15 @@
       "path": "tools/hidloom_outputd/src/main.rs",
       "kind": "file",
       "mode": 420,
-      "size": 19752,
-      "sha256": "ba5a1c4dd8f91bfc1361ab647be54c40a70f85a7c7f3961c1cb4dec0a7b0d8cb"
+      "size": 34599,
+      "sha256": "08dbd248ec8a273b986d9bbb4b48d08c3929a4b820e0283b13e0bc784aaf9f0e"
+    },
+    {
+      "path": "tools/hidloom_outputd/src/readiness.rs",
+      "kind": "file",
+      "mode": 420,
+      "size": 6801,
+      "sha256": "49d528d0ef4f9d291d54f053ae5fe01769a117cb44407d113267efe051bb005e"
     },
     {
       "path": "tools/hidloom_send/Makefile",
@@ -8401,8 +8730,8 @@
       "path": "tools/hidloom_uidd/src/main.rs",
       "kind": "file",
       "mode": 420,
-      "size": 21217,
-      "sha256": "2719323d1ca2ab62138a8da1a073e13e2639301dcb8df764c2c88ded01364fc5"
+      "size": 23198,
+      "sha256": "8e51008d870cf779c49333dce95517be8845b03ef0372ef2cd4a068fd601cb36"
     },
     {
       "path": "tools/hidloom_usb_gadget_fast/Makefile",
@@ -8576,8 +8905,8 @@
       "path": "tools/package/README.md",
       "kind": "file",
       "mode": 420,
-      "size": 29361,
-      "sha256": "8b388945622c7b4dea6e88c3c4a9392ce39221951c39598d5db74410de4e7afd"
+      "size": 29694,
+      "sha256": "23cfb6146671d92e3e7930460bdb7e2f84263e6ffc75df2223fcb8fe5cf745b6"
     },
     {
       "path": "tools/package/apply_release_bundle.sh",
@@ -8653,8 +8982,8 @@
       "path": "tools/package/deploy_deb_unit_switch.sh",
       "kind": "file",
       "mode": 493,
-      "size": 1908,
-      "sha256": "14f25a57b8b889fb4cfd101bab46e5d0a6b5a939e685a4fe5a8ecb868230c82c"
+      "size": 2265,
+      "sha256": "f40b2e17b6b76ea1126e10c09339c0b70bb5d779bce45325f501b420eb0fe67e"
     },
     {
       "path": "tools/package/deploy_deb_verify.sh",
@@ -8667,8 +8996,8 @@
       "path": "tools/package/deploy_github_release_deb.sh",
       "kind": "file",
       "mode": 493,
-      "size": 4475,
-      "sha256": "e27a9833320321d619a1a30d164af9b20223362fbd14514deca7fb0bf4733390"
+      "size": 4622,
+      "sha256": "ef4ff65928e1429cbfb5b13b4ade411ee4f564291a009a8a86e8fc3a40950346"
     },
     {
       "path": "tools/package/deploy_release_bundle.sh",
@@ -8688,8 +9017,8 @@
       "path": "tools/package/install_github_release_deb.sh",
       "kind": "file",
       "mode": 493,
-      "size": 14579,
-      "sha256": "e9d06a1e696fb7275fada514467ca99a834b4dafbb27bf05a9ef07e7fb74c878"
+      "size": 15314,
+      "sha256": "cb8430651960f013117ed2e91653dad938aa46970ade70463fd77445789b4c68"
     },
     {
       "path": "tools/package/low_memory_install_preflight.py",
@@ -8709,8 +9038,8 @@
       "path": "tools/package/publish_public_release_bundle.py",
       "kind": "file",
       "mode": 493,
-      "size": 8941,
-      "sha256": "4174ff3da905c50d4a1222a246b55f230568f5301fa1f3b513af216c35133845"
+      "size": 11560,
+      "sha256": "b571cb634ad639b4985b9d8430d55e331330985712313f7ba8c22ee517d964a7"
     },
     {
       "path": "tools/package/release_candidate_check.sh",
@@ -8730,15 +9059,15 @@
       "path": "tools/package/switch_deb_systemd_units.sh",
       "kind": "file",
       "mode": 493,
-      "size": 5814,
-      "sha256": "94500d8db35340a3b52b51109aa8a540b803b80bb845f78eaf45bf37399f476f"
+      "size": 7380,
+      "sha256": "bdd69634b41469f29631def49c7f2306e51f0f517373e91ab416198c635a54a2"
     },
     {
       "path": "tools/package/verify_github_public_release_bundle.py",
       "kind": "file",
       "mode": 493,
-      "size": 9986,
-      "sha256": "b8acdd64b1989e682593dc200df5646f6ea03d454bea24bb844b76ca88cc8d3f"
+      "size": 18800,
+      "sha256": "fb31c1b8267847728e4e7a2f72857fd2234a910f935413edae0c01286d0cc0b4"
     },
     {
       "path": "tools/package/verify_github_release_assets.sh",
@@ -8814,8 +9143,8 @@
       "path": "tools/public_export_manifest.py",
       "kind": "file",
       "mode": 420,
-      "size": 10798,
-      "sha256": "012029a4036d058732fd5d3ca14daa5ce6ecdc7352200a1854d9db5c4b5553d8"
+      "size": 15336,
+      "sha256": "e1aeeb3abf28514a5197701e433806ee5e7ba8633a7f1a397d6f0045bcdd18be"
     },
     {
       "path": "tools/public_privacy_audit.py",

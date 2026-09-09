@@ -95,9 +95,9 @@ fi
 
 if command -v rustup >/dev/null 2>&1; then
     host=$(rustc -Vv 2>/dev/null | awk '/^host:/ {print $2}')
-    toolchain=$(rustup show active-toolchain 2>/dev/null | awk '{print $1}')
-    if [ -n "$host" ] && [ -n "$toolchain" ]; then
-        rust_lld="$HOME/.rustup/toolchains/$toolchain/lib/rustlib/$host/bin/rust-lld"
+    rust_sysroot=$(rustc --print sysroot 2>/dev/null || true)
+    if [ -n "$host" ] && [ -n "$rust_sysroot" ]; then
+        rust_lld="$rust_sysroot/lib/rustlib/$host/bin/rust-lld"
         if [ -x "$rust_lld" ]; then
             echo "ok: rust-lld $rust_lld"
         else

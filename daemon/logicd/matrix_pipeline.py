@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import time
 from collections.abc import Callable
 
@@ -15,6 +16,9 @@ log = logging.getLogger(__name__)
 
 def _next_interaction_timeout(runtime: LogicdRuntime) -> float | None:
     """Return queue wait timeout for the next interaction deadline."""
+    if os.environ.get("LOGICD_CORE_KEY_EVENT_CTRL_SOCKET"):
+        # Native drives delegate_tick in the same ordered stream as input.
+        return None
     due = runtime.interactions.next_timer_due()
     if due is None:
         return None

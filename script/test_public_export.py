@@ -572,7 +572,7 @@ def main() -> None:
         assert all(item["mode"] in {0o644, 0o755, 0o777} for item in export_manifest["files"])
         assert sbom["bomFormat"] == "CycloneDX"
         assert sbom["specVersion"] == "1.7"
-        assert len(sbom["components"]) == 56
+        assert len(sbom["components"]) == 65
         assert privacy["ready"] is True
         assert privacy["summary"]["blockers"] == 0
         assert privacy["summary"]["media_files"] == 32

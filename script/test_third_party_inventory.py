@@ -32,11 +32,29 @@ def main() -> None:
         assert generated_markdown.read_bytes() == (ROOT / "THIRD_PARTY_NOTICES.md").read_bytes()
         inventory = json.loads(generated_json.read_text(encoding="utf-8"))
         assert inventory["schema"] == "hidloom.third-party-inventory.v2"
-        assert inventory["summary"]["total"] == 56
-        assert inventory["summary"]["complete"] == 31
+        assert inventory["summary"]["total"] == 65
+        assert inventory["summary"]["complete"] == 40
         assert inventory["summary"]["not_redistributed"] == 25
         assert inventory["summary"]["review_required"] == 0
         assert inventory["summary"]["redistributed_review_required"] == 0
+        outputd_additions = {
+            ("memchr", "2.8.3"),
+            ("proc-macro2", "1.0.107"),
+            ("quote", "1.0.47"),
+            ("serde", "1.0.229"),
+            ("serde_core", "1.0.229"),
+            ("serde_derive", "1.0.229"),
+            ("serde_json", "1.0.151"),
+            ("syn", "3.0.5"),
+            ("zmij", "1.0.23"),
+        }
+        assert outputd_additions <= {
+            (item["name"], item["version"])
+            for item in inventory["components"]
+            if item["ecosystem"] == "cargo"
+            and item["review"] == "complete"
+            and item["distribution_scope"] == "linked-binary"
+        }
         assert any(
             item["name"] == "serde"
             and item["review"] == "complete"

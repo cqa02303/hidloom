@@ -75,6 +75,7 @@ class CtrlContext:
     joysticks: Any | None = None
     push_ledd_key_event: Callable[[int, int, bool], None] | None = None
     reload_native_core: Callable[[], Awaitable[dict[str, Any]]] | None = None
+    keymap_coordinator: Any | None = None
 
 
 async def process_ctrl_json(line: str, ctx: CtrlContext, writer: Any = None) -> None:
@@ -92,6 +93,18 @@ async def process_ctrl_json(line: str, ctx: CtrlContext, writer: Any = None) -> 
         return
 
     t = msg.get("t")
+    coordinator = getattr(ctx, "keymap_coordinator", None)
+    if t in {"CONTROL_OWNER", "GUARDED_TAP", "GUARDED_OPERATION"}:
+        result = await coordinator.control(msg) if coordinator else {"result": "error", "msg": "owner coordination unavailable"}
+        await ctrl_response(writer, result)
+        return
+    if coordinator is not None and t in {"M", "S", "LAYER_ADD", "LAYER_CLEAR", "RESET_KEYMAP", "KEYMAP_COMPARE_APPLY"}:
+        result = await coordinator.execute(msg)
+        if result.get("runtime_applied") and t != "M":
+            from .ctrl_keymap import _notify_ledd_semantic_reload
+            _notify_ledd_semantic_reload(ctx, t)
+        await ctrl_response(writer, result)
+        return
     if t == "A":
         try:
             stick = clamp_with_log("stick", ctrl_int(msg, "stick", default=0), 0, 31, "ctrl A")
@@ -129,7 +142,13 @@ async def process_ctrl_json(line: str, ctx: CtrlContext, writer: Any = None) -> 
     elif t == "BT":
         await process_bt_json(msg, ctx, writer)
     elif t == "OUTPUT":
-        await process_output_json(msg, ctx, writer)
+        if coordinator is not None:
+            async with coordinator.lock:
+                if coordinator.native_request is not None:
+                    await coordinator.native_request({"t": "output_transition"})
+                await process_output_json(msg, ctx, writer)
+        else:
+            await process_output_json(msg, ctx, writer)
     elif t == "HOST_LED":
         await process_host_led_json(msg, ctx, writer)
     elif t == "MORSE_FEEDBACK":

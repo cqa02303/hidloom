@@ -8,9 +8,9 @@
   },
   "published_release_tags": [],
   "summary": {
-    "files_scanned": 1259,
-    "repository_references": 140,
-    "public_repository_references": 49,
+    "files_scanned": 1306,
+    "repository_references": 174,
+    "public_repository_references": 53,
     "findings": 0,
     "blockers": 0
   },
@@ -114,72 +114,126 @@
     {
       "path": "SBOM.cdx.json",
       "line": 667,
+      "slug": "burntsushi/memchr",
+      "url": "https://github.com/BurntSushi/memchr"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 694,
       "slug": "dtolnay/proc-macro2",
       "url": "https://github.com/dtolnay/proc-macro2"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 694,
+      "line": 721,
+      "slug": "dtolnay/proc-macro2",
+      "url": "https://github.com/dtolnay/proc-macro2"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 748,
       "slug": "dtolnay/quote",
       "url": "https://github.com/dtolnay/quote"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 721,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
-    },
-    {
-      "path": "SBOM.cdx.json",
-      "line": 748,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
-    },
-    {
-      "path": "SBOM.cdx.json",
       "line": 775,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
+      "slug": "dtolnay/quote",
+      "url": "https://github.com/dtolnay/quote"
     },
     {
       "path": "SBOM.cdx.json",
       "line": 802,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 829,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 856,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 883,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 910,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 937,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 964,
       "slug": "serde-rs/json",
       "url": "https://github.com/serde-rs/json"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 829,
+      "line": 991,
+      "slug": "serde-rs/json",
+      "url": "https://github.com/serde-rs/json"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1018,
       "slug": "dtolnay/syn",
       "url": "https://github.com/dtolnay/syn"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 856,
+      "line": 1045,
+      "slug": "dtolnay/syn",
+      "url": "https://github.com/dtolnay/syn"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1072,
       "slug": "dtolnay/unicode-ident",
       "url": "https://github.com/dtolnay/unicode-ident"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 883,
+      "line": 1099,
       "slug": "dtolnay/zmij",
       "url": "https://github.com/dtolnay/zmij"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 1351,
+      "line": 1126,
+      "slug": "dtolnay/zmij",
+      "url": "https://github.com/dtolnay/zmij"
+    },
+    {
+      "path": "SBOM.cdx.json",
+      "line": 1594,
       "slug": "actions/cache",
       "url": "https://github.com/actions/cache"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 1380,
+      "line": 1623,
       "slug": "actions/checkout",
       "url": "https://github.com/actions/checkout"
     },
     {
       "path": "SBOM.cdx.json",
-      "line": 1441,
+      "line": 1684,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom.git"
     },
@@ -515,7 +569,7 @@
     },
     {
       "path": "docs/ops/failure-patterns.md",
-      "line": 625,
+      "line": 633,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -576,66 +630,120 @@
     {
       "path": "docs/ops/third-party-inventory.json",
       "line": 254,
+      "slug": "burntsushi/memchr",
+      "url": "https://github.com/BurntSushi/memchr"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 263,
       "slug": "dtolnay/proc-macro2",
       "url": "https://github.com/dtolnay/proc-macro2"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
-      "line": 263,
+      "line": 272,
+      "slug": "dtolnay/proc-macro2",
+      "url": "https://github.com/dtolnay/proc-macro2"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 281,
       "slug": "dtolnay/quote",
       "url": "https://github.com/dtolnay/quote"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
-      "line": 272,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
-    },
-    {
-      "path": "docs/ops/third-party-inventory.json",
-      "line": 281,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
-    },
-    {
-      "path": "docs/ops/third-party-inventory.json",
       "line": 290,
-      "slug": "serde-rs/serde",
-      "url": "https://github.com/serde-rs/serde"
+      "slug": "dtolnay/quote",
+      "url": "https://github.com/dtolnay/quote"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
       "line": 299,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 308,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 317,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 326,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 335,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 344,
+      "slug": "serde-rs/serde",
+      "url": "https://github.com/serde-rs/serde"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 353,
       "slug": "serde-rs/json",
       "url": "https://github.com/serde-rs/json"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
-      "line": 308,
+      "line": 362,
+      "slug": "serde-rs/json",
+      "url": "https://github.com/serde-rs/json"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 371,
       "slug": "dtolnay/syn",
       "url": "https://github.com/dtolnay/syn"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
-      "line": 317,
+      "line": 380,
+      "slug": "dtolnay/syn",
+      "url": "https://github.com/dtolnay/syn"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 389,
       "slug": "dtolnay/unicode-ident",
       "url": "https://github.com/dtolnay/unicode-ident"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
-      "line": 326,
+      "line": 398,
       "slug": "dtolnay/zmij",
       "url": "https://github.com/dtolnay/zmij"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
-      "line": 524,
+      "line": 407,
+      "slug": "dtolnay/zmij",
+      "url": "https://github.com/dtolnay/zmij"
+    },
+    {
+      "path": "docs/ops/third-party-inventory.json",
+      "line": 605,
       "slug": "actions/cache",
       "url": "https://github.com/actions/cache"
     },
     {
       "path": "docs/ops/third-party-inventory.json",
-      "line": 534,
+      "line": 615,
       "slug": "actions/checkout",
       "url": "https://github.com/actions/checkout"
     },
@@ -718,6 +826,36 @@
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
     {
+      "path": "script/test_public_release_bundle.py",
+      "line": 701,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "script/test_public_release_bundle.py",
+      "line": 763,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "script/test_public_release_mapping.py",
+      "line": 72,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
+      "path": "script/test_public_release_mapping.py",
+      "line": 204,
+      "slug": "private/wrong",
+      "url": "https://github.com/private/wrong.git"
+    },
+    {
+      "path": "script/test_public_release_mapping.py",
+      "line": 295,
+      "slug": "cqa02303/hidloom",
+      "url": "https://github.com/cqa02303/hidloom.git"
+    },
+    {
       "path": "script/test_public_repository_create.py",
       "line": 194,
       "slug": "cqa02303/hidloom",
@@ -743,7 +881,7 @@
     },
     {
       "path": "script/test_release_bundle_tools.py",
-      "line": 1070,
+      "line": 1103,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -822,6 +960,72 @@
     {
       "path": "tools/hidloom_logicd_core/Cargo.lock",
       "line": 106,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 15,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 21,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 27,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 36,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 45,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 54,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 63,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 74,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 87,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 98,
+      "slug": "rust-lang/crates.io-index",
+      "url": "https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "path": "tools/hidloom_outputd/Cargo.lock",
+      "line": 104,
       "slug": "rust-lang/crates.io-index",
       "url": "https://github.com/rust-lang/crates.io-index"
     },

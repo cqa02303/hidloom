@@ -98,6 +98,24 @@ def test_mouse_action_uses_analog_amount() -> None:
     assert result.mouse_event.wheel == 0
 
 
+def test_remapped_held_key_releases_once() -> None:
+    for replacement in ("KC_MS_U", "KC_WH_U", "MS_UP", "MS_WHLU", "KC_B"):
+        manager = JoystickManager([_binding(), _binding()])
+        actions = {(0, 0): "KC_UP", (2, 2): "KC_RGHT"}
+        resolver = lambda row, col: actions.get((row, col), "KC_NONE")
+        assert len(manager.process(0, 60, -60, resolver).key_events) == 2
+        manager.process(1, 0, -60, resolver)
+        actions[(0, 0)] = replacement
+        assert manager.process(0, 60, -60, resolver).key_events == []
+        released = manager.process(0, 60, 0, resolver).key_events
+        assert [(e.action, e.is_press) for e in released] == [("KC_UP", False)], replacement
+        assert manager.process(0, 60, 0, resolver).key_events == []
+        states = manager.status()["sticks"]
+        assert {d["direction"] for d in states[0]["directions"] if d["held"]} == {"right"}
+        assert {d["direction"] for d in states[1]["directions"] if d["held"]} == {"up"}
+        assert [(e.action, e.is_press) for e in manager.process(1, 0, 0, resolver).key_events] == [("KC_UP", False)]
+
+
 def test_wheel_action_uses_smaller_scale() -> None:
     manager = JoystickManager([_binding()])
 
@@ -174,6 +192,9 @@ async def test_logicd_ctrl_integration() -> None:
     logicd._push_ledd_key_event = lambda row, col, press: led_events.append((row, col, press))  # type: ignore[assignment]
 
     await logicd._process_ctrl_json('{"t":"A","x":0,"y":-80}')  # type: ignore[attr-defined]
+    layers.load([{"0,0": "KC_WH_U", "2,2": "KC_MS_R"}])
+    await logicd._process_ctrl_json('{"t":"A","x":0,"y":-80}')  # type: ignore[attr-defined]
+    await logicd._process_ctrl_json('{"t":"A","x":0,"y":0}')  # type: ignore[attr-defined]
     await logicd._process_ctrl_json('{"t":"A","x":0,"y":0}')  # type: ignore[attr-defined]
     await logicd._process_ctrl_json('{"t":"A","x":80,"y":0}')  # type: ignore[attr-defined]
 
@@ -228,6 +249,7 @@ def main() -> None:
     test_config_loader_extracts_stick()
     test_threshold_key_press_release()
     test_release_uses_pressed_action()
+    test_remapped_held_key_releases_once()
     test_mouse_action_uses_analog_amount()
     test_wheel_action_uses_smaller_scale()
     test_wheel_action_throttles_low_mid_range()
