@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "c9b5165ef7f77702f4ba767fd353699a52240486",
-    "base_tree": "7c03bd7a79f48b0e8aaaea7174a1be1481ada77c",
-    "base_revision_count": 2110,
+    "base_commit": "b2e856911defa97333286557b3cdb514e5fc5b45",
+    "base_tree": "68a9ac4d11ec7f5bb5f77d7ee20b2e252d9c8b0f",
+    "base_revision_count": 2113,
     "selected_path_count": 1333,
-    "selected_snapshot_sha256": "c5613a69246aca5e1193373c71043f30325b8a2a26b9974160b9194ac08d6863"
+    "selected_snapshot_sha256": "ba826cb257c2a491f83d09cc1987cef3d18c6cdfc4d3cbd8120fb51083a27317"
   },
   "files": [
     {
@@ -177,28 +177,28 @@
       "kind": "file",
       "mode": 420,
       "size": 19966,
-      "sha256": "7c9b4bd74f82e7489a50ecf92cbe2f18406078d7c114c12d7ffe8dd0e789de52"
+      "sha256": "e4dcd70b0349d9400704ca1f0ef5aa2fd620685a407e2de913fb1d4af133307c"
     },
     {
       "path": "PUBLIC_DOCUMENTATION_AUDIT.md",
       "kind": "file",
       "mode": 420,
       "size": 13661,
-      "sha256": "459e9b731b24008ebf0d9407ad635265bdb0e8d0648e66e3f4933fa977423fac"
+      "sha256": "5f63f2c3d9d2fbba4816a67a9e1db6c7e8d92906e57d7f12e1f3ed2894c64930"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.json",
       "kind": "file",
       "mode": 420,
       "size": 420100,
-      "sha256": "fbe8ddf11de92a3e8ec73098d4123a556959a71af4bb38f3d511d9480f061405"
+      "sha256": "d6d38881f3cc11c3cdfb96eb7c5f9c298bfbf956238743736fc8c657de459de8"
     },
     {
       "path": "PUBLIC_EXPORT_REPORT.md",
       "kind": "file",
       "mode": 420,
       "size": 173049,
-      "sha256": "a75a119a815f5dcc6f559c00f8c89c60206ed55f71c0c2d13c0573d4e722d892"
+      "sha256": "314121762e67d6188dbaa65e81b5fb9675a9eac7b911b074c6c4462def620faa"
     },
     {
       "path": "PUBLIC_PRIVACY_AUDIT.json",
@@ -247,7 +247,7 @@
       "kind": "file",
       "mode": 420,
       "size": 53626,
-      "sha256": "e3324ea95c439c1f5d93e47ca8a043831700b26d556acd2ab4d0c87ad4fff2fc"
+      "sha256": "8571d5e9f1579093677669763ad77585c9337f70f4ab5afce26d12d805df6ad3"
     },
     {
       "path": "SECURITY.md",
@@ -4712,8 +4712,8 @@
       "path": "docs/ops/rpi-os-early-initramfs-experiment.md",
       "kind": "file",
       "mode": 420,
-      "size": 49831,
-      "sha256": "ba2736985cf527059a7e2f9065f0b61e5611effbdeaaa59e72eac793d43819f0"
+      "size": 50546,
+      "sha256": "7c8de0d2c9139e43b80471d99966ede75c00759b5244763ef57dfa9568645339"
     },
     {
       "path": "docs/ops/script-safety-metadata.md",
@@ -5867,8 +5867,8 @@
       "path": "script/test_hidloom_outputd_tool.py",
       "kind": "file",
       "mode": 420,
-      "size": 30795,
-      "sha256": "d25e7cec77a8387c5f575aa4ecd4291402e5cfdeca40dd8c3d1cdccbae336a28"
+      "size": 31741,
+      "sha256": "1f521f736cdb859dd8a2441be79a4a0bc87fbcd93027fb6b06eb1c57782685e0"
     },
     {
       "path": "script/test_hidloom_paths.py",
@@ -7463,8 +7463,8 @@
       "path": "script/test_rpi_os_early_input_handoff_tool.py",
       "kind": "file",
       "mode": 493,
-      "size": 49631,
-      "sha256": "556fbf6d9b7897714807186475b127d1f344d96549793de3606f6d19e7001006"
+      "size": 52014,
+      "sha256": "b77c32acce5490d1b438f98278fb47006f27726f4d00e295aef18782c36b44cd"
     },
     {
       "path": "script/test_rpi_os_early_native_initramfs_tool.py",
@@ -9269,8 +9269,8 @@
       "path": "tools/rpi_os_early_input_handoff.py",
       "kind": "file",
       "mode": 493,
-      "size": 83828,
-      "sha256": "34997e563358751237bc575f015f62e39c8fb0be4df23fdec53ca45ef6dc0b78"
+      "size": 84130,
+      "sha256": "197f8b62281625137983520a73de745756392ce74afa583df248c74ac8e66238"
     },
     {
       "path": "tools/rpi_os_early_native_smoke.py",

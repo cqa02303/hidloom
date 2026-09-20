@@ -1,9 +1,9 @@
 # HIDloom Public Export Report
 
-- Source base commit: `c9b5165ef7f77702f4ba767fd353699a52240486`
+- Source base commit: `b2e856911defa97333286557b3cdb514e5fc5b45`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `c5613a69246aca5e1193373c71043f30325b8a2a26b9974160b9194ac08d6863`
+- Selected source snapshot: `ba826cb257c2a491f83d09cc1987cef3d18c6cdfc4d3cbd8120fb51083a27317`
 - Files: 1333
 - Tracked source paths: 1409
 - Private-only paths: 76
@@ -235,9 +235,9 @@
 - `warn` `credential_word` `docs/ops/keyboard-mcp-server.md:1170` `documentation_security_keyword` — `- HTTP transport を採用する場合の bearer token / OAuth 設計:`
 - `warn` `credential_word` `docs/ops/keyboard-write-mcp-server.md:52` `documentation_security_keyword` — `fileで配置し、必要なCodex profileからだけ起動します。IP、SSH key、password、tokenは設定例やdocsへ`
 - `warn` `credential_word` `docs/ops/performance-tuning-plan.md:62` `documentation_security_keyword` — `Linux HID gadget の `/dev/hidgX` は、USB host の IN polling token を userspace callback として直接通知する interface ではない。`
-- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:605` `documentation_security_keyword` — `early token/treeはなく通常boot 4 hashは正しく、`keyboard_ready` 14.666秒、`usb->input` 0.686秒、`
-- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:659` `documentation_security_keyword` — `通常rebootを1回実行し、fallback boot ID `c0e63dd9-5ce0-4c9d-b613-d2e72f6f00e4`、early token/treeなし、`
-- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:702` `documentation_security_keyword` — ``749a1fad-577a-4bd5-8c7e-d1be8ecfbd04`へ戻した。early token/treeなし、keyboard ready 14.092秒、`
+- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:612` `documentation_security_keyword` — `early token/treeはなく通常boot 4 hashは正しく、`keyboard_ready` 14.666秒、`usb->input` 0.686秒、`
+- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:666` `documentation_security_keyword` — `通常rebootを1回実行し、fallback boot ID `c0e63dd9-5ce0-4c9d-b613-d2e72f6f00e4`、early token/treeなし、`
+- `warn` `credential_word` `docs/ops/rpi-os-early-initramfs-experiment.md:709` `documentation_security_keyword` — ``749a1fad-577a-4bd5-8c7e-d1be8ecfbd04`へ戻した。early token/treeなし、keyboard ready 14.092秒、`
 - `warn` `credential_word` `docs/ops/script-safety-metadata.md:52` `documentation_security_keyword` — `- 危険 script の通常 run が backend 経由になった場合、API 側でも確認 token なし実行を拒否する。`
 - `warn` `credential_word` `docs/ops/test-script-inventory.md:91` `documentation_security_keyword` — `- public repositoryのvisibility/main、feature/merge設定、secret scanning、private vulnerability reporting、Actions allowlist、`
 - `warn` `credential_word` `docs/policy/decisions-spec.md:136` `documentation_security_keyword` — `- HTTP UI に Settings タブを追加し、Basic 認証 password を変更できるようにする。`

@@ -4,11 +4,11 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "c9b5165ef7f77702f4ba767fd353699a52240486",
-    "base_tree": "7c03bd7a79f48b0e8aaaea7174a1be1481ada77c",
-    "base_revision_count": 2110,
+    "base_commit": "b2e856911defa97333286557b3cdb514e5fc5b45",
+    "base_tree": "68a9ac4d11ec7f5bb5f77d7ee20b2e252d9c8b0f",
+    "base_revision_count": 2113,
     "selected_path_count": 1333,
-    "selected_snapshot_sha256": "c5613a69246aca5e1193373c71043f30325b8a2a26b9974160b9194ac08d6863"
+    "selected_snapshot_sha256": "ba826cb257c2a491f83d09cc1987cef3d18c6cdfc4d3cbd8120fb51083a27317"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
@@ -2019,7 +2019,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/rpi-os-early-initramfs-experiment.md",
-      "line": 605,
+      "line": 612,
       "excerpt": "early token/treeはなく通常boot 4 hashは正しく、`keyboard_ready` 14.666秒、`usb->input` 0.686秒、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2028,7 +2028,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/rpi-os-early-initramfs-experiment.md",
-      "line": 659,
+      "line": 666,
       "excerpt": "通常rebootを1回実行し、fallback boot ID `c0e63dd9-5ce0-4c9d-b613-d2e72f6f00e4`、early token/treeなし、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2037,7 +2037,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/rpi-os-early-initramfs-experiment.md",
-      "line": 702,
+      "line": 709,
       "excerpt": "`749a1fad-577a-4bd5-8c7e-d1be8ecfbd04`へ戻した。early token/treeなし、keyboard ready 14.092秒、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"

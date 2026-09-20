@@ -208,7 +208,7 @@
 - `docs/ops/keyboard-mcp-server.md:1186` (file target omitted)
 - `docs/ops/keyboard-write-mcp-server.md:114` (file target omitted)
 - `docs/ops/release-channel-policy.md:104` (file target omitted)
-- `docs/ops/rpi-os-early-initramfs-experiment.md:610` (file target omitted)
+- `docs/ops/rpi-os-early-initramfs-experiment.md:617` (file target omitted)
 - `docs/ops/windows-ime-custom-hid-real-device-runbook.md:7` (file target omitted)
 - `docs/policy/README.md:10` (file target omitted)
 - `docs/policy/README.md:11` (file target omitted)
