@@ -117,6 +117,23 @@ def outputd_status(
     }
 
 
+class CheckedThread(threading.Thread):
+    """Keep fixture worker failures visible to the main test after cleanup."""
+
+    error: BaseException | None = None
+
+    def run(self) -> None:
+        try:
+            super().run()
+        except BaseException as exc:
+            self.error = exc
+
+    def check(self) -> None:
+        assert not self.is_alive(), "fixture worker did not finish"
+        if self.error is not None:
+            raise AssertionError("fixture worker failed") from self.error
+
+
 class ControlServer:
     def __init__(self, path: Path, handler: Any, listener: socket.socket | None = None) -> None:
         self.path = path
@@ -127,7 +144,7 @@ class ControlServer:
             self.listener.listen(1)
         self.listener.settimeout(0.1)
         self.stopping = threading.Event()
-        self.thread = threading.Thread(target=self.run, daemon=True)
+        self.thread = CheckedThread(target=self.run, daemon=True)
         self.thread.start()
 
     def run(self) -> None:
@@ -161,6 +178,9 @@ class Fixture:
         *,
         failure: str | None = None,
         foreign_socket: str | None = None,
+        release_ack: dict[str, int] | None = None,
+        release_frames: int = 4,
+        hidd_release_frames: int = 4,
     ) -> None:
         self.root = root
         self.uid = os.getuid()
@@ -177,11 +197,14 @@ class Fixture:
         self.complete = self.run / "e4-handoff.complete.json"
         self.failure_evidence = self.run / "e4-handoff.failure.json"
         self.failure = failure
+        self.release_ack = release_ack or {"attempted": 4, "delivered": 4, "errors": 0}
+        self.release_frames = release_frames
+        self.hidd_release_frames = hidd_release_frames
         self.runners: list[subprocess.Popen[bytes]] = []
         self.normal_processes: list[subprocess.Popen[bytes]] = []
         self.normal_sockets: list[socket.socket] = []
         self.normal_connections: list[socket.socket] = []
-        self.workers: list[threading.Thread] = []
+        self.workers: list[CheckedThread] = []
         self.identities: dict[str, dict[str, int]] = {}
         self.cleanup_pidfds: dict[str, int] = {}
         self.recovery_ptys: list[tuple[int, int]] = [os.openpty(), os.openpty()]
@@ -462,7 +485,7 @@ class Fixture:
                     early_hidd_status(2, 3, frames_received=6),
                 )
 
-            worker = threading.Thread(
+            worker = CheckedThread(
                 target=publish_drain_only_after_core_death, daemon=True
             )
             self.workers.append(worker)
@@ -491,7 +514,7 @@ class Fixture:
                 write_json(
                     self.live / "outputd-status.json",
                     early_outputd_status(
-                        2, frames_received=6, frames_to_usb=6, ctrl_requests=1
+                        self.release_frames, frames_received=6, frames_to_usb=6, ctrl_requests=1
                     ),
                 )
 
@@ -506,17 +529,17 @@ class Fixture:
                 # dead; expose the two endpoint zeros at that point.
                 write_json(
                     self.live / "hidd-status.json",
-                    early_hidd_status(3, 4, frames_received=8),
+                    early_hidd_status(3, 4, frames_received=6 + self.hidd_release_frames),
                 )
 
-            worker = threading.Thread(
+            worker = CheckedThread(
                 target=publish_final_only_after_outputd_death, daemon=True
             )
             self.workers.append(worker)
             worker.start()
             return {
                 "result": "ok",
-                "release": {"attempted": 2, "delivered": 2, "errors": 0},
+                "release": self.release_ack,
             }
 
         self.servers = [
@@ -743,6 +766,8 @@ class Fixture:
         for master, slave in self.recovery_ptys:
             os.close(master)
             os.close(slave)
+        for worker in [*self.workers, *(server.thread for server in self.servers)]:
+            worker.check()
 
 
 def run(arguments: list[str]) -> subprocess.CompletedProcess[str]:
@@ -767,8 +792,8 @@ def read_exact_fd(fd: int, size: int, timeout: float = 2.0) -> bytes:
     return bytes(result)
 
 
-def successful_handoff(root: Path) -> None:
-    fixture = Fixture(root / "success")
+def successful_handoff(root: Path, *, release_ack: dict[str, int] | None = None) -> None:
+    fixture = Fixture(root / "success", release_ack=release_ack)
     try:
         unix_rows = [
             line
@@ -789,8 +814,8 @@ def successful_handoff(root: Path) -> None:
         assert evidence["release"]["hidd_zero_before"] == {"main": 2, "us_sub": 3}
         assert evidence["release"]["hidd_zero_after"] == {"main": 3, "us_sub": 4}
         assert evidence["release"]["outputd_response"]["release"] == {
-            "attempted": 2,
-            "delivered": 2,
+            "attempted": 4,
+            "delivered": 4,
             "errors": 0,
         }
         assert evidence["release"]["queue_barrier"] == {
@@ -800,7 +825,7 @@ def successful_handoff(root: Path) -> None:
             "outputd_frames_received": 6,
             "outputd_frames_to_usb": 6,
             "hidd_frames_received_before_release": 6,
-            "hidd_frames_received_after_release": 8,
+            "hidd_frames_received_after_release": 10,
         }
         assert stat_mode(fixture.prepare) == 0o600
         assert udc.read_text(encoding="ascii") == "fixture.udc\n"
@@ -974,6 +999,32 @@ def post_action_failures_release_or_disconnect(root: Path) -> None:
         assert fixture.recovery_udc.read_text(encoding="ascii").strip() == ""
     finally:
         fixture.close()
+
+
+def release_counts_are_exact(root: Path) -> None:
+    cases = [
+        (f"ack-{count}", {"release_ack": {"attempted": count, "delivered": count, "errors": 0}})
+        for count in (2, 3, 5)
+    ]
+    cases += [("partial", {"release_ack": {"attempted": 4, "delivered": 3, "errors": 1}})]
+    for count in (2, 3, 5):
+        cases += [(f"output-{count}", {"release_frames": count}),
+                  (f"hidd-{count}", {"hidd_release_frames": count})]
+    for name, options in cases:
+        # Use the existing bounded negative-path timeout; status undersupply
+        # must reach recovery before the fixture publisher deadline.
+        fixture = Fixture(root / name, failure="release-count", **options)
+        try:
+            result = run(fixture.args("prepare"))
+            assert result.returncode == 78, (name, result.stdout, result.stderr)
+            assert not fixture.prepare.exists(), name
+            evidence = json.loads(fixture.failure_evidence.read_text(encoding="utf-8"))
+            assert evidence["status"] == "released", (name, evidence)
+            assert evidence["all_processes_dead"] is True
+            assert read_exact_fd(fixture.recovery_ptys[0][0], 9) == bytes.fromhex("010000000000000000")
+            assert read_exact_fd(fixture.recovery_ptys[1][0], 8) == bytes(8)
+        finally:
+            fixture.close()
 
 
 def early_topology_failures_are_action_free(root: Path) -> None:
@@ -1227,6 +1278,7 @@ def main() -> None:
         release_contract_is_required(root)
         early_topology_failures_are_action_free(root)
         post_action_failures_release_or_disconnect(root)
+        release_counts_are_exact(root)
         normal_owner_failures_are_rejected(root)
         discovery_paths(root)
     numeric_pid_without_pidfd_is_action_free()

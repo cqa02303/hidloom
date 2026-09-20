@@ -711,6 +711,26 @@ def test_console_switch_login_sequence_round_trip() -> None:
     ]
 
 
+def test_e4_handoff_accepts_production_usb_release() -> None:
+    # Feed the production router's ACK into the full E4 ownership/release fixture.
+    # This catches report-count drift that a handoff-only mock cannot discover.
+    from script.test_rpi_os_early_input_handoff_tool import successful_handoff
+
+    with tempfile.TemporaryDirectory(prefix="e4-usb-") as directory:
+        root = Path(directory)
+        receiver = bind_receiver(root / "usbd_hid_reports.sock")
+        proc, paths = run_outputd(root)
+        try:
+            response = ctrl_request(paths["ctrl"], {"t": "release_all"})
+            assert response["result"] == "ok", response
+            assert recv_all(receiver, 4) == usb_neutrals()
+            successful_handoff(root, release_ack=response["release"])
+        finally:
+            receiver.close()
+            proc.terminate()
+            proc.wait(timeout=3.0)
+
+
 def main() -> None:
     build_tool()
     test_idle_and_partial_control_clients_do_not_stall_reports()
@@ -728,6 +748,7 @@ def main() -> None:
     test_ctrl_release_all_sends_null_reports_to_current_target()
     test_ctrl_release_all_reports_delivery_failures()
     test_console_switch_login_sequence_round_trip()
+    test_e4_handoff_accepts_production_usb_release()
     print("ok: hidloom-outputd native report router")
 
 

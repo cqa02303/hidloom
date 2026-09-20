@@ -416,6 +416,10 @@ E3合格条件:
 
 handoff順序を固定する。
 
+現行outputdのUSB `release_all`は4 reportを返す。旧2 reportを前提としたhandoff helperとは互換でない。
+以下の現行契約を満たすsourceからcandidateを再生成し、実binaryとのhost回帰と新しいone-shot / fallbackで
+確認する。後段に残すsource `3e7ab2b10`のE0-E6合格記録は、その過去のcandidateに限定した証跡である。
+
 1. `hidloom-early-input-handoff-prepare.service`をUSB gadgetより前に必ず実行する。path Conditionは使わず、
    valid E3 markerがなければhelper自身が`not-applicable`を返す。
 2. runtime contract hashと4 daemonのPID/starttime/executable device+inode/path/UIDを全件認証し、各processを
@@ -427,8 +431,11 @@ handoff順序を固定する。
 4. logicd-core control socketへ`release_all`を送り、pressed matrix/key/injected/modifierと全split routeが0を確認する。
 5. logicd-coreを停止して唯一のproducerを消滅させる。core `broker_frames_sent`、outputd `frames_received` / `frames_to_usb`、
    hidd `frames_received`の完全一致と、uinput/BT/error/control/release counter 0を確認する。live producer中の一時的一致は採用しない。
-6. outputd control socketへ`release_all`を送り、main/US-subのattempted=2 / delivered=2 / errors=0とrelease/control counterの
-   exact増分を確認してoutputdを停止する。その後hidd受信数のexact `core+2`と両zero-report counterの各+1以上を確認する。
+6. outputd control socketへ`release_all`を送り、main keyboard / US-sub keyboard / mouse / consumerの
+   attempted=4 / delivered=4 / errors=0、release counter +4、control counter +1を確認してoutputdを停止する。
+   その後hidd受信数のexact `core+4`と両keyboard zero-report counterの各+1以上を確認する。
+   4はIPC report数であり、keyboard zero-writeを確認する対象はmain / US-subの2つである。mouseのneutral reportは既に中立なら
+   schedulerで抑制されるため、4回の物理USB writeやmouse report counterの一律増分を要求しない。
 7. hiddを停止し、全PID identity消滅後にcounter equationを含む0600のprepare証跡を書く。
 8. normal USB unitが同じconfigfs gadgetをmutation-free adoptし、hidd/outputd/core/matrixdを起動する。
 9. matrixdからpullされる`hidloom-early-input-handoff-finalize.service`が通常4 statusのPID/executableと
