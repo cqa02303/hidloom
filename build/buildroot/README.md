@@ -109,6 +109,17 @@ QEMU import smokeはhostの`PYTHONHOME`とuser siteを使用せず、target root
 tools/buildroot_m6_build.sh --configure-only
 ```
 
+正式割当済みのUSB identityを使うM6候補は、最新のpid.codes証拠を確認してから次を使います。
+
+```bash
+HIDLOOM_M6_USB_PROFILE=public_formal tools/buildroot_m6_build.sh
+python3 tools/buildroot_m6_verify.py --output build/artifacts/buildroot-m6-output --usb-profile public_formal
+```
+
+未指定時は`development_compatibility`です。post-buildがguarded contractからgadgetのID/文字列と
+config/Vial seedを一緒に生成します。正式割当が未確認なら生成を拒否し、verifierはtargetとrootfs内の
+設定・gadget・receipt、sdcard内rootfsの一致を検査します。M1–M4用の元templateや保存済みkeymapは変更しません。
+
 source archive取得だけを再開する場合は`--source`、source取得後にBuildrootのlicense/source evidenceを
 生成する場合は`--legal-info`を指定する。後者は`legal-info/hidloom-summary.json`も生成し、source auditと
 binary release blockerを分離して記録する。どちらもimage検証を誤って要求しない。

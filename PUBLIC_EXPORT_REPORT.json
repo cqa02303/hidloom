@@ -4,19 +4,19 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "b2e856911defa97333286557b3cdb514e5fc5b45",
-    "base_tree": "68a9ac4d11ec7f5bb5f77d7ee20b2e252d9c8b0f",
-    "base_revision_count": 2113,
-    "selected_path_count": 1333,
-    "selected_snapshot_sha256": "ba826cb257c2a491f83d09cc1987cef3d18c6cdfc4d3cbd8120fb51083a27317"
+    "base_commit": "abe9ef4ce0edc4fcadd70b1c38c37203d7b7ed75",
+    "base_tree": "1b8808db957eee9da51954fce1756c36e8dc6b6d",
+    "base_revision_count": 2115,
+    "selected_path_count": 1334,
+    "selected_snapshot_sha256": "247fb7466a41cd110ad6b3b4fe1c2f0df89da5e6f61b4ffc31f575f2c3511135"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1333,
+  "file_count": 1334,
   "source_selection": {
-    "tracked_paths": 1409,
-    "public_source_paths": 1333,
+    "tracked_paths": 1410,
+    "public_source_paths": 1334,
     "private_only_paths": 76,
     "generated_output_paths": 0,
     "unclassified_paths": 0
@@ -34,7 +34,7 @@
     },
     "warn:linux_foundation_vid": {
       "migration_documentation": 2,
-      "pid_codes_migration_required": 17,
+      "pid_codes_migration_required": 19,
       "scanner_definition": 1,
       "test_fixture": 1
     },
@@ -1812,7 +1812,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 547,
+      "line": 555,
       "excerpt": "M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -9397,9 +9397,18 @@
     },
     {
       "severity": "warn",
+      "pattern_id": "linux_foundation_vid",
+      "path": "script/test_buildroot_fast_boot_assets.py",
+      "line": 93,
+      "excerpt": "assert json.loads((target / \"mnt/p3/config.json\").read_text())[\"device\"][\"vendor_id\"] == \"0x1d6b\"",
+      "disposition": "pid_codes_migration_required",
+      "reason": "public USB profile must use an assigned pid.codes VID/PID"
+    },
+    {
+      "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_buildroot_fast_boot_assets.py",
-      "line": 304,
+      "line": 348,
       "excerpt": "assert 'filesystem_file(debugfs, rootfs, \"/etc/passwd\")' in m6_verify_text",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9885,7 +9894,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_usb_identity.py",
-      "line": 329,
+      "line": 338,
       "excerpt": "contract[\"source_bindings\"][\"usb_config\"] = \"../../etc/passwd\"",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -10135,9 +10144,18 @@
     },
     {
       "severity": "warn",
+      "pattern_id": "linux_foundation_vid",
+      "path": "tools/buildroot_m6_identity.py",
+      "line": 23,
+      "excerpt": "\"printf '0x1d6b\\\\n' > idVendor\": ('idVendor', values['vendor_id']),",
+      "disposition": "pid_codes_migration_required",
+      "reason": "public USB profile must use an assigned pid.codes VID/PID"
+    },
+    {
+      "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 138,
+      "line": 142,
       "excerpt": "filesystem_file(debugfs, rootfs, \"/etc/passwd\"),",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -10146,7 +10164,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 140,
+      "line": 144,
       "excerpt": "f\"{rootfs}:/etc/passwd\",",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -10155,7 +10173,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 143,
+      "line": 147,
       "excerpt": "raise SystemExit(\"invalid M6 pi passwd entry\")",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -10164,7 +10182,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 153,
+      "line": 157,
       "excerpt": "raise SystemExit(\"M6 pi password hash does not match the SHA-256 users table\")",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -10488,7 +10506,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 23,
+      "line": 30,
       "excerpt": "違う version の Windows SDK を使う場合は、`build-sign-install-cqa-jis-inf-admin.ps1` の",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10497,7 +10515,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 40,
+      "line": 47,
       "excerpt": ".\\build-sign-install-cqa-jis-inf-admin.ps1",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10506,7 +10524,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 45,
+      "line": 52,
       "excerpt": "で install される。log は `build-sign-install-cqa-jis-inf.log` に残る。",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10515,7 +10533,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 70,
+      "line": 77,
       "excerpt": "`build-sign-install-cqa-jis-inf-admin.ps1` が失敗した場合は、まず log を見る。",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10524,7 +10542,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 73,
+      "line": 80,
       "excerpt": "Get-Content .\\build-sign-install-cqa-jis-inf.log -Tail 80",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10533,7 +10551,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 84,
+      "line": 91,
       "excerpt": "必要に応じて repository root の `script\\cleanup_windows_cqa_stale_devices.ps1` を使う。",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"

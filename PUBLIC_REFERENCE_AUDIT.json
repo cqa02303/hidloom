@@ -8,8 +8,8 @@
   },
   "published_release_tags": [],
   "summary": {
-    "files_scanned": 1306,
-    "repository_references": 174,
+    "files_scanned": 1307,
+    "repository_references": 175,
     "public_repository_references": 53,
     "findings": 0,
     "blockers": 0
@@ -329,19 +329,25 @@
     },
     {
       "path": "config/public-usb-identity.json",
-      "line": 46,
+      "line": 49,
+      "slug": "pidcodes/pidcodes.github.com",
+      "url": "https://github.com/pidcodes/pidcodes.github.com"
+    },
+    {
+      "path": "config/public-usb-identity.json",
+      "line": 69,
       "slug": "vial-kb/vial-gui",
       "url": "https://github.com/vial-kb/vial-gui"
     },
     {
       "path": "config/public-usb-identity.json",
-      "line": 106,
+      "line": 129,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "config/public-usb-identity.json",
-      "line": 107,
+      "line": 130,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -779,37 +785,37 @@
     },
     {
       "path": "script/test_pid_codes_allocation.py",
-      "line": 158,
+      "line": 165,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "script/test_pid_codes_allocation.py",
-      "line": 159,
+      "line": 166,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
     {
       "path": "script/test_pid_codes_allocation.py",
-      "line": 180,
+      "line": 187,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "script/test_pid_codes_application.py",
-      "line": 79,
+      "line": 71,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "script/test_pid_codes_application.py",
-      "line": 211,
+      "line": 219,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com.git"
     },
     {
       "path": "script/test_pid_codes_application.py",
-      "line": 366,
+      "line": 374,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom"
     },
@@ -875,7 +881,7 @@
     },
     {
       "path": "script/test_public_usb_identity.py",
-      "line": 260,
+      "line": 269,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },

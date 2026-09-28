@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
 import os
 from pathlib import Path
 import re
@@ -62,6 +63,49 @@ def assert_m6_post_build_normalizes_getty(post_build: Path) -> None:
             assert active == [
                 "tty1::respawn:/sbin/getty -L tty1 0 vt100 # HIDloom M6 HDMI console"
             ]
+        environment["HIDLOOM_M6_USB_PROFILE"] = "public_formal"
+        subprocess.run([str(post_build), str(target)], check=True, env=environment)
+        sys.path.insert(0, str(ROOT / "tools"))
+        from buildroot_m6_identity import verify as verify_identity
+        verify_identity(ROOT, target, "public_formal")
+        gadget = target / "usr/bin/hidloom-hid-gadget-m4"
+        gadget.write_text(gadget.read_text().replace("0x484c", "0x0105"))
+        try:
+            verify_identity(ROOT, target, "public_formal")
+        except ValueError as exc:
+            assert "gadget identity differs" in str(exc)
+        else:
+            raise AssertionError("M6 formal identity drift was accepted")
+        subprocess.run([str(post_build), str(target)], check=True, env=environment)
+        seed = target / "mnt/p3/vial.json"
+        payload = json.loads(seed.read_text())
+        payload["uid"] += 1
+        seed.write_text(json.dumps(payload))
+        try:
+            verify_identity(ROOT, target, "public_formal")
+        except ValueError as exc:
+            assert "Vial identity mismatch" in str(exc)
+        else:
+            raise AssertionError("M6 Vial UID drift was accepted")
+        environment["HIDLOOM_M6_USB_PROFILE"] = "development_compatibility"
+        subprocess.run([str(post_build), str(target)], check=True, env=environment)
+        verify_identity(ROOT, target, "development_compatibility")
+        assert json.loads((target / "mnt/p3/config.json").read_text())["device"]["vendor_id"] == "0x1d6b"
+        from test_public_usb_identity import copy_fixture
+        from buildroot_m6_identity import plan_for
+        candidate_root = temporary / "candidate"
+        copy_fixture(candidate_root)
+        candidate_path = candidate_root / "config/public-usb-identity.json"
+        candidate = json.loads(candidate_path.read_text())
+        candidate["assignment"].update(status="candidate-unassigned", allocation_evidence=None)
+        candidate["profiles"]["public_formal"].update(status="blocked-until-pid-codes-merge", public_release_allowed=False)
+        candidate_path.write_text(json.dumps(candidate))
+        try:
+            plan_for(candidate_root, "public_formal")
+        except ValueError as exc:
+            assert "activation blocked" in str(exc)
+        else:
+            raise AssertionError("M6 unassigned identity was accepted")
         modules = ("delegate_protocol", "input_session", "keymap_coordinator", "runtime_json")
         staged_root = target / "usr/share/hidloom"
         for module in modules:

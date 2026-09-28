@@ -27,3 +27,11 @@ release-channels.jsonとrelease readinessがchannelを区別する。このADR�
 
 - [docs/ops/release-channel-policy.md](../../ops/release-channel-policy.md)
 - [config/release-channels.json](../../../config/release-channels.json)
+
+## 2026-09-28: 正式identityのM6搭載
+
+割当確認後のM6は明示的な`HIDLOOM_M6_USB_PROFILE=public_formal`選択で、同じguarded contractから
+USB gadgetとconfig/Vial seedを生成する。開発互換defaultとM1–M4 templateは保持する。
+理由はUSBとVialの部分移行を防ぎ、別microSDの復旧用開発identityを維持するため。
+新しいnetwork露出やtarget依存は追加せず、host上の生成とimage内照合に限定する。
+採用済みだが、実機移行・公開の受入を意味しない。descriptor構成変更時は生成templateとimage検証を再評価する。

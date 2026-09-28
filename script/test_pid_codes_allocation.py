@@ -62,6 +62,13 @@ def copy_project(destination: Path) -> None:
             encoding="utf-8"
         )
     )
+    contract["assignment"]["status"] = "candidate-unassigned"
+    contract["assignment"]["allocation_evidence"] = None
+    contract["profiles"]["public_formal"]["status"] = "blocked-until-pid-codes-merge"
+    contract["profiles"]["public_formal"]["public_release_allowed"] = False
+    (destination / "config/public-usb-identity.json").write_text(
+        json.dumps(contract) + "\n", encoding="utf-8"
+    )
     bindings = contract["source_bindings"]
     source_paths = [
         bindings["ble_gatt_identity"],

@@ -16,6 +16,8 @@ FRAME_SIZE = 64
 CHECKSUM_OFFSET = 63
 PAYLOAD_OFFSET = 8
 KIND_KEYBOARD = 0x01
+KIND_MOUSE = 0x02
+KIND_CONSUMER = 0x03
 KIND_US_SUB_KEYBOARD = 0x04
 
 
@@ -206,16 +208,19 @@ def smoke_console_route(qemu: str, target: Path, temporary: Path) -> None:
 
         null_keyboard = encode_frame(KIND_KEYBOARD, bytes(8))
         null_us_sub = encode_frame(KIND_US_SUB_KEYBOARD, bytes(8))
+        usb_release = [null_keyboard, null_us_sub,
+                       encode_frame(KIND_MOUSE, bytes(4)),
+                       encode_frame(KIND_CONSUMER, bytes(2))]
         switch_to_uinput = ctrl_request(
             outputd_ctrl_socket, {"t": "set_output_target", "target": "uinput"}
         )
         if switch_to_uinput != {
             "result": "ok",
             "target": "uinput",
-            "release": {"attempted": 4, "delivered": 4, "errors": 0},
+            "release": {"attempted": 6, "delivered": 6, "errors": 0},
         }:
-            raise SystemExit("M6 ARM outputd rejected the uinput target")
-        if [usb.recv(128), usb.recv(128)] != [null_keyboard, null_us_sub]:
+            raise SystemExit(f"M6 ARM outputd uinput acknowledgement differs: {switch_to_uinput}")
+        if [usb.recv(128) for _ in usb_release] != usb_release:
             raise SystemExit("M6 ARM outputd did not release USB before uinput")
 
         for payload in (
@@ -238,10 +243,10 @@ def smoke_console_route(qemu: str, target: Path, temporary: Path) -> None:
         if switch_to_usb != {
             "result": "ok",
             "target": "usb",
-            "release": {"attempted": 4, "delivered": 4, "errors": 0},
+            "release": {"attempted": 6, "delivered": 6, "errors": 0},
         }:
-            raise SystemExit("M6 ARM outputd rejected the USB return target")
-        if [usb.recv(128), usb.recv(128)] != [null_keyboard, null_us_sub]:
+            raise SystemExit(f"M6 ARM outputd USB acknowledgement differs: {switch_to_usb}")
+        if [usb.recv(128) for _ in usb_release] != usb_release:
             raise SystemExit("M6 ARM outputd did not release uinput before USB return")
         final_usb = encode_frame(KIND_KEYBOARD, bytes.fromhex("0000040000000000"))
         send_frame(outputd_report_socket, final_usb)
@@ -264,7 +269,7 @@ def smoke_console_route(qemu: str, target: Path, temporary: Path) -> None:
         actual_events = [(event["type"], event["code"], event["value"]) for event in events]
         if actual_events != expected_events:
             raise SystemExit(f"M6 ARM console login events differ: {actual_events}")
-        if outputd_status["target"] != "usb" or outputd_status["counters"]["release_frames"] != 8:
+        if outputd_status["target"] != "usb" or outputd_status["counters"]["release_frames"] != 12:
             raise SystemExit(f"M6 ARM output route did not complete the round trip: {outputd_status}")
         if uidd_status["counters"]["frames_received"] != 10:
             raise SystemExit(f"M6 ARM uinput frame count differs: {uidd_status}")
