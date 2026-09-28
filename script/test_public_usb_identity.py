@@ -83,10 +83,10 @@ def main() -> None:
         ],
     }
     assert plan["profile"] == "public_formal"
-    assert plan["assignment_status"] == "candidate-unassigned"
-    assert plan["activation_allowed"] is False
-    assert plan["activation_blocker"] == "pid-codes-merge-required"
-    assert plan["public_release_allowed"] is False
+    assert plan["assignment_status"] == "assigned"
+    assert plan["activation_allowed"] is True
+    assert plan["activation_blocker"] is None
+    assert plan["public_release_allowed"] is True
     assert plan["device_config"] == {
         "vendor_id": "0x1209",
         "product_id": "0x484c",
@@ -160,7 +160,16 @@ def main() -> None:
         )
 
         blocked_output = temporary_path / "blocked"
-        blocked = run("--output", str(blocked_output), check=False)
+        unassigned_root = temporary_path / "unassigned-root"
+        copy_fixture(unassigned_root)
+        candidate_path = unassigned_root / "config/public-usb-identity.json"
+        candidate = json.loads(candidate_path.read_text(encoding="utf-8"))
+        candidate["assignment"]["status"] = "candidate-unassigned"
+        candidate["assignment"]["allocation_evidence"] = None
+        candidate["profiles"]["public_formal"]["status"] = "blocked-until-pid-codes-merge"
+        candidate["profiles"]["public_formal"]["public_release_allowed"] = False
+        candidate_path.write_text(json.dumps(candidate) + "\n", encoding="utf-8")
+        blocked = run("--output", str(blocked_output), root=unassigned_root, check=False)
         assert blocked.returncode != 0
         assert "profile activation is blocked" in blocked.stderr
         assert not blocked_output.exists()

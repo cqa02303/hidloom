@@ -4,7 +4,7 @@
 - Markdown files scanned: 277
 - Public docs: 224
 - Reachable public docs: 224
-- Private links converted to text: 122
+- Private links converted to text: 123
 - Private-only navigation lines removed: 85
 - Broken links: 0
 - Orphaned documents: 0
@@ -72,7 +72,7 @@
 - `docs/ops/README.md:71` (private-only navigation removed)
 - `docs/ops/README.md:76` (private-only navigation removed)
 - `docs/ops/README.md:78` (private-only navigation removed)
-- `docs/ops/buildroot-fast-boot-experiment.md:37` (private-only navigation removed)
+- `docs/ops/buildroot-fast-boot-experiment.md:45` (private-only navigation removed)
 - `docs/ops/codex-ssh-stdio-mcp-profile.md:13` (private-only navigation removed)
 - `docs/ops/failure-patterns.md:27` (private-only navigation removed)
 - `docs/ops/keyboard-mcp-server.md:213` (private-only navigation removed)
@@ -186,10 +186,11 @@
 - `docs/ops/README.md:71` (file target omitted)
 - `docs/ops/README.md:76` (file target omitted)
 - `docs/ops/README.md:78` (file target omitted)
-- `docs/ops/buildroot-fast-boot-experiment.md:37` (file target omitted)
+- `docs/ops/buildroot-fast-boot-experiment.md:45` (file target omitted)
 - `docs/ops/codex-ssh-stdio-mcp-profile.md:13` (file target omitted)
 - `docs/ops/failure-patterns.md:4` (file target omitted)
 - `docs/ops/failure-patterns.md:27` (file target omitted)
+- `docs/ops/failure-patterns.md:1466` (file target omitted)
 - `docs/ops/hidloom-hidd-deep-test-plan.md:10` (file target omitted)
 - `docs/ops/keyboard-mcp-server.md:9` (file target omitted)
 - `docs/ops/keyboard-mcp-server.md:213` (file target omitted)

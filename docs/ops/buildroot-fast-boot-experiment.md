@@ -27,6 +27,14 @@ Raspberry Pi OS package との選択基準と利用者向け導入入口は
 - 非搭載: HTTP WebSocket、MCP、Bluetooth、sessiondの修正。offline M6がそれらのserviceを配置しない境界は維持する。Debian profile適用とAPT/unit移行はRaspberry Pi OS専用。
 - 検証: native ARM build、M6 stagingと追加Python moduleのimportをsource検証に含める。容量差・実boot時間は新imageのM3/M6実験で測定し、未測定の速度改善を主張しない。今回image生成・microSD更新は行わない。
 
+### 2026-09-28 正式VID/PIDの搭載判断
+
+- 搭載: 割当済み`1209:484C`を`HIDLOOM_M6_USB_PROFILE=public_formal`で選択し、gadgetとconfig/Vial seedを同じcontractから生成する。
+- 既存の開発互換defaultとM1–M4 templateを保持する。USB descriptor構成、keymap保存schema、Vial UIDは変更しない。
+- host側生成とimage内一致検査だけを追加し、target依存・daemon・network露出は増やさない。
+- image生成/QEMU確認と、microSD書込み・Windows列挙・usable keyboard/boot markerの実機受入を分ける。
+  理由は[ADR-0017](../policy/adr/0017-release-channels.md)、生成方法は[Buildroot入口](../../build/buildroot/README.md)を参照する。
+
 ## 公開方針
 
 - 現在のrepositoryはprivateの主開発・履歴保管用として維持する。

@@ -1450,3 +1450,16 @@
 - recovery: cleanな現行mainから新しい統合worktreeを作り、commit済み変更はexact commitから取り込む。未commit分はhash一致を確認できるversioned artifactと回帰testから`apply_patch`で再構成し、元branch/stash/worktree metadataを破棄しない。
 - regression check: 長時間・複数turn作業では、機密を含まないsource/testを自動検証後の明示commitへ早めに固定する。commit未許可なら一時pathだけに依存せず、変更path、diff hash、再構成元と未commit状態をhandoffへ記録する。
 - evidence: 2026-08-30、matrix診断/debounceとKeyboard MCPの2 worktree directory消失を再監査で検出した。3 commitはbranch refから保持され、MCPの4 source/test fileは実機user-owned versioned releaseのSHA-256と一致して回収できた。既存stash、saved checkout、device runtimeは復旧調査中に変更していない。
+
+## M6 ARM smokeが旧USB解放数の期待値で停止する
+
+- symptom: image/identity/import検証はpassするが、`M6 ARM outputd rejected the uinput target`で止まる。
+- cause: 2026-09の全report解放後はUSB keyboard/sub/mouse/consumerの4 frameとuinputの2 frameで計6。
+  M6用smokeだけ旧keyboard2+uinput2=4の応答とUSB2 frameを期待していた。
+- detect: `send_release_frames`と`test_hidloom_outputd_tool.py`のconsole round-trip契約を照合する。
+  PID変更が原因と推定せず、切替応答の内容と各endpointの実frameを確認する。
+- recovery: ARM smokeを6/6/0 acknowledgement、USB4種類の正確なzero payload、往復release count12へ合わせる。
+  uinputのlogin event列と受信10 frameの検査は維持する。missing/extra/wrong-kind/wrong-payloadを許容しない。
+- evidence: 2026-09-28 formal M6 image `947ffb96644465b4da1b55bdc6412750165accaba086908cadf61ceb29f04ef9`で検出。
+  testだけを修正し、同一imageに対してARM startup-release、split route、USB/uinput往復、companion runtimeをPASSした。
+  実機への変更はなく、初回失敗logと成功logはprivate workspace reference *(omitted from public export)*のartifactに保持する。

@@ -40,3 +40,6 @@ install -d "$TARGET_DIR/mnt/p3"
 for name in config keymap vial; do
     install -m 0644 "$ROOT/config/default/$name.json" "$TARGET_DIR/mnt/p3/$name.json"
 done
+
+python3 "$ROOT/tools/buildroot_m6_identity.py" --target "$TARGET_DIR" \
+    --profile "${HIDLOOM_M6_USB_PROFILE:-development_compatibility}"

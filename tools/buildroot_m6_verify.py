@@ -7,10 +7,13 @@ import json
 import stat
 import subprocess
 import tempfile
+import sys
 from pathlib import Path
 
 EXPECTED_RELEASE_SHA256 = "c862b3a0a598e0d59f202d3ec87181089202b28c896813bf57ff5c43ea4914a8"
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from buildroot_m6_identity import verify as verify_identity
 
 
 def sha256(path: Path) -> str:
@@ -96,6 +99,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--expect-release-sha", action="store_true")
+    parser.add_argument("--usb-profile", choices=["development_compatibility", "public_formal"], default="development_compatibility")
     args = parser.parse_args()
     target = args.output / "target"
     image = args.output / "images" / "sdcard.img"
@@ -193,6 +197,9 @@ def main() -> None:
         raise SystemExit("M6 rootfs hidloom-hidd differs from the verified target binary")
     if filesystem_bytes(debugfs, rootfs, "/usr/bin/hidloom-hid-gadget-m4") != gadget.encode():
         raise SystemExit("M6 rootfs HID gadget script differs from the verified target script")
+    for relative in verify_identity(ROOT, target, args.usb_profile):
+        if filesystem_bytes(debugfs, rootfs, "/" + relative) != (target / relative).read_bytes():
+            raise SystemExit(f"M6 embedded identity differs from target: {relative}")
     rootfs_sha = sha256(rootfs)
     embedded_rootfs_sha = embedded_partition_sha256(image, 1, rootfs.stat().st_size)
     if embedded_rootfs_sha != rootfs_sha:
@@ -207,7 +214,7 @@ def main() -> None:
     image_sha = sha256(image)
     if args.expect_release_sha and image_sha != EXPECTED_RELEASE_SHA256:
         raise SystemExit(f"release SHA mismatch: {image_sha}")
-    print(json.dumps({"schema": "hidloom.buildroot-m6.verify.v1", "image": str(image), "sha256": image_sha, "rootfs_sha256": rootfs_sha, "rootfs_partition_embedded": True, "required_files": len(required), "sudoers_mode": "0440", "console_account": "pi", "console_password_hash": "sha256-crypt", "console_sudo_group": "wheel", "console_getty": "tty1-single", "boot_policy": "microsd-uart-off-hdmi-1080p", "python_path_module": "hidloom_paths.py", "vial_serial_magic": "vial:f64c2b3c", "usb_keyboard_contract": "hidg0-report-id-01-9-byte+hidg2-no-report-id-8-byte"}, indent=2))
+    print(json.dumps({"schema": "hidloom.buildroot-m6.verify.v1", "usb_profile": args.usb_profile, "image": str(image), "sha256": image_sha, "rootfs_sha256": rootfs_sha, "rootfs_partition_embedded": True, "required_files": len(required), "sudoers_mode": "0440", "console_account": "pi", "console_password_hash": "sha256-crypt", "console_sudo_group": "wheel", "console_getty": "tty1-single", "boot_policy": "microsd-uart-off-hdmi-1080p", "python_path_module": "hidloom_paths.py", "vial_serial_magic": "vial:f64c2b3c", "usb_keyboard_contract": "hidg0-report-id-01-9-byte+hidg2-no-report-id-8-byte"}, indent=2))
 
 
 if __name__ == "__main__":

@@ -65,7 +65,8 @@ def main() -> None:
         assert payload["ready"] is True
         assert payload["source_publication_ready"] is True
         assert payload["blocking_count"] == 0
-        assert payload["action_required_count"] == 17
+        # Includes the M6 legacy-template replacement and compatibility regression fixture.
+        assert payload["action_required_count"] == 19
         assert payload["pending_dispositions"] == ["pid_codes_migration_required"]
         assert payload["privacy_summary"]["blockers"] == 0
         assert payload["privacy_summary"]["media_files"] == 32
@@ -216,7 +217,7 @@ def main() -> None:
         assert stable.returncode == 2
         stable_payload = json.loads(stable.stdout)
         assert stable_payload["release_channel"] == "stable-public"
-        assert stable_payload["unexpected_required_count"] == 17
+        assert stable_payload["unexpected_required_count"] == 19
         plan = subprocess.run(
             [
                 "python3",

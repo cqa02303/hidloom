@@ -1,18 +1,18 @@
 # HIDloom Public Export Report
 
-- Source base commit: `b2e856911defa97333286557b3cdb514e5fc5b45`
+- Source base commit: `abe9ef4ce0edc4fcadd70b1c38c37203d7b7ed75`
 - Source mode: `clean-head`
 - Publishable source: `true`
-- Selected source snapshot: `ba826cb257c2a491f83d09cc1987cef3d18c6cdfc4d3cbd8120fb51083a27317`
-- Files: 1333
-- Tracked source paths: 1409
+- Selected source snapshot: `247fb7466a41cd110ad6b3b4fe1c2f0df89da5e6f61b4ffc31f575f2c3511135`
+- Files: 1334
+- Tracked source paths: 1410
 - Private-only paths: 76
 - Tracked generated outputs: 0
 - Unclassified paths: 0
 - Blocking findings: 0
-- Warnings: 1167
+- Warnings: 1169
 - Untriaged warnings: 0
-- Action-required warnings: 17
+- Action-required warnings: 19
 
 ## Findings
 
@@ -212,7 +212,7 @@
 - `warn` `credential_word` `docs/keycode/qmk-vial-keycode-support.md:130` `documentation_security_keyword` — `| QMK Macro | `QK_MACRO_*` 系 | 一部対応 | Vial Macro buffer を `settings.vial_macro_buffer` に保持し、`M0`-`M7` を `MACRO:VIAL0`-`MACRO:VIAL7` として実行する。text / tap / down / up / delay は実行用 token へ変換する |`
 - `warn` `credential_word` `docs/macro/compatibility-plan.md:40` `documentation_security_keyword` — `-> daemon/logicd/macro.py token runner`
 - `warn` `credential_word` `docs/macro/kml-qmk-macro-keycode-design.md:137` `documentation_security_keyword` — `- script / system / connectivity / power / arbitrary C 相当 token の rejection。`
-- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:547` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
+- `warn` `credential_word` `docs/ops/buildroot-fast-boot-experiment.md:555` `documentation_security_keyword` — `M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:20` `documentation_security_keyword` — `- SSH key、IP address、token、password、`.env` の値は docs に書かない。`
 - `warn` `credential_word` `docs/ops/codex-ssh-stdio-mcp-profile.md:79` `documentation_security_keyword` — `- `env` / `env_vars` で bearer token や password を渡さない。`
 - `warn` `credential_word` `docs/ops/failure-patterns.md:198` `documentation_security_keyword` — `- fixed candidate: source `0ebc76ddb`、core/profile `0.0.2043+git0ebc76ddb`、accepted manifest `f0eeb2eef76f0ba10439cd7690012c0d6de1948bb1f95c1e52b6e665a2a0a322`でsnapshot v2を再試験した。one-shot boot ID `7def`
@@ -1055,7 +1055,8 @@
 - `warn` `credential_word` `script/test_boot_marker_baseline_tool.py:190` `test_fixture` — `outside = work / "outside-secret"`
 - `warn` `credential_word` `script/test_boot_marker_baseline_tool.py:491` `test_fixture` — `(race_outside / "outside-secret.txt").write_text(`
 - `warn` `credential_word` `script/test_boot_marker_baseline_tool.py:515` `test_fixture` — `assert not any(item.path.endswith("outside-secret.txt") for item in race_tree)`
-- `warn` `credential_word` `script/test_buildroot_fast_boot_assets.py:304` `test_fixture` — `assert 'filesystem_file(debugfs, rootfs, "/etc/passwd")' in m6_verify_text`
+- `warn` `linux_foundation_vid` `script/test_buildroot_fast_boot_assets.py:93` `pid_codes_migration_required` — `assert json.loads((target / "mnt/p3/config.json").read_text())["device"]["vendor_id"] == "0x1d6b"`
+- `warn` `credential_word` `script/test_buildroot_fast_boot_assets.py:348` `test_fixture` — `assert 'filesystem_file(debugfs, rootfs, "/etc/passwd")' in m6_verify_text`
 - `warn` `credential_word` `script/test_control_owner_sessions.py:102` `test_fixture` — `# EOF is observed even while this source executes a long token macro.`
 - `warn` `credential_word` `script/test_current_status_doc.py:264` `test_fixture` — `assert config["settings"]["http_basic_auth"]["password"] == "__HOSTNAME__"`
 - `warn` `legacy_project_name` `script/test_hardware_pdf_exports.py:16` `allowed_device_profile` — `PROJECT = ROOT / "kicad" / "cqa02303v5rpi"`
@@ -1109,7 +1110,7 @@
 - `warn` `credential_word` `script/test_public_export.py:255` `test_fixture` — `reviewed.write_text("password\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_export.py:258` `test_fixture` — `reviewed_scanner.write_text("token\n", encoding="utf-8")`
 - `warn` `credential_word` `script/test_public_privacy_audit.py:60` `test_fixture` — `print("ok: privacy audit blocks secret files and embedded image metadata")`
-- `warn` `credential_word` `script/test_public_usb_identity.py:329` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
+- `warn` `credential_word` `script/test_public_usb_identity.py:338` `test_fixture` — `contract["source_bindings"]["usb_config"] = "../../etc/passwd"`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:34` `pid_codes_migration_required` — `"HIDLOOM_USB_VENDOR_ID": "0x1d6b",`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_gadget_adopt_tool.py:264` `pid_codes_migration_required` — `"idVendor": "0x1d6b",`
 - `warn` `linux_foundation_vid` `script/test_rpi_os_early_initramfs_tool.py:31` `pid_codes_migration_required` — `HIDLOOM_USB_VENDOR_ID=0x1D6B`
@@ -1137,10 +1138,11 @@
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:53` `implementation_security_keyword` — `token in line`
 - `warn` `credential_word` `tools/btd_bluez_pairing_window.py:54` `implementation_security_keyword` — `for token in (`
 - `warn` `credential_word` `tools/buildroot_m1_compare.py:71` `implementation_security_keyword` — `if any(token in line for token in ("hid", "usb", "cqa02303v5", "1d6b:0105")):`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:138` `implementation_security_keyword` — `filesystem_file(debugfs, rootfs, "/etc/passwd"),`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:140` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:143` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
-- `warn` `credential_word` `tools/buildroot_m6_verify.py:153` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
+- `warn` `linux_foundation_vid` `tools/buildroot_m6_identity.py:23` `pid_codes_migration_required` — `"printf '0x1d6b\\n' > idVendor": ('idVendor', values['vendor_id']),`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:142` `implementation_security_keyword` — `filesystem_file(debugfs, rootfs, "/etc/passwd"),`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:144` `implementation_security_keyword` — `f"{rootfs}:/etc/passwd",`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:147` `implementation_security_keyword` — `raise SystemExit("invalid M6 pi passwd entry")`
+- `warn` `credential_word` `tools/buildroot_m6_verify.py:157` `implementation_security_keyword` — `raise SystemExit("M6 pi password hash does not match the SHA-256 users table")`
 - `warn` `credential_word` `tools/collect_license_evidence.py:103` `implementation_security_keyword` — `if not any(token in relative.name.upper() for token in ("LICENSE", "COPYING", "NOTICE")):`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:122` `implementation_security_keyword` — `for token in tokens:`
 - `warn` `credential_word` `tools/development_residue_hygiene.py:123` `implementation_security_keyword` — `if token.type != tokenize.COMMENT:`
@@ -1176,10 +1178,10 @@
 - `warn` `credential_word` `tools/sessiond_ctl.py:157` `implementation_security_keyword` — `data = token.encode("ascii")`
 - `warn` `legacy_project_name` `windows-driver/README.md:9` `allowed_device_profile` — `- `build-sign-install-cqa-jis-inf-admin.ps1`: INF を package 化し、自己署名 catalog を作成して install する管理者用 script。`
 - `warn` `legacy_project_name` `windows-driver/README.md:10` `allowed_device_profile` — `- `install-cqa-jis-inf-admin.ps1`: 署名済み package を使わず、INF を直接 `pnputil` に渡す最小 script。`
-- `warn` `legacy_project_name` `windows-driver/README.md:23` `allowed_device_profile` — `違う version の Windows SDK を使う場合は、`build-sign-install-cqa-jis-inf-admin.ps1` の`
-- `warn` `legacy_project_name` `windows-driver/README.md:40` `allowed_device_profile` — `.\build-sign-install-cqa-jis-inf-admin.ps1`
-- `warn` `legacy_project_name` `windows-driver/README.md:45` `allowed_device_profile` — `で install される。log は `build-sign-install-cqa-jis-inf.log` に残る。`
-- `warn` `legacy_project_name` `windows-driver/README.md:70` `allowed_device_profile` — ``build-sign-install-cqa-jis-inf-admin.ps1` が失敗した場合は、まず log を見る。`
-- `warn` `legacy_project_name` `windows-driver/README.md:73` `allowed_device_profile` — `Get-Content .\build-sign-install-cqa-jis-inf.log -Tail 80`
-- `warn` `legacy_project_name` `windows-driver/README.md:84` `allowed_device_profile` — `必要に応じて repository root の `script\cleanup_windows_cqa_stale_devices.ps1` を使う。`
+- `warn` `legacy_project_name` `windows-driver/README.md:30` `allowed_device_profile` — `違う version の Windows SDK を使う場合は、`build-sign-install-cqa-jis-inf-admin.ps1` の`
+- `warn` `legacy_project_name` `windows-driver/README.md:47` `allowed_device_profile` — `.\build-sign-install-cqa-jis-inf-admin.ps1`
+- `warn` `legacy_project_name` `windows-driver/README.md:52` `allowed_device_profile` — `で install される。log は `build-sign-install-cqa-jis-inf.log` に残る。`
+- `warn` `legacy_project_name` `windows-driver/README.md:77` `allowed_device_profile` — ``build-sign-install-cqa-jis-inf-admin.ps1` が失敗した場合は、まず log を見る。`
+- `warn` `legacy_project_name` `windows-driver/README.md:80` `allowed_device_profile` — `Get-Content .\build-sign-install-cqa-jis-inf.log -Tail 80`
+- `warn` `legacy_project_name` `windows-driver/README.md:91` `allowed_device_profile` — `必要に応じて repository root の `script\cleanup_windows_cqa_stale_devices.ps1` を使う。`
 - `warn` `legacy_project_name` `windows-driver/build-sign-install-cqa-jis-inf-admin.ps1:9` `allowed_device_profile` — `$LogPath = Join-Path $Root "build-sign-install-cqa-jis-inf.log"`

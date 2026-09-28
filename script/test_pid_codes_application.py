@@ -40,17 +40,9 @@ def run(
 
 def main() -> None:
     owner_slug = "c" + "qa" + "02303"
-    plan = json.loads(run().stdout)
-    assert plan["schema"] == "hidloom.pid-codes-application-plan.v1"
-    assert plan["status"] == "candidate-unassigned"
-    assert plan["candidate"] == {
-        "vid": "0x1209",
-        "pid": "0x484C",
-        "path": "1209/484C/index.md",
-    }
-    assert plan["owner_path"] == f"org/{owner_slug}/index.md"
-    assert plan["activation_allowed"] is False
-    assert plan["availability_recheck_required"] is True
+    rejected = run(check=False)
+    assert rejected.returncode != 0
+    assert "must remain candidate-unassigned" in rejected.stderr
 
     with tempfile.TemporaryDirectory() as temporary:
         temporary_path = Path(temporary)
@@ -108,6 +100,10 @@ def main() -> None:
         (project / "kicad/fixture.kicad_pcb").write_text("fixture\n", encoding="utf-8")
         contract_path = project / "config/public-usb-identity.json"
         contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        contract["assignment"]["status"] = "candidate-unassigned"
+        contract["assignment"]["allocation_evidence"] = None
+        contract["profiles"]["public_formal"]["status"] = "blocked-until-pid-codes-merge"
+        contract["profiles"]["public_formal"]["public_release_allowed"] = False
         identity_bindings = contract["source_bindings"]
         identity_sources = [
             identity_bindings["ble_gatt_identity"],
@@ -131,6 +127,18 @@ def main() -> None:
         contract_path.write_text(
             json.dumps(contract, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
+
+        plan = json.loads(run(root=project).stdout)
+        assert plan["schema"] == "hidloom.pid-codes-application-plan.v1"
+        assert plan["status"] == "candidate-unassigned"
+        assert plan["candidate"] == {
+            "vid": "0x1209",
+            "pid": "0x484C",
+            "path": "1209/484C/index.md",
+        }
+        assert plan["owner_path"] == f"org/{owner_slug}/index.md"
+        assert plan["activation_allowed"] is False
+        assert plan["availability_recheck_required"] is True
 
         real_git = shutil.which("git")
         assert real_git is not None

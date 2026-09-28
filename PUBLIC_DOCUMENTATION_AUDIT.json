@@ -5,7 +5,7 @@
     "files_scanned": 277,
     "public_docs": 224,
     "reachable_public_docs": 224,
-    "omitted_private_links": 122,
+    "omitted_private_links": 123,
     "removed_private_navigation_lines": 85,
     "broken_links": 0,
     "orphaned_documents": 0
@@ -408,7 +408,7 @@
     },
     {
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 37,
+      "line": 45,
       "target_type": "file"
     },
     {
@@ -424,6 +424,11 @@
     {
       "path": "docs/ops/failure-patterns.md",
       "line": 27,
+      "target_type": "file"
+    },
+    {
+      "path": "docs/ops/failure-patterns.md",
+      "line": 1466,
       "target_type": "file"
     },
     {
@@ -837,7 +842,7 @@
     },
     {
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 37
+      "line": 45
     },
     {
       "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
