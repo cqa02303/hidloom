@@ -1143,6 +1143,13 @@ python3 tools/buildroot_m1_compare.py \
   --output /tmp/hidloom-buildroot-m1-compare.md
 ```
 
+## buildroot_m6_identity.py
+
+生成済みBuildroot M6 target treeへ選択したUSB identity profileを反映し、gadget・device設定・Vial定義・receiptの一致を検証します。
+`--target`は生成物専用directory、`--profile`は`development_compatibility`（既定）または`public_formal`です。
+formal profileは割当evidenceのguardを満たした場合だけ生成できます。実機へのinstallや実行中identityの変更は行いません。
+[Buildrootの手順](../build/buildroot/README.md)で現行milestoneと公開gateを確認してください。
+
 ## btd_bluez_pairing_window.py
 
 Bluetooth pairing / reconnect の実機確認窓を開く helper です。btd service を起動し直さず、
