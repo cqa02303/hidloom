@@ -33,7 +33,7 @@ def rerun_in_clean_snapshot(root: Path, entrypoint: str, marker: str) -> None:
         paths = [os.fsdecode(item) for item in untracked.split(b"\0") if item]
         raise SystemExit(f"stage or remove untracked validation inputs: {paths}")
     tracked = subprocess.run(
-        ["git", "ls-files", "-z"],
+        ["git", "ls-files", "--stage", "-z"],
         cwd=root,
         check=True,
         stdout=subprocess.PIPE,
@@ -44,16 +44,30 @@ def rerun_in_clean_snapshot(root: Path, entrypoint: str, marker: str) -> None:
         for encoded in tracked.split(b"\0"):
             if not encoded:
                 continue
-            relative = Path(os.fsdecode(encoded))
+            metadata, encoded_path = encoded.split(b"\t", 1)
+            mode, _object_id, stage = metadata.split(b" ")
+            relative = Path(os.fsdecode(encoded_path))
+            if stage != b"0":
+                raise SystemExit(f"unmerged validation input: {relative}")
+            if mode not in (b"100644", b"100755", b"120000"):
+                raise SystemExit(f"unsupported validation input mode {os.fsdecode(mode)}: {relative}")
             source = root / relative
             destination = snapshot / relative
             if not source.exists() and not source.is_symlink():
                 raise SystemExit(f"tracked validation input is missing: {relative}")
             destination.parent.mkdir(parents=True, exist_ok=True)
-            if source.is_symlink():
-                destination.symlink_to(os.readlink(source))
+            if mode == b"120000":
+                # core.symlinks=false may materialize an indexed link as a
+                # regular file containing its target on the source host.
+                target = os.readlink(source) if source.is_symlink() else os.fsdecode(source.read_bytes())
+                destination.symlink_to(target)
             else:
+                if source.is_symlink():
+                    raise SystemExit(f"stage the changed symlink type before validation: {relative}")
                 shutil.copy2(source, destination)
+                # DrvFS can synthesize 0777 for indexed 100644 files. Git's
+                # executable bit, not the source mount, defines this snapshot.
+                destination.chmod(int(mode, 8) & 0o777)
         subprocess.run(["git", "init", "-q", "-b", "main"], cwd=snapshot, check=True)
         subprocess.run(
             ["git", "config", "user.name", "HIDloom Validation"],

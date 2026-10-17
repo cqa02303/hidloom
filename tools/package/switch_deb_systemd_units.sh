@@ -6,6 +6,7 @@ SYSTEMD_ETC_DIR=${HIDLOOM_SYSTEMD_ETC_DIR:-/etc/systemd/system}
 SYSTEMD_PACKAGE_DIR=${HIDLOOM_SYSTEMD_PACKAGE_DIR:-/lib/systemd/system}
 DRY_RUN=0
 RESTART=0
+PROFILE=
 
 usage() {
     cat <<'EOF'
@@ -17,6 +18,7 @@ units under /lib/systemd/system become active.
 Options:
   --dry-run          show actions without changing files
   --restart          restart package-managed services after switching
+  --profile ID       final profile application (default: installed marker)
   --backup-root DIR  backup root; default /var/backups/hidloom/systemd-pre-deb
   -h, --help         show this help
 
@@ -34,6 +36,10 @@ while [ "$#" -gt 0 ]; do
             RESTART=1
             shift
             ;;
+        --profile)
+            PROFILE=${2:?missing --profile value}
+            shift 2
+            ;;
         --backup-root)
             BACKUP_ROOT=${2:?missing --backup-root value}
             shift 2
@@ -49,6 +55,32 @@ while [ "$#" -gt 0 ]; do
             ;;
     esac
 done
+
+if [ "$RESTART" -eq 1 ] && [ -z "$PROFILE" ]; then
+    PROFILE=$(python3 -c 'import json; from pathlib import Path; print(json.loads(Path("/mnt/p3/device_profile.json").read_text())["id"])') || {
+        echo "cannot determine installed profile; supply --profile ID" >&2
+        exit 2
+    }
+fi
+case "$PROFILE" in
+    *[!A-Za-z0-9.+-]*) echo "invalid profile: $PROFILE" >&2; exit 2 ;;
+esac
+if [ "$RESTART" -eq 1 ] && [ -z "$PROFILE" ]; then
+    echo "--restart requires an installed profile or --profile ID" >&2
+    exit 2
+fi
+
+apply_selected_profile() {
+    if [ "$RESTART" -ne 1 ]; then
+        return
+    fi
+    if [ "$DRY_RUN" -eq 1 ]; then
+        echo "dry-run: would apply profile $PROFILE after migration without an earlier restart"
+    else
+        migration_phase="final profile application: $PROFILE"
+        hidloom-profile "$PROFILE" --apply --backup --restart
+    fi
+}
 
 if [ "$DRY_RUN" -ne 1 ] && [ "$(id -u)" -ne 0 ]; then
     echo "non-dry-run switch must run as root" >&2
@@ -83,21 +115,6 @@ usbd.service
 viald.service
 "
 
-restart_units="
-hidloom-usb-gadget.service
-hidloom-hidd.service
-hidloom-uidd.service
-hidloom-outputd.service
-hidloom-logicd-core.service
-matrixd.service
-logicd-companion.service
-httpd.service
-i2cd.service
-ledd.service
-btd.service
-viald.service
-"
-
 timestamp=$(date -u +%Y%m%dT%H%M%SZ)
 backup_dir="$BACKUP_ROOT/$timestamp"
 missing_package=0
@@ -111,8 +128,8 @@ echo "backup dir: $backup_dir"
 for unit in $units; do
     etc_unit="$SYSTEMD_ETC_DIR/$unit"
     package_unit="$SYSTEMD_PACKAGE_DIR/$unit"
-    fragment=$(systemctl show -p FragmentPath --value "$unit" 2>/dev/null || true)
-    state=$(systemctl show -p UnitFileState --value "$unit" 2>/dev/null || true)
+    fragment=$(systemctl show -p FragmentPath --value "$unit")
+    state=$(systemctl show -p UnitFileState --value "$unit")
     if [ -f "$etc_unit" ]; then
         found_etc=1
         if [ ! -f "$package_unit" ]; then
@@ -140,50 +157,68 @@ fi
 
 if [ "$found_etc" -eq 0 ]; then
     echo "no /etc units need migration"
-    if [ "$RESTART" -eq 1 ]; then
-        if [ "$DRY_RUN" -eq 1 ]; then
-            echo "dry-run: would restart package-managed services"
-        else
-            systemctl restart $restart_units
-            echo "restarted package-managed services"
-        fi
-    fi
+    apply_selected_profile
     exit 0
 fi
 
 if [ "$DRY_RUN" -eq 1 ]; then
     echo "dry-run: would copy /etc units to $backup_dir and remove the /etc copies"
     echo "dry-run: would run systemctl daemon-reload and restore previous unit enable states"
-    if [ "$RESTART" -eq 1 ]; then
-        echo "dry-run: would restart package-managed services"
-    fi
+    apply_selected_profile
     exit 0
 fi
 
-install -d -m 755 "$backup_dir"
+install -d -m 755 "$BACKUP_ROOT"
+backup_dir=$(mktemp -d "$BACKUP_ROOT/$timestamp.XXXXXX")
 state_file="$backup_dir/unit-states.tsv"
 : > "$state_file"
+echo "unit migration receipt: $state_file"
+migration_phase=backup
+trap 'migration_result=$?
+    if [ "$migration_result" -ne 0 ]; then
+        echo "unit migration incomplete: $migration_phase (exit $migration_result)" >&2
+        echo "retained backup and unit state receipt: $backup_dir / $state_file" >&2
+        echo "recovery: inspect the receipt; restore its backed-up unit files to $SYSTEMD_ETC_DIR, run systemctl daemon-reload, and restore the recorded enable/mask policy before restarting" >&2
+        echo "installed package versions are unchanged by this recovery; no automatic package downgrade or service rollback was performed" >&2
+    fi
+    exit "$migration_result"' 0
 for unit in $units; do
     etc_unit="$SYSTEMD_ETC_DIR/$unit"
-    state=$(systemctl show -p UnitFileState --value "$unit" 2>/dev/null || true)
+    migration_phase="capture unit state: $unit"
+    state=$(systemctl show -p UnitFileState --value "$unit")
     printf '%s\t%s\n' "$unit" "${state:-unknown}" >> "$state_file"
     if [ -f "$etc_unit" ]; then
+        migration_phase="backup/remove unit: $unit"
         cp -a "$etc_unit" "$backup_dir/$unit"
         rm -f "$etc_unit"
     fi
 done
 
+migration_phase=daemon-reload
 systemctl daemon-reload
 while IFS="$(printf '\t')" read -r unit state; do
+    migration_phase="restore unit state: $unit ($state)"
     case "$state" in
-        enabled|enabled-runtime|linked|linked-runtime)
-            systemctl enable "$unit" >/dev/null 2>&1 || true
+        enabled)
+            systemctl enable "$unit"
+            ;;
+        enabled-runtime)
+            systemctl enable --runtime "$unit"
+            ;;
+        linked)
+            systemctl link "$SYSTEMD_PACKAGE_DIR/$unit"
+            ;;
+        linked-runtime)
+            systemctl link --runtime "$SYSTEMD_PACKAGE_DIR/$unit"
             ;;
         disabled|indirect)
-            systemctl disable "$unit" >/dev/null 2>&1 || true
+            systemctl disable "$unit"
             ;;
-        masked|masked-runtime)
-            systemctl mask "$unit" >/dev/null 2>&1 || true
+        masked)
+            systemctl mask "$unit"
+            ;;
+        masked-runtime)
+            systemctl mask --runtime "$unit"
             ;;
         static|generated|transient|unknown|"")
             :
@@ -194,9 +229,7 @@ while IFS="$(printf '\t')" read -r unit state; do
     esac
 done < "$state_file"
 
-if [ "$RESTART" -eq 1 ]; then
-    systemctl restart $restart_units
-fi
+apply_selected_profile
 
 echo "migrated /etc units to package units"
 echo "backup dir: $backup_dir"

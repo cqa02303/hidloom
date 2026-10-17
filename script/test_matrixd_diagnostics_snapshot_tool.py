@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import stat
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -17,6 +19,8 @@ def main() -> None:
     assert "logicd" in diag.DEFAULT_SERVICES
     assert diag.DEFAULT_KEY_SOCKET == "/tmp/key_events.sock"
     assert diag.DEFAULT_LEDD_SOCKET == "/tmp/ledd_events.sock"
+    assert diag.DEFAULT_TRACE_PATH == Path("/run/hidloom/matrixd-trace.jsonl")
+    assert diag.rotated_trace_path(diag.DEFAULT_TRACE_PATH) == Path("/run/hidloom/matrixd-trace.1.jsonl")
 
     ps_cmd = diag.ps_command()
     assert ps_cmd[:3] == ["ps", "-o", "pid,ni,pri,rtprio,pcpu,pmem,rss,comm,args"]
@@ -71,6 +75,26 @@ def main() -> None:
             {"path": "/etc/systemd/system/logicd.service", "exists": True, "size": 3, "sha256": "def", "text": "[Service]"},
             {"path": "/mnt/p3/keymap.json", "exists": True, "error": "permission denied"},
         ],
+        traces=[
+            {
+                "path": "/run/hidloom/matrixd-trace.1.jsonl",
+                "exists": True,
+                "size": 80,
+                "sha256": "old",
+                "schema_lines": 1,
+                "invalid_lines": 0,
+                "text": '{"schema":"matrixd.trace.v1","kind":"dispatch","row":1,"col":2}',
+            },
+            {
+                "path": "/run/hidloom/matrixd-trace.jsonl",
+                "exists": True,
+                "size": 81,
+                "sha256": "new",
+                "schema_lines": 1,
+                "invalid_lines": 0,
+                "text": '{"schema":"matrixd.trace.v1","kind":"debounce","row":1,"col":2}',
+            },
+        ],
     )
     assert "# matrixd Diagnostics Snapshot" in report
     assert "key_event_count: `2`" in report
@@ -83,10 +107,36 @@ def main() -> None:
     assert "/etc/systemd/system/logicd.service" in report
     assert "/mnt/p3/keymap.json" in report
     assert "permission denied" in report
+    assert "## Pre-incident Matrix Trace" in report
+    assert report.index("matrixd-trace.1.jsonl") < report.index("matrixd-trace.jsonl")
+    assert "schema_lines: `1`" in report
+
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        trace = tmp_path / "matrixd-trace.jsonl"
+        rotated = tmp_path / "matrixd-trace.1.jsonl"
+        rotated.write_text(
+            '{"schema":"matrixd.trace.v1","kind":"debounce","scan":1}\n',
+            encoding="utf-8",
+        )
+        trace.write_text(
+            '{"schema":"matrixd.trace.v1","kind":"dispatch","scan":2}\n',
+            encoding="utf-8",
+        )
+        actual_traces = [diag.trace_snapshot(rotated), diag.trace_snapshot(trace)]
+        assert [item["schema_lines"] for item in actual_traces] == [1, 1]
+        assert [item["invalid_lines"] for item in actual_traces] == [0, 0]
+        assert "\"scan\":1" in actual_traces[0]["text"]
+        assert "\"scan\":2" in actual_traces[1]["text"]
+
+        output = tmp_path / "snapshot.md"
+        diag.write_private_report(output, report)
+        assert stat.S_IMODE(output.stat().st_mode) == 0o600
 
     readme = (ROOT / "tools" / "README.md").read_text(encoding="utf-8")
     assert "matrixd_diagnostics_snapshot.py" in readme
     assert "/mnt/p3/matrixd-diagnostics" in readme
+    assert "--output -" in readme
     print("ok: matrixd diagnostics snapshot helper is documented")
 
 

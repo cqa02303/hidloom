@@ -29,8 +29,10 @@ def main() -> None:
     resolved_body = _function_body(input_events, "handle_resolved_action")
     pipeline_body = _function_body(matrix_pipeline, "event_processor")
 
-    assert "ctx.pressed_matrix.add(key)" in process_body
-    assert "ctx.pressed_matrix.discard(key)" in process_body
+    assert "pressed = ctx.pressed_matrix" in process_body
+    assert "pressed.add(key)" in process_body
+    assert "ctx.pressed_matrix_owners.setdefault(owner, set())" in process_body
+    assert "pressed.discard(key)" in process_body
     assert "ctx.push_ledd_key_event(row, col, is_press)" in process_body
     assert "ctx.interactions.on_key" in process_body
     assert "ctx.interactions.on_tick" in process_body

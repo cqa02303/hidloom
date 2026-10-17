@@ -9,6 +9,7 @@ read-only 診断を使えるようにすることです。
 関連:
 
 - MCP 機能一覧: [keyboard-mcp-server.md](keyboard-mcp-server.md)
+- guarded write companion: [keyboard-write-mcp-server.md](keyboard-write-mcp-server.md)
 
 ## 前提
 
@@ -91,3 +92,9 @@ profile 分離のほうが失敗時の noise が少なくなります。
 
 この profile は、desktop-driven SSH を維持しながら Codex MCP の操作面だけを短くするためのものです。
 device-side Codex CLI 導入判断は別項目として扱います。
+
+## Write companionを使う場合
+
+read-only profileへwrite toolを混ぜず、[keyboard-write-mcp-server.md](keyboard-write-mcp-server.md)の
+別profileを必要時だけ有効にします。実行前にread-only snapshot、plan、keymap digest、dynamic確認句を確認し、
+実行後にpressed state、save/readback、rollback状態を確認します。

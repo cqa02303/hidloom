@@ -20,6 +20,7 @@ Macro element syntax (list items):
 from __future__ import annotations
 
 import asyncio
+from contextvars import ContextVar
 import os
 import shlex
 import logging
@@ -42,8 +43,6 @@ from .script_report import parse_script_report_metadata, sanitize_report_text
 _SH_KEY_MIN = 960
 _SH_KEY_MAX = 970
 _JIS_ZENKAKU_HANKAKU_KEY = 997
-_JIS_ZENKAKU_HANKAKU_INTERNAL_MARKER = 0x5A
-_JIS_ZENKAKU_HANKAKU_HID_USAGE = 0x35
 _REPO_ROOT = Path(
     os.environ.get("HIDLOOM_REPO_ROOT")
     or Path(__file__).resolve().parents[2]
@@ -159,16 +158,61 @@ class MacroExecutor:
         self._mouse_wheel_step = MOUSE_WHEEL_STEP
         # キーコード → 連続移動タスクのマッピング
         self._move_tasks: Dict[int, asyncio.Task] = {}
+        self._shell_output_tasks: dict[asyncio.Task, object] = {}
+        self._suppressed_shell_output: set[asyncio.Task] = set()
+        self._source_context: ContextVar[object] = ContextVar("macro_source", default=None)
+        self.keyboard_event_fn = None
 
     @property
     def mouse_buttons(self) -> int:
         return self._mouse_state.buttons
 
+    def has_pending_output(self) -> bool:
+        return any(not task.done() for task in self._shell_output_tasks)
+
+    def cancel_output_source(self, source: object) -> None:
+        """Suppress future output for an ended source; let its script finish."""
+        for task, owner in self._shell_output_tasks.items():
+            if owner == source or (isinstance(owner, tuple) and owner and owner[0] == source):
+                self._suppressed_shell_output.add(task)
+
+    def _shell_output_done(self, task: asyncio.Task) -> None:
+        self._shell_output_tasks.pop(task, None)
+        self._suppressed_shell_output.discard(task)
+
     # ------------------------------------------------------------------
     # Public entry point
     # ------------------------------------------------------------------
 
-    async def handle(self, action: str, is_press: bool) -> None:
+    async def handle_owned(self, action: str, is_press: bool, *, source: object) -> None:
+        """Dispatch with an explicit input owner while retaining handle's API."""
+        context_handle = self._source_context.set(source)
+        try:
+            await self.handle(action, is_press, source=source)
+        finally:
+            self._source_context.reset(context_handle)
+
+    async def _keyboard_edge(self, code: int, is_press: bool, source: object) -> None:
+        if self.keyboard_event_fn is not None:
+            await self.keyboard_event_fn(code, is_press, source)
+            return
+        if is_press:
+            self._state.press(code, source=source)
+        else:
+            self._state.release(code, source=source)
+        self._write(self._state.build())
+
+    async def _release_keyboard_codes(self, codes, source: object) -> None:
+        error = None
+        for code in codes:
+            try:
+                await self._keyboard_edge(code, False, source)
+            except Exception as exc:
+                error = exc
+        if error is not None:
+            raise error
+
+    async def handle(self, action: str, is_press: bool, *, source: object = None) -> None:
         """Dispatch action on key press or release."""
         if action in ("KC_NONE", "KC_TRNS", ""):
             return
@@ -208,21 +252,7 @@ class MacroExecutor:
                 return
 
             if code == _JIS_ZENKAKU_HANKAKU_KEY:
-                report = (
-                    bytes([
-                        self._state.mod,
-                        _JIS_ZENKAKU_HANKAKU_INTERNAL_MARKER,
-                        _JIS_ZENKAKU_HANKAKU_HID_USAGE,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                    ])
-                    if is_press
-                    else bytes([self._state.mod, 0x00, 0, 0, 0, 0, 0, 0])
-                )
-                self._write(report)
+                await self._keyboard_edge(code, is_press, source)
                 self._key_event_broadcast(code, self._state.mod, is_press)
                 return
 
@@ -230,7 +260,9 @@ class MacroExecutor:
             if _SH_KEY_MIN <= code <= _SH_KEY_MAX:
                 if is_press:
                     name = f"KC_SH{code - _SH_KEY_MIN}"
-                    asyncio.create_task(self._run_shell_script(name))
+                    task = asyncio.create_task(self._run_shell_script(name))
+                    self._shell_output_tasks[task] = source
+                    task.add_done_callback(self._shell_output_done)
                 return
 
             if code == 999:  # KC_SHUTDOWN
@@ -285,11 +317,7 @@ class MacroExecutor:
                         None, self._mouse_write, self._mouse_state.null_report())
                 return
             # 通常のキーコード処理
-            if is_press:
-                self._state.press(code)
-            else:
-                self._state.release(code)
-            self._write(self._state.build())
+            await self._keyboard_edge(code, is_press, source)
 
             # key_events.sock へブロードキャスト
             modifier = self._state.mod  # 現在のモディファイアビット
@@ -346,7 +374,7 @@ class MacroExecutor:
             if stderr:
                 log.warning("Script %s stderr: %s",
                             name, stderr.decode(errors="replace").strip())
-            if report_meta.enabled:
+            if report_meta.enabled and asyncio.current_task() not in self._suppressed_shell_output:
                 await self._notify_script_report(name, report_meta.sinks, stdout, stderr, exit_code, report_meta)
             log.info("スクリプト終了: %s (exit_code=%d)", name, exit_code)
         except Exception as exc:
@@ -384,8 +412,12 @@ class MacroExecutor:
         if not text:
             return
         for sink in sinks:
+            if asyncio.current_task() in self._suppressed_shell_output:
+                return
             if sink == "hid_text":
                 await self._type_string(text)
+                if asyncio.current_task() in self._suppressed_shell_output:
+                    return
             try:
                 self._script_report_notify(name, sink, text, exit_code)
             except Exception as exc:
@@ -426,15 +458,32 @@ class MacroExecutor:
         self, code: int, add_mod_bits: int = 0, hold: float = _KEY_HOLD
     ) -> None:
         """Press and release one key, then wait for gap."""
+        source = (self._source_context.get(), object())
+        if self.keyboard_event_fn is not None:
+            pressed = []
+            try:
+                for bit in range(8):
+                    if add_mod_bits & (1 << bit):
+                        pressed.append(0xE0 + bit)
+                        await self._keyboard_edge(0xE0 + bit, True, source)
+                pressed.append(code)
+                await self._keyboard_edge(code, True, source)
+                await asyncio.sleep(hold)
+            finally:
+                await self._release_keyboard_codes(reversed(pressed), source)
+            await asyncio.sleep(_KEY_GAP)
+            return
         if add_mod_bits:
-            self._state.set_mod_bits(add_mod_bits)
-        self._state.press(code)
-        self._write(self._state.build())
-        await asyncio.sleep(hold)
-        self._state.release(code)
-        if add_mod_bits:
-            self._state.clear_mod_bits(add_mod_bits)
-        self._write(self._state.build())
+            self._state.set_mod_bits(add_mod_bits, source=source)
+        self._state.press(code, source=source)
+        try:
+            self._write(self._state.build())
+            await asyncio.sleep(hold)
+        finally:
+            self._state.release(code, source=source)
+            if add_mod_bits:
+                self._state.clear_mod_bits(add_mod_bits, source=source)
+            self._write(self._state.build())
         await asyncio.sleep(_KEY_GAP)
 
     async def _unicode(self, hex_str: str) -> None:
@@ -449,6 +498,8 @@ class MacroExecutor:
 
     async def _type_string(self, text: str) -> None:
         for ch in text:
+            if asyncio.current_task() in self._suppressed_shell_output:
+                return
             pair = _CHAR_MAP.get(ch)
             if pair is None:
                 continue
@@ -464,6 +515,17 @@ class MacroExecutor:
 
     async def _exec(self, macro_def: Any) -> None:
         """Execute a macro definition (str or list of tokens)."""
+        source = (self._source_context.get(), object())
+        held: dict[int, None] = {}
+        try:
+            await self._exec_owned(macro_def, source, held)
+        finally:
+            if self.keyboard_event_fn is not None:
+                await self._release_keyboard_codes(reversed(held), source)
+            elif self._state.release_source(source):
+                self._write(self._state.build())
+
+    async def _exec_owned(self, macro_def: Any, source: object, held: dict[int, None]) -> None:
         if isinstance(macro_def, str):
             await self._type_string(macro_def)
             return
@@ -475,13 +537,13 @@ class MacroExecutor:
             elif item.startswith("{KC_DOWN:") and item.endswith("}"):
                 code = KEYCODE.get(item[9:-1], 0)
                 if code:
-                    self._state.press(code)
-                    self._write(self._state.build())
+                    held[code] = None
+                    await self._keyboard_edge(code, True, source)
             elif item.startswith("{KC_UP:") and item.endswith("}"):
                 code = KEYCODE.get(item[7:-1], 0)
                 if code:
-                    self._state.release(code)
-                    self._write(self._state.build())
+                    await self._keyboard_edge(code, False, source)
+                    held.pop(code, None)
             elif item.startswith("{DELAY:") and item.endswith("}"):
                 try:
                     delay_ms = max(0, min(60000, int(item[7:-1])))

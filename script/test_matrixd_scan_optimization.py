@@ -11,6 +11,18 @@ def main() -> None:
     source = (ROOT / "daemon" / "matrixd" / "matrixd.c").read_text(encoding="utf-8")
     service = (ROOT / "system" / "systemd" / "matrixd.service").read_text(encoding="utf-8")
     config = (ROOT / "config" / "default" / "matrixd.json").read_text(encoding="utf-8")
+    buildroot_config = (
+        ROOT
+        / "build"
+        / "buildroot"
+        / "hidloom-external"
+        / "board"
+        / "hidloom"
+        / "rootfs_overlay_m3"
+        / "etc"
+        / "hidloom"
+        / "matrixd.json"
+    ).read_text(encoding="utf-8")
     board_configs = [
         (ROOT / "config" / "boards" / version / "conf" / "matrixd.json").read_text(encoding="utf-8")
         for version in ("ver0.1", "ver1.0")
@@ -29,10 +41,14 @@ def main() -> None:
     assert '#include "debounce.h"' in source
     assert "MatrixdDebounceKey key_state" in source
     assert "debounce_mode" in source
+    assert 'json_int (buf, "debounce_ms",        6)' in source
+    assert 'json_int(buf, "press_debounce_ms", 5)' in source
+    assert 'json_int(buf, "repress_guard_ms", 16)' in source
     assert 'json_str(buf, "debounce_mode"' in source
     assert "matrixd_debounce_step_count" in source
     assert "matrixd_debounce_step_time" in source
-    assert "matrixd_debounce_commit_event(&key_state[r][c], event)" in source
+    assert "matrixd_debounce_step_time_policy" in source
+    assert "matrixd_debounce_commit_event_at(&key_state[r][c], event, now_us)" in source
     assert "key_state[r][c].state = (uint8_t)!new_raw" not in source
     assert "monotonic_us" in source
     assert "post_row_settle_us" in source
@@ -55,6 +71,8 @@ def main() -> None:
     assert "CPUSchedulingPriority=99" in service
     assert "IOSchedulingClass=realtime" in service
     assert "LimitRTPRIO=99" in service
+    assert "MATRIXD_EVENT_LOG_PATH=/run/hidloom/matrixd-trace.jsonl" in service
+    assert "MATRIXD_EVENT_LOG_MAX_BYTES=4194304" in service
 
     assert "reapply_pull_each_scan" in readme
     assert "idle_interval_us" in readme
@@ -74,14 +92,21 @@ def main() -> None:
     assert '"idle_after_ms": 100' in config
     assert '"deep_idle_after_ms": 500' in config
     assert '"debounce_mode": "time"' in config
-    assert '"debounce_ms": 5' in config
+    assert '"debounce_ms": 6' in config
+    assert '"press_debounce_ms": 5' in config
+    assert '"repress_guard_ms": 16' in config
     assert '"post_row_settle_us": 2' in config
     assert '"debounce_count": 3' not in config
     for board_config in board_configs:
         assert '"debounce_mode": "time"' in board_config
-        assert '"debounce_ms": 5' in board_config
+        assert '"debounce_ms": 6' in board_config
+        assert '"press_debounce_ms": 5' in board_config
+        assert '"repress_guard_ms": 16' in board_config
         assert '"post_row_settle_us": 2' in board_config
         assert '"debounce_count": 3' not in board_config
+    assert '"debounce_ms":6' in buildroot_config
+    assert '"press_debounce_ms":5' in buildroot_config
+    assert '"repress_guard_ms":16' in buildroot_config
 
     print("ok: matrixd scan-loop tuning is documented")
 

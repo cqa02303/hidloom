@@ -132,6 +132,14 @@ class JoystickManager:
             action = resolver(row, col)
             code = _mouse_code(action)
             value = values[direction]
+            # A held action belongs to the press, even if a later keymap maps
+            # this direction to mouse movement. Release before that branch.
+            held = direction in state.held_actions
+            if held and value <= binding.release_threshold:
+                held_action = state.held_actions.pop(direction)
+                result.key_events.append(
+                    JoystickKeyEvent(binding.name, direction, row, col, held_action, False)
+                )
             if code in _MOUSE_CODES:
                 mdx, mdy, mwheel = _mouse_delta(code, value, binding, state, direction)
                 dx += mdx
@@ -139,14 +147,7 @@ class JoystickManager:
                 wheel += mwheel
                 continue
 
-            held = direction in state.held_actions
-            if held:
-                if value <= binding.release_threshold:
-                    held_action = state.held_actions.pop(direction)
-                    result.key_events.append(
-                        JoystickKeyEvent(binding.name, direction, row, col, held_action, False)
-                    )
-            elif value >= binding.press_threshold:
+            if not held and value >= binding.press_threshold:
                 state.held_actions[direction] = action
                 result.key_events.append(
                     JoystickKeyEvent(binding.name, direction, row, col, action, True)

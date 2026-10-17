@@ -1,5 +1,7 @@
 # Buildroot Fast Boot Experiment
 
+現在の採用判断: [ADR](../policy/adr/0015-buildroot-appliance-boundary.md)。この文書の過去の段階・初期案とは区別する。
+
 更新日: 2026-07-05
 
 Raspberry Pi Zero 2 W の高速起動を試すための Buildroot 実験メモ。
@@ -17,6 +19,21 @@ Raspberry Pi OS package との選択基準と利用者向け導入入口は
 - 判断結果は「搭載」「非搭載」「後送り」のいずれかとして本書へ記録する。
 - defconfig、overlay、cross-build/runtime staging helper、検証、Release手順を常に更新し、任意のcommitからimageを再生成できる状態を維持する。
 - keymap、Vial definition、device profileなど共有データは両構成で互換性を保つ。
+
+### 2026-09 入力所有権・出力切替修正の搭載判断
+
+- 搭載: native core/outputd/uiddの入力所有権、layer同期、全report解放、nonblocking control、auto readiness、機能キー修正。既存4 binaryのcross-buildとM6 post-build配置を使い、新daemon・network serviceは追加しない。outputdのJSON依存はCargo.lockで固定する。
+- 搭載: logicd companionのsource/session、keymap coordinator、delegate protocol、runtime JSON helper、joystick解放とrepeat修正。既存post-buildがlogicd directory全体を配置するため追加moduleも同じsourceから入る。keymap保存schemaとtiming既定値を維持する。
+- 非搭載: HTTP WebSocket、MCP、Bluetooth、sessiondの修正。offline M6がそれらのserviceを配置しない境界は維持する。Debian profile適用とAPT/unit移行はRaspberry Pi OS専用。
+- 検証: native ARM build、M6 stagingと追加Python moduleのimportをsource検証に含める。容量差・実boot時間は新imageのM3/M6実験で測定し、未測定の速度改善を主張しない。今回image生成・microSD更新は行わない。
+
+### 2026-09-28 正式VID/PIDの搭載判断
+
+- 搭載: 割当済み`1209:484C`を`HIDLOOM_M6_USB_PROFILE=public_formal`で選択し、gadgetとconfig/Vial seedを同じcontractから生成する。
+- 既存の開発互換defaultとM1–M4 templateを保持する。USB descriptor構成、keymap保存schema、Vial UIDは変更しない。
+- host側生成とimage内一致検査だけを追加し、target依存・daemon・network露出は増やさない。
+- image生成/QEMU確認と、microSD書込み・Windows列挙・usable keyboard/boot markerの実機受入を分ける。
+  理由は[ADR-0017](../policy/adr/0017-release-channels.md)、生成方法は[Buildroot入口](../../build/buildroot/README.md)を参照する。
 
 ## 公開方針
 

@@ -1,14 +1,20 @@
 use serde::Deserialize;
 use serde_json::{Value, json};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::env;
 use std::fs::{self, OpenOptions};
 use std::io::{self, BufRead, BufReader, ErrorKind, Read, Write};
+use std::os::fd::FromRawFd;
+use std::os::unix::ffi::OsStrExt;
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::{UnixDatagram, UnixListener, UnixStream};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::thread;
-use std::time::Duration;
+use std::time::Instant;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
+mod delegate;
+mod owner_protocol;
 
 const KIND_KEYBOARD: u8 = 0x01;
 const KIND_US_SUB_KEYBOARD: u8 = 0x04;
@@ -18,6 +24,13 @@ const PAYLOAD_OFFSET: usize = 8;
 const PAYLOAD_CAPACITY: usize = 24;
 const JIS_ZENKAKU_HANKAKU_INTERNAL_MARKER: u8 = 0x5a;
 const JIS_ZENKAKU_HANKAKU_HID_USAGE: u8 = 0x35;
+type PressIdentity = (u64, u8, u8);
+fn is_owned_injection_id(id: &str) -> bool {
+    id.starts_with("owner:")
+        || id.starts_with("delegate:")
+        || id.starts_with("guard:")
+        || id.starts_with("macro:")
+}
 
 struct Config {
     matrix_socket: PathBuf,
@@ -26,6 +39,7 @@ struct Config {
     matrix_tap_socket: Option<PathBuf>,
     hid_report_socket: PathBuf,
     status_path: PathBuf,
+    output_status_path: PathBuf,
     output_enabled: bool,
     matrix_socket_mode: u32,
     ctrl_socket_mode: u32,
@@ -39,6 +53,8 @@ struct StreamClient {
     input: Vec<u8>,
     output: Vec<u8>,
     read_closed: bool,
+    source: Option<u64>,
+    last_seen: Instant,
 }
 
 impl StreamClient {
@@ -48,6 +64,8 @@ impl StreamClient {
             input: Vec::new(),
             output: Vec::new(),
             read_closed: false,
+            source: None,
+            last_seen: Instant::now(),
         }
     }
 }
@@ -127,6 +145,9 @@ struct RouteState {
     primary_key_active: bool,
     primary_modifier_mirror_active: bool,
     zenkaku_hankaku_active: bool,
+    main_report: [u8; 8],
+    sub_report: [u8; 8],
+    contribution_routing: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -140,6 +161,7 @@ enum InjectedRoute {
     Normal,
     Keyboard,
     UsSubKeyboard,
+    BothKeyboards,
 }
 
 #[derive(Default)]
@@ -166,15 +188,31 @@ struct Counters {
 }
 
 struct Core {
+    owner_epoch: String,
+    keymap_revision: u64,
+    layer_revision: u64,
+    keymap_operations: VecDeque<(String, Value, Value)>,
+    guarded_tap: Option<owner_protocol::GuardedTap>,
+    output_revision: u64,
+    delegate_context: bool,
+    delegate_pending: bool,
+    broker_pending: VecDeque<RoutedReport>,
+    broker_coalesced: bool,
+    broker_queue_overflows: u64,
     keycodes: HashMap<String, u16>,
     layers: Vec<HashMap<String, String>>,
     routing: RoutingConfig,
     route_state: RouteState,
-    pressed_matrix: HashMap<(u8, u8), Action>,
+    pressed_matrix: HashMap<PressIdentity, Action>,
+    pressed_routes: HashMap<PressIdentity, InjectedRoute>,
     injected_keys: HashMap<String, KeyAction>,
+    injected_routes: HashMap<String, InjectedRoute>,
     force_delegate_all: bool,
     momentary_layers: HashSet<usize>,
+    momentary_owners: HashMap<usize, HashSet<PressIdentity>>,
     toggled_layers: HashSet<usize>,
+    locked_layers: HashSet<usize>,
+    conditional_rules: Vec<(HashSet<usize>, usize)>,
     oneshot_layers: HashSet<usize>,
     default_layer: usize,
     hid: HidState,
@@ -536,10 +574,10 @@ impl HidState {
         self.keys.iter().filter(|key| **key != 0).count()
     }
 
-    fn press(&mut self, key: KeyAction) {
+    fn press(&mut self, key: KeyAction) -> bool {
         let code = key.code;
         if code == 0 {
-            return;
+            return false;
         }
         if (0xE0..=0xE7).contains(&code) {
             let index = (code - 0xE0) as usize;
@@ -558,9 +596,11 @@ impl HidState {
                     }
                 } else {
                     self.rollover_drops += 1;
+                    return false;
                 }
             }
         }
+        true
     }
 
     fn release(&mut self, key: KeyAction) {
@@ -604,6 +644,50 @@ impl HidState {
     }
 }
 
+fn new_owner_epoch() -> String {
+    static INSTANCE: AtomicU64 = AtomicU64::new(1);
+    let started = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    format!(
+        "{}-{started}-{}",
+        std::process::id(),
+        INSTANCE.fetch_add(1, Ordering::Relaxed)
+    )
+}
+
+fn validated_candidate_layers(request: &Value) -> Result<Vec<HashMap<String, String>>, String> {
+    let layers = request
+        .get("layers")
+        .and_then(Value::as_array)
+        .filter(|layers| !layers.is_empty() && layers.len() <= 256)
+        .ok_or("layers_required")?;
+    let mut result = Vec::new();
+    for layer in layers {
+        let values = layer.as_object().ok_or("invalid_layer")?;
+        let mut flat = HashMap::new();
+        for (position, value) in values {
+            let Some((row, col)) = position.split_once(',') else {
+                return Err("invalid_coordinate".into());
+            };
+            let (Ok(row), Ok(col)) = (row.parse::<u8>(), col.parse::<u8>()) else {
+                return Err("invalid_coordinate".into());
+            };
+            if row > 15 || col > 15 || *position != format!("{row},{col}") {
+                return Err("invalid_coordinate".into());
+            }
+            let action = value
+                .as_str()
+                .filter(|action| !action.is_empty() && action.len() <= 4096)
+                .ok_or("invalid_action")?;
+            flat.insert(position.clone(), action.to_string());
+        }
+        result.push(flat);
+    }
+    Ok(result)
+}
+
 impl Core {
     fn new(
         keycodes: HashMap<String, u16>,
@@ -611,15 +695,31 @@ impl Core {
         routing: RoutingConfig,
     ) -> Self {
         Self {
+            owner_epoch: new_owner_epoch(),
+            keymap_revision: 1,
+            layer_revision: 1,
+            keymap_operations: VecDeque::new(),
+            guarded_tap: None,
+            output_revision: 1,
+            delegate_context: false,
+            delegate_pending: false,
+            broker_pending: VecDeque::new(),
+            broker_coalesced: false,
+            broker_queue_overflows: 0,
             keycodes,
             layers,
             routing,
             route_state: RouteState::default(),
             pressed_matrix: HashMap::new(),
+            pressed_routes: HashMap::new(),
             injected_keys: HashMap::new(),
+            injected_routes: HashMap::new(),
             force_delegate_all: false,
             momentary_layers: HashSet::new(),
+            momentary_owners: HashMap::new(),
             toggled_layers: HashSet::new(),
+            locked_layers: HashSet::new(),
+            conditional_rules: Vec::new(),
             oneshot_layers: HashSet::new(),
             default_layer: 0,
             hid: HidState::default(),
@@ -638,17 +738,29 @@ impl Core {
             .iter()
             .chain(self.toggled_layers.iter())
             .chain(self.oneshot_layers.iter())
+            .chain(self.locked_layers.iter())
         {
             if *layer < self.layers.len() {
                 active.insert(*layer);
             }
         }
+        let conditional: Vec<_> = self
+            .conditional_rules
+            .iter()
+            .filter(|(sources, target)| *target < self.layers.len() && sources.is_subset(&active))
+            .map(|(_, target)| *target)
+            .collect();
+        active.extend(conditional);
         let mut layers: Vec<usize> = active.into_iter().collect();
         layers.sort_unstable_by(|a, b| b.cmp(a));
         layers
     }
 
     fn resolve(&self, row: u8, col: u8) -> Action {
+        self.action_from_str(self.resolve_action_string(row, col))
+    }
+
+    fn resolve_action_string(&self, row: u8, col: u8) -> &str {
         let key = format!("{row},{col}");
         for layer in self.active_layers() {
             let Some(actions) = self.layers.get(layer) else {
@@ -658,9 +770,9 @@ impl Core {
             if action == "KC_TRNS" {
                 continue;
             }
-            return self.action_from_str(action);
+            return action;
         }
-        Action::NoOp
+        "KC_NONE"
     }
 
     fn action_from_str(&self, action: &str) -> Action {
@@ -698,7 +810,9 @@ impl Core {
     fn clear_invalid_layer_state(&mut self) {
         let len = self.layers.len();
         self.momentary_layers.retain(|layer| *layer < len);
+        self.momentary_owners.retain(|layer, _| *layer < len);
         self.toggled_layers.retain(|layer| *layer < len);
+        self.locked_layers.retain(|layer| *layer < len);
         self.oneshot_layers.retain(|layer| *layer < len);
         if self.default_layer >= len {
             self.default_layer = 0;
@@ -708,19 +822,31 @@ impl Core {
     fn clear_oneshot_layers(&mut self) {
         if !self.oneshot_layers.is_empty() {
             self.oneshot_layers.clear();
+            self.layer_revision += 1;
         }
     }
 
-    fn apply_layer_action(&mut self, action: LayerAction, is_press: bool) {
+    fn apply_layer_action(&mut self, action: LayerAction, is_press: bool, source: PressIdentity) {
+        let before = self.layer_snapshot();
         self.clear_invalid_layer_state();
         match action.op {
             LayerOp::Momentary => {
                 if is_press {
                     if self.valid_layer(action.layer) {
+                        self.momentary_owners
+                            .entry(action.layer)
+                            .or_default()
+                            .insert(source);
                         self.momentary_layers.insert(action.layer);
                     }
                 } else {
-                    self.momentary_layers.remove(&action.layer);
+                    if let Some(owners) = self.momentary_owners.get_mut(&action.layer) {
+                        owners.remove(&source);
+                        if owners.is_empty() {
+                            self.momentary_owners.remove(&action.layer);
+                            self.momentary_layers.remove(&action.layer);
+                        }
+                    }
                 }
             }
             LayerOp::Toggle => {
@@ -733,7 +859,9 @@ impl Core {
             LayerOp::To => {
                 if is_press && self.valid_layer(action.layer) {
                     self.momentary_layers.clear();
+                    self.momentary_owners.clear();
                     self.toggled_layers.clear();
+                    self.locked_layers.clear();
                     self.oneshot_layers.clear();
                     if action.layer != self.default_layer {
                         self.toggled_layers.insert(action.layer);
@@ -744,6 +872,8 @@ impl Core {
                 if is_press && self.valid_layer(action.layer) {
                     self.default_layer = action.layer;
                     self.momentary_layers.clear();
+                    self.momentary_owners.clear();
+                    self.locked_layers.clear();
                     self.oneshot_layers.clear();
                 }
             }
@@ -753,25 +883,129 @@ impl Core {
                 }
             }
         }
+        if before != self.layer_snapshot() {
+            self.layer_revision += 1;
+        }
+    }
+
+    fn layer_snapshot(&self) -> Value {
+        let sorted = |layers: &HashSet<usize>| {
+            let mut values: Vec<usize> = layers.iter().copied().collect();
+            values.sort_unstable();
+            values
+        };
+        json!({"default": self.default_layer, "momentary": sorted(&self.momentary_layers),
+            "toggled": sorted(&self.toggled_layers), "oneshot": sorted(&self.oneshot_layers),
+            "locked": sorted(&self.locked_layers)})
+    }
+
+    fn owner_state(&self, row: Option<u8>, col: Option<u8>) -> Value {
+        let delegated = self
+            .pressed_matrix
+            .values()
+            .filter(|action| matches!(action, Action::Delegated(_)))
+            .count();
+        json!({"result": "ok", "owner": "hidloom-logicd-core", "owner_epoch": self.owner_epoch,
+            "keymap_revision": self.keymap_revision, "layer_revision": self.layer_revision,
+            "action": row.zip(col).map(|(r,c)| self.resolve_action_string(r,c)),
+            "effective_action": row.zip(col).map(|(r,c)| self.resolve_action_string(r,c)),
+            "active_layers": self.active_layers(), "layer_state": self.layer_snapshot(),
+            "pressed": self.pressed_matrix.len(), "injected": self.injected_keys.len(), "delegated": delegated,
+            "idle": self.pressed_matrix.is_empty() && self.injected_keys.is_empty()
+                && self.oneshot_layers.is_empty() && self.momentary_layers.is_empty()
+                && !self.force_delegate_all && !self.delegate_context && !self.delegate_pending,
+            "output_revision": self.output_revision,
+            "output_pending_reports": self.broker_pending.len(),
+            "output_queue_overflows": self.broker_queue_overflows,
+            "capabilities": ["apply_keymap_v1", "operation_status_v1", "source_session_v1", "guarded_tap_v1", "guarded_tap", "delegate_v2"],
+            "guarded_tap_supported": true,
+            "delegate_protocol": 2})
+    }
+
+    fn apply_keymap_request(&mut self, request: &Value) -> Value {
+        let Some(operation_id) = request
+            .get("operation_id")
+            .and_then(Value::as_str)
+            .filter(|id| !id.is_empty() && id.len() <= 128)
+        else {
+            return json!({"result":"error", "error":"operation_id_required"});
+        };
+        if let Some((_, previous, outcome)) = self
+            .keymap_operations
+            .iter()
+            .find(|(id, _, _)| id == operation_id)
+        {
+            return if previous == request {
+                outcome.clone()
+            } else {
+                json!({"result":"error", "error":"operation_id_conflict"})
+            };
+        }
+        if self.delegate_pending {
+            return json!({"result":"error", "error":"delegate_busy"});
+        }
+        if request.get("expected_owner_epoch").and_then(Value::as_str)
+            != Some(self.owner_epoch.as_str())
+        {
+            return json!({"result":"error", "error":"owner_epoch_mismatch"});
+        }
+        if request
+            .get("expected_keymap_revision")
+            .and_then(Value::as_u64)
+            != Some(self.keymap_revision)
+        {
+            return json!({"result":"error", "error":"keymap_revision_mismatch"});
+        }
+        let layers = match validated_candidate_layers(request) {
+            Ok(layers) => layers,
+            Err(error) => return json!({"result":"error", "error":error}),
+        };
+        if self.layers != layers {
+            let previous_layers = self.layer_snapshot();
+            self.layers = layers;
+            self.keymap_revision += 1;
+            self.clear_invalid_layer_state();
+            if self.layer_snapshot() != previous_layers {
+                self.layer_revision += 1;
+            }
+        }
+        let result = json!({"result":"ok", "operation_id":operation_id, "owner_epoch":self.owner_epoch,
+            "keymap_revision":self.keymap_revision, "layer_revision":self.layer_revision,
+            "layers":self.layers.len(), "runtime_applied":true});
+        if self.keymap_operations.len() == 128 {
+            self.keymap_operations.pop_front();
+        }
+        self.keymap_operations
+            .push_back((operation_id.into(), request.clone(), result.clone()));
+        result
+    }
+
+    fn operation_status(&self, operation_id: &str) -> Value {
+        self.keymap_operations
+            .iter()
+            .find(|(id, _, _)| id == operation_id)
+            .map(|(_, _, result)| result.clone())
+            .unwrap_or_else(|| {
+                json!({"result":"unknown", "operation_id":operation_id,
+                "owner_epoch":self.owner_epoch, "error":"operation_outcome_unknown"})
+            })
     }
 
     fn delegate_active(&self) -> bool {
-        self.pressed_matrix
-            .values()
-            .any(|action| matches!(action, Action::Delegated(_)))
+        self.delegate_context
+            || self
+                .pressed_matrix
+                .values()
+                .any(|action| matches!(action, Action::Delegated(_)))
     }
 
     fn apply_event(&mut self, event: MatrixEvent) -> EventOutcome {
+        self.apply_source_event(0, event)
+    }
+
+    fn apply_source_event(&mut self, source: u64, event: MatrixEvent) -> EventOutcome {
         self.counters.matrix_events += 1;
-        if self.force_delegate_all {
-            self.counters.delegated_actions += 1;
-            return EventOutcome {
-                reports: Vec::new(),
-                delegate_packet: Some(matrix_packet(event)),
-                tap_packet: None,
-            };
-        }
-        let key = (event.row, event.col);
+        let key = (source, event.row, event.col);
         let before = self.hid.build();
         let tap_packet = Some(matrix_packet(event));
         if event.press {
@@ -779,20 +1013,32 @@ impl Core {
                 self.counters.ignored_duplicates += 1;
                 return EventOutcome::default();
             }
-            let action = if self.delegate_active() {
+            let mut action = if self.force_delegate_all || self.delegate_active() {
                 Action::Delegated("delegate-context".to_string())
             } else {
                 self.resolve(event.row, event.col)
             };
-            if !self.oneshot_layers.is_empty() && !matches!(action, Action::NoOp | Action::Layer(_))
+            if !self.oneshot_layers.is_empty()
+                && matches!(action, Action::Key(KeyAction { code: 1..=0xdf, .. }))
             {
                 self.clear_oneshot_layers();
             }
+            let mut key_rejected = false;
             match &action {
                 Action::NoOp => {}
-                Action::Key(key) => self.hid.press(*key),
-                Action::Layer(layer) => self.apply_layer_action(*layer, true),
+                Action::Key(key_action) => {
+                    if self.hid.press(*key_action) {
+                        self.pressed_routes
+                            .insert(key, self.capture_route(*key_action, InjectedRoute::Normal));
+                    } else {
+                        key_rejected = true;
+                    }
+                }
+                Action::Layer(layer) => self.apply_layer_action(*layer, true, key),
                 Action::Delegated(_) => self.counters.delegated_actions += 1,
+            }
+            if key_rejected {
+                action = Action::NoOp;
             }
             let delegated = matches!(action, Action::Delegated(_));
             self.pressed_matrix.insert(key, action);
@@ -808,10 +1054,11 @@ impl Core {
                 self.counters.ignored_duplicates += 1;
                 return EventOutcome::default();
             };
+            self.pressed_routes.remove(&key);
             match action {
                 Action::NoOp => {}
                 Action::Key(key) => self.hid.release(key),
-                Action::Layer(layer) => self.apply_layer_action(layer, false),
+                Action::Layer(layer) => self.apply_layer_action(layer, false, key),
                 Action::Delegated(_) => {
                     self.counters.delegated_actions += 1;
                     return EventOutcome {
@@ -824,7 +1071,7 @@ impl Core {
         }
         let after = self.hid.build();
         self.counters.rollover_drops = self.hid.rollover_drops;
-        if before != after {
+        if before != after || self.contribution_routing_enabled() {
             let reports = self.route_report(after);
             self.counters.reports_emitted += reports.len() as u64;
             EventOutcome {
@@ -842,14 +1089,22 @@ impl Core {
     }
 
     fn release_all(&mut self) -> Vec<RoutedReport> {
+        let previous_layers = self.layer_snapshot();
         let before = self.hid.build();
         let route_state_before = self.route_state;
         self.pressed_matrix.clear();
+        self.pressed_routes.clear();
         self.injected_keys.clear();
+        self.injected_routes.clear();
         self.momentary_layers.clear();
+        self.momentary_owners.clear();
         self.toggled_layers.clear();
+        self.locked_layers.clear();
         self.oneshot_layers.clear();
         self.default_layer = 0;
+        if previous_layers != self.layer_snapshot() {
+            self.layer_revision += 1;
+        }
         self.hid.modifiers = 0;
         self.hid.modifier_counts = [0; 8];
         self.hid.reserved = 0;
@@ -900,7 +1155,7 @@ impl Core {
             return None;
         };
         let mut matches = self.injected_keys.iter().filter_map(|(id, key)| {
-            if *key == target {
+            if *key == target && !is_owned_injection_id(id) {
                 Some(id.clone())
             } else {
                 None
@@ -910,6 +1165,7 @@ impl Core {
         if matches.next().is_some() {
             return None;
         }
+        self.injected_routes.remove(&first);
         self.injected_keys.remove(&first)
     }
 
@@ -942,45 +1198,53 @@ impl Core {
             }
             match self.action_from_str(action) {
                 Action::Key(key) => {
-                    self.hid.press(key);
-                    self.injected_keys.insert(id.to_string(), key);
+                    let accepted = self.hid.press(key);
+                    self.injected_keys.insert(
+                        id.to_string(),
+                        if accepted {
+                            key
+                        } else {
+                            KeyAction {
+                                code: 0,
+                                reserved: 0,
+                            }
+                        },
+                    );
+                    self.injected_routes
+                        .insert(id.to_string(), self.capture_route(key, route));
                 }
                 Action::NoOp => {}
                 Action::Layer(_) => return Err("unsupported_injected_action".to_string()),
                 Action::Delegated(_) => return Err("unsupported_injected_action".to_string()),
             }
         } else {
-            let Some(key) = self
-                .injected_keys
-                .remove(id)
-                .or_else(|| self.remove_unique_injected_key_by_action(action))
-            else {
+            let Some(key) = self.injected_keys.remove(id).or_else(|| {
+                if is_owned_injection_id(id) {
+                    None
+                } else {
+                    self.remove_unique_injected_key_by_action(action)
+                }
+            }) else {
                 self.counters.injected_duplicates += 1;
                 return Ok(Vec::new());
             };
+            self.injected_routes.remove(id);
             self.hid.release(key);
         }
         let after = self.hid.build();
         self.counters.rollover_drops = self.hid.rollover_drops;
-        if before == after {
+        if before == after && !self.contribution_routing_enabled() {
             return Ok(Vec::new());
         }
-        let reports = match route {
-            InjectedRoute::Normal => self.route_report(after),
-            InjectedRoute::Keyboard => {
-                self.route_state.primary_key_active = after != [0; 8];
-                vec![routed(KIND_KEYBOARD, after)]
-            }
-            InjectedRoute::UsSubKeyboard => {
-                self.route_state.us_sub_key_active = after != [0; 8];
-                vec![routed(KIND_US_SUB_KEYBOARD, after)]
-            }
-        };
+        let reports = self.route_report(after);
         self.counters.reports_emitted += reports.len() as u64;
         Ok(reports)
     }
 
     fn route_report(&mut self, report: [u8; 8]) -> Vec<RoutedReport> {
+        if self.contribution_routing_enabled() {
+            return self.route_key_contributions(report);
+        }
         if !self.routing.split_keyboard_enabled || self.routing.route_mode == RouteMode::Disabled {
             return vec![routed(KIND_KEYBOARD, report)];
         }
@@ -996,7 +1260,7 @@ impl Core {
                     vec![routed(KIND_US_SUB_KEYBOARD, report)]
                 }
             }
-            RouteMode::JisSpecialUsDefault => self.route_jis_special_us_default(report),
+            RouteMode::JisSpecialUsDefault => self.route_key_contributions(report),
             RouteMode::ImeKeys => self.route_ime_keys(report),
         }
     }
@@ -1014,50 +1278,137 @@ impl Core {
         vec![routed(KIND_KEYBOARD, report)]
     }
 
-    fn route_jis_special_us_default(&mut self, report: [u8; 8]) -> Vec<RoutedReport> {
-        if report_is_internal_zenkaku_hankaku(&report) {
-            self.route_state.primary_key_active = false;
-            self.route_state.primary_modifier_mirror_active = report[0] != 0;
-            self.route_state.us_sub_key_active = false;
-            self.route_state.zenkaku_hankaku_active = true;
-            return vec![routed(KIND_KEYBOARD, clear_report_reserved_byte(report))];
+    fn contribution_routing_enabled(&self) -> bool {
+        (self.routing.split_keyboard_enabled
+            && self.routing.route_mode == RouteMode::JisSpecialUsDefault)
+            || self.route_state.contribution_routing
+            || self
+                .injected_routes
+                .values()
+                .any(|route| *route != InjectedRoute::Normal)
+    }
+
+    fn capture_route(&self, key: KeyAction, route: InjectedRoute) -> InjectedRoute {
+        if route != InjectedRoute::Normal
+            || !self.routing.split_keyboard_enabled
+            || self.routing.route_mode != RouteMode::JisSpecialUsDefault
+        {
+            return route;
         }
-        if report == [0u8; 8] && self.route_state.zenkaku_hankaku_active {
-            self.route_state.zenkaku_hankaku_active = false;
-            self.route_state.primary_modifier_mirror_active = false;
-            return vec![routed(KIND_KEYBOARD, report)];
+        if (0xe0..=0xe7).contains(&key.code) {
+            InjectedRoute::BothKeyboards
+        } else if (0x87..=0x8f).contains(&key.code)
+            || key.reserved == JIS_ZENKAKU_HANKAKU_INTERNAL_MARKER
+        {
+            InjectedRoute::Keyboard
+        } else {
+            InjectedRoute::UsSubKeyboard
         }
-        self.route_state.zenkaku_hankaku_active = false;
-        if report_has_jis_special_on_main_key(&report) {
-            self.route_state.primary_key_active = true;
-            self.route_state.primary_modifier_mirror_active = report[0] != 0;
-            self.route_state.us_sub_key_active = false;
-            return vec![routed(KIND_KEYBOARD, report)];
-        }
-        if report_is_modifier_only(&report) {
-            self.route_state.primary_key_active = false;
-            self.route_state.primary_modifier_mirror_active = report[0] != 0;
-            self.route_state.us_sub_key_active = report[0] != 0;
-            return vec![
-                routed(KIND_KEYBOARD, report),
-                routed(KIND_US_SUB_KEYBOARD, report),
-            ];
-        }
-        let mut reports = Vec::new();
-        if self.route_state.primary_key_active {
-            self.route_state.primary_key_active = false;
-            self.route_state.primary_modifier_mirror_active = report[0] != 0;
-            reports.push(routed(KIND_KEYBOARD, primary_modifier_report(&report)));
-            if report == [0u8; 8] {
-                return reports;
+    }
+
+    fn route_key_contributions(&mut self, report: [u8; 8]) -> Vec<RoutedReport> {
+        let split = self.routing.split_keyboard_enabled;
+        let jis_default = split && self.routing.route_mode == RouteMode::JisSpecialUsDefault;
+        let mut main = [0u8; 8];
+        let mut sub = [0u8; 8];
+        let mut add = |key: KeyAction, route: InjectedRoute| {
+            let use_sub = match route {
+                InjectedRoute::Keyboard => false,
+                InjectedRoute::UsSubKeyboard => true,
+                InjectedRoute::BothKeyboards => false,
+                InjectedRoute::Normal => {
+                    split
+                        && match self.routing.route_mode {
+                            RouteMode::Disabled => false,
+                            RouteMode::All => true,
+                            RouteMode::ImeKeys => report_has_split_keyboard_switch_key(&report),
+                            RouteMode::JisSpecialUsDefault => {
+                                !(0x87..=0x8f).contains(&key.code)
+                                    && key.reserved != JIS_ZENKAKU_HANKAKU_INTERNAL_MARKER
+                            }
+                        }
+                }
+            };
+            if (0xe0..=0xe7).contains(&key.code) {
+                let bit = 1 << (key.code - 0xe0);
+                if route == InjectedRoute::BothKeyboards
+                    || (jis_default && route == InjectedRoute::Normal)
+                {
+                    main[0] |= bit;
+                    sub[0] |= bit;
+                } else if use_sub {
+                    sub[0] |= bit;
+                } else {
+                    main[0] |= bit;
+                }
+            } else if let Some(slot) = report[2..]
+                .iter()
+                .position(|usage| *usage != 0 && *usage as u16 == key.code)
+            {
+                // Slots and admission remain global: split routing does not double rollover capacity.
+                if use_sub {
+                    sub[slot + 2] = key.code as u8;
+                } else {
+                    main[slot + 2] = key.code as u8;
+                }
             }
-        } else if self.route_state.primary_modifier_mirror_active {
-            self.route_state.primary_modifier_mirror_active = report[0] != 0;
-            reports.push(routed(KIND_KEYBOARD, primary_modifier_report(&report)));
+        };
+        for (position, action) in &self.pressed_matrix {
+            if let Action::Key(key) = action {
+                add(
+                    *key,
+                    *self
+                        .pressed_routes
+                        .get(position)
+                        .unwrap_or(&InjectedRoute::Normal),
+                );
+            }
         }
-        self.route_state.primary_key_active = false;
-        self.route_state.us_sub_key_active = report != [0; 8];
-        reports.push(routed(KIND_US_SUB_KEYBOARD, report));
+        for (id, key) in &self.injected_keys {
+            add(
+                *key,
+                *self
+                    .injected_routes
+                    .get(id)
+                    .unwrap_or(&InjectedRoute::Normal),
+            );
+        }
+        let previous = self.route_state;
+        let mut reports = Vec::new();
+        // Removing a modifier together with keys (release_all) must release
+        // both endpoints' keys while their old modifiers are still held.
+        if ((previous.main_report[0] & !main[0]) | (previous.sub_report[0] & !sub[0])) != 0
+            && (previous.main_report[2..] != main[2..] || previous.sub_report[2..] != sub[2..])
+        {
+            let mut middle_main = main;
+            middle_main[0] |= previous.main_report[0];
+            let mut middle_sub = sub;
+            middle_sub[0] |= previous.sub_report[0];
+            if middle_main != previous.main_report {
+                reports.push(routed(KIND_KEYBOARD, middle_main));
+            }
+            if middle_sub != previous.sub_report {
+                reports.push(routed(KIND_US_SUB_KEYBOARD, middle_sub));
+            }
+        }
+        // Retain the established modifier mirror refresh on ordinary-key transitions.
+        let mirror_refresh = jis_default
+            && main[0] != 0
+            && report != [0; 8]
+            && (report_is_modifier_only(&report) || sub[2..].iter().any(|usage| *usage != 0));
+        if main != previous.main_report || mirror_refresh {
+            reports.push(routed(KIND_KEYBOARD, main));
+        }
+        if sub != previous.sub_report || (jis_default && report_is_modifier_only(&report)) {
+            reports.push(routed(KIND_US_SUB_KEYBOARD, sub));
+        }
+        self.route_state.main_report = main;
+        self.route_state.sub_report = sub;
+        self.route_state.primary_key_active = main[2..].iter().any(|usage| *usage != 0);
+        self.route_state.primary_modifier_mirror_active = main[0] != 0;
+        self.route_state.us_sub_key_active = sub != [0; 8];
+        self.route_state.zenkaku_hankaku_active = false;
+        self.route_state.contribution_routing = true;
         reports
     }
 }
@@ -1084,21 +1435,8 @@ fn report_has_split_keyboard_switch_key(report: &[u8; 8]) -> bool {
     report[2..8].iter().any(|key| (0x87..0x99).contains(key))
 }
 
-fn report_has_jis_special_on_main_key(report: &[u8; 8]) -> bool {
-    report[2..8].iter().any(|key| {
-        matches!(
-            *key,
-            0x87 | 0x88 | 0x89 | 0x8a | 0x8b | 0x8c | 0x8d | 0x8e | 0x8f
-        )
-    })
-}
-
 fn report_is_modifier_only(report: &[u8; 8]) -> bool {
     report[0] != 0 && report[1] == 0 && report[2..8].iter().all(|key| *key == 0)
-}
-
-fn primary_modifier_report(report: &[u8; 8]) -> [u8; 8] {
-    [report[0], 0, 0, 0, 0, 0, 0, 0]
 }
 
 fn xor_checksum(data: &[u8]) -> u8 {
@@ -1189,7 +1527,26 @@ fn load_core_from_env() -> Result<Core, String> {
         root.join("config/default/config.json"),
     );
     let routing = load_routing_config(&config_path, &default_config_path)?;
-    Ok(Core::new(keycodes, layers, routing))
+    let (config, _) = load_json_with_fallback(&config_path, &default_config_path)?;
+    let mut core = Core::new(keycodes, layers, routing);
+    if let Some(rules) = config["settings"]["interaction"]["conditional_layers"].as_array() {
+        for rule in rules {
+            let Some(target) = rule["then"].as_u64() else {
+                continue;
+            };
+            let Some(sources) = rule["if_all"].as_array() else {
+                continue;
+            };
+            let sources: Option<HashSet<usize>> = sources
+                .iter()
+                .map(|v| v.as_u64().map(|v| v as usize))
+                .collect();
+            if let Some(sources) = sources {
+                core.conditional_rules.push((sources, target as usize));
+            }
+        }
+    }
+    Ok(core)
 }
 
 fn load_config_from_env(exit_after_packets: Option<u64>) -> Config {
@@ -1217,6 +1574,10 @@ fn load_config_from_env(exit_after_packets: Option<u64>) -> Config {
         status_path: env_path(
             "LOGICD_CORE_STATUS_PATH",
             PathBuf::from("/run/hidloom/logicd-core-status.json"),
+        ),
+        output_status_path: env_path(
+            "LOGICD_CORE_OUTPUT_STATUS_PATH",
+            PathBuf::from("/run/hidloom/outputd-status.json"),
         ),
         output_enabled: env_bool("LOGICD_CORE_OUTPUT_ENABLED", false),
         matrix_socket_mode: env_u32("LOGICD_CORE_MATRIX_SOCKET_MODE", 0o666, 0, 0o777),
@@ -1371,15 +1732,54 @@ fn send_broker_frame(
     socket: &UnixDatagram,
     config: &Config,
     routed_report: &RoutedReport,
-) -> Result<(), String> {
-    if !config.output_enabled {
-        return Ok(());
-    }
-    let frame = encode_broker_frame(routed_report.kind, &routed_report.report)?;
+) -> io::Result<()> {
+    let frame = encode_broker_frame(routed_report.kind, &routed_report.report)
+        .map_err(|err| io::Error::new(ErrorKind::InvalidInput, err))?;
     socket
         .send_to(&frame, &config.hid_report_socket)
         .map(|_| ())
-        .map_err(|err| format!("failed to send broker frame: {err}"))
+}
+
+impl Core {
+    fn coalesce_pending_reports(&mut self) {
+        if self.broker_pending.is_empty() {
+            return;
+        }
+        let mut latest: VecDeque<RoutedReport> = VecDeque::new();
+        for report in self.broker_pending.drain(..) {
+            latest.retain(|old| old.kind != report.kind);
+            latest.push_back(report);
+        }
+        self.broker_pending = latest;
+        self.broker_coalesced = true;
+    }
+}
+
+fn flush_broker_pending(
+    broker: &UnixDatagram,
+    config: &Config,
+    core: &mut Core,
+    error: &mut String,
+) {
+    for _ in 0..32 {
+        let Some(report) = core.broker_pending.front() else {
+            core.broker_coalesced = false;
+            return;
+        };
+        match send_broker_frame(broker, config, report) {
+            Ok(()) => {
+                core.broker_pending.pop_front();
+                core.counters.broker_frames_sent += 1;
+                if core.broker_pending.is_empty() {
+                    error.clear();
+                }
+            }
+            Err(err) => {
+                *error = format!("broker_delivery_pending: {err}");
+                return;
+            }
+        }
+    }
 }
 
 fn emit_report(
@@ -1389,50 +1789,61 @@ fn emit_report(
     routed_report: &RoutedReport,
     last_broker_error: &mut String,
 ) {
-    match send_broker_frame(broker, config, routed_report) {
-        Ok(()) => {
-            if config.output_enabled {
-                core.counters.broker_frames_sent += 1;
-            }
-            last_broker_error.clear()
-        }
-        Err(err) => {
-            *last_broker_error = err;
-            eprintln!("warning: {}", last_broker_error);
-        }
+    if !config.output_enabled {
+        return;
     }
+    if core.broker_pending.len() >= 256 {
+        core.broker_queue_overflows += 1;
+        core.coalesce_pending_reports();
+    }
+    if core.broker_coalesced {
+        core.broker_pending
+            .retain(|old| old.kind != routed_report.kind);
+    }
+    core.broker_pending.push_back(*routed_report);
+    flush_broker_pending(broker, config, core, last_broker_error);
 }
 
-fn delegate_matrix_packet(core: &mut Core, config: &Config, packet: [u8; 4]) {
-    let Some(path) = config.delegate_socket.as_ref() else {
-        core.counters.delegate_errors += 1;
-        return;
-    };
-    match UnixStream::connect(path) {
-        Ok(mut stream) => {
-            if let Err(err) = stream.write_all(&packet) {
-                core.counters.delegate_errors += 1;
-                eprintln!(
-                    "warning: failed to write delegated matrix event to {}: {err}",
-                    path.display()
-                );
-            }
-        }
-        Err(err) => {
-            core.counters.delegate_errors += 1;
-            eprintln!(
-                "warning: failed to connect delegated matrix socket {}: {err}",
-                path.display()
-            );
-        }
+// Linux AF_UNIX connect can block before set_nonblocking if the accept queue is
+// full. Set NONBLOCK and CLOEXEC at socket creation, also on ARM Linux/musl.
+fn connect_unix_nonblocking(path: &Path) -> io::Result<UnixStream> {
+    #[repr(C)]
+    struct SockAddrUn {
+        family: u16,
+        path: [u8; 108],
     }
+    unsafe extern "C" {
+        fn socket(domain: i32, kind: i32, protocol: i32) -> i32;
+        fn connect(fd: i32, address: *const SockAddrUn, len: u32) -> i32;
+    }
+    let path = path.as_os_str().as_bytes();
+    if path.is_empty() || path.len() >= 108 || path.contains(&0) {
+        return Err(io::Error::new(
+            ErrorKind::InvalidInput,
+            "invalid Unix socket path",
+        ));
+    }
+    let mut address = SockAddrUn {
+        family: 1,
+        path: [0; 108],
+    };
+    address.path[..path.len()].copy_from_slice(path);
+    let fd = unsafe { socket(1, 1 | 0o4000 | 0o2000000, 0) };
+    if fd < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    let stream = unsafe { UnixStream::from_raw_fd(fd) };
+    if unsafe { connect(fd, &address, (2 + path.len() + 1) as u32) } < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    Ok(stream)
 }
 
 fn tap_matrix_packet(core: &mut Core, config: &Config, packet: [u8; 4]) {
     let Some(path) = config.matrix_tap_socket.as_ref() else {
         return;
     };
-    match UnixStream::connect(path) {
+    match connect_unix_nonblocking(path) {
         Ok(mut stream) => {
             if let Err(err) = stream.write_all(&packet) {
                 core.counters.matrix_tap_errors += 1;
@@ -1466,7 +1877,67 @@ fn handle_ctrl_line(
         return json!({"result": "error", "error": "invalid_json"});
     };
     let command = request.get("t").and_then(Value::as_str).unwrap_or("");
+    if matches!(
+        command,
+        "apply_keymap"
+            | "reload"
+            | "key_event"
+            | "set_output"
+            | "set_matrix_delegate_all"
+            | "release_all"
+            | "output_transition"
+    ) {
+        for report in core.end_guarded_tap("control_transition") {
+            emit_report(broker, config, core, &report, last_broker_error);
+        }
+    }
     match command {
+        "owner_state" => {
+            let coordinate = |name: &str| {
+                request
+                    .get(name)
+                    .and_then(Value::as_u64)
+                    .filter(|v| *v <= 15)
+                    .map(|v| v as u8)
+            };
+            if (request.get("row").is_some() || request.get("col").is_some())
+                && (coordinate("row").is_none() || coordinate("col").is_none())
+            {
+                return json!({"result":"error", "error":"invalid_coordinate"});
+            }
+            let mut state = core.owner_state(coordinate("row"), coordinate("col"));
+            state["output_ready"] =
+                json!(owner_protocol::output_ready(config) && last_broker_error.is_empty());
+            if request.get("include_keymap").and_then(Value::as_bool) == Some(true) {
+                state["layers"] = json!(core.layers);
+            }
+            state
+        }
+        "apply_keymap" => core.apply_keymap_request(&request),
+        "operation_status" => core.operation_status(
+            request
+                .get("operation_id")
+                .and_then(Value::as_str)
+                .unwrap_or(""),
+        ),
+        "guarded_tap" => {
+            let ready = owner_protocol::output_ready(config) && last_broker_error.is_empty();
+            let (mut result, reports) = core.start_guarded_tap(&request, ready, Instant::now());
+            for report in reports {
+                emit_report(broker, config, core, &report, last_broker_error);
+            }
+            if result["state"] == "started" && !last_broker_error.is_empty() {
+                result["delivery"] = json!("unknown");
+                for report in core.end_guarded_tap("output_error") {
+                    emit_report(broker, config, core, &report, last_broker_error);
+                }
+            }
+            result
+        }
+        "output_transition" => {
+            core.output_revision += 1;
+            json!({"result":"ok","output_revision":core.output_revision})
+        }
         "status" => status_payload(
             core,
             config,
@@ -1530,15 +2001,28 @@ fn handle_ctrl_line(
                 Err(err) => json!({"result": "error", "error": err}),
             }
         }
+        "reload" if core.delegate_pending => json!({"result":"error","error":"delegate_busy"}),
         "reload" => match load_core_from_env() {
             Ok(new_core) => {
-                for report in core.release_all() {
-                    emit_report(broker, config, core, &report, last_broker_error);
+                let previous_layers = core.layer_snapshot();
+                if core.layers != new_core.layers
+                    || core.keycodes != new_core.keycodes
+                    || core.routing != new_core.routing
+                    || core.conditional_rules != new_core.conditional_rules
+                {
+                    core.keymap_revision += 1;
                 }
-                let counters = std::mem::take(&mut core.counters);
-                *core = new_core;
-                core.counters = counters;
-                json!({"result": "ok", "layers": core.layers.len(), "keycodes": core.keycodes.len()})
+                core.layers = new_core.layers;
+                core.keycodes = new_core.keycodes;
+                core.routing = new_core.routing;
+                core.conditional_rules = new_core.conditional_rules;
+                core.clear_invalid_layer_state();
+                if previous_layers != core.layer_snapshot() {
+                    core.layer_revision += 1;
+                }
+                json!({"result": "ok", "layers": core.layers.len(), "keycodes": core.keycodes.len(),
+                    "owner_epoch":core.owner_epoch, "keymap_revision":core.keymap_revision,
+                    "layer_revision":core.layer_revision, "runtime_applied":true})
             }
             Err(err) => json!({"result": "error", "error": err}),
         },
@@ -1567,7 +2051,10 @@ fn flush_pending<W: Write>(writer: &mut W, pending: &mut Vec<u8>) -> io::Result<
 }
 
 fn accept_pending(listener: &UnixListener, clients: &mut Vec<StreamClient>, label: &str) {
-    loop {
+    for _ in 0..32 {
+        if clients.len() >= 256 {
+            break;
+        }
         match listener.accept() {
             Ok((stream, _addr)) => {
                 let _ = stream.set_nonblocking(true);
@@ -1606,6 +2093,9 @@ fn serve(mut config: Config) -> Result<(), String> {
     );
     let broker =
         UnixDatagram::unbound().map_err(|err| format!("failed to open datagram socket: {err}"))?;
+    broker
+        .set_nonblocking(true)
+        .map_err(|err| format!("failed to set broker nonblocking: {err}"))?;
     let mut last_broker_error = String::new();
     write_status(&core, &config, false, "");
 
@@ -1613,7 +2103,24 @@ fn serve(mut config: Config) -> Result<(), String> {
     let mut matrix_clients: Vec<StreamClient> = Vec::new();
     let mut ctrl_clients: Vec<StreamClient> = Vec::new();
     let mut should_exit = false;
+    let mut delegate = delegate::Delegate::new();
+    let mut next_source = 1u64;
+    let source_lease = Duration::from_millis(u64::from(env_u32(
+        "LOGICD_CORE_SOURCE_LEASE_MS",
+        30000,
+        100,
+        300000,
+    )));
     while !should_exit {
+        flush_broker_pending(&broker, &config, &mut core, &mut last_broker_error);
+        delegate.poll(&mut core, &config, &broker, &mut last_broker_error);
+        if core.guarded_deadline_due(Instant::now())
+            || (core.guarded_tap.is_some() && !owner_protocol::output_ready(&config))
+        {
+            for report in core.end_guarded_tap("deadline_or_readiness") {
+                emit_report(&broker, &config, &mut core, &report, &mut last_broker_error);
+            }
+        }
         accept_pending(&matrix_listener, &mut matrix_clients, "matrix");
         accept_pending(&ctrl_listener, &mut ctrl_clients, "ctrl");
 
@@ -1621,7 +2128,7 @@ fn serve(mut config: Config) -> Result<(), String> {
         while index < matrix_clients.len() {
             let mut remove = false;
             let mut buf = [0u8; 256];
-            loop {
+            for _ in 0..16 {
                 match matrix_clients[index].stream.read(&mut buf) {
                     Ok(0) => {
                         remove = true;
@@ -1638,34 +2145,14 @@ fn serve(mut config: Config) -> Result<(), String> {
                                     continue;
                                 }
                             };
-                            let outcome = core.apply_event(event);
-                            if let Some(packet) = outcome.delegate_packet {
-                                delegate_matrix_packet(&mut core, &config, packet);
-                            }
-                            if let Some(packet) = outcome.tap_packet {
-                                tap_matrix_packet(&mut core, &config, packet);
-                            }
-                            let reports = outcome.reports;
-                            let preview_start = core
-                                .counters
-                                .reports_emitted
-                                .saturating_sub(reports.len() as u64)
-                                + 1;
-                            for (offset, report) in reports.iter().enumerate() {
-                                let preview_seq = preview_start + offset as u64;
-                                if let Err(err) =
-                                    write_preview_log(&config, preview_seq, &event, report)
-                                {
-                                    eprintln!("warning: {err}");
-                                }
-                                emit_report(
-                                    &broker,
-                                    &config,
-                                    &mut core,
-                                    report,
-                                    &mut last_broker_error,
-                                );
-                            }
+                            delegate.event(
+                                &mut core,
+                                &config,
+                                0,
+                                event,
+                                &broker,
+                                &mut last_broker_error,
+                            );
                             processed += 1;
                             write_status(
                                 &core,
@@ -1704,7 +2191,10 @@ fn serve(mut config: Config) -> Result<(), String> {
         while ctrl_index < ctrl_clients.len() {
             let mut remove = false;
             let mut buf = [0u8; 256];
-            while !ctrl_clients[ctrl_index].read_closed {
+            for _ in 0..16 {
+                if ctrl_clients[ctrl_index].read_closed {
+                    break;
+                }
                 match ctrl_clients[ctrl_index].stream.read(&mut buf) {
                     Ok(0) => {
                         ctrl_clients[ctrl_index].read_closed = true;
@@ -1712,6 +2202,10 @@ fn serve(mut config: Config) -> Result<(), String> {
                     }
                     Ok(n) => {
                         ctrl_clients[ctrl_index].input.extend_from_slice(&buf[..n]);
+                        if ctrl_clients[ctrl_index].input.len() > 1024 * 1024 {
+                            remove = true;
+                            break;
+                        }
                         while let Some(pos) = ctrl_clients[ctrl_index]
                             .input
                             .iter()
@@ -1722,16 +2216,110 @@ fn serve(mut config: Config) -> Result<(), String> {
                             if line.ends_with(b"\n") {
                                 line.pop();
                             }
-                            let response = handle_ctrl_line(
-                                &line,
-                                &mut core,
-                                &mut config,
-                                &broker,
-                                &mut last_broker_error,
-                            );
+                            let parsed =
+                                serde_json::from_slice::<Value>(&line).unwrap_or(Value::Null);
+                            let command = parsed["t"].as_str().unwrap_or("");
+                            if matches!(command, "release_all" | "set_matrix_delegate_all") {
+                                delegate.invalidate(
+                                    &mut core,
+                                    &config,
+                                    &broker,
+                                    &mut last_broker_error,
+                                );
+                            }
+                            let client = &mut ctrl_clients[ctrl_index];
+                            client.last_seen = Instant::now();
+                            let mut response = match command {
+                                "source_open" => {
+                                    if parsed["protocol"] != 1 {
+                                        json!({"result":"error","error":"source_protocol_required"})
+                                    } else if client.source.is_some() {
+                                        json!({"result":"error","error":"source_already_open"})
+                                    } else {
+                                        let source = next_source;
+                                        next_source += 1;
+                                        client.source = Some(source);
+                                        json!({"result":"ok","source":source,"owner_epoch":core.owner_epoch,"lease_ms":source_lease.as_millis()})
+                                    }
+                                }
+                                "source_event" => {
+                                    let values = (
+                                        client.source,
+                                        parsed["row"].as_u64().filter(|v| *v <= 15),
+                                        parsed["col"].as_u64().filter(|v| *v <= 15),
+                                        parsed["is_press"].as_bool(),
+                                    );
+                                    if parsed.get("source").is_some() {
+                                        json!({"result":"error","error":"source_is_connection_owned"})
+                                    } else if let (
+                                        Some(source),
+                                        Some(row),
+                                        Some(col),
+                                        Some(press),
+                                    ) = values
+                                    {
+                                        delegate.event(
+                                            &mut core,
+                                            &config,
+                                            source,
+                                            MatrixEvent {
+                                                press,
+                                                row: row as u8,
+                                                col: col as u8,
+                                            },
+                                            &broker,
+                                            &mut last_broker_error,
+                                        );
+                                        json!({"result":"ok","state":"accepted","source":source})
+                                    } else {
+                                        json!({"result":"error","error":"invalid_source_event"})
+                                    }
+                                }
+                                "source_ping" => {
+                                    if client.source.is_some() {
+                                        json!({"result":"ok"})
+                                    } else {
+                                        json!({"result":"error","error":"source_not_open"})
+                                    }
+                                }
+                                "source_close" => {
+                                    if let Some(source) = client.source.take() {
+                                        delegate.end_source(
+                                            &mut core,
+                                            &config,
+                                            source,
+                                            &broker,
+                                            &mut last_broker_error,
+                                        );
+                                    }
+                                    json!({"result":"ok","state":if core.delegate_pending{"cleanup_pending"}else{"released"}})
+                                }
+                                "key_event" if parsed["delegate_owned"] == true => delegate
+                                    .owned_key_event(
+                                        &mut core,
+                                        &config,
+                                        &parsed,
+                                        &broker,
+                                        &mut last_broker_error,
+                                    ),
+                                _ => handle_ctrl_line(
+                                    &line,
+                                    &mut core,
+                                    &mut config,
+                                    &broker,
+                                    &mut last_broker_error,
+                                ),
+                            };
+                            if matches!(command, "owner_state" | "status") {
+                                response["delegate_transaction"] = delegate.metrics();
+                            }
                             let mut encoded = response.to_string().into_bytes();
                             encoded.push(b'\n');
                             ctrl_clients[ctrl_index].output.extend_from_slice(&encoded);
+                            if ctrl_clients[ctrl_index].output.len() > 1024 * 1024 {
+                                remove = true;
+                                break;
+                            }
                             write_status(
                                 &core,
                                 &config,
@@ -1764,8 +2352,33 @@ fn serve(mut config: Config) -> Result<(), String> {
             {
                 remove = true;
             }
+            if ctrl_clients[ctrl_index].source.is_some()
+                && ctrl_clients[ctrl_index].last_seen.elapsed() > source_lease
+            {
+                remove = true;
+            }
+            if ctrl_clients[ctrl_index].read_closed {
+                if let Some(source) = ctrl_clients[ctrl_index].source.take() {
+                    delegate.end_source(
+                        &mut core,
+                        &config,
+                        source,
+                        &broker,
+                        &mut last_broker_error,
+                    );
+                }
+            }
             if remove {
-                let _ = ctrl_clients.remove(ctrl_index);
+                let client = ctrl_clients.remove(ctrl_index);
+                if let Some(source) = client.source {
+                    delegate.end_source(
+                        &mut core,
+                        &config,
+                        source,
+                        &broker,
+                        &mut last_broker_error,
+                    );
+                }
             } else {
                 ctrl_index += 1;
             }
@@ -2130,6 +2743,217 @@ mod tests {
             one_report(core.apply_event(event(false, 0, 0))),
             [0, 0, 4, 0, 0, 0, 0, 0]
         );
+    }
+
+    fn jis_core(entries: &[(&str, &str)]) -> Core {
+        let mut core = test_core(vec![layer(entries)]);
+        core.keycodes.insert("KC_RO".into(), 0x87);
+        core.keycodes.insert("KC_GRV".into(), 0x35);
+        core.routing = RoutingConfig {
+            split_keyboard_enabled: true,
+            route_mode: RouteMode::JisSpecialUsDefault,
+        };
+        core
+    }
+
+    #[test]
+    fn mixed_jis_keys_retain_endpoint_and_release_edges_in_every_order() {
+        for press_order in [[0, 1], [1, 0]] {
+            for release_order in [[0, 1], [1, 0]] {
+                let mut core = jis_core(&[("0,0", "KC_A"), ("0,1", "KC_RO")]);
+                let mut trace = Vec::new();
+                for col in press_order {
+                    trace.extend(core.apply_event(event(true, 0, col)).reports);
+                }
+                for col in release_order {
+                    trace.extend(core.apply_event(event(false, 0, col)).reports);
+                }
+                for (kind, usage, forbidden) in
+                    [(KIND_KEYBOARD, 0x87, 4), (KIND_US_SUB_KEYBOARD, 4, 0x87)]
+                {
+                    let mut down = false;
+                    let mut edges = Vec::new();
+                    for output in trace.iter().filter(|report| report.kind == kind) {
+                        assert!(!output.report[2..].contains(&forbidden));
+                        let next = output.report[2..].contains(&usage);
+                        if next != down {
+                            edges.push(next);
+                            down = next;
+                        }
+                    }
+                    assert_eq!(
+                        edges,
+                        vec![true, false],
+                        "{press_order:?} {release_order:?} {kind}"
+                    );
+                    assert!(!down);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn grave_and_zkhk_same_usage_have_independent_endpoint_ownership() {
+        for release_order in [[0, 1], [1, 0]] {
+            let mut core = jis_core(&[("0,0", "KC_GRV"), ("0,1", "KC_ZKHK")]);
+            let first = core.apply_event(event(true, 0, 0)).reports;
+            assert_eq!(first[0].kind, KIND_US_SUB_KEYBOARD);
+            let second = core.apply_event(event(true, 0, 1)).reports;
+            assert!(
+                second
+                    .iter()
+                    .any(|r| r.kind == KIND_KEYBOARD && r.report[2..].contains(&0x35))
+            );
+            let first_release = core.apply_event(event(false, 0, release_order[0])).reports;
+            let endpoint = if release_order[0] == 0 {
+                KIND_US_SUB_KEYBOARD
+            } else {
+                KIND_KEYBOARD
+            };
+            assert!(
+                first_release
+                    .iter()
+                    .any(|r| r.kind == endpoint && r.report == [0; 8])
+            );
+            assert!(
+                !first_release
+                    .iter()
+                    .any(|r| r.kind != endpoint && r.report == [0; 8])
+            );
+            assert!(first_release.iter().all(|r| r.report[1] == 0));
+            assert!(
+                core.apply_event(event(false, 0, release_order[1]))
+                    .reports
+                    .iter()
+                    .any(|r| r.report == [0; 8])
+            );
+        }
+    }
+
+    #[test]
+    fn forced_injection_routes_only_its_source_and_pins_release_route() {
+        let mut core = jis_core(&[("0,0", "KC_RO")]);
+        core.apply_event(event(true, 0, 0));
+        let press = core
+            .apply_injected_key_event_with_route(
+                "owned",
+                "KC_A",
+                true,
+                InjectedRoute::UsSubKeyboard,
+            )
+            .unwrap();
+        assert!(
+            press
+                .iter()
+                .all(|r| r.kind != KIND_US_SUB_KEYBOARD || !r.report[2..].contains(&0x87))
+        );
+        let release = core
+            .apply_injected_key_event_with_route("owned", "KC_A", false, InjectedRoute::Keyboard)
+            .unwrap();
+        assert!(
+            release
+                .iter()
+                .any(|r| r.kind == KIND_US_SUB_KEYBOARD && r.report == [0; 8])
+        );
+        assert!(
+            !release
+                .iter()
+                .any(|r| r.kind == KIND_KEYBOARD && r.report == [0; 8])
+        );
+        assert_eq!(core.hid.build()[2], 0x87);
+    }
+
+    fn apply_candidate(core: &Core, id: &str, layers: Value) -> Value {
+        json!({"t":"apply_keymap", "operation_id":id, "layers":layers,
+            "expected_owner_epoch":core.owner_epoch, "expected_keymap_revision":core.keymap_revision})
+    }
+
+    #[test]
+    fn owner_apply_changes_future_presses_but_held_key_keeps_original_action() {
+        let mut core = test_core(vec![layer(&[("0,0", "KC_LSHIFT"), ("0,1", "KC_A")])]);
+        core.apply_event(event(true, 0, 0));
+        core.apply_event(event(true, 0, 1));
+        let request = apply_candidate(&core, "remap-held", json!([{"0,0":"KC_B", "0,1":"KC_C"}]));
+        let outcome = core.apply_keymap_request(&request);
+        assert_eq!(outcome["result"], "ok");
+        assert_eq!(core.hid.build(), [2, 0, 4, 0, 0, 0, 0, 0]);
+        assert_eq!(core.owner_state(Some(0), Some(0))["action"], "KC_B");
+        assert_eq!(
+            one_report(core.apply_event(event(false, 0, 1))),
+            [2, 0, 0, 0, 0, 0, 0, 0]
+        );
+        assert_eq!(one_report(core.apply_event(event(false, 0, 0))), [0; 8]);
+        assert_eq!(
+            one_report(core.apply_event(event(true, 0, 0))),
+            [0, 0, 5, 0, 0, 0, 0, 0]
+        );
+    }
+
+    #[test]
+    fn keymap_operations_are_idempotent_and_guard_owner_and_revision() {
+        let mut core = test_core(vec![layer(&[("0,0", "KC_A")])]);
+        let request = apply_candidate(&core, "apply-1", json!([{"0,0":"KC_B"}]));
+        let first = core.apply_keymap_request(&request);
+        assert_eq!(first["keymap_revision"], 2);
+        assert_eq!(core.apply_keymap_request(&request), first);
+        assert_eq!(core.operation_status("apply-1"), first);
+        assert_eq!(core.keymap_revision, 2);
+        let mut conflicting = request.clone();
+        conflicting["layers"] = json!([{"0,0":"KC_C"}]);
+        assert_eq!(
+            core.apply_keymap_request(&conflicting)["error"],
+            "operation_id_conflict"
+        );
+        conflicting["operation_id"] = json!("apply-2");
+        assert_eq!(
+            core.apply_keymap_request(&conflicting)["error"],
+            "keymap_revision_mismatch"
+        );
+        let mut restarted = test_core(vec![layer(&[("0,0", "KC_A")])]);
+        assert_eq!(
+            restarted.apply_keymap_request(&request)["error"],
+            "owner_epoch_mismatch"
+        );
+        assert_eq!(restarted.operation_status("apply-1")["result"], "unknown");
+        assert_eq!(core.owner_state(None, None)["keymap_revision"], 2);
+    }
+
+    #[test]
+    fn invalid_candidate_cannot_mutate_owner_or_pressed_state() {
+        let mut core = test_core(vec![layer(&[("0,0", "KC_A")])]);
+        core.apply_event(event(true, 0, 0));
+        for layers in [
+            json!([]),
+            json!([{"16,0":"KC_A"}]),
+            json!([{"0,0":4}]),
+            json!([{"00,0":"KC_A"}]),
+        ] {
+            let request = apply_candidate(&core, "invalid", layers);
+            assert_eq!(core.apply_keymap_request(&request)["result"], "error");
+            assert_eq!(core.keymap_revision, 1);
+            assert_eq!(core.hid.build(), [0, 0, 4, 0, 0, 0, 0, 0]);
+        }
+        assert_eq!(one_report(core.apply_event(event(false, 0, 0))), [0; 8]);
+    }
+
+    #[test]
+    fn multiple_momentary_contributions_survive_remap_and_release_individually() {
+        let mut core = test_core(vec![
+            layer(&[("0,0", "MO(1)"), ("0,1", "MO(1)")]),
+            layer(&[("0,2", "KC_B")]),
+        ]);
+        core.apply_event(event(true, 0, 0));
+        core.apply_event(event(true, 0, 1));
+        let request = apply_candidate(
+            &core,
+            "remap-layers",
+            json!([{"0,0":"KC_A", "0,1":"KC_B"}, {"0,2":"KC_C"}]),
+        );
+        assert_eq!(core.apply_keymap_request(&request)["result"], "ok");
+        core.apply_event(event(false, 0, 0));
+        assert_eq!(core.active_layers(), vec![1, 0]);
+        core.apply_event(event(false, 0, 1));
+        assert_eq!(core.active_layers(), vec![0]);
     }
 
     #[test]

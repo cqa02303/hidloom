@@ -41,6 +41,7 @@
 #include <sys/stat.h>
 
 #include "debounce.h"
+#include "trace.h"
 
 /* ------------------------------------------------------------------ */
 /* 定数                                                                 */
@@ -109,6 +110,8 @@ typedef struct {
     int  idle_after_ms;     /* この時間無変化なら idle_interval_us へ移行 */
     int  deep_idle_after_ms;/* この時間無変化なら deep_idle_interval_us へ移行 */
     int  debounce_ms;       /* チャタリング除去時間 (ミリ秒)               */
+    int  press_debounce_ms; /* time方式の通常press確定時間                 */
+    int  repress_guard_ms;  /* release直後の同一key再press保護時間         */
     int  debounce_count;    /* デバウンス確定スキャン数 (0=debounce_msから自動計算) */
     int  startup_quiet_ms;  /* 起動直後は状態同期のみ行いイベントを送らない時間 */
     char debounce_mode[16]; /* count=既存scan回数方式, time=実時間方式     */
@@ -130,7 +133,10 @@ static volatile sig_atomic_t g_running = 1;
 
 static void write_runtime_status(const char *path, const Config *cfg,
                                  int process, int gpio_ready,
-                                 int logic_connected)
+                                 int logic_connected,
+                                 const MatrixdTrace *trace,
+                                 uint64_t send_failures,
+                                 uint64_t tap_send_failures)
 {
     if (!path || !*path)
         return;
@@ -141,15 +147,41 @@ static void write_runtime_status(const char *path, const Config *cfg,
     FILE *stream = fopen(temporary, "w");
     if (!stream)
         return;
+    (void)fchmod(fileno(stream), 0600);
+    uint64_t trace_records_written = 0;
+    uint64_t trace_bytes_written = 0;
+    uint64_t trace_rotations = 0;
+    uint64_t trace_io_errors = 0;
+    if (trace && trace->writer) {
+        trace_records_written = trace->writer->records_written;
+        trace_bytes_written = trace->writer->bytes_written;
+        trace_rotations = trace->writer->rotations;
+        trace_io_errors = trace->writer->io_errors;
+    }
     fprintf(stream,
             "{\"schema\":\"matrixd.status.v1\",\"process\":%s,"
             "\"configured\":true,\"gpio_ready\":%s,"
             "\"logic_socket\":{\"path\":\"%s\",\"connected\":%s},"
+            "\"diagnostic_trace\":{\"enabled\":%s,\"path\":\"%s\","
+            "\"records_queued\":%llu,\"queue_dropped\":%llu,"
+            "\"records_written\":%llu,\"bytes_written\":%llu,"
+            "\"rotations\":%llu,\"io_errors\":%llu},"
+            "\"send_failures\":%llu,\"tap_send_failures\":%llu,"
             "\"pid\":%ld}\n",
             process ? "true" : "false",
             gpio_ready ? "true" : "false",
             cfg->socket_path,
             logic_connected ? "true" : "false",
+            trace && trace->write_fd >= 0 ? "true" : "false",
+            cfg->event_log_path,
+            (unsigned long long)(trace ? trace->records_queued : 0),
+            (unsigned long long)(trace ? trace->queue_dropped : 0),
+            (unsigned long long)trace_records_written,
+            (unsigned long long)trace_bytes_written,
+            (unsigned long long)trace_rotations,
+            (unsigned long long)trace_io_errors,
+            (unsigned long long)send_failures,
+            (unsigned long long)tap_send_failures,
             (long)getpid());
     if (fclose(stream) == 0)
         (void)rename(temporary, path);
@@ -494,7 +526,9 @@ static int config_load(const char *path, Config *cfg)
     cfg->deep_idle_interval_us = json_int(buf, "deep_idle_interval_us", 0);
     cfg->idle_after_ms = json_int(buf, "idle_after_ms", 0);
     cfg->deep_idle_after_ms = json_int(buf, "deep_idle_after_ms", 0);
-    cfg->debounce_ms    = json_int (buf, "debounce_ms",        5);
+    cfg->debounce_ms    = json_int (buf, "debounce_ms",        6);
+    cfg->press_debounce_ms = json_int(buf, "press_debounce_ms", 5);
+    cfg->repress_guard_ms = json_int(buf, "repress_guard_ms", 16);
     cfg->debounce_count = json_int (buf, "debounce_count",     0);
     cfg->startup_quiet_ms = json_int(buf, "startup_quiet_ms",  0);
     json_str(buf, "debounce_mode", cfg->debounce_mode, sizeof(cfg->debounce_mode), "count");
@@ -509,6 +543,8 @@ static int config_load(const char *path, Config *cfg)
     clamp_nonnegative_int(&cfg->idle_after_ms, "idle_after_ms");
     clamp_nonnegative_int(&cfg->deep_idle_after_ms, "deep_idle_after_ms");
     clamp_nonnegative_int(&cfg->debounce_ms, "debounce_ms");
+    clamp_nonnegative_int(&cfg->press_debounce_ms, "press_debounce_ms");
+    clamp_nonnegative_int(&cfg->repress_guard_ms, "repress_guard_ms");
     clamp_nonnegative_int(&cfg->debounce_count, "debounce_count");
     clamp_nonnegative_int(&cfg->startup_quiet_ms, "startup_quiet_ms");
     clamp_nonnegative_int(&cfg->settle_us, "settle_us");
@@ -800,40 +836,20 @@ static int64_t realtime_us(void)
     return (int64_t)ts.tv_sec * 1000000 + ts.tv_nsec / 1000;
 }
 
-static void matrixd_log_event(
-    const Config *cfg,
-    char type,
-    int row,
-    int col,
-    uint8_t raw,
-    int64_t monotonic_event_us
-)
+static void trace_emit_record(MatrixdTrace *trace, const char *record, size_t length)
 {
-    if (!cfg->event_log_path[0])
-        return;
-
-    FILE *f = fopen(cfg->event_log_path, "a");
-    if (!f)
-        return;
-    fprintf(
-        f,
-        "{\"t\":\"matrixd_event\",\"unix_us\":%lld,\"monotonic_us\":%lld,"
-        "\"event\":\"%c\",\"row\":%d,\"col\":%d,\"raw\":%u,\"packet\":\"%c%X%X\\n\"}\n",
-        (long long)realtime_us(),
-        (long long)monotonic_event_us,
-        type,
-        row,
-        col,
-        (unsigned)raw,
-        type,
-        row & 0xF,
-        col & 0xF
-    );
-    fclose(f);
+    static int64_t last_warning_ms;
+    if (matrixd_trace_emit(trace, record, length) < 0) {
+        int64_t now_ms = monotonic_ms();
+        if (last_warning_ms == 0 || now_ms - last_warning_ms >= 60000) {
+            syslog(LOG_WARNING, "diagnostic trace queue full or unavailable; input continues");
+            last_warning_ms = now_ms;
+        }
+    }
 }
 
-static void matrixd_log_debounce(
-    const Config *cfg,
+static void matrixd_trace_debounce(
+    MatrixdTrace *trace,
     uint64_t scan_seq,
     int row,
     int col,
@@ -844,29 +860,28 @@ static void matrixd_log_debounce(
     int64_t monotonic_event_us
 )
 {
-    if (!cfg->event_log_path[0])
+    if (!trace || trace->write_fd < 0)
         return;
     if (before == NULL || after == NULL)
         return;
     if (new_raw == before->raw && event == MATRIXD_DEBOUNCE_EVENT_NONE)
         return;
 
-    char event_type = 'N';
+    char event_type = '-';
     if (event == MATRIXD_DEBOUNCE_EVENT_PRESS)
         event_type = 'P';
     else if (event == MATRIXD_DEBOUNCE_EVENT_RELEASE)
         event_type = 'R';
 
-    FILE *f = fopen(cfg->event_log_path, "a");
-    if (!f)
-        return;
-    fprintf(
-        f,
-        "{\"t\":\"matrixd_debounce\",\"unix_us\":%lld,\"monotonic_us\":%lld,"
+    char record[MATRIXD_TRACE_MAX_RECORD_BYTES];
+    int written = snprintf(
+        record, sizeof(record),
+        "{\"schema\":\"matrixd.trace.v1\",\"kind\":\"debounce\","
+        "\"realtime_us\":%lld,\"monotonic_us\":%lld,"
         "\"scan\":%llu,\"row\":%d,\"col\":%d,\"new_raw\":%u,"
         "\"before\":{\"raw\":%u,\"state\":%u,\"count\":%u,\"raw_since_us\":%lld},"
         "\"after\":{\"raw\":%u,\"state\":%u,\"count\":%u,\"raw_since_us\":%lld},"
-        "\"event\":\"%c\"}\n",
+        "\"confirmed\":\"%c\"}\n",
         (long long)realtime_us(),
         (long long)monotonic_event_us,
         (unsigned long long)scan_seq,
@@ -883,7 +898,41 @@ static void matrixd_log_debounce(
         (long long)after->raw_since_us,
         event_type
     );
-    fclose(f);
+    if (written > 0 && (size_t)written < sizeof(record))
+        trace_emit_record(trace, record, (size_t)written);
+}
+
+static void matrixd_trace_dispatch(
+    MatrixdTrace *trace,
+    uint64_t scan_seq,
+    char type,
+    int row,
+    int col,
+    const char *primary,
+    const char *tap,
+    int committed,
+    int64_t monotonic_event_us)
+{
+    if (!trace || trace->write_fd < 0)
+        return;
+    char record[MATRIXD_TRACE_MAX_RECORD_BYTES];
+    int written = snprintf(
+        record, sizeof(record),
+        "{\"schema\":\"matrixd.trace.v1\",\"kind\":\"dispatch\","
+        "\"realtime_us\":%lld,\"monotonic_us\":%lld,\"scan\":%llu,"
+        "\"row\":%d,\"col\":%d,\"confirmed\":\"%c\","
+        "\"primary\":\"%s\",\"tap\":\"%s\",\"committed\":%s}\n",
+        (long long)realtime_us(),
+        (long long)monotonic_event_us,
+        (unsigned long long)scan_seq,
+        row,
+        col,
+        type,
+        primary,
+        tap,
+        committed ? "true" : "false");
+    if (written > 0 && (size_t)written < sizeof(record))
+        trace_emit_record(trace, record, (size_t)written);
 }
 
 static int scan_sleep_us(const Config *cfg, int64_t idle_ms)
@@ -941,7 +990,23 @@ static void print_usage(FILE *out)
             "  -h, --help    show this help and exit\n"
             "\n"
             "Environment:\n"
-            "  MATRIXD_EVENT_LOG_PATH\n");
+            "  MATRIXD_EVENT_LOG_PATH\n"
+            "  MATRIXD_EVENT_LOG_MAX_BYTES\n");
+}
+
+static size_t trace_max_file_bytes(void)
+{
+    const char *value = getenv("MATRIXD_EVENT_LOG_MAX_BYTES");
+    if (!value || !value[0])
+        return MATRIXD_TRACE_DEFAULT_MAX_FILE_BYTES;
+    char *end = NULL;
+    errno = 0;
+    unsigned long long parsed = strtoull(value, &end, 10);
+    if (errno || !end || *end || parsed < MATRIXD_TRACE_MAX_RECORD_BYTES || parsed > SIZE_MAX) {
+        syslog(LOG_WARNING, "invalid MATRIXD_EVENT_LOG_MAX_BYTES=%s; using default", value);
+        return MATRIXD_TRACE_DEFAULT_MAX_FILE_BYTES;
+    }
+    return (size_t)parsed;
 }
 
 int main(int argc, char *argv[])
@@ -972,6 +1037,16 @@ int main(int argc, char *argv[])
     if (config_load(config_path, &cfg) < 0)
         return 1;
 
+    MatrixdTrace trace;
+    if (matrixd_trace_start(&trace, cfg.event_log_path, trace_max_file_bytes()) < 0) {
+        memset(&trace, 0, sizeof(trace));
+        trace.write_fd = -1;
+        trace.writer_pid = -1;
+        syslog(LOG_WARNING, "diagnostic trace unavailable; input continues without trace");
+    }
+    uint64_t send_failures = 0;
+    uint64_t tap_send_failures = 0;
+
     syslog(LOG_INFO, "設定読み込み完了: %dx%d matrix enabled=%d direct_switches=%d rotary_encoders=%d socket=%s tap_socket=%s",
            cfg.rows, cfg.cols, cfg.matrix_enabled, cfg.direct_switch_count,
            cfg.rotary_encoder_count, cfg.socket_path,
@@ -980,7 +1055,9 @@ int main(int argc, char *argv[])
     /* GPIO 初期化 */
     if (cfg.gpio_enabled) {
         if (gpio_open() < 0) {
-            write_runtime_status(status_path, &cfg, 0, 0, 0);
+            write_runtime_status(status_path, &cfg, 0, 0, 0, &trace,
+                                 send_failures, tap_send_failures);
+            matrixd_trace_stop(&trace);
             return 1;
         }
         gpio_init_all(&cfg);
@@ -988,7 +1065,8 @@ int main(int argc, char *argv[])
     } else {
         syslog(LOG_WARNING, "gpio_enabled=false: GPIO スキャンを無効化 (ハードウェア未接続モード)");
     }
-    write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 0);
+    write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 0, &trace,
+                         send_failures, tap_send_failures);
 
     /* デバウンス用配列 */
     uint8_t raw[MAX_ROWS][MAX_COLS];  /* スキャン生データ */
@@ -1017,7 +1095,9 @@ int main(int argc, char *argv[])
                debounce_thresh, cfg.debounce_ms, cfg.interval_us);
     }
     if (use_time_debounce) {
-        syslog(LOG_INFO, "デバウンス方式: time (debounce_ms=%d)", cfg.debounce_ms);
+        syslog(LOG_INFO,
+               "デバウンス方式: time (press=%d ms release=%d ms repress_guard=%d ms)",
+               cfg.press_debounce_ms, cfg.debounce_ms, cfg.repress_guard_ms);
     } else {
         syslog(LOG_INFO, "デバウンス方式: count");
     }
@@ -1032,18 +1112,26 @@ int main(int argc, char *argv[])
     if (cfg.startup_quiet_ms > 0)
         syslog(LOG_INFO, "起動時イベント抑止: %d ms", cfg.startup_quiet_ms);
     uint64_t scan_seq = 0;
+    int64_t last_status_ms = monotonic_ms();
 
     while (g_running) {
         /* logicd へ未接続なら接続を試みる */
         if (sock_fd < 0) {
             sock_fd = sock_connect(cfg.socket_path);
             if (sock_fd < 0) {
+                int64_t disconnected_ms = monotonic_ms();
+                if (disconnected_ms - last_status_ms >= 5000) {
+                    write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 0,
+                                         &trace, send_failures, tap_send_failures);
+                    last_status_ms = disconnected_ms;
+                }
                 /* logicd が未起動の可能性; 少し待って再試行 */
                 usleep(LOGICD_CONNECT_RETRY_US);
                 continue;
             }
             syslog(LOG_INFO, "logicd に接続しました: %s", cfg.socket_path);
-            write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 1);
+            write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 1, &trace,
+                                 send_failures, tap_send_failures);
         }
 
         if (tap_enabled && tap_sock_fd < 0) {
@@ -1080,11 +1168,13 @@ int main(int argc, char *argv[])
                 MatrixdDebounceKey before = key_state[r][c];
                 MatrixdDebounceEvent event;
                 if (use_time_debounce) {
-                    event = matrixd_debounce_step_time(
+                    event = matrixd_debounce_step_time_policy(
                         &key_state[r][c],
                         new_raw,
                         now_us,
-                        (int64_t)cfg.debounce_ms * 1000
+                        (int64_t)cfg.press_debounce_ms * 1000,
+                        (int64_t)cfg.debounce_ms * 1000,
+                        (int64_t)cfg.repress_guard_ms * 1000
                     );
                 } else {
                     event = matrixd_debounce_step_count(
@@ -1094,28 +1184,41 @@ int main(int argc, char *argv[])
                     );
                 }
                 MatrixdDebounceKey after = key_state[r][c];
-                matrixd_log_debounce(&cfg, scan_seq, r, c, new_raw, &before, &after, event, now_us);
+                matrixd_trace_debounce(&trace, scan_seq, r, c, new_raw, &before, &after, event, now_us);
 
                 if (event != MATRIXD_DEBOUNCE_EVENT_NONE) {
                     if (now_us < startup_quiet_until_us) {
-                        matrixd_debounce_commit_event(&key_state[r][c], event);
+                        char type = (event == MATRIXD_DEBOUNCE_EVENT_PRESS) ? 'P' : 'R';
+                        matrixd_trace_dispatch(&trace, scan_seq, type, r, c,
+                                               "startup_quiet", "not_attempted", 1, now_us);
+                        matrixd_debounce_commit_event_at(&key_state[r][c], event, now_us);
                         continue;
                     }
                     char type = (event == MATRIXD_DEBOUNCE_EVENT_PRESS) ? 'P' : 'R';
                     if (sock_send_event(sock_fd, type, r, c) < 0) {
+                        send_failures++;
+                        matrixd_trace_dispatch(&trace, scan_seq, type, r, c,
+                                               "failed", "not_attempted", 0, now_us);
                         syslog(LOG_WARNING, "送信失敗。再接続します");
                         close(sock_fd);
                         sock_fd = -1;
-                        write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 0);
+                        write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled, 0, &trace,
+                                             send_failures, tap_send_failures);
                         goto next_scan;
                     }
+                    const char *tap_result = tap_enabled ? "disconnected" : "disabled";
                     if (tap_sock_fd >= 0 && sock_send_event(tap_sock_fd, type, r, c) < 0) {
+                        tap_send_failures++;
+                        tap_result = "failed";
                         syslog(LOG_DEBUG, "matrix tap 送信失敗。tap 側だけ再接続します");
                         close(tap_sock_fd);
                         tap_sock_fd = -1;
+                    } else if (tap_sock_fd >= 0) {
+                        tap_result = "sent";
                     }
-                    matrixd_log_event(&cfg, type, r, c, new_raw, now_us);
-                    matrixd_debounce_commit_event(&key_state[r][c], event);
+                    matrixd_trace_dispatch(&trace, scan_seq, type, r, c,
+                                           "sent", tap_result, 1, now_us);
+                    matrixd_debounce_commit_event_at(&key_state[r][c], event, now_us);
                     event_sent = 1;
                 }
             }
@@ -1126,6 +1229,12 @@ int main(int argc, char *argv[])
 
 next_scan:
         int64_t now_ms = monotonic_ms();
+        if (now_ms - last_status_ms >= 5000) {
+            write_runtime_status(status_path, &cfg, 1, cfg.gpio_enabled,
+                                 sock_fd >= 0, &trace,
+                                 send_failures, tap_send_failures);
+            last_status_ms = now_ms;
+        }
         int64_t idle_ms = now_ms - last_activity_ms;
         if (idle_ms < 0)
             idle_ms = 0;
@@ -1140,7 +1249,9 @@ next_scan:
         gpio_cleanup(&cfg);
         gpio_close();
     }
-    write_runtime_status(status_path, &cfg, 0, 0, 0);
+    write_runtime_status(status_path, &cfg, 0, 0, 0, &trace,
+                         send_failures, tap_send_failures);
+    matrixd_trace_stop(&trace);
     closelog();
     return 0;
 }

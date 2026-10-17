@@ -10,6 +10,13 @@ sub keyboard = US 101/102 として認識させるための実験用 driver pack
 - `install-cqa-jis-inf-admin.ps1`: 署名済み package を使わず、INF を直接 `pnputil` に渡す最小 script。
 - `cqa02303v5-keyboard-layout-override-template.reg`: 手動 registry override 実験用の控え。通常手順では使わない。
 
+## 正式VID/PIDへの移行
+
+2026-09-28に承認された `1209:484C` と、復旧用の `1D6B:0105` の両方をINFに登録しています。
+main `MI_00&COL01` / `MI_00` はJIS、sub `MI_02` はUSです。Raw HID `MI_01` はこのINFでbindしません。
+変更後のINFはcatalogを再生成・署名し、Windowsでfresh enumerationと両配列を確認する必要があります。
+Linux上の静的確認は、Windows署名・install・入力確認の代わりにはなりません。
+
 ## 前提
 
 - Windows の管理者 PowerShell で実行する。

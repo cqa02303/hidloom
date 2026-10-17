@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import codecs
+import errno
 import fcntl
 import os
 import pty
@@ -255,6 +257,12 @@ def render_cursor(row: int, column: int) -> str:
     return f"{ESC}[{safe_row};{safe_column}H"
 
 
+@dataclass(frozen=True)
+class PtyReadResult:
+    data: bytes = b""
+    eof: bool = False
+
+
 class PtyMirrorSession:
     """Small PTY process wrapper for M0 local tests and sessiond wiring."""
 
@@ -264,16 +272,21 @@ class PtyMirrorSession:
         self.columns = columns
         self.master_fd: int | None = None
         self.process: subprocess.Popen[bytes] | None = None
+        self.output_eof = False
+        self._decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+        self._decoder_finished = False
+        self._pending_output = b""
 
     @property
     def active(self) -> bool:
         return self.process is not None and self.process.poll() is None
 
     def start(self) -> None:
-        if self.active:
+        if self.active or self.master_fd is not None:
             raise RuntimeError("PTY mirror session is already active")
         argv = shlex.split(self.command) or ["bash"]
         master_fd, slave_fd = pty.openpty()
+        os.set_blocking(master_fd, False)
         attrs = termios.tcgetattr(slave_fd)
         attrs[3] &= ~termios.ECHO
         termios.tcsetattr(slave_fd, termios.TCSANOW, attrs)
@@ -308,6 +321,10 @@ class PtyMirrorSession:
         finally:
             os.close(slave_fd)
         self.master_fd = master_fd
+        self.output_eof = False
+        self._decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+        self._decoder_finished = False
+        self._pending_output = b""
 
     def write(self, data: bytes) -> int:
         if self.master_fd is None or not self.active:
@@ -340,37 +357,68 @@ class PtyMirrorSession:
         return sent
 
     def read_available(self, *, timeout: float = 0.0, max_bytes: int = 4096) -> bytes:
-        if self.master_fd is None:
-            return b""
+        """Compatibility byte reader; use read_available_result to observe EOF."""
+        return self.read_available_result(timeout=timeout, max_bytes=max_bytes).data
+
+    def read_available_result(self, *, timeout: float = 0.0, max_bytes: int = 4096) -> PtyReadResult:
+        if max_bytes <= 0:
+            raise ValueError("max_bytes must be positive")
+        if self._pending_output:
+            data, self._pending_output = self._pending_output[:max_bytes], self._pending_output[max_bytes:]
+            return PtyReadResult(data)
+        if self.master_fd is None or self.output_eof:
+            return PtyReadResult(eof=True)
         ready, _write, _error = select.select([self.master_fd], [], [], max(0.0, timeout))
         if not ready:
-            return b""
+            return PtyReadResult()
         try:
-            return os.read(self.master_fd, max_bytes)
-        except OSError:
-            return b""
+            data = os.read(self.master_fd, max_bytes)
+        except OSError as exc:
+            if exc.errno in (errno.EAGAIN, errno.EWOULDBLOCK, errno.EINTR):
+                return PtyReadResult()
+            if exc.errno != errno.EIO:
+                raise
+            # Linux PTYs report EIO once every slave descriptor has closed.
+            data = b""
+        self.output_eof = not data
+        return PtyReadResult(data, eof=self.output_eof)
+
+    def probe_output_eof(self) -> bool:
+        """Check an exited empty PTY without consuming output from its reader."""
+        result = self.read_available_result(max_bytes=1)
+        if result.data:
+            self._pending_output = result.data + self._pending_output
+        # An incomplete UTF-8 character still needs the reader's final decode.
+        return result.eof and not self._decoder.getstate()[0]
+
+    def decode_output(self, result: PtyReadResult) -> str:
+        if self._decoder_finished:
+            return ""
+        text = self._decoder.decode(result.data, final=result.eof)
+        self._decoder_finished = result.eof
+        return text
 
     def read_text_until_quiet(self, *, timeout: float = 0.5, quiet_sec: float = 0.05, max_bytes: int = 8192) -> str:
         deadline = time.monotonic() + max(0.0, timeout)
         quiet_deadline = time.monotonic() + max(0.0, quiet_sec)
-        chunks: list[bytes] = []
+        chunks: list[str] = []
         total = 0
         limit = max(256, int(max_bytes or 8192))
         while time.monotonic() < deadline:
             remaining = max(1, limit - total)
-            chunk = self.read_available(timeout=0.01, max_bytes=min(4096, remaining))
-            if chunk:
-                chunks.append(chunk)
-                total += len(chunk)
+            result = self.read_available_result(timeout=0.01, max_bytes=min(4096, remaining))
+            chunks.append(self.decode_output(result))
+            if result.data:
+                total += len(result.data)
                 if total >= limit:
                     break
                 quiet_deadline = time.monotonic() + max(0.0, quiet_sec)
                 continue
-            if chunks and time.monotonic() >= quiet_deadline:
+            if total and time.monotonic() >= quiet_deadline:
                 break
-            if not self.active and not chunk:
+            if result.eof:
                 break
-        return b"".join(chunks).decode(errors="replace")
+        return "".join(chunks)
 
     def wait(self, *, timeout: float = 1.0) -> int | None:
         if self.process is None:
@@ -382,7 +430,7 @@ class PtyMirrorSession:
 
     def terminate(self) -> None:
         process = self.process
-        if process is None or process.poll() is not None:
+        if process is None:
             self.close()
             return
         try:

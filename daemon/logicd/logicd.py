@@ -183,8 +183,10 @@ def _apply_config(cfg: dict) -> None:
     from hidloom_paths import default_config_dir
     from .config_runtime import apply_runtime_config
     from .spid_runtime import spid_settings_from_config
+    from .input_session import invalidate_input_sessions
 
     runtime = _require_runtime()
+    invalidate_input_sessions()
     apply_runtime_config(
         cfg,
         runtime,
@@ -196,6 +198,8 @@ def _apply_config(cfg: dict) -> None:
         broadcast_key_event=_broadcast_key_event,
         push_i2cd_script_exit=_push_i2cd_script_exit,
     )
+    if CORE_KEY_EVENT_CTRL_SOCKET:
+        runtime.macros.keyboard_event_fn = _send_core_macro_key_event
     _spid_runtime_settings = spid_settings_from_config(cfg)
     if _spid_runtime_settings.binding is not None:
         from .spid_direction import SpidDirectionMapper
@@ -442,6 +446,7 @@ def _input_event_context() -> Any:
         encoders=runtime.encoders,
         joysticks=runtime.joysticks,
         pressed_matrix=runtime.pressed_matrix,
+        pressed_matrix_owners=runtime.pressed_matrix_owners,
         push_ledd_key_event=_push_ledd_key_event,
         push_ledd_status=_push_ledd_status,
         push_i2cd_status=_push_i2cd_status,
@@ -463,6 +468,8 @@ def _input_event_context() -> Any:
         pty_mirror_set_capture=_set_pty_mirror_capture,
         pty_mirror_release_output=_release_pty_mirror_output,
         core_key_event_fn=_send_core_key_event if CORE_KEY_EVENT_CTRL_SOCKET else None,
+        core_key_event_owned_fn=_send_core_key_event_owned if CORE_KEY_EVENT_CTRL_SOCKET else None,
+        output_transition_fn=(lambda: _send_core_ctrl_request({"t": "output_transition"})) if CORE_KEY_EVENT_CTRL_SOCKET else None,
     )
 
 
@@ -548,24 +555,27 @@ async def _release_pty_mirror_output() -> None:
 async def _send_core_ctrl_request(payload: dict) -> dict:
     if not CORE_KEY_EVENT_CTRL_SOCKET:
         return {}
+    writer = None
     try:
-        reader, writer = await asyncio.open_unix_connection(CORE_KEY_EVENT_CTRL_SOCKET)
+        reader, writer = await asyncio.wait_for(asyncio.open_unix_connection(CORE_KEY_EVENT_CTRL_SOCKET), timeout=2.0)
         writer.write((json.dumps(payload, separators=(",", ":")) + "\n").encode())
-        await writer.drain()
-        response = await reader.readline()
-        writer.close()
-        await writer.wait_closed()
-    except Exception as exc:
-        raise RuntimeError(f"core ctrl request failed: {exc}") from exc
-    if not response:
-        raise RuntimeError("core ctrl request returned empty response")
-    try:
+        await asyncio.wait_for(writer.drain(), timeout=2.0)
+        response = await asyncio.wait_for(reader.readline(), timeout=2.0)
+        if not response:
+            raise RuntimeError("core ctrl request returned empty response")
         result = json.loads(response.decode())
-    except Exception as exc:
-        raise RuntimeError(f"core ctrl request returned invalid response: {exc}") from exc
-    if result.get("result") == "error":
-        raise RuntimeError(str(result.get("error") or result))
-    return result
+        if result.get("result") == "error":
+            rejection = RuntimeError(str(result.get("error") or result))
+            rejection.owner_response = result
+            raise rejection
+        return result
+    finally:
+        if writer is not None:
+            writer.close()
+            try:
+                await writer.wait_closed()
+            except (OSError, asyncio.CancelledError):
+                pass
 
 
 async def _reload_native_core() -> dict:
@@ -595,6 +605,29 @@ async def _send_core_key_event(
         if source == "pty_terminal_mirror":
             raise RuntimeError(f"core key event forward failed: {exc}") from exc
         return
+
+
+async def _send_core_key_event_owned(action, is_press, matrix_key, source, owner):
+    if not CORE_KEY_EVENT_CTRL_SOCKET:
+        return
+    payload = _core_key_event_payload(action, is_press, matrix_key, source)
+    payload["id"] = f"owner:{owner!s}:" + payload["id"]
+    await _send_core_ctrl_request(payload)
+
+
+async def _send_core_macro_key_event(code, is_press, source):
+    from .hid_report import KEYCODE
+    action = "KC_ZKHK" if code == 997 else next((name for name, value in KEYCODE.items() if value == code and name.startswith("KC_")), None)
+    if action is None:
+        raise ValueError(f"macro key code cannot be represented by native owner: {code}")
+    owner = source
+    while isinstance(owner, tuple) and owner:
+        owner = owner[0]
+    delegated = str(owner).isdigit()
+    payload = {"t": "key_event", "id": f"macro:{source!s}:{code}", "action": action, "is_press": bool(is_press)}
+    if delegated:
+        payload.update(source=int(owner), delegate_owned=True)
+    await _send_core_ctrl_request(payload)
 
 
 def _push_ledd_vialrgb_direct(first_index: int, pixels: list) -> None:
@@ -819,6 +852,13 @@ async def _process_ctrl_json(line: str, writer: Optional[asyncio.StreamWriter] =
     from .input_events import handle_analog_stick as input_handle_analog_stick
 
     runtime = _require_runtime()
+    if runtime.keymap_coordinator is None:
+        from .keymap_coordinator import KeymapCoordinator
+        from hidloom_paths import runtime_file, default_config_file
+        runtime.keymap_coordinator = KeymapCoordinator(
+            runtime.layers, runtime_file("keymap.json"), default_config_file("keymap.json"),
+            _matrix_in_range, native_request=_send_core_ctrl_request if CORE_KEY_EVENT_CTRL_SOCKET else None,
+        )
     ctx = CtrlContext(
         matrix_in_range=_matrix_in_range,
         handle_analog_stick=lambda index, x, y: input_handle_analog_stick(index, x, y, _input_event_context()),
@@ -853,6 +893,7 @@ async def _process_ctrl_json(line: str, writer: Optional[asyncio.StreamWriter] =
         joysticks=runtime.joysticks,
         push_ledd_key_event=_push_ledd_key_event,
         reload_native_core=_reload_native_core if CORE_KEY_EVENT_CTRL_SOCKET else None,
+        keymap_coordinator=runtime.keymap_coordinator,
     )
     await process_ctrl_json(line, ctx, writer)
 
@@ -943,9 +984,29 @@ def _reset_runtime_keymap() -> dict:
 
 
 async def _handle_ctrl_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
-    from .sockets import handle_ctrl_client as socket_handle_ctrl_client
-
-    await socket_handle_ctrl_client(reader, writer, process_line=_process_ctrl_json)
+    from .sockets import close_writer
+    from .input_session import handle_source_session
+    try:
+        first = await asyncio.wait_for(reader.readline(), timeout=30.0)
+        if not first:
+            return
+        try:
+            opening = json.loads(first)
+        except (ValueError, TypeError):
+            opening = {}
+        if isinstance(opening, dict) and opening.get("t") == "source_open":
+            if opening.get("protocol") != 1 or "source" in opening:
+                raise ValueError("invalid source_open")
+            await handle_source_session(reader, writer, context=_input_event_context,
+                matrix_in_range=_matrix_in_range, native_socket=CORE_KEY_EVENT_CTRL_SOCKET or None)
+            return
+        await _process_ctrl_json(first.decode().strip(), writer)
+        while line := await reader.readline():
+            await _process_ctrl_json(line.decode().strip(), writer)
+    except (OSError, ValueError, asyncio.TimeoutError):
+        log.info("control client ended")
+    finally:
+        await close_writer(writer)
 
 
 async def _handle_key_event_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
@@ -1022,7 +1083,12 @@ async def _main_async(cfg_path: Optional[str]) -> None:
     if key_sock is not None:
         servers.append(("matrix events", await asyncio.start_unix_server(_handle_client, path=key_sock)))
     if delegate_sock is not None:
-        servers.append(("delegated matrix events", await asyncio.start_unix_server(_handle_client, path=delegate_sock)))
+        if CORE_KEY_EVENT_CTRL_SOCKET:
+            from .delegate_protocol import DelegateSession
+            delegate_session = DelegateSession(_input_event_context)
+            servers.append(("delegated matrix events", await asyncio.start_unix_server(delegate_session.handle_client, path=delegate_sock, limit=2 * 1024 * 1024)))
+        else:
+            servers.append(("delegated matrix events", await asyncio.start_unix_server(_handle_client, path=delegate_sock)))
     if matrix_tap_sock is not None:
         servers.append(("matrix tap events", await asyncio.start_unix_server(_handle_matrix_tap_client, path=matrix_tap_sock)))
     if ctrl_sock is not None:
@@ -1067,9 +1133,21 @@ async def _main_async(cfg_path: Optional[str]) -> None:
 
     async def _reload_config() -> None:
         try:
-            _cancel_text_send("config_reload")
-            next_cfg = config_loader.load(cfg_path)
-            _apply_config(next_cfg)
+            from .input_session import quiesce_input_sessions
+            async with quiesce_input_sessions():
+                _cancel_text_send("config_reload")
+                coordinator = runtime.keymap_coordinator
+                if coordinator is None:
+                    _apply_config(config_loader.load(cfg_path))
+                else:
+                    async with coordinator.lock:
+                        next_cfg = config_loader.load(cfg_path)
+                        # A settings reload must not resurrect the last disk snapshot
+                        # while an acknowledged HTTP remap awaits its debounced save.
+                        if coordinator.revision != coordinator.persisted_revision:
+                            next_cfg["layers"] = coordinator.layers.layers_snapshot()
+                        _apply_config(next_cfg)
+                        coordinator.layers = runtime.layers
             _push_ledd_semantic_roles()
             _push_ledd_semantic_keymap()
             _push_ledd_status()

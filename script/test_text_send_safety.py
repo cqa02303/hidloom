@@ -503,7 +503,7 @@ def test_http_payload_and_registration() -> None:
     assert "send_string_entry_missing" in plan_payload["plan"]["blocking_reasons"]
 
     httpd = (ROOT / "daemon/http/httpd.py").read_text(encoding="utf-8")
-    assert "register_text_send_safety_route(app, CONFIG_JSON)" in httpd
+    assert "register_text_send_safety_route(app, mutable_path(CONFIG_JSON))" in httpd
     assert "from text_send_safety_api import register_text_send_safety_route" in httpd
     text_send_api = (ROOT / "daemon/http/text_send_safety_api.py").read_text(encoding="utf-8")
     assert 'TEXT_SEND_PLAN_ROUTE = "/api/interaction/text-send-safety/plan"' in text_send_api

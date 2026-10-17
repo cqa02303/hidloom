@@ -18,6 +18,7 @@ typedef struct {
     uint8_t state;
     uint8_t count;
     int64_t raw_since_us;
+    int64_t last_release_us;
 } MatrixdDebounceKey;
 
 void matrixd_debounce_init(MatrixdDebounceKey *key);
@@ -40,9 +41,24 @@ MatrixdDebounceEvent matrixd_debounce_step_time(
     int64_t debounce_us
 );
 
+MatrixdDebounceEvent matrixd_debounce_step_time_policy(
+    MatrixdDebounceKey *key,
+    uint8_t new_raw,
+    int64_t now_us,
+    int64_t press_debounce_us,
+    int64_t release_debounce_us,
+    int64_t repress_guard_us
+);
+
 void matrixd_debounce_commit_event(
     MatrixdDebounceKey *key,
     MatrixdDebounceEvent event
+);
+
+void matrixd_debounce_commit_event_at(
+    MatrixdDebounceKey *key,
+    MatrixdDebounceEvent event,
+    int64_t now_us
 );
 
 #ifdef __cplusplus

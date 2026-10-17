@@ -1,5 +1,7 @@
 # Native Fast Input Core Design
 
+現在の採用判断: [ADR](../policy/adr/0001-native-input-core.md)。この文書の過去の段階・初期案とは区別する。
+
 作成日: 2026-06-19
 
 この文書は、起動直後の usable keyboard time を短縮するために、

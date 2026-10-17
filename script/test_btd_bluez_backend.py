@@ -6,6 +6,8 @@ import asyncio
 import sys
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "daemon"))
@@ -563,7 +565,86 @@ async def main_async() -> None:
 
 
 def main() -> None:
+    asyncio.run(test_repeat_lock_edges_and_cancellation())
     asyncio.run(main_async())
+
+
+async def test_repeat_lock_edges_and_cancellation() -> None:
+    """Advance each repeat timer explicitly; no wall-clock sleeps decide a pass."""
+    timers: asyncio.Queue = asyncio.Queue()
+
+    async def timer(delay: float) -> None:
+        future = asyncio.get_running_loop().create_future()
+        await timers.put((delay, future))
+        await future
+
+    async def next_timer(expected: float):
+        delay, future = await asyncio.wait_for(timers.get(), timeout=2)
+        assert delay == expected
+        return future
+
+    def edges(reports: list[bytes], code: int) -> list[bool]:
+        previous = False
+        result = []
+        for report in reports:
+            current = code in report[2:]
+            if current != previous:
+                result.append(current)
+            previous = current
+        return result
+
+    clock_asyncio = SimpleNamespace(**{**vars(asyncio), "sleep": timer})
+    with patch.object(bluez_backend_module, "asyncio", clock_asyncio):
+        for lock in (0x39, 0x47, 0x53):
+            for keys, modifier in (([], 0), ([4], 0), ([4, 5], 0), ([4], 2)):
+                adapter = NotifyingAdapter()
+                adapter.notifying = True
+                backend = BlueZBackend(enabled=True, adapter=adapter, keyboard_repeat_enabled=True)
+                payload = bytes([modifier, 0, lock, *keys] + [0] * (5 - len(keys)))
+                await backend.send_keyboard_report(parse_raw_keyboard_report(payload))
+                if keys:
+                    for delay in (backend.keyboard_repeat_delay_sec, backend.keyboard_repeat_interval_sec):
+                        (await next_timer(delay)).set_result(None)
+                        gap = await next_timer(backend.keyboard_repeat_tap_gap_sec)
+                        assert adapter.keyboard_reports[-1] == bytes([modifier, 0, lock, 0, 0, 0, 0, 0])
+                        gap.set_result(None)
+                    await next_timer(backend.keyboard_repeat_interval_sec)
+                else:
+                    assert backend._keyboard_repeat_task is None, hex(lock)
+                old_task = backend._keyboard_repeat_task
+                await backend.send_keyboard_report(parse_raw_keyboard_report(bytes(8)))
+                if old_task:
+                    await asyncio.gather(old_task, return_exceptions=True)
+                assert edges(adapter.keyboard_reports, lock) == [True, False]
+                for key in keys:
+                    assert edges(adapter.keyboard_reports, key) == [True, False, True, False, True, False]
+                assert all(report[0] == modifier for report in adapter.keyboard_reports[:-1])
+
+        for transition in ("release", "change", "disconnect", "stop"):
+            adapter = NotifyingAdapter()
+            adapter.notifying = True
+            backend = BlueZBackend(enabled=True, adapter=adapter, keyboard_repeat_enabled=True, send_null_on_stop=False)
+            payload = bytes([0, 0, 0x39, 4, 0, 0, 0, 0])
+            await backend.send_keyboard_report(parse_raw_keyboard_report(payload))
+            (await next_timer(backend.keyboard_repeat_delay_sec)).set_result(None)
+            await next_timer(backend.keyboard_repeat_tap_gap_sec)
+            old_task = backend._keyboard_repeat_task
+            if transition == "release":
+                await backend.send_keyboard_report(parse_raw_keyboard_report(bytes(8)))
+            elif transition == "change":
+                await backend.send_keyboard_report(parse_raw_keyboard_report(bytes([0, 0, 0x39, 0, 0, 0, 0, 0])))
+            elif transition == "disconnect":
+                backend._monitor_saw_connected_devices = True
+                await backend._handle_connected_devices_snapshot([])
+            else:
+                await backend.stop()
+            count = len(adapter.keyboard_reports)
+            await asyncio.wait_for(asyncio.gather(old_task, return_exceptions=True), timeout=2)
+            assert len(adapter.keyboard_reports) == count, transition
+            assert adapter.keyboard_reports.count(payload) == 1, transition
+
+        for code in (0, 1, 2, 3, 0xE0, 0xFF):
+            assert not bluez_backend_module._keyboard_report_has_repeatable_key(bytes([0, 0, code, 0, 0, 0, 0, 0]))
 
 
 if __name__ == "__main__":

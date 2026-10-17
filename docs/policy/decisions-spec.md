@@ -1,8 +1,13 @@
 # Decision Specification
 
-更新日: 2026-05-24
+更新日: 2026-09-07（ADRへの入口を追加。下記の日付付き記録は当時の仕様を保持）
 
-このファイルは、実装中に決めた仕様・運用方針を集約する場所です。
+現在の主要な決定は [ADR索引](adr/README.md) を参照する。
+この文書は2026-05時点の仕様決定の参照元として保持する。以後のnative ownerやpackage構成などの変更は
+ADRとリンク先の現行仕様で確認し、この文書の旧logicd/OutputRouter記述だけから現行ownerを判断しない。
+新しい判断と条件に該当する既存決定はADRへ記録する。
+
+このファイルは、実装中に決めた過去の仕様・運用方針を参照する場所です。
 詳細な daemon / IPC / API 仕様は [specification.md](../architecture/specification.md) を参照し、
 ここでは「なぜこの挙動にするか」「どの状態を正とするか」を残します。
 
@@ -10,7 +15,8 @@
 
 | ファイル | 役割 |
 |---|---|
-| [decisions-spec.md](decisions-spec.md) | 決定済みの仕様・運用方針 |
+| [ADR索引](adr/README.md) | 現在の判断・理由・置換関係 |
+| [decisions-spec.md](decisions-spec.md) | 過去の仕様・運用決定の参照元 |
 | [specification.md](../architecture/specification.md) | 現在実装されている全体仕様 |
 
 ## 2026-05-22 Bluetooth / Output 決定事項
@@ -198,4 +204,4 @@
 
 ### Documentation
 
-- 決定済みの仕様・運用方針はこのファイルへ追記する。
+- 現在の判断記録は [ADR索引](adr/README.md) へ追加する（2026-09-07に追記先を変更）。

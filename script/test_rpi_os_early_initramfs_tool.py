@@ -129,6 +129,8 @@ def base_bytes(
     )
     main_entries = {
         "main-fixture": (0o100644, b"compressed main archive remains byte-identical\n"),
+        "scripts": (0o040755, b""),
+        "scripts/init-premount": (0o040755, b""),
         "scripts/init-premount/ORDER": (
             0o100644,
             b'/scripts/init-premount/plymouth "$@"\n'
@@ -401,6 +403,29 @@ def main() -> None:
         base_records, base_boundary = early.locate_base_boundary(base_data)
         assert {record["path"] for record in base_records} == {"early-fixture"}
         assert base_data[base_boundary:].startswith(early.ZSTD_MAGIC)
+        main_records = early.validate_main_archive(base_data[base_boundary:])
+        main_by_path = {record["path"]: record for record in main_records}
+        for path in ("scripts", "scripts/init-premount"):
+            assert main_by_path[path]["mode"] == 0o040755
+
+        unpack_records = {"probe": {"data": b"overlay\n"}}
+        unpack_modes = {"probe": 0o100644}
+        legacy_unpack = fixture / "legacy-unpack"
+        legacy_unpack.mkdir()
+        (legacy_unpack / "probe").write_bytes(b"overlay\n")
+        early.verify_unmkinitramfs_overlay(legacy_unpack, unpack_records, unpack_modes)
+        split_unpack = fixture / "split-unpack"
+        for component in ("early", "early2", "main"):
+            (split_unpack / component).mkdir(parents=True)
+        (split_unpack / "early2" / "probe").write_bytes(b"overlay\n")
+        early.verify_unmkinitramfs_overlay(split_unpack, unpack_records, unpack_modes)
+        (split_unpack / "early2" / "probe").write_bytes(b"wrong\n")
+        try:
+            early.verify_unmkinitramfs_overlay(split_unpack, unpack_records, unpack_modes)
+        except early.VerifyError as exc:
+            assert "content mismatch: probe" in str(exc)
+        else:
+            raise AssertionError("unmkinitramfs content mismatch was accepted")
 
         builds: list[tuple[Path, Path]] = []
         build_results = []

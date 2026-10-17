@@ -53,6 +53,7 @@ def main() -> None:
     assert manifest["initial_version"] == "0.1.0"
     assert ".env.example" in manifest["include_files"]
     assert "AUTHORS.md" in manifest["include_files"]
+    assert ".codex/config.toml" in manifest["exclude_globs"]
     assert "codex_tasks/**" in manifest["exclude_globs"]
     assert "docs/ops/real-device-test-checklist.md" in manifest["exclude_globs"]
     assert "docs/CURRENT_STATUS.md" in manifest["exclude_globs"]
@@ -231,6 +232,7 @@ def main() -> None:
             "**/*.ico",
             "**/*.jpg",
             "**/*.jpeg",
+            "**/*.pdf",
             "**/*.png",
         ],
         "empty_file_allow_globs": [
@@ -507,6 +509,11 @@ def main() -> None:
         assert (destination / "script/test_public_repository_create.py").exists()
         assert (destination / "script/test_public_repository_bootstrap.py").exists()
         assert (destination / "script/test_public_repository_policy.py").exists()
+        adopt_fixture = (
+            destination / "script/test_rpi_os_early_gadget_adopt_tool.py"
+        ).read_text(encoding="utf-8")
+        assert 'FIXTURE_HOSTNAME = "hidloom-fixture"' in adopt_fixture
+        assert "<keyboard-host>" not in adopt_fixture
         assert (destination / "daemon").is_dir()
         assert (destination / "build" / "buildroot").is_dir()
         assert (destination / "kicad").is_dir()
@@ -565,12 +572,12 @@ def main() -> None:
         assert all(item["mode"] in {0o644, 0o755, 0o777} for item in export_manifest["files"])
         assert sbom["bomFormat"] == "CycloneDX"
         assert sbom["specVersion"] == "1.7"
-        assert len(sbom["components"]) == 56
+        assert len(sbom["components"]) == 65
         assert privacy["ready"] is True
         assert privacy["summary"]["blockers"] == 0
         assert privacy["summary"]["media_files"] == 32
         assert assets["ready"] is True
-        assert assets["summary"]["assets"] == 49
+        assert assets["summary"]["assets"] == 51
         assert references["ready"] is True
         assert references["summary"]["blockers"] == 0
         assert references["public_repository"]["slug"] == "cqa02303/hidloom"

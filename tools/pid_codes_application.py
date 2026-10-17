@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Sequence
 from datetime import date
 import json
 from pathlib import Path
@@ -124,7 +125,10 @@ def validate(root: Path) -> dict[str, Any]:
 
 
 def check_canonical_upstream(
-    plan: dict[str, Any], upstream: Path
+    plan: dict[str, Any],
+    upstream: Path,
+    *,
+    git_command: Sequence[str] = ("git",),
 ) -> dict[str, Any]:
     if not upstream.is_dir():
         raise SystemExit(f"pid.codes upstream checkout not found: {upstream}")
@@ -137,7 +141,7 @@ def check_canonical_upstream(
     if not (upstream / "org").is_dir():
         raise SystemExit(f"pid.codes organisation directory not found: {upstream / 'org'}")
     commit_result = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
+        [*git_command, "rev-parse", "HEAD"],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -146,7 +150,7 @@ def check_canonical_upstream(
         raise SystemExit("pid.codes upstream checkout must have a committed Git HEAD")
     commit = commit_result.stdout.strip()
     remote_result = subprocess.run(
-        ["git", "config", "--get", "remote.origin.url"],
+        [*git_command, "config", "--get", "remote.origin.url"],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -160,7 +164,7 @@ def check_canonical_upstream(
     if remote_result.returncode != 0 or remote not in allowed_remotes:
         raise SystemExit(f"pid.codes upstream origin is not canonical: {remote or '<missing>'}")
     rewrite_result = subprocess.run(
-        ["git", "config", "--get-regexp", r"^url\..*\.insteadof$"],
+        [*git_command, "config", "--get-regexp", r"^url\..*\.insteadof$"],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -176,7 +180,7 @@ def check_canonical_upstream(
     if any(remote.startswith(value) for value in rewrite_values):
         raise SystemExit("pid.codes canonical origin must not use a Git URL rewrite")
     status_result = subprocess.run(
-        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"],
+        [*git_command, "status", "--porcelain=v1", "-z", "--untracked-files=all"],
         cwd=upstream,
         capture_output=True,
     )
@@ -185,7 +189,7 @@ def check_canonical_upstream(
     if status_result.stdout:
         raise SystemExit("pid.codes upstream checkout must be clean")
     origin_head_result = subprocess.run(
-        ["git", "symbolic-ref", "refs/remotes/origin/HEAD"],
+        [*git_command, "symbolic-ref", "refs/remotes/origin/HEAD"],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -197,7 +201,7 @@ def check_canonical_upstream(
     ):
         raise SystemExit("pid.codes upstream checkout has no canonical origin/HEAD")
     ref_check = subprocess.run(
-        ["git", "check-ref-format", origin_head_ref],
+        [*git_command, "check-ref-format", origin_head_ref],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -205,7 +209,7 @@ def check_canonical_upstream(
     if ref_check.returncode != 0:
         raise SystemExit(f"pid.codes upstream origin/HEAD is invalid: {origin_head_ref}")
     origin_head_commit_result = subprocess.run(
-        ["git", "rev-parse", origin_head_ref],
+        [*git_command, "rev-parse", origin_head_ref],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -222,7 +226,7 @@ def check_canonical_upstream(
             f"head={commit} origin_head={origin_head_commit}"
         )
     remote_head_result = subprocess.run(
-        ["git", "ls-remote", "--exit-code", "origin", "HEAD"],
+        [*git_command, "ls-remote", "--exit-code", "origin", "HEAD"],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -258,8 +262,15 @@ def check_canonical_upstream(
     }
 
 
-def check_upstream(plan: dict[str, Any], upstream: Path) -> dict[str, Any]:
-    upstream_check = check_canonical_upstream(plan, upstream)
+def check_upstream(
+    plan: dict[str, Any],
+    upstream: Path,
+    *,
+    git_command: Sequence[str] = ("git",),
+) -> dict[str, Any]:
+    upstream_check = check_canonical_upstream(
+        plan, upstream, git_command=git_command
+    )
     candidate = upstream / Path(plan["candidate"]["path"]).parent
     if candidate.exists():
         raise SystemExit(f"PID candidate is already present in upstream checkout: {candidate}")
@@ -370,6 +381,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--upstream-checkout", type=Path)
+    parser.add_argument("--git-command", nargs="+", default=["git"])
     parser.add_argument("--output", type=Path)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
@@ -378,7 +390,9 @@ def main() -> None:
     plan = validate(root)
     upstream = args.upstream_checkout.resolve() if args.upstream_checkout else None
     if args.upstream_checkout:
-        upstream_check = check_upstream(plan, upstream)
+        upstream_check = check_upstream(
+            plan, upstream, git_command=args.git_command
+        )
         validate_recorded_availability(plan, upstream_check)
         plan["upstream_check"] = upstream_check
     if args.output:

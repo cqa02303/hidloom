@@ -79,6 +79,42 @@ def compact_events(events: list[dict]) -> list[tuple[int, int, int]]:
     return [(event["type"], event["code"], event["value"]) for event in events]
 
 
+def test_endpoint_union_preserves_other_endpoint_keys_and_modifiers() -> None:
+    sequence = [
+        (KIND_US_SUB_KEYBOARD, "0200040000000000"),
+        (KIND_KEYBOARD, "0200050000000000"),
+        (KIND_KEYBOARD, "0000000000000000"),
+        (KIND_US_SUB_KEYBOARD, "0200040000000000"),
+        (KIND_KEYBOARD, "0200040000000000"),
+        (KIND_US_SUB_KEYBOARD, "0000000000000000"),
+        (KIND_KEYBOARD, "0000000000000000"),
+    ]
+    with tempfile.TemporaryDirectory() as tmpdir:
+        events, status = run_uidd(Path(tmpdir), [
+            encode_hid_report_request(kind, bytes.fromhex(payload))
+            for kind, payload in sequence
+        ])
+    for code in (30, 48, 42):
+        assert [e["value"] for e in events if e["type"] == 1 and e["code"] == code] == [1, 0], (code, events)
+    assert status["counters"]["key_events"] == 6
+
+
+def test_function_key_mapping_uses_linux_codes() -> None:
+    # Fixed Linux input-event-codes.h values, independent of the implementation.
+    expected = [(0x41, 66), (0x42, 67), (0x43, 68), (0x44, 87), (0x45, 88), (0x46, 99)]
+    frames = []
+    for usage, _ in expected:
+        frames.extend([
+            encode_hid_report_request(KIND_KEYBOARD, bytes([0, 0, usage, 0, 0, 0, 0, 0])),
+            encode_hid_report_request(KIND_KEYBOARD, bytes(8)),
+        ])
+    with tempfile.TemporaryDirectory() as tmpdir:
+        events, _ = run_uidd(Path(tmpdir), frames)
+    assert [(e["code"], e["value"]) for e in events if e["type"] == 1] == [
+        (code, value) for _, code in expected for value in (1, 0)
+    ]
+
+
 def test_keyboard_report_diff_to_linux_events() -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         events, status = run_uidd(
@@ -207,6 +243,8 @@ def test_status_schema_and_paths_are_reported() -> None:
 
 def main() -> None:
     build_tool()
+    test_endpoint_union_preserves_other_endpoint_keys_and_modifiers()
+    test_function_key_mapping_uses_linux_codes()
     test_keyboard_report_diff_to_linux_events()
     test_modifier_and_us_sub_keyboard_reports_share_diff_state()
     test_login_sequence_preserves_pi_and_enter_events()

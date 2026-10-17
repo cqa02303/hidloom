@@ -134,7 +134,9 @@ C 言語実装の GPIO スキャンデーモン `matrixd` の設定。
     "idle_after_ms": 100,
     "deep_idle_after_ms": 500,
     "debounce_mode": "time",
-    "debounce_ms": 5,
+    "debounce_ms": 6,
+    "press_debounce_ms": 5,
+    "repress_guard_ms": 16,
     "settle_us": 20,
     "post_row_settle_us": 2
   },
@@ -152,7 +154,9 @@ C 言語実装の GPIO スキャンデーモン `matrixd` の設定。
 | `scan.interval_us` | スキャン周期（マイクロ秒）|
 | `scan.idle_interval_us` / `deep_idle_interval_us` | 無操作時だけ伸ばす scan wait |
 | `scan.debounce_mode` | `time` で実時間 debounce、`count` で scan 回数 debounce |
-| `scan.debounce_ms` | チャタリング除去時間（ミリ秒）|
+| `scan.debounce_ms` | release確定時間。`press_debounce_ms`未指定時の互換値（ミリ秒）|
+| `scan.press_debounce_ms` | time方式の通常press確定時間（ミリ秒）|
+| `scan.repress_guard_ms` | release確定直後に同一keyのpressへrelease側閾値を使う期間（ミリ秒）|
 | `scan.settle_us` | ROW ドライブ後のセトリング待ち時間（マイクロ秒）|
 | `scan.post_row_settle_us` | ROW release 後の行間待ち時間（マイクロ秒）|
 

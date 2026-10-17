@@ -46,12 +46,12 @@ def test_jis_special_release_preserves_modifier_on_main() -> None:
     ])
 
     assert jis_main == [
+        bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),  # Mirror Shift before either endpoint's key.
         bytes([0x02, 0, 0x87, 0, 0, 0, 0, 0]),
         bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
         bytes(8),
     ]
     assert us_sub == [
-        bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
         bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
         bytes(8),
     ]
@@ -68,6 +68,7 @@ def test_jis_special_double_tap_with_held_modifier_releases_between_taps() -> No
     ])
 
     assert jis_main == [
+        bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
         bytes([0x02, 0, 0x87, 0, 0, 0, 0, 0]),
         bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
         bytes([0x02, 0, 0x87, 0, 0, 0, 0, 0]),
@@ -75,8 +76,6 @@ def test_jis_special_double_tap_with_held_modifier_releases_between_taps() -> No
         bytes(8),
     ]
     assert us_sub == [
-        bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
-        bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
         bytes([0x02, 0, 0, 0, 0, 0, 0, 0]),
         bytes(8),
     ]
@@ -91,9 +90,12 @@ async def main_async() -> None:
         bytes(8),
     ]
     assert zkhk_reports == [
-        bytes([0, 0x5A, 0x35, 0, 0, 0, 0, 0]),
+        bytes([0, 0, 0x35, 0, 0, 0, 0, 0]),
         bytes(8),
     ]
+    # Per-action metadata survives the Python writer chain; the wire reserved
+    # byte no longer has to describe the entire held keyboard state.
+    assert zkhk_reports[0].key_routes == ((0x35, True),)
 
     grave_jis_main, grave_us_sub = _route_reports(grave_reports)
     zkhk_jis_main, zkhk_us_sub = _route_reports(zkhk_reports)

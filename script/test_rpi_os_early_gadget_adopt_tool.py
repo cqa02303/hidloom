@@ -28,12 +28,13 @@ KERNEL = "6.18.34+rpt-rpi-v8"
 GADGET_NAME = "cqa02303v5"
 UDC = "20980000.usb"
 PACKAGE_VERSION = "0.0.2033+git4c4c830f53f0"
+FIXTURE_HOSTNAME = "hidloom-fixture"
 
 IDENTITY = {
     "HIDLOOM_USB_VENDOR_ID": "0x1d6b",
     "HIDLOOM_USB_PRODUCT_ID": "0x0105",
-    "HIDLOOM_USB_MANUFACTURER": "<keyboard-host>",
-    "HIDLOOM_USB_PRODUCT_NAME": "<keyboard-host>",
+    "HIDLOOM_USB_MANUFACTURER": FIXTURE_HOSTNAME,
+    "HIDLOOM_USB_PRODUCT_NAME": FIXTURE_HOSTNAME,
     "HIDLOOM_USB_SERIAL": "vial:f64c2b3c",
     "HIDLOOM_USB_SERIAL_SUFFIX": "",
     "HIDLOOM_USB_US_SUB_KEYBOARD": "1",
@@ -108,7 +109,7 @@ class Fixture:
 
     def _build(self) -> None:
         write_text(self.proc_root / "sys/kernel/osrelease", KERNEL + "\n")
-        write_text(self.proc_root / "sys/kernel/hostname", "<keyboard-host>\n")
+        write_text(self.proc_root / "sys/kernel/hostname", FIXTURE_HOSTNAME + "\n")
         (self.sys_root / "class/udc" / UDC).mkdir(parents=True)
 
         profile = {

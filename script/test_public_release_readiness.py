@@ -65,7 +65,8 @@ def main() -> None:
         assert payload["ready"] is True
         assert payload["source_publication_ready"] is True
         assert payload["blocking_count"] == 0
-        assert payload["action_required_count"] == 17
+        # Includes the M6 legacy-template replacement and compatibility regression fixture.
+        assert payload["action_required_count"] == 19
         assert payload["pending_dispositions"] == ["pid_codes_migration_required"]
         assert payload["privacy_summary"]["blockers"] == 0
         assert payload["privacy_summary"]["media_files"] == 32
@@ -85,7 +86,7 @@ def main() -> None:
         else:
             assert payload["documentation_summary"]["omitted_private_links"] == 0
             assert payload["documentation_summary"]["removed_private_navigation_lines"] == 0
-        assert payload["asset_summary"]["assets"] == 49
+        assert payload["asset_summary"]["assets"] == 51
         assert payload["checks"]["third_party_redistributed_complete"] is True
         assert payload["checks"]["github_actions_supply_chain_ready"] is True
         assert payload["github_actions_issues"] == []
@@ -99,7 +100,7 @@ def main() -> None:
         assert payload["development_residue_issues"] == []
         assert payload["checks"]["source_selection_ready"] is True
         assert payload["source_selection_issues"] == []
-        assert payload["third_party_summary"]["total"] == 56
+        assert payload["third_party_summary"]["total"] == 65
         assert payload["checks"]["buildroot_source_audit_ready"] is True
         assert payload["binary_distribution_ready"] is False
         assert payload["binary_distribution_status"] == "compliance-bundle-required"
@@ -216,7 +217,7 @@ def main() -> None:
         assert stable.returncode == 2
         stable_payload = json.loads(stable.stdout)
         assert stable_payload["release_channel"] == "stable-public"
-        assert stable_payload["unexpected_required_count"] == 17
+        assert stable_payload["unexpected_required_count"] == 19
         plan = subprocess.run(
             [
                 "python3",

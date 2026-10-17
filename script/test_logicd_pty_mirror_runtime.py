@@ -309,10 +309,15 @@ async def _cancel_pty_output_for_test(ctx: InputEventContext) -> None:
     ctx.pty_mirror_output_queue = None
 
 
-def _seed_pending_pty_output(ctx: InputEventContext, key: str = "KC_A") -> None:
+def _seed_pending_pty_output(ctx: InputEventContext, key: str = "KC_A", *, drain: bool = False) -> None:
     queue = asyncio.Queue()
     queue.put_nowait([{"available": True, "taps": [{"key": key}]}])
-    task = asyncio.create_task(asyncio.sleep(60))
+    if drain:
+        from logicd.input_events import _run_pty_mirror_output_queue
+
+        task = asyncio.create_task(_run_pty_mirror_output_queue(ctx, ctx.pty_mirror, queue))
+    else:
+        task = asyncio.create_task(asyncio.sleep(60))
     ctx.pty_mirror.output_dispatch_queue = queue
     ctx.pty_mirror.output_dispatch_task = task
     ctx.pty_mirror_output_queue = queue
@@ -453,22 +458,22 @@ async def _run() -> None:
     mirror = PtyMirrorRuntime(client=client, active=True)
     macros = RecordingMacros()
     ctx = _ctx(mirror, macros)
-    _seed_pending_pty_output(ctx)
-    await handle_resolved_action("KC_ENTER", True, ctx)
+    _seed_pending_pty_output(ctx, drain=True)
+    await asyncio.wait_for(handle_resolved_action("KC_ENTER", True, ctx), 2)
     assert client.actions[-1] == ("KC_ENTER", True, ())
     assert mirror.active is False
     assert mirror.last_reason == "exit:0"
     assert ctx.pty_mirror_output_task is None
     assert ctx.pty_mirror_output_queue is None or ctx.pty_mirror_output_queue.empty()
-    assert macros.events == [("KC_D", True), ("KC_D", False)]
+    assert macros.events == [("KC_A", True), ("KC_A", False), ("KC_D", True), ("KC_D", False)]
     assert macros.alerts[-1] == ("PTY EXIT\nexit:0", 2.0, {"immediate": True})
 
     client = ExitWithTextPlanClient()
     mirror = PtyMirrorRuntime(client=client, active=True)
     macros = FailingKeyMacros("KC_D")
     ctx = _ctx(mirror, macros)
-    _seed_pending_pty_output(ctx)
-    await handle_resolved_action("KC_ENTER", True, ctx)
+    _seed_pending_pty_output(ctx, drain=True)
+    await asyncio.wait_for(handle_resolved_action("KC_ENTER", True, ctx), 2)
     assert mirror.active is False
     assert mirror.last_reason == "output_dispatch_failed"
     assert "synthetic KC_D press failed" in str(mirror.last_error)

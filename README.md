@@ -11,13 +11,16 @@ HIDloomは、Linux SBCをprogrammable keyboard applianceとして動かすsoftwa
 - Raspberry Pi 4 touch panelを試す: [Touch Panel Package](docs/hardware/raspberry-pi-4-touch-panel-package.md)
 - 詳細ドキュメント目次: [docs/README.md](docs/README.md)
 - 画像ギャラリー: [docs/gallery/README.md](docs/gallery/README.md)
+- 回路図PDF: [cqa02303v5 schematic](kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf)
+- PCB fabrication-layer PDF: [cqa02303v5 fabrication layers](kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf)
+- 編集可能なhardware source: [KiCad project](kicad/cqa02303v5rpi/README.md)
 
 - メインターゲット: Raspberry Pi Zero 2 W
 - 開発・貢献手順: [CONTRIBUTING.md](CONTRIBUTING.md)
 - 公開sourceからの再現build: [docs/ops/public-source-rebuild-runbook.md](docs/ops/public-source-rebuild-runbook.md)
 - 公開文書とprivate運用資料の境界: [docs/ops/public-documentation-boundary.md](docs/ops/public-documentation-boundary.md)
 - 実機失敗パターン: [docs/ops/failure-patterns.md](docs/ops/failure-patterns.md)
-- MCP 診断サーバ: [docs/ops/keyboard-mcp-server.md](docs/ops/keyboard-mcp-server.md)
+- MCPサーバ: [read-only診断](docs/ops/keyboard-mcp-server.md) / [guarded write companion](docs/ops/keyboard-write-mcp-server.md)
 - Security: [SECURITY.md](SECURITY.md)
 - Support: [SUPPORT.md](SUPPORT.md)
 - Community conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
@@ -102,7 +105,9 @@ root 直下は、導入入口と主要 daemon の位置を見失わないため�
 | `system/install/`, `system/systemd/` | install script 実体、systemd unit source |
 | `config/default/`, `config/boards/` | repository default config、board profile config |
 | `build/generated/`, `build/generators/` | tracked generated data、生成 helper |
+| `kicad/cqa02303v5rpi/` | 編集可能なKiCad hardware source、回路図・PCB review PDF |
 | `dev/mcp/keyboard/` | Codex / MCP read-only keyboard diagnostics server |
+| `dev/mcp/keyboard_write/` | key tapと1位置keymap変更だけを許すguarded write companion |
 | `tools/` | 実機操作、計測、手動 smoke helper |
 | `script/` | regression suite、install/systemd 直呼び helper、既存 live smoke 入口 |
 | `daemon/logicd/`, `daemon/http/`, `daemon/matrixd/`, `daemon/i2cd/`, `daemon/ledd/`, `daemon/usbd/`, `daemon/viald/`, `daemon/btd/`, `daemon/spid/` | Python / native daemon 本体 |
@@ -221,6 +226,7 @@ USB gadget の割り当て:
 | lighting / VialRGB | [docs/lighting/README.md](docs/lighting/README.md) |
 | Bluetooth / BLE | [docs/bluetooth/README.md](docs/bluetooth/README.md) |
 | MCP / Codex 診断 | [docs/ops/keyboard-mcp-server.md](docs/ops/keyboard-mcp-server.md) |
+| MCP guarded write companion | [docs/ops/keyboard-write-mcp-server.md](docs/ops/keyboard-write-mcp-server.md) |
 | MCP write-capable 境界設計 | [docs/policy/mcp-write-capable-tool-design.md](docs/policy/mcp-write-capable-tool-design.md) |
 | Technical design backlog | [docs/feature/design-todo-backlog.md](docs/feature/design-todo-backlog.md) |
 | 開発・貢献手順 | [CONTRIBUTING.md](CONTRIBUTING.md) |

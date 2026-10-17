@@ -35,6 +35,27 @@
 - 現行 native path は `logicd-core-rs -> hidloom-outputd -> hidloom-hidd` とし、USB / uinput / BT target owner を core に戻さない。
 - Windows IME / custom HID の診断 route を通常 keyboard route の成功条件と混同しない。
 
+## 入力・委譲の所有権
+
+状態確認・操作順序・解除を実行ownerへ集約する判断は[ADR-0024](../../../policy/adr/0024-native-owner-transactions.md)に記録する。
+
+keyboard profileではnative coreがlayer状態の正本を持つ。delegate protocol v2はowner epoch、keymap/layer revision、
+event順序、入力source、押下時actionとlayer snapshotを運び、companionが返すlayer操作をACK単位で検証して反映する。
+不正なsourceや同一batch内の所有権衝突、古いACKは一部だけ適用せず拒否する。companion待ちの未解決pressは有限queueで待たせ、
+既にnativeで解決したkeyのrelease、control処理、guarded tapの解放期限は進める。layer/tapの既定時間は変えない。
+
+明示的な入力sessionはcontrol streamの `source_open` → `source_event` / `source_ping` → `source_close` を使う。
+source識別子はownerが発行するopaque値（nativeでは正整数、Pythonでは文字列）で、clientから他sourceを指定できない。
+既定leaseは30秒。EOF・lease切れでは該当sourceの寄与だけを解除し、同座標の他sourceやphysical入力を保持する。
+legacyな1イベントごとの4-byte matrix接続は従来の寿命を維持する。
+
+guarded tapは実行ownerが現在のaction・revision・modifier/layer・idle・auto出力状態を同じ処理内で確認し、
+専用sourceのpressと解放予約を行う。operation IDの再試行は重複実行しない。結果の `started` / `released` はownerの状態であり、
+host applicationの受信証明ではない。通信停滞や切断の試験は実socketを隔離した回帰で確認する。
+
+companion/observer接続とbroker配送はnonblockingにする。配送が詰まった場合は有限bufferで扱い、通常時のreport順序を維持する。
+飽和時は最新のendpoint別状態へまとめて古い押下の復活を防ぎ、配送劣化をstatusに残す。未配送reportがある間はguarded tapを受理しない。
+
 ## 移植時に維持する互換性
 
 - press / release pairing は Python `logicd` と一致する。

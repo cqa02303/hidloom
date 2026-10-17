@@ -6,7 +6,7 @@ use std::os::fd::AsRawFd;
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixDatagram;
 use std::path::Path;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 const FRAME_SIZE: usize = 64;
 const CHECKSUM_OFFSET: usize = 63;
@@ -67,6 +67,7 @@ struct InputEvent {
 #[derive(Default)]
 struct KeyboardDiff {
     pressed: HashSet<u16>,
+    reports: [[u8; 8]; 2],
 }
 
 struct EventSink {
@@ -76,18 +77,21 @@ struct EventSink {
 }
 
 impl KeyboardDiff {
-    fn apply_report(&mut self, report: &[u8; 8]) -> Vec<InputEvent> {
+    fn apply_endpoint_report(&mut self, kind: u8, report: &[u8; 8]) -> Vec<InputEvent> {
+        self.reports[if kind == KIND_US_SUB_KEYBOARD { 1 } else { 0 }] = *report;
         let mut current = HashSet::new();
-        for bit in 0..8 {
-            if report[0] & (1 << bit) != 0 {
-                if let Some(code) = modifier_bit_to_linux(bit) {
-                    current.insert(code);
+        for report in &self.reports {
+            for bit in 0..8 {
+                if report[0] & (1 << bit) != 0 {
+                    if let Some(code) = modifier_bit_to_linux(bit) {
+                        current.insert(code);
+                    }
                 }
             }
-        }
-        for usage in report[2..8].iter().copied().filter(|usage| *usage != 0) {
-            if let Some(code) = hid_usage_to_linux(usage) {
-                current.insert(code);
+            for usage in report[2..8].iter().copied().filter(|usage| *usage != 0) {
+                if let Some(code) = hid_usage_to_linux(usage) {
+                    current.insert(code);
+                }
             }
         }
 
@@ -119,6 +123,11 @@ impl KeyboardDiff {
         }
         self.pressed = current;
         events
+    }
+
+    #[cfg(test)]
+    fn apply_report(&mut self, report: &[u8; 8]) -> Vec<InputEvent> {
+        self.apply_endpoint_report(KIND_KEYBOARD, report)
     }
 }
 
@@ -192,11 +201,11 @@ fn hid_usage_to_linux(usage: u8) -> Option<u16> {
         0x38 => Some(53),
         0x39 => Some(58),
         0x3a..=0x41 => Some(59 + u16::from(usage - 0x3a)),
-        0x42 => Some(66),
-        0x43 => Some(67),
-        0x44 => Some(68),
-        0x45 => Some(87),
-        0x46 => Some(88),
+        0x42 => Some(67),
+        0x43 => Some(68),
+        0x44 => Some(87),
+        0x45 => Some(88),
+        0x46 => Some(99),
         0x49 => Some(110),
         0x4a => Some(102),
         0x4b => Some(104),
@@ -411,7 +420,11 @@ impl Drop for EventSink {
 }
 
 fn write_input_event(file: &mut File, event_type: u16, code: u16, value: i32) -> io::Result<()> {
-    let mut bytes = Vec::with_capacity(if cfg!(target_pointer_width = "32") { 16 } else { 24 });
+    let mut bytes = Vec::with_capacity(if cfg!(target_pointer_width = "32") {
+        16
+    } else {
+        24
+    });
     #[cfg(target_pointer_width = "32")]
     {
         bytes.extend_from_slice(&0i32.to_ne_bytes());
@@ -574,6 +587,9 @@ fn run() -> Result<(), String> {
     let cfg = load_config()?;
     let socket = bind_socket(&cfg.socket_path, cfg.socket_mode)
         .map_err(|err| format!("failed to bind {}: {err}", cfg.socket_path))?;
+    socket
+        .set_read_timeout(Some(Duration::from_millis(500)))
+        .map_err(|err| format!("failed to configure status heartbeat: {err}"))?;
     let mut counters = Counters::default();
     let mut diff = KeyboardDiff::default();
     let mut sink = EventSink::new(&cfg);
@@ -583,9 +599,19 @@ fn run() -> Result<(), String> {
 
     loop {
         let mut frame = [0u8; FRAME_SIZE];
-        let size = socket
-            .recv(&mut frame)
-            .map_err(|err| format!("failed to receive frame: {err}"))?;
+        let size = match socket.recv(&mut frame) {
+            Ok(size) => size,
+            Err(err)
+                if matches!(
+                    err.kind(),
+                    io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut
+                ) =>
+            {
+                write_status(&cfg, &counters, &sink, &last_error);
+                continue;
+            }
+            Err(err) => return Err(format!("failed to receive frame: {err}")),
+        };
         match decode_frame(&frame[..size]) {
             Ok((kind, report)) => {
                 counters.frames_received += 1;
@@ -594,7 +620,7 @@ fn run() -> Result<(), String> {
                 } else {
                     counters.us_sub_keyboard_reports += 1;
                 }
-                for event in diff.apply_report(&report) {
+                for event in diff.apply_endpoint_report(kind, &report) {
                     if event.event_type == EV_SYN {
                         counters.sync_events += 1;
                     } else {
@@ -641,6 +667,42 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn function_key_capabilities_use_canonical_codes() {
+        for (usage, code) in [
+            (0x41, 66),
+            (0x42, 67),
+            (0x43, 68),
+            (0x44, 87),
+            (0x45, 88),
+            (0x46, 99),
+        ] {
+            assert_eq!(hid_usage_to_linux(usage), Some(code));
+            assert!(supported_linux_keys().contains(&code));
+        }
+    }
+
+    #[test]
+    fn overlapping_linux_aliases_release_only_after_both_endpoints() {
+        let mut diff = KeyboardDiff::default();
+        assert_eq!(
+            diff.apply_endpoint_report(KIND_KEYBOARD, &[0, 0, 0x31, 0, 0, 0, 0, 0])[0].value,
+            1
+        );
+        assert!(
+            diff.apply_endpoint_report(KIND_US_SUB_KEYBOARD, &[0, 0, 0x32, 0, 0, 0, 0, 0])
+                .is_empty()
+        );
+        assert!(
+            diff.apply_endpoint_report(KIND_KEYBOARD, &[0; 8])
+                .is_empty()
+        );
+        assert_eq!(
+            diff.apply_endpoint_report(KIND_US_SUB_KEYBOARD, &[0; 8])[0].value,
+            0
+        );
+    }
 
     #[test]
     fn report_diff_presses_and_releases_keys() {

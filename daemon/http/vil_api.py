@@ -10,6 +10,7 @@ from typing import Any, Awaitable, Callable, Dict, Optional
 from aiohttp import web
 
 from layout_api import current_keymap_layers
+from daemon.logicd.runtime_json import effective_source
 from vil_apply import apply_vil_interaction_settings, apply_vil_macro_settings, apply_vil_remaps
 from vil_layout import (
     HIDLOOM_EXPORT_WARNINGS_KEY,
@@ -35,7 +36,7 @@ async def vil_export_response(
     config_json: Path,
 ) -> web.Response:
     layers = await current_keymap_layers(query_logicd_layers)
-    document = build_vil_from_files(vial_json=vial_json, keymap_json=keymap_json, layers=layers, config_json=config_json)
+    document = build_vil_from_files(vial_json=vial_json, keymap_json=keymap_json, layers=layers, config_json=effective_source(config_json))
     payload = encode_vil(document)
     try:
         uid = json.loads(vial_json.read_text(encoding="utf-8")).get("uid", "layout")

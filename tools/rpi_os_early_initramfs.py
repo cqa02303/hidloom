@@ -1304,6 +1304,22 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
     return verify_artifact(base_path, output_path, manifest_path, run_unmkinitramfs=False)
 
 
+def verify_unmkinitramfs_overlay(
+    root: Path,
+    records: dict[str, dict[str, Any]],
+    file_modes: dict[str, int],
+) -> None:
+    """Verify files extracted by both split-archive and legacy unmkinitramfs."""
+    split_layout = all((root / name).is_dir() for name in ("early", "early2", "main"))
+    overlay_root = root / "early2" if split_layout else root
+    for path in file_modes:
+        extracted = overlay_root / path
+        if not extracted.is_file():
+            raise VerifyError(f"unmkinitramfs output is missing {path}")
+        if extracted.read_bytes() != records[path]["data"]:
+            raise VerifyError(f"unmkinitramfs output content mismatch: {path}")
+
+
 def verify_artifact(
     base_path: Path, image_path: Path, manifest_path: Path, *, run_unmkinitramfs: bool
 ) -> dict[str, Any]:
@@ -1529,10 +1545,7 @@ def verify_artifact(
             )
             if result.returncode:
                 raise VerifyError("unmkinitramfs rejected output: " + result.stderr.decode(errors="replace"))
-            root = Path(directory)
-            for path in file_modes:
-                if not (root / path).is_file():
-                    raise VerifyError(f"unmkinitramfs output is missing {path}")
+            verify_unmkinitramfs_overlay(Path(directory), records, file_modes)
     return {
         "status": "pass",
         "schema": SCHEMA,

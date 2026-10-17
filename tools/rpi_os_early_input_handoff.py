@@ -51,6 +51,9 @@ CONTRACT_BINARY_KEYS = {
 }
 HIDD_ERROR_COUNTERS = ("invalid_frames", "write_errors", "dropped_reports")
 OUTPUTD_ERROR_COUNTERS = ("invalid_frames", "forward_errors", "release_errors")
+# USB release_all sends main keyboard, US-sub keyboard, mouse, and consumer.
+# Four IPC reports still require two independent keyboard endpoint zero proofs.
+USB_RELEASE_FRAME_COUNT = 4
 
 
 class HandoffError(RuntimeError):
@@ -1481,11 +1484,11 @@ def run_prepare_with_context(
     )
     release = require_object(outputd_response.get("release"), "outputd release acknowledgement")
     if (
-        require_nonnegative_int(release.get("attempted"), "release attempted") != 2
-        or require_nonnegative_int(release.get("delivered"), "release delivered") != 2
+        require_nonnegative_int(release.get("attempted"), "release attempted") != USB_RELEASE_FRAME_COUNT
+        or require_nonnegative_int(release.get("delivered"), "release delivered") != USB_RELEASE_FRAME_COUNT
         or require_nonnegative_int(release.get("errors"), "release errors") != 0
     ):
-        raise HandoffError(f"outputd did not acknowledge both endpoint releases: {release}")
+        raise HandoffError(f"outputd did not acknowledge the exact USB release reports: {release}")
 
     def outputd_release_probe() -> dict[str, Any] | None:
         outputd = read_status_json(outputd_path, "early outputd status", args.expected_owner_uid)
@@ -1509,9 +1512,9 @@ def run_prepare_with_context(
         if status_counter(outputd, "ctrl_requests", "early outputd") != controls_before + 1:
             raise HandoffError("early outputd final release control count is not exact")
         release_frames = status_counter(outputd, "release_frames", "early outputd")
-        if release_frames > releases_before + 2:
+        if release_frames > releases_before + USB_RELEASE_FRAME_COUNT:
             raise HandoffError("early outputd emitted excess final release frames")
-        if release_frames < releases_before + 2:
+        if release_frames < releases_before + USB_RELEASE_FRAME_COUNT:
             return None
         return outputd
 
@@ -1529,7 +1532,7 @@ def run_prepare_with_context(
         args.poll_interval,
     )
 
-    expected_final_hidd_frames = core_frames_sent + 2
+    expected_final_hidd_frames = core_frames_sent + USB_RELEASE_FRAME_COUNT
 
     def endpoint_release_probe() -> dict[str, Any] | None:
         hidd = read_status_json(hidd_path, "early hidd status", args.expected_owner_uid)

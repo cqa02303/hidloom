@@ -18,6 +18,7 @@ if str(_REPO_ROOT / "daemon") not in sys.path:
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from logicd.runtime_json import load_json
 from logicd.text_send_safety import build_text_send_real_send_plan, text_send_safety_policy  # noqa: E402
 
 TEXT_SEND_SAFETY_ROUTE = "/api/interaction/text-send-safety"
@@ -26,7 +27,7 @@ TEXT_SEND_PLAN_ROUTE = "/api/interaction/text-send-safety/plan"
 
 def _load_settings(config_json: Path) -> dict[str, Any]:
     try:
-        data = json.loads(config_json.read_text(encoding="utf-8"))
+        data = load_json(config_json)
     except (OSError, json.JSONDecodeError):
         return {}
     if not isinstance(data, dict):

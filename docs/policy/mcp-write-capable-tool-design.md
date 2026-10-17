@@ -20,13 +20,17 @@ Keyboard MCP の標準 server は read-only のまま維持する。実キー送
 | tool 候補 | 目的 | 初期状態 | 確認句 |
 | --- | --- | --- | --- |
 | `send_text_smoke_sequence` | `U+3042` / `TEXT(kana_a)` の bounded 実入力 smoke | helper script まで実装。MCP tool 化は未導入 | `SEND_TEXT_SMOKE_TO_FOCUSED_HOST` |
-| `send_test_key` | `KC_A` / `KC_ESC` など allowlist された単発 key tap | 後続候補 | `SEND_TEST_KEY_TO_FOCUSED_HOST` |
+| `send_key_tap` | `KC_A` / `KC_ESC` などallowlist済み位置の単発tap | 実装済み。dynamic確認句とkeymap digest必須 | planが返す`SEND_MATRIX_TAP ...` |
+| `apply_keymap_change` | 1 layer / 1 matrix位置だけをlogicdへ反映・保存 | 実装済み。readback不一致時rollback | planが返す`APPLY_KEYMAP_CHANGE ...` |
 | `preview_lighting_with_restore` | LED role preview と restore | 後続候補 | `PREVIEW_LIGHTING_AND_RESTORE` |
 | `restart_keyboard_service` | allowlist service の restart | 後続候補。post-smoke が固定されるまで入れない | `RESTART_KEYBOARD_SERVICE` |
 
-最初の実装対象は text-send smoke だけでよい。これは既存の
+text-send smokeは既存の
 [`script/text_send_smoke_sequence.py`](../../script/text_send_smoke_sequence.py) が dry-run default と
-確認句つき `--send` を持つため、write-capable MCP tool 化する場合も同じ guard を使える。
+確認句つき `--send` を持つため、このcompanionへは統合せず独立したguardを維持する。
+
+実装は[`dev/mcp/keyboard_write/`](../../dev/mcp/keyboard_write/README.md)に分離した。通常の
+read-only serverのtool listや登録名は変更せず、write companionは必要時だけ別profileで有効化する。
 
 ## 禁止すること
 

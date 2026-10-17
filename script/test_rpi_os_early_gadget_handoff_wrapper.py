@@ -115,6 +115,8 @@ def run_restart_case(root: Path) -> None:
     runtime_bytes = (json.dumps(runtime_payload, indent=2, sort_keys=True) + "\n").encode()
     runtime_contract.parent.mkdir(parents=True)
     runtime_contract.write_bytes(runtime_bytes)
+    runtime_contract.chmod(0o600)
+    assert runtime_contract.stat().st_mode & 0o777 == 0o600
     marker.write_text(
         json.dumps(
             {
@@ -130,6 +132,8 @@ def run_restart_case(root: Path) -> None:
         + "\n",
         encoding="utf-8",
     )
+    marker.chmod(0o600)
+    assert marker.stat().st_mode & 0o777 == 0o600
     configfs_root = case / "configfs"
     udc = configfs_root / "cqa02303v5/UDC"
     udc.parent.mkdir(parents=True)
@@ -144,6 +148,21 @@ def run_restart_case(root: Path) -> None:
         "BACKEND_LOG": str(backend_log),
         "BACKEND_STATUS": "29",
     }
+    marker.chmod(0o664)
+    rejected = subprocess.run(
+        [str(wrapper), "--stop"],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env=environment,
+        check=False,
+    )
+    assert rejected.returncode == 78, (rejected.stdout, rejected.stderr)
+    assert "runtime marker is group/world writable" in rejected.stderr
+    assert marker.exists()
+    assert not udc.read_text(encoding="utf-8").strip()
+    marker.chmod(0o600)
+    udc.write_text("20980000.usb\n", encoding="utf-8")
     stopped = subprocess.run(
         [str(wrapper), "--stop"],
         text=True,

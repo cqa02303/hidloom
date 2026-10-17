@@ -5,7 +5,7 @@
   "assignment": {
     "registry": "pid.codes",
     "registry_repository": "https://github.com/pidcodes/pidcodes.github.com",
-    "status": "candidate-unassigned",
+    "status": "assigned",
     "vid": "1209",
     "pid": "484C",
     "activate_only_after_pid_codes_merge": true,
@@ -36,7 +36,30 @@
       ],
       "patch_sha256": "76f255e3280497461eb0b0fbec260f35b5029447263a1c646c40888d892bc6c0"
     },
-    "allocation_evidence": null
+    "allocation_evidence": {
+      "merged_date": "2026-09-28",
+      "merged_at": "2026-09-28T05:22:00Z",
+      "upstream_commit": "af024eb94feaeed7d4856b3a4e5de2a35f8b09b5",
+      "origin_head_ref": "refs/remotes/origin/master",
+      "remote_head_commit": "af024eb94feaeed7d4856b3a4e5de2a35f8b09b5",
+      "checkout_clean": true,
+      "head_matches_origin_head": true,
+      "origin_head_matches_remote_head": true,
+      "pull_request_number": 1246,
+      "pull_request_url": "https://github.com/pidcodes/pidcodes.github.com/pull/1246",
+      "pull_request_head": "3b0358d721dfdaa66985b4aceebd1813cb6474a2",
+      "merge_commit": "34e3f0912fec5429715a22b27a53a6ee7ed5dc2a",
+      "merge_commit_reachable": true,
+      "required_checks": {
+        "HTML Proofer": "SUCCESS",
+        "Python Validator": "SUCCESS"
+      },
+      "candidate_path": "1209/484C/index.md",
+      "candidate_path_present": true,
+      "owner_path": "org/cqa02303/index.md",
+      "owner_path_present": true,
+      "content_verified": true
+    }
   },
   "vial_detection": {
     "serial_magic": "vial:f64c2b3c",
@@ -80,8 +103,8 @@
       }
     },
     "public_formal": {
-      "status": "blocked-until-pid-codes-merge",
-      "public_release_allowed": false,
+      "status": "assigned-ready",
+      "public_release_allowed": true,
       "usb": {
         "vid": "1209",
         "pid": "484C",

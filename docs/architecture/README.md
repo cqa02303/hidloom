@@ -15,3 +15,7 @@
 - [single-source-architecture.md](single-source-architecture.md)
 - [specification.md](specification.md)
 - [system-overview.md](system-overview.md)
+
+関連文書:
+
+- [ADR索引](../policy/adr/README.md): 入力・出力の責務、配布構成などの採用判断

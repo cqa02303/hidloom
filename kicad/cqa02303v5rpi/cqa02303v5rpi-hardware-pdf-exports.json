@@ -1,0 +1,80 @@
+{
+  "generator": "tools/export_hardware_pdfs.py",
+  "kicad_version": "10.0.1",
+  "outputs": {
+    "pcb_fabrication_layers": {
+      "path": "cqa02303v5rpi-pcb-fabrication-layers.pdf",
+      "sha256": "b6ca056aeb31ccf0ecebe7901c792a75528057419e212b40765eadd0bd9c0ddc",
+      "size": 2957281
+    },
+    "schematic": {
+      "path": "cqa02303v5rpi-schematic.pdf",
+      "sha256": "0913a9bc83cc5e6c53efaf25f0a065f8cd1cf5c1cd971d5969350f8b6b020be9",
+      "size": 692049
+    }
+  },
+  "pcb_contract": {
+    "black_and_white": true,
+    "border_and_title_block": true,
+    "common_layers": [
+      "Edge.Cuts"
+    ],
+    "drill_shape": "actual",
+    "layers": [
+      "F.Cu",
+      "F.Mask",
+      "F.Silkscreen",
+      "F.Paste",
+      "B.Cu",
+      "B.Mask",
+      "B.Silkscreen",
+      "B.Paste"
+    ],
+    "manufacturing_output": false,
+    "multipage": true
+  },
+  "project": "cqa02303v5rpi",
+  "schema": "hidloom.hardware-pdf-exports.v1",
+  "schematic_contract": {
+    "all_hierarchical_pages": true,
+    "background_color": false,
+    "black_and_white": true
+  },
+  "sources": {
+    "cqa02303v5rpi.kicad_pcb": {
+      "path": "cqa02303v5rpi.kicad_pcb",
+      "sha256": "5f58959d771ce7b10494cd832915d8fcd8624bf5a769115f385f189ee1ff4271",
+      "size": 7394045
+    },
+    "cqa02303v5rpi.kicad_pro": {
+      "path": "cqa02303v5rpi.kicad_pro",
+      "sha256": "51c74ece05d7bd77f97cdf1fdcfcafedd9a208f105996db4fb5ec29454d35748",
+      "size": 19677
+    },
+    "cqa02303v5rpi.kicad_sch": {
+      "path": "cqa02303v5rpi.kicad_sch",
+      "sha256": "9324b464244ebd54ef36ab7a54a4c873ccc7fd1a0f4b6165821fcd9d710b2473",
+      "size": 159743
+    },
+    "keymap.kicad_sch": {
+      "path": "keymap.kicad_sch",
+      "sha256": "beea55fd7fba482262ba7917da77d805d032dec5f2b8006a09f29325236d4b7a",
+      "size": 344763
+    },
+    "led.kicad_sch": {
+      "path": "led.kicad_sch",
+      "sha256": "8a05fbb21592647611a6dfa8a4f39d7321e47fd9c4529d7f305c7e5929106725",
+      "size": 395675
+    },
+    "mouse_sch.kicad_sch": {
+      "path": "mouse_sch.kicad_sch",
+      "sha256": "cbd28a99045c00d2b35d8c7bce3228d41505218ed345e6eb5bd1669dbf3dc49d",
+      "size": 23673
+    },
+    "other.kicad_sch": {
+      "path": "other.kicad_sch",
+      "sha256": "1c3dd922d5200bab99bfb0ebdbe291e7efe3f2eb6dc181728de996b29a586e8c",
+      "size": 8305
+    }
+  }
+}

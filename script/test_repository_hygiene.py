@@ -51,6 +51,7 @@ def main() -> None:
         "*.ico binary",
         "*.jpg binary",
         "*.jpeg binary",
+        "*.pdf binary",
         "*.png binary",
     ]
     config = json.loads(CONFIG.read_text(encoding="utf-8"))

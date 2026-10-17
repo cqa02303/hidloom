@@ -1,5 +1,7 @@
 # Release Channel Policy
 
+現在の採用判断: [ADR](../policy/adr/0017-release-channels.md)。
+
 HIDloomの開発、公開source同期、実機release candidate、正式binary公開を、pid.codesの待ち時間から
 分離するための昇格方針です。pid.codes割当は`stable-public`だけを停止し、private開発、
 `source-public`、`internal-rc`を停止しません。

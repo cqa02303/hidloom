@@ -17,6 +17,59 @@
 - evidence:
 ```
 
+## Installed package is current while a late-started service still runs old code
+
+- symptom: package version/hash and service active checks pass after an update, but a late-started service retains its pre-update PID/start time.
+- likely cause: a disabled unit can be active through the late-start policy while remaining outside the profile's enabled-service restart list. Installed Python files do not replace modules already loaded by its running process.
+- detect: compare all active HIDloom process start times with package application, and compare native `/proc/<pid>/exe` hashes with installed/package bytes. Record enable/mask/active state before acting; `NRestarts=0` alone does not prove candidate code is running.
+- recovery: within the authorized update scope, check dependent connections and recovery state, then restart only the identified stale services once while retaining their enable/mask policy. Verify fresh process identity and health without repeating APT/profile application or rebooting.
+- regression check: after the correction, compare PID/start time/restart counters across the final input test and recheck native running/installed/package identity. Keep host receipt separate from package/process evidence.
+
+## Windows zstd cannot reopen an active compliance tar tempfile
+
+- symptom: Buildroot compliance fixture generation reaches `zstd`, then fails with `Permission denied` for a temporary `.tar` even though the destination directory is writable.
+- likely cause: `normalized_tar()` kept a `NamedTemporaryFile` handle open while invoking `zstd` with that file's path. POSIX permits the second process to reopen the active file, but Windows file sharing rejects it.
+- detect: run `script/test_buildroot_compliance_bundle.py` or `script/test_public_release_readiness.py` on Windows with the canonical PyYAML and zstd dependencies. Distinguish an earlier `PyYAML is required` environment failure from the characteristic `zstd: ...tmp*.tar: Permission denied` sharing failure.
+- recovery: preserve the failed output and rerun after creating the tar at a path inside a temporary directory, closing `tarfile` completely, and only then invoking `zstd`. Do not weaken bundle determinism, checksum, compliance, or tamper gates.
+- regression check: require `script/test_buildroot_compliance_bundle.py` and `script/test_public_release_readiness.py` to pass on the Windows execution host, and retain the public Linux full regression / locked Rust / diff hygiene gate for the exported source.
+- evidence: 2026-08-09のWindows final closeoutでcanonical dependency PATHを設定後に再現した。temporary tar lifecycle修正後、deterministic compliance bundle / tamper gateはWindowsでpassし、archive formatとcompression argumentsは変更していない。
+
+## Windows decodes KiCad CLI progress with the legacy console code page
+
+- symptom: hardware PDF export starts KiCad successfully but its Python wrapper raises `UnicodeDecodeError` in a subprocess reader thread, then receives `stdout=None` before publishing any staged PDF.
+- likely cause: KiCad 10 emits UTF-8 localized progress while Windows Python uses the active legacy console encoding for `text=True` unless an encoding is explicit.
+- detect: run the PDF exporter from a non-ASCII checkout and distinguish a decode traceback in `_readerthread` from a nonzero KiCad exit or malformed PDF. Confirm final destinations are still absent because generation occurs in a temporary staging directory.
+- recovery: decode KiCad stdout/stderr as UTF-8 with strict errors and rerun the same generator. Do not replace decode failures, relax PDF validation, or publish a partially generated pair.
+- regression check: the fake KiCad fixture emits a non-ASCII UTF-8 completion line and must generate both PDFs, provenance, overwrite refusal, and forced replacement on Windows and POSIX.
+- evidence: 2026-08-10のWindows execution hostで最初のtracked PDF生成時に検出した。staging cleanup後も公開先PDFは未作成で、UTF-8境界修正を入れて同じsourceから再生成した。
+
+## Public name audit rejects exact KiCad hardware export filenames
+
+- symptom: a clean source-public export passes privacy/readiness locally, but public `validate` stops in `test_hidloom_name_audit.py` after adding generated hardware review PDFs.
+- likely cause: the immutable KiCad project identity was allowed inside `kicad/**`, while the generator and regression test referenced the same exact output filenames outside that directory and matched the retired software-name rule.
+- detect: run `tools/hidloom_name_audit.py` on the private source as a focused pre-sync check and inspect findings outside `kicad/**`; do not weaken the generic retired-name patterns.
+- recovery: allow only the three canonical hardware export filenames used by the generator, test, and provenance record. Keep arbitrary names with the same prefix blocked.
+- regression check: `script/test_hidloom_name_audit.py` accepts the three exact export names and rejects a nearby unreviewed PDF name.
+- evidence: public branch `sync/v0.1.0-68b856b67487` run `31393396336` failed at the required name audit before PR creation; the local focused reproduction returned the same six generator/test findings. Follow-up run `31393998832` passed that audit, then exposed untriaged public-export warnings for the exact `.gitignore` exception and this failure prose; the ignore path is now explicitly classified and the prose no longer repeats the literal.
+
+## New public helper is missing from the tools inventory
+
+- symptom: required public `validate` passes, but manual `extended` reaches the full regression suite and `test_tools_readme.py` rejects a newly added `tools/*.py` helper.
+- likely cause: focused validation covered the helper itself, source syntax, public export, and repository hygiene, but omitted the repository's manual-helper documentation inventory gate.
+- detect: whenever a non-private Python helper is added below `tools/`, run `script/test_tools_readme.py` before public sync in addition to the helper's own regression test.
+- recovery: add the helper name and its operator-facing boundary to `tools/README.md`; do not weaken the inventory scan or exclude a public helper.
+- regression check: `script/test_tools_readme.py` must discover every public `tools/**/*.py` file recursively and find either its relative path or basename in the README.
+- evidence: PR #25 manual Public CI run `31395381884` passed `validate` in 2m47s, then `extended` failed after 19m25s because `export_hardware_pdfs.py` had no tools inventory entry.
+
+## New regression test leaves test inventory counts stale
+
+- symptom: public `extended` passes the new helper's own regression and tools inventory, then `test_test_inventory_doc.py` rejects the documented test-file or canonical-suite count.
+- likely cause: a new `script/test_*.py` file and canonical suite entry were added without running the inventory-document gate in the same focused validation set.
+- detect: after adding or removing any regression file or canonical suite entry, run `script/test_test_inventory_doc.py` before public sync.
+- recovery: update both discovered counts and add an operator-readable inventory entry for the new test. Do not loosen count equality or omit the test from the canonical suite merely to satisfy the document.
+- regression check: `script/test_test_inventory_doc.py` derives both counts from source, validates suite reachability, and requires every otherwise orphaned test to be documented.
+- evidence: PR #26 manual Public CI run `31398433514` passed the new hardware PDF test and tools inventory, then failed at `test_test_inventory_doc.py` after about 20 minutes; the extended job limit remained 45 minutes, so this was not a timeout.
+
 ## Bounded Windows watcher appears stalled after the new boot is reachable
 
 - symptom: cold-boot runner logs a new boot ID, then prints nothing for several minutes, so the operator may interpret the run as hung and repeat the power cycle or start another runner.
@@ -129,10 +182,10 @@
 
 - symptom: split packageのAPTは対象packageのunpack/setupと`Processing triggers for man-db`を最後に表示したまま終了せず、pingと既存SSHのTCP ACKは続く一方、新規SSHはbanner exchange、HTTPSはaccept後の応答でtimeoutする。保存logではpackage transactionが既に完了していても、APT parentだけが残る場合がある。
 - likely cause: actual開始前から圧迫されたzramへlibapt cacheが重なり、package transaction後のAPT parentがpage fault / compression thrashで進めなくなる。zramは追加RAMではなくcompressed pageをRAM内に保持するため、logical swap残量だけで安全と判断しない。terminalの最終行だけから`man-db` trigger停止やmicroSD I/O不良と断定しない。
-- detect: APT simulation後かつactual直前に`/proc/meminfo`を確認し、Pi Zero 2 Wでは初期保守値として`MemAvailable >= 128 MiB`、`SwapFree >= 256 MiB`かつ`SwapTotalの75%`、`dpkg --audit`空、APT / dpkg / mandb processとpackage-manager lock holderなしを必須にする。絶対量も要求し、swapなし・極小swapを空き率100%として通さない。60秒以上無出力なら別sessionから`ps`のpid/ppid/state/etime/RSS/VSZ/wchan、APTの`VmRSS` / `VmSwap`、`free`、`/proc/meminfo`、zram `mm_stat`、lock、kernel OOM / MMC / EXT4 logを保存する。APT historyの`End-Date`、terminalの`Log ended`、dpkg logのpackage / trigger `status installed`も照合する。
-- recovery: memory gate不合格時は`swapoff`せず、actualを開始しない。package checksum/state/auditを保持してclean reboot後にgateを取り直す。停滞中は確立済みsessionを切断せず追加probeを最小限にし、非TTY sessionへのsignal、`dpkg`直接kill、即電源断を避ける。復旧後にpackage / trigger完了、process / lockなし、audit cleanが揃えば`dpkg --configure -a`やAPTを再実行しない。auditにpendingがありlock ownerなしの場合だけ`sudo dpkg --configure -a`、dependency不整合の場合だけmemory gate後に`sudo apt-get -f install`を行う。audit clean後にprofile適用とhealth確認へ進む。
-- regression check: 更新前にexact rollback `.deb`、通常boot 4 file、package/profile/healthをroot-only backupへ保存してchecksumを確認する。simulation後のPi Zero 2 W actualでは`deploy_github_release_deb.sh --install --low-memory-preflight`を使い、同じSSH shellでAPT直前のgateを通して`ready=true`のJSONを証跡へ残す。local candidateを手動導入する場合も`tools/package/low_memory_install_preflight.py`をactual直前に実行する。core/profileは同じAPT transaction、profile applyは別commandにする。APT完了、audit clean、同一version/architecture/source、profile apply、failed unit 0、status JSON、HTTPS、output `auto`を確認するまでE1 accepted captureやboot配置へ進まない。
-- evidence: 2026-08-05 `<keyboard-host>`の`0.0.2036+git1d59ce4ab`から`0.0.2037+gitcdadc2bcd`への更新で再現した。APT simulationは2 upgrade / new 0 / remove 0。actual直前は`MemAvailable=89 MiB`、swap free 168 / 414 MiB。logではcore/profileが23:36:41、`man-db 2.13.1-1`が9秒後の23:36:50にinstalledとなり、APT historyもEnd-Date 23:36:50だった。約95分後、swap free 0、zram physical 252,240 KiBでkernelがRSS約43.6 MiB / swap約135 MiBの`apt-get`をglobal OOM victimにした。同時点にdpkg/mandbはなく、MMC / I/O / EXT4 errorもない。電源再投入後はpackage `ii`、audit/verify clean、profile/service/status/HTTPS/output `auto`、通常boot hash不変を確認した。
+- detect: APT simulation後かつactual直前に`/proc/meminfo`を確認し、Pi Zero 2 Wではcold / strict policy（`MemAvailable >= 128 MiB`、`SwapFree >= 256 MiB`かつ`SwapTotalの75%`）または長時間稼働向けsteady-state policy（`MemAvailable >= 96 MiB`、`SwapFree >= 256 MiB`かつ60%、`MemAvailable + SwapFree >= 384 MiB`）のどちらかと、`dpkg --audit`空、APT / dpkg / mandb process、package-manager lock holderなしを必須にする。絶対量も要求し、swapなし・極小swapを空き率100%として通さない。60秒以上無出力なら別sessionから`ps`のpid/ppid/state/etime/RSS/VSZ/wchan、APTの`VmRSS` / `VmSwap`、`free`、`/proc/meminfo`、zram `mm_stat`、lock、kernel OOM / MMC / EXT4 logを保存する。APT historyの`End-Date`、terminalの`Log ended`、dpkg logのpackage / trigger `status installed`も照合する。
+- recovery: 両memory policyが不合格なら`swapoff`せずactualを開始しない。APT simulationは1回だけとし、同じsimulation / gateを反復してさらにcacheを積まず、package checksum/state/auditとmemory推移を保持する。75%だけを外れsteady-stateが合格した場合はrebootを必須にせずactualへ進める。両方が不合格なら不要processの調査またはclean reboot後にgateを取り直す。停滞中は確立済みsessionを切断せず追加probeを最小限にし、非TTY sessionへのsignal、`dpkg`直接kill、即電源断を避ける。復旧後にpackage / trigger完了、process / lockなし、audit cleanが揃えば`dpkg --configure -a`やAPTを再実行しない。auditにpendingがありlock ownerなしの場合だけ`sudo dpkg --configure -a`、dependency不整合の場合だけmemory gate後に`sudo apt-get -f install`を行う。audit clean後にprofile適用とhealth確認へ進む。
+- regression check: 更新前にexact rollback `.deb`、通常boot 4 file、package/profile/healthをroot-only backupへ保存してchecksumを確認する。simulation後のPi Zero 2 W actualでは`deploy_github_release_deb.sh --install --low-memory-preflight`を使い、同じSSH shellでAPT直前のgateを通して`ready=true`と`admission_policy`のJSONを証跡へ残す。fixtureはstrict境界、今回の長時間稼働値、過去OOM値、絶対swap下限、combined headroom下限、swapなし・極小swapを固定する。local candidateを手動導入する場合も`tools/package/low_memory_install_preflight.py`をactual直前に実行する。core/profileは同じAPT transaction、profile applyは別commandにする。APT完了、audit clean、同一version/architecture/source、profile apply、failed unit 0、status JSON、HTTPS、output `auto`を確認するまでE1 accepted captureやboot配置へ進まない。
+- evidence: 2026-08-05 `<keyboard-host>`の`0.0.2036+git1d59ce4ab`から`0.0.2037+gitcdadc2bcd`への更新で再現した。APT simulationは2 upgrade / new 0 / remove 0。actual直前は`MemAvailable=89 MiB`、swap free 168 / 414 MiB。logではcore/profileが23:36:41、`man-db 2.13.1-1`が9秒後の23:36:50にinstalledとなり、APT historyもEnd-Date 23:36:50だった。約95分後、swap free 0、zram physical 252,240 KiBでkernelがRSS約43.6 MiB / swap約135 MiBの`apt-get`をglobal OOM victimにした。同時点にdpkg/mandbはなく、MMC / I/O / EXT4 errorもない。電源再投入後はpackage `ii`、audit/verify clean、profile/service/status/HTTPS/output `auto`、通常boot hash不変を確認した。2026-08-29から30には長時間稼働中の同機でstrict gateが2回停止したが、停止値は`MemAvailable=110–132 MiB`、swap free 279–291 / 415 MiB、combined headroom 401–411 MiB、audit/process/lock cleanだった。1回はsimulation前の約187 MiB / 354 MiB / 85.26%からsimulation後の約132 MiB / 279 MiB / 67.28%へ低下しており、固定75%判定のfalse stopと分類した。
 
 ## Early gadget accepted snapshot freezes a kernel-normalized configfs value before bind
 
@@ -690,14 +743,23 @@
 - regression check: `script/test_public_community_health.py`で現行selected pathの未被覆を0件にし、root-only `*`がnested pathを誤って覆うと判定しないfixtureを維持する。PR templateとissue formの欠落・内容劣化もreadinessで拒否する。
 - evidence: 2026-07-14、従来filterが通常のroot文書、daemon、Buildroot、hardware sourceを覆っていないことを検出した。最初のprefix統合も個別includeの`bin/` 2 filesを漏らしたためfixtureで検出し、18個のroot/prefix patternへ統合した。
 
-## Unclassified tracked paths disappear from the public export
+## Unclassified tracked paths disappear from or block the public export
 
-- symptom: private repositoryへ新しいroot fileまたはprivate workflowを追加してもclean exportは成功するが、public treeへ入らず、private-onlyとして除外した記録も残らない。生成helperがcacheや未承認reportを置いた場合はmanifestへ黙って収録される。
-- likely cause: allowlistに一致したpathだけをcopyし、includeにもexcludeにも一致しないtracked pathを暗黙に無視する。manifest生成もdestinationの全fileを正本にするため、予定外の生成物を正当化してしまう。
+- symptom: private repositoryへ新しいroot file、project-local agent設定、private workflowを追加すると`unclassified-tracked-path:<path>`でclean exportが停止する。旧schemaではexportが成功してもpublic treeへ入らず、private-onlyとして除外した記録も残らなかった。生成helperがcacheや未承認reportを置いた場合はmanifestへ黙って収録される危険もある。
+- likely cause: tracked pathを追加した同じ変更で、`config/public-export.json`の明示include / exact private-only excludeを更新していない。旧実装はallowlistに一致したpathだけをcopyし、includeにもexcludeにも一致しないtracked pathを暗黙に無視していた。manifest生成もdestinationの全fileを正本にすると、予定外の生成物を正当化してしまう。
 - detect: `config/public-export.json` schema v2とGit indexを`tools/public_export.py`で照合し、`source_selection.unclassified_paths`、private-only件数、generated output exact setを確認する。
-- recovery: 公開すべきpathはincludeへ追加し、内部運用pathは具体的な`exclude_globs`へ分類する。生成物はcanonical 12 files以外を削除し、generatorの出力境界を修正する。広いroot除外やmanifestへの予定外file追加で通さない。
-- regression check: `script/test_public_export.py`で未分類tracked fixture、missing include、unsafe path、generated set drift、unexpected destination file/空directoryを拒否する。`script/test_public_release_readiness.py`はmanifest整合を維持したreport件数改ざんも`source_selection_ready=false`で拒否する。private treeはpublic 1180 / private-only 67 / generated 0、standalone public cloneはpublic 1180 / private-only 0 / generated 12へ完全分類する。
-- evidence: 2026-07-14、1247 tracked pathsのうち67件が非公開だったが、private workflow 3件、Copilot instruction、`AGENTS.md`の5件はallowlist外という理由だけで暗黙除外されていた。exact private-onlyへ分類し、export前後のfile set gateを追加した。
+- recovery: 公開すべきpathはincludeへ追加し、内部運用pathは具体的な`exclude_globs`へ分類する。project-local Codex担当設定は`.codex/config.toml`だけをexact private-onlyとし、将来の未審査fileまで隠す`.codex/**`は使わない。生成物はcanonical 12 files以外を削除し、generatorの出力境界を修正する。広いroot除外やmanifestへの予定外file追加で通さない。
+- regression check: `script/test_public_export.py`で`.codex/config.toml`のexact private-only分類、未分類tracked fixture、missing include、unsafe path、generated set drift、unexpected destination file/空directoryを検査する。`script/test_public_release_readiness.py`はmanifest整合を維持したreport件数改ざんも`source_selection_ready=false`で拒否する。private treeとstandalone public cloneの全tracked pathをpublic / private-only / canonical generatedのいずれか1つへ完全分類する。
+- evidence: 2026-07-14、1247 tracked pathsのうち67件が非公開だったが、private workflow 3件、Copilot instruction、`AGENTS.md`の5件はallowlist外という理由だけで暗黙除外されていた。exact private-onlyへ分類し、export前後のfile set gateを追加した。2026-08-27、project-local `.codex/config.toml`追加後のprivate clean HEAD `57ecd30277f6`で正規exportが`unclassified-tracked-path:.codex/config.toml`を検出して安全停止した。修正前の公開対象比較は既存failure文書1件だけだったが、exact excludeと回帰assert自体がexport toolingの機能改善となるため、ユーザー基準に従って修正後sourceを`source-public`同期対象とした。
+
+## Retired-name audit scans private-only project instructions
+
+- symptom: public export contractとfocused export testはpassするが、private PRの`test_hidloom_name_audit.py`が、`AGENTS.md`に必要な保存checkout名をretired software identifierとして検出して停止する。
+- likely cause: `AGENTS.md`は`config/public-export.json`でexact private-onlyだが、retired-name auditのactive source除外に同じ境界がなく、hardware repository名とretired software namespaceを区別できない。
+- detect: private HEADで`python3 tools/hidloom_name_audit.py`を実行し、`content:AGENTS.md:<line>:` findingと、対象語が実際のcheckout識別に限定されることを確認する。
+- recovery: `AGENTS.md`だけをretired-name auditのexact path除外へ追加する。hardware名を全sourceで許可したり、root Markdown全体やprivate-only glob全体を除外したりしない。
+- regression check: temporary Git fixtureへhardware repository名を含む`AGENTS.md`を追加してaudit passを固定し、同じfixtureの通常tracked fileにあるretired identifierは引き続き拒否する。
+- evidence: 2026-08-27、private PR #53のpush event `Public CI / validate` run `33075688692`が`content:AGENTS.md:6:`でfailした。local再現で同一findingを確認し、exact path除外とfixture追加後にfocused name audit、public PR gate、canonical public exportを再検証する。
 
 ## Clean canonical checkout accumulates ignored build output
 
@@ -1050,7 +1112,7 @@
 - detect: `tar --zstd -tvf`またはuncompressed tar memberのheader modeと展開後modeを分けて比較する。Windowsでheader `0755` / extracted `0666`ならarchive不良ではない。`.deb` fixtureはPOSIX hostでroot/`DEBIAN` `0755`、control `0644`とdpkg-deb stderrを確認する。
 - recovery: archive writerはpublic export manifestのcanonical `0644/0755/0777`をtar headerへ明示し、source filesystem modeを再推測しない。mode検証はtar memberを正本とし、POSIX展開testだけ`--same-permissions`後のmodeも確認する。fixture packageは全directoryを`0755`、control/payloadを`0644`へ正規化してからbuildする。
 - regression check: source archive、public release bundle、profile release bundle、release helper testをrestrictive umaskとWindowsで実行し、deterministic bytes、manifest限定file、tar member mode、fixture `.deb`生成を確認する。Windows verifierはmanifest modeの許可値とcontent hashを検査し、表現不能なNTFS execute bitを等値比較しない。
-- evidence: 2026-07-19、x86_64 build hostのcaller umask `0077`でarchive mode assertionとpublic release fixture `.deb`が順に停止した。2026-08-09にはWindowsでtar展開後のexecutableが`0666`となり、さらにwriterがsource filesystem modeからheaderを`0644`へ落とす経路を検出した。manifest modeからのheader生成とtar member検査へ変更した。
+- evidence: 2026-07-19、x86_64 build hostのcaller umask `0077`でarchive mode assertionとpublic release fixture `.deb`が順に停止した。2026-08-09にはWindowsでtar展開後のexecutableが`0666`となり、さらにwriterがsource filesystem modeからheaderを`0644`へ落とす経路を検出した。manifest modeからのheader生成とtar member検査へ変更した。同日のWindows final closeoutではrelease helperのtracked mode `100755`にもNTFS `stat()`を直接適用して停止したため、Git index modeを全hostの正本、filesystem execute bitをPOSIX追加checkとし、Windows help checkはrelative shell pathまたはcurrent Python interpreter経由へ分離した。
 
 ## Generated release Markdown is mistaken for repository documentation
 
@@ -1259,10 +1321,10 @@
 
 - symptom: public source archive testがcompression開始時に`FileNotFoundError: zstd`で停止する。source manifest、tar生成、Python runtimeは正常で、archive outputは完成していない。
 - cause: Windows hostとbundled workspace runtimeのPATHに`zstd.exe`がなく、release toolingが要求するexternal compressorを起動できない。Python標準libraryだけでは`.tar.zst` contractを満たさない。
-- detect: test前に`Get-Command zstd`または`zstd --version`を実行する。見つからない場合はarchive testを開始せずdependency不足として分ける。既存`.zst` artifactがあることをCLI availabilityの証明にしない。
-- recovery: system-wide installを必須にせず、official Zstandard releaseのpinned Win64 portable assetをignored validation directoryへ取得し、asset hashと`zstd --version`を記録する。そのtest processのPATHだけへbinary directoryを追加し、source archive testを省略せず再実行する。
-- regression check: source archiveのcreate、2回生成byte一致、decompress、tar member mode、manifest限定fileをportable CLIでpassさせる。CI/build hostは`zstd` preflightをrelease作業前に行う。
-- evidence: 2026-08-09 Windows execution hostではbundled runtimeにも`zstd`がなかった。official v1.5.7 Win64 ZIP SHA-256 `acb4e8111511749dc7a3ebedca9b04190e37a17afeb73f55d4425dbf0b90fad9`をignored directoryへ展開し、CLI v1.5.7をprocess-local PATHで使用した。
+- detect: test前に`Get-Command zstd`または`zstd --version`を実行する。見つからない場合はarchive testを開始せずdependency不足として分ける。既存`.zst` artifactがあることをCLI availabilityの証明にしない。`zstd`追加後に`tar --zstd`だけがexit 2なら、`Get-Command tar,bash,node,zstd`でPATH shadowingも確認する。
+- recovery: system-wide installを必須にせず、official Zstandard releaseのpinned Win64 portable assetをignored validation directoryへ取得し、asset hashと`zstd --version`を記録する。そのtest processのPATHだけへbinary directoryを追加し、source archive testを省略せず再実行する。shell syntax用にはGit `bin`の`bash.exe` fallbackを使い、Git `usr/bin`全体をSystem32より前へ置いて`tar.exe`まで差し替えない。
+- regression check: `tar`がWindows System32、`bash`がGit `bin`、`node`と`zstd`がpinned process-local runtimeを解決する状態で、source syntaxとsource archiveのcreate、2回生成byte一致、decompress、tar member mode、manifest限定fileをpassさせる。その後full public exportを完走する。CI/build hostは`zstd` preflightをrelease作業前に行う。
+- evidence: 2026-08-09 Windows execution hostではbundled runtimeにも`zstd`がなかった。official v1.5.7 Win64 ZIP SHA-256 `acb4e8111511749dc7a3ebedca9b04190e37a17afeb73f55d4425dbf0b90fad9`をignored directoryへ展開し、CLI v1.5.7をprocess-local PATHで使用した。2026-08-11のcloseoutではGit `usr/bin`を先頭へ置いた初回復旧がGit tarを選び`--zstd` exit 2となったため、Git `bin`だけを追加してSystem32 tarを保持し、focused archiveとfull public exportをpassした。
 
 ## Windows bash validation receives an unconverted native absolute path
 
@@ -1345,11 +1407,59 @@
 - regression check: WindowsとLinuxで`script/test_license_evidence_tools.py`を実行し、schema、host field、Debian 21/Python 2のtotalを固定する。Linux focused validationでは実`dpkg-query`観測も維持し、Windowsのunobserved結果をLinux evidenceの代用にしない。
 - evidence: 2026-08-09 Windows execution hostのfull public exportでlocal environment hygiene通過後に検出した。host fallbackとcommand availabilityを明示し、LF固定evidenceを再生成した。
 
-## Public extended CI omits the ARM64 cross compiler required by the full suite
+## Public extended CI exposes late cross-host prerequisites in the full suite
 
-- symptom: public sync PRのrequired `validate`はpassするが、merge後`extended`のcanonical suiteが終盤の`script/test_rpi_os_early_initramfs_tool.py`で`required test command is missing: aarch64-linux-gnu-gcc`となり、locked Rust checksとdiff hygieneへ進めない。
-- cause: early-initramfs builder testをcanonical suiteへ追加した一方、public `extended`のUbuntu dependency listへARM64 GNU cross compilerを追加していなかった。`rustup target add aarch64-unknown-linux-musl`と`build-essential`は`aarch64-linux-gnu-gcc`を提供しないため、cross-build hostの既存packageがlocal validationで不足を隠した。
-- detect: merge後Public CIの最初のfailed testと`require_commands()`の不足名を確認し、test本体のfixture failureとrunner dependency不足を分ける。PR gateがgreenでも、`extended`のapt install listとcanonical suiteが要求するexternal commandを照合する。
-- recovery: public `extended`のapt installへUbuntu package `gcc-aarch64-linux-gnu`を追加する。失敗したpublic `main`を履歴改変せずfollow-up source sync PRで修正し、merge後runのfull suite、locked Rust checks、diff hygieneまでpassさせる。PID未割当中はRelease、tag、binary assetを作成しない。
-- regression check: `script/test_public_ci_workflow.py`で`script/test_rpi_os_early_initramfs_tool.py`がfull suiteに含まれることと、`gcc-aarch64-linux-gnu`が`extended` install blockにあることを同時に固定する。focused workflow test、early-initramfs tool test、public PR `validate`、merge後`extended`をpassさせる。
-- evidence: 2026-08-09 public PR #19 merge後run `31298701323`は`validate`を2分48秒でpassしたが、`extended` run job `93207883186`が17分31秒で上記missing commandにより失敗した。先行するpublic export/readiness/bootstrap/sync/policy testはすべてpassしており、最初の実failureはcross compiler preflightだった。
+- symptom: public sync PRのrequired `validate`はpassするが、`extended`のcanonical suiteが終盤で停止し、locked Rust checksとdiff hygieneへ進めない。順にmissing cross compiler、不完全main archive、`unmkinitramfs`展開先誤認、export後gadget identity不正を検出した。branch作成前のstandalone export suiteはhandoff/tryboot fixture modeを直してRust release buildまで進んだ後、watcher testが非公開checklistを読んで`FileNotFoundError`になった。
+- cause: early-initramfs testのUbuntu dependency/fixture/split展開、adopt fixtureのprivacy置換後validator適合を未考慮だった。`umask 0002` hostでは暗黙作成したsecure fixture rootが`0775`となり、production security checkが正しく拒否した。さらにWindows watcher testはpublicなtool fixture検証とprivate real-device checklist連携を一つにし、export policyが意図的に除外するdocをpublic cloneでも必須にしていた。production runtimeの欠陥ではない。
+- detect: Public CIまたはstandalone export suiteの最初のfailed testを確認し、missing command、`unmkinitramfs` stderr/path、export後identity、secure fixture mode、missing pathがexport contractのprivate除外かを分ける。recovery statusが`unbound`でもevidence fileがなければpayloadの`evidence_error`、placement処理前ならfixture root/file mode、doc不在なら`config/public-export.json`を確認する。
+- recovery: cross compiler、cpio parent、split `early2/`検証、`hidloom-fixture`を順に追加する。handoff fixtureは`0700`、tryboot root/fileは`0755`/`0644`を明示する。watcher testはprivate checkoutではchecklist内容を検証し、public cloneでは同pathがcanonical export contractで明示除外されていることを検証する。未merge失敗PRはcloseし、fresh sourceから再exportする。
+- regression check: workflow、initramfs、export後identity、handoff/tryboot modeをfocused testで固定する。watcher testはprivate doc存在時の`post-first-ready`連携と、不在時のstructured export exclusionを排他的に検証する。focused testは`umask 0002`、clean standalone export canonical suiteはGitHub相当`umask 0022`でpassさせ、public PR `validate`、branch/merge後`extended`もpassさせる。
+- evidence: 2026-08-09 public PR #19 run `31298701323`のjob `93207883186`はmissing compiler、PR #20 run `31299905422`のjob `93210899878`は不完全fixture、未mergePR #21 run `31300895654`のjob `93213364537`はsplit展開先、未mergePR #22 run `31302439786`のjob `93217288309`はexport後identityを検出した。PR #22 close後、source `9fd792ea` suiteはhandoff、`791e3ab6` suiteはtryboot mode、`ba44ff8c` suiteは両者を通過後にprivate checklist couplingを検出した。mode assertion追加時の`stat` import漏れもexport前に検出した。production image、Release、runtimeは変更していない。
+
+## Public sync selects a mismatched default SSH identity
+
+- symptom: approved public repositoryへfresh sync branchをpushする前のcloneが`identity_sign: private key contents do not match public`と`Permission denied (publickey)`で停止する。
+- cause: execution hostのdefault SSH identityはprivate/public pairが一致しない状態だった一方、GitHub CLIの既存git protocolはHTTPSで認証済みだった。sync helperとremote branchの不具合ではない。
+- detect: failed helper後にdestination worktreeが存在しないこと、`git ls-remote --heads`で予定branchが存在しないこと、`gh auth status`のactive accountとgit protocolを値非表示で確認する。SSH鍵内容やtokenをlogへ出さない。
+- recovery: SSH identityやcredential設定を変更せず、helperが許可する同じofficial repositoryのHTTPS URLと既存GitHub CLI credentialでfresh empty worktreeから再実行する。2026-08-09 runでは予定branch不在を確認後、同じexport manifestからnon-force pushへ復旧した。
+- regression check: execute前に選択protocolのread-only remote accessと予定branch不在を確認し、helperのapproved repository guard、empty worktree guard、remote branch overwrite拒否を維持する。認証失敗後に別repository、force push、credential再生成へ進まない。
+
+## PID fixture command wrappers are bypassed on Windows
+
+- symptom: `script/test_pid_codes_application.py`と`script/test_pid_codes_allocation.py`がWindowsだけchild `CalledProcessError`で停止する。fixture repositoryとrecorded payloadは正しいが、申請preflightはremote HEAD照合、allocation guardはPR merge確認の最初の実行でnonzeroになる。
+- cause: testは拡張子なしPOSIX shell wrapperを`chmod(0755)`し、PATHをliteral `:`で連結していた。Windowsではexecute bit/shebangをprocess launcherとして扱わず、PATH separatorも`;`のためfake `git` / `gh`を選択できない。fixtureはinstalled real CLIへ漏れ、未mergeの実PR状態などfixture外の結果を読んだ。
+- detect: child stderrだけでなく、wrapper invocation record、`os.pathsep`、wrapper suffix/shebang、実行hostを確認する。同じfixtureがPOSIXでpassしWindowsでremote query境界から失敗し、live PRがfixtureの`MERGED`と異なる場合はproduction allocation判定ではなくcommand injection境界を疑う。
+- recovery: PID toolへargv prefixとして明示できる`--git-command` / `--gh-command`を追加し、testはcurrent Python interpreterとportable fake Python scriptを直接渡す。PATH、PATHEXT、shell associationへ依存せず、通常実行のdefault `git` / `gh`とfail-closed判定は変更しない。
+- regression check: 両PID testをWindowsとPOSIXで直接実行し、remote HEAD unavailable/stale、URL rewrite、OPEN/wrong-head/missing/failed check、unreachable merge、content drift、confirm/apply/repeat拒否まで通す。public exportとcanonical Linux suiteでもdefault command pathを再確認する。
+- evidence: 2026-08-09 Windows execution hostのprivate closeout validationで、public export/policyまでpassした後にallocation testが失敗し、application testも同じ境界で再現した。Windows command prefix修正後に両fixtureを取り直し、公式PR #1246のlive状態やallocation evidence、runtime profileは変更していない。
+
+## POSIX output mode assertion is applied to a Windows profile fixture
+
+- symptom: `script/test_public_usb_identity.py`は生成JSON/envの内容を全てpassした後、`PROFILE_PLAN.json`のmodeが期待`0644`ではなく`0666`として見えるためWindowsだけ停止する。
+- cause: production helperは各outputへ`chmod(0644)`しているが、Windows/NTFSの`st_mode`はPOSIX owner/group/other permissionを表現せず通常fileを`0666`相当として返す。内容、regular-file境界、symlink拒否の欠陥ではない。
+- detect: 全生成fileのcontent assertion、`path.is_file()`、`path.is_symlink()`、host OS、`stat().st_mode`を分ける。POSIXでだけ`0644`となりWindowsで一様に`0666`ならmode driftとしてoutputを書き換えない。
+- recovery: regular fileかつnon-symlinkのassertionは全hostで維持し、exact `0644` assertionはmodeを表現できるPOSIX hostで維持する。production chmod、force overwrite、unexpected file、symlink fail-closed処理は緩めない。
+- regression check: WindowsとPOSIXでpublic USB identity testを完走し、POSIXでは4 outputの`0644`、両hostでは内容一致、unexpected file保持、symlink拒否、正式profile activation guardを確認する。
+- evidence: 2026-08-09 Windows execution hostでPID fixture修正後の追加focused validation中に検出した。platform assertion分離後も生成profile、runtime identity、allocation evidenceは変更していない。
+
+## Uncommitted work kept only in `/tmp` disappears between task resumes
+
+- symptom: `git worktree list`にはbranchとHEADが残るがworktree pathが`prunable`で、directoryは存在しない。commit済み変更はrefから読める一方、unstaged / untracked sourceは元pathから取得できない。
+- cause: 長時間taskの継続sourceを一時領域だけに置き、未commit差分のdurable checkpointを作らないままtask境界を越えた。Git worktree metadataはdirectory内容のbackupではない。
+- detect: 作業再開時にworktree path、branch、HEAD、staged / unstaged / untrackedを再監査する。path不在なら`worktree prune`や同名再作成をせず、branch ref、package/source artifact、実機のversioned deployment、hash済みevidenceを先に棚卸しする。
+- recovery: cleanな現行mainから新しい統合worktreeを作り、commit済み変更はexact commitから取り込む。未commit分はhash一致を確認できるversioned artifactと回帰testから`apply_patch`で再構成し、元branch/stash/worktree metadataを破棄しない。
+- regression check: 長時間・複数turn作業では、機密を含まないsource/testを自動検証後の明示commitへ早めに固定する。commit未許可なら一時pathだけに依存せず、変更path、diff hash、再構成元と未commit状態をhandoffへ記録する。
+- evidence: 2026-08-30、matrix診断/debounceとKeyboard MCPの2 worktree directory消失を再監査で検出した。3 commitはbranch refから保持され、MCPの4 source/test fileは実機user-owned versioned releaseのSHA-256と一致して回収できた。既存stash、saved checkout、device runtimeは復旧調査中に変更していない。
+
+## M6 ARM smokeが旧USB解放数の期待値で停止する
+
+- symptom: image/identity/import検証はpassするが、`M6 ARM outputd rejected the uinput target`で止まる。
+- cause: 2026-09の全report解放後はUSB keyboard/sub/mouse/consumerの4 frameとuinputの2 frameで計6。
+  M6用smokeだけ旧keyboard2+uinput2=4の応答とUSB2 frameを期待していた。
+- detect: `send_release_frames`と`test_hidloom_outputd_tool.py`のconsole round-trip契約を照合する。
+  PID変更が原因と推定せず、切替応答の内容と各endpointの実frameを確認する。
+- recovery: ARM smokeを6/6/0 acknowledgement、USB4種類の正確なzero payload、往復release count12へ合わせる。
+  uinputのlogin event列と受信10 frameの検査は維持する。missing/extra/wrong-kind/wrong-payloadを許容しない。
+- evidence: 2026-09-28 formal M6 image `947ffb96644465b4da1b55bdc6412750165accaba086908cadf61ceb29f04ef9`で検出。
+  testだけを修正し、同一imageに対してARM startup-release、split route、USB/uinput往復、companion runtimeをPASSした。
+  実機への変更はなく、初回失敗logと成功logはprivate workspace reference *(omitted from public export)*のartifactに保持する。

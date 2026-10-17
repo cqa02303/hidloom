@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Sequence
 import copy
 from datetime import datetime, timezone
 import hashlib
@@ -49,10 +50,14 @@ def normalize_merged_at(value: object) -> str:
     return timestamp.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def check_pull_request(application: dict[str, Any]) -> dict[str, Any]:
+def check_pull_request(
+    application: dict[str, Any],
+    *,
+    gh_command: Sequence[str] = ("gh",),
+) -> dict[str, Any]:
     number = application["pull_request_number"]
     command = [
-        "gh",
+        *gh_command,
         "pr",
         "view",
         str(number),
@@ -134,12 +139,17 @@ def check_pull_request(application: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def require_tracked_file(upstream: Path, relative: str) -> Path:
+def require_tracked_file(
+    upstream: Path,
+    relative: str,
+    *,
+    git_command: Sequence[str] = ("git",),
+) -> Path:
     path = upstream / relative
     if path.is_symlink() or not path.is_file():
         raise SystemExit(f"pid.codes allocated path is not a regular file: {relative}")
     result = subprocess.run(
-        ["git", "ls-files", "--error-unmatch", "--", relative],
+        [*git_command, "ls-files", "--error-unmatch", "--", relative],
         cwd=upstream,
         capture_output=True,
         text=True,
@@ -150,13 +160,23 @@ def require_tracked_file(upstream: Path, relative: str) -> Path:
 
 
 def check_allocated_upstream(
-    plan: dict[str, Any], upstream: Path, pull_request: dict[str, Any]
+    plan: dict[str, Any],
+    upstream: Path,
+    pull_request: dict[str, Any],
+    *,
+    git_command: Sequence[str] = ("git",),
 ) -> dict[str, Any]:
-    upstream_check = check_canonical_upstream(plan, upstream)
+    upstream_check = check_canonical_upstream(
+        plan, upstream, git_command=git_command
+    )
     candidate_relative = plan["candidate"]["path"]
     owner_relative = plan["owner_path"]
-    candidate_path = require_tracked_file(upstream, candidate_relative)
-    owner_path = require_tracked_file(upstream, owner_relative)
+    candidate_path = require_tracked_file(
+        upstream, candidate_relative, git_command=git_command
+    )
+    owner_path = require_tracked_file(
+        upstream, owner_relative, git_command=git_command
+    )
     expected_candidate = device_page(plan)
     expected_owner = org_page(plan)
     candidate_text = candidate_path.read_text(encoding="utf-8")
@@ -167,7 +187,7 @@ def check_allocated_upstream(
         raise SystemExit("pid.codes owner page does not match the approved application")
     ancestor = subprocess.run(
         [
-            "git",
+            *git_command,
             "merge-base",
             "--is-ancestor",
             pull_request["merge_commit"],
@@ -268,6 +288,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--upstream-checkout", type=Path, required=True)
+    parser.add_argument("--git-command", nargs="+", default=["git"])
+    parser.add_argument("--gh-command", nargs="+", default=["gh"])
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--confirm")
     args = parser.parse_args()
@@ -282,9 +304,14 @@ def main() -> None:
         raise SystemExit("recorded pid.codes candidate path does not match the application")
     if application.get("owner_path") != application_plan["owner_path"]:
         raise SystemExit("recorded pid.codes owner path does not match the application")
-    pull_request = check_pull_request(application)
+    pull_request = check_pull_request(
+        application, gh_command=args.gh_command
+    )
     upstream_check = check_allocated_upstream(
-        application_plan, upstream, pull_request
+        application_plan,
+        upstream,
+        pull_request,
+        git_command=args.git_command,
     )
     contract = load_json(contract_path)
     proposed = build_proposed_contract(

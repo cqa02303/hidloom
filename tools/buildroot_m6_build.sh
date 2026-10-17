@@ -72,7 +72,8 @@ case "$MODE" in
         "$ROOT/tools/buildroot_m4_native_build.sh" "$(dirname "$NATIVE")"
         repair_python_target_cache
         HIDLOOM_M6_NATIVE_DIR="$NATIVE" PATH="$HOSTBIN:$PATH" make -C "$BUILDROOT" O="$OUTPUT"
-        python3 "$ROOT/tools/buildroot_m6_verify.py" --output "$OUTPUT"
+        python3 "$ROOT/tools/buildroot_m6_verify.py" --output "$OUTPUT" \
+            --usb-profile "${HIDLOOM_M6_USB_PROFILE:-development_compatibility}"
         python3 "$ROOT/tools/buildroot_m6_import_smoke.py" --output "$OUTPUT"
         python3 "$ROOT/tools/buildroot_m6_runtime_smoke.py" --output "$OUTPUT"
         ;;

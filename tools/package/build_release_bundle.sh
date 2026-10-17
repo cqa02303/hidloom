@@ -144,7 +144,8 @@ if [ "$BUILD" -eq 1 ]; then
     "$MATRIX_CC" -std=c11 -Wall -Wextra -O2 -D_POSIX_C_SOURCE=200809L -static \
         -o "$MATRIX_BIN_DIR/matrixd" \
         "$REPO_ROOT/daemon/matrixd/matrixd.c" \
-        "$REPO_ROOT/daemon/matrixd/debounce.c"
+        "$REPO_ROOT/daemon/matrixd/debounce.c" \
+        "$REPO_ROOT/daemon/matrixd/trace.c"
     file "$MATRIX_BIN_DIR/matrixd"
     mkdir -p "$USB_GADGET_FAST_BIN_DIR"
     echo "== tools/hidloom_usb_gadget_fast -> hidloom-usb-gadget-fast (aarch64 static) =="

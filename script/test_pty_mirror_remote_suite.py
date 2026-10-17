@@ -14,6 +14,7 @@ TESTS = [
     "script/test_sessiond_protocol.py",
     "script/test_sessiond_pty_mirror.py",
     "script/test_sessiond_pty_session.py",
+    "script/test_sessiond_output_drain.py",
     "script/test_sessiond_pty_terminal_mirror_design_doc.py",
     "script/test_sessiond_socket.py",
     "script/test_sessiond_ctl.py",

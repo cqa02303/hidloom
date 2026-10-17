@@ -8,13 +8,17 @@ Signature="$WINDOWS NT$"
 Class=Keyboard
 ClassGuid={4D36E96B-E325-11CE-BFC1-08002BE10318}
 Provider=%ProviderName%
-DriverVer=06/12/2026,0.0.2.0
+DriverVer=09/28/2026,0.0.3.0
 CatalogFile=cqa02303v5-jis-keyboard.cat
 
 [Manufacturer]
 %ManufacturerName%=CQA02303v5,NTamd64
 
 [CQA02303v5.NTamd64]
+; Assigned HIDloom identity; keep development IDs for rollback.
+%CQA02303v5JisKeyboard.DeviceDesc%=CQA02303v5_HID_106_Keyboard_Inst, HID\VID_1209&PID_484C&MI_00&COL01
+%CQA02303v5JisKeyboard.DeviceDesc%=CQA02303v5_HID_106_Keyboard_Inst, HID\VID_1209&PID_484C&MI_00
+%CQA02303v5UsSubKeyboard.DeviceDesc%=CQA02303v5_HID_101_Keyboard_Inst, HID\VID_1209&PID_484C&MI_02
 %CQA02303v5JisKeyboard.DeviceDesc%=CQA02303v5_HID_106_Keyboard_Inst, HID\VID_1D6B&PID_0105&MI_00&COL01
 %CQA02303v5JisKeyboard.DeviceDesc%=CQA02303v5_HID_106_Keyboard_Inst, HID\VID_1D6B&PID_0105&MI_00
 %CQA02303v5UsSubKeyboard.DeviceDesc%=CQA02303v5_HID_101_Keyboard_Inst, HID\VID_1D6B&PID_0105&MI_02

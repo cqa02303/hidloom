@@ -167,7 +167,7 @@ def test_static_assets_are_wired() -> None:
     assert ".interaction-morse-hidden-state" in css
     assert ".interaction-morse-row.morse-force_commit" in css
     assert "from morse_inspector import register_morse_inspector_route" in httpd_py
-    assert "register_morse_inspector_route(app, CONFIG_JSON, VIAL_JSON)" in httpd_py
+    assert "register_morse_inspector_route(app, mutable_path(CONFIG_JSON), VIAL_JSON)" in httpd_py
 
 
 def main() -> None:

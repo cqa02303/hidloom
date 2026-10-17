@@ -5,6 +5,8 @@
 まず見る文書:
 
 - [real-device-experiment-workflow.md](real-device-experiment-workflow.md): 実機一時修正を戻し、正式変更だけを repository 経由で反映する標準手順
+- [matrixd-incident-snapshot.md](matrixd-incident-snapshot.md): キー重複・固着・欠落のRAM traceと連絡後snapshot手順
+- [keyboard-write-mcp-server.md](keyboard-write-mcp-server.md): guarded key tap / 1位置keymap変更の登録・rollback手順
 - [release-packaging-runbook.md](release-packaging-runbook.md): release bundle / Debian package の build、deploy、verify、rollback 手順
 - [release-channel-policy.md](release-channel-policy.md): source / internal RC / stable public の昇格条件と変更影響別テスト
 - [public-source-rebuild-runbook.md](public-source-rebuild-runbook.md): public sourceからsplit Debian packageとBuildroot M6 imageを再生成する手順
@@ -37,7 +39,9 @@
 - [hidloom-name-inventory.md](hidloom-name-inventory.md)
 - [package-profile-split-plan.md](package-profile-split-plan.md)
 - [keyboard-mcp-server.md](keyboard-mcp-server.md)
+- [keyboard-write-mcp-server.md](keyboard-write-mcp-server.md)
 - [kc-sh-hid-text-cat-smoke.md](kc-sh-hid-text-cat-smoke.md)
+- [matrixd-incident-snapshot.md](matrixd-incident-snapshot.md)
 - [performance-tuning-plan.md](performance-tuning-plan.md)
 - [pty-terminal-mirror-smoke.md](pty-terminal-mirror-smoke.md)
 - [real-device-experiment-workflow.md](real-device-experiment-workflow.md)

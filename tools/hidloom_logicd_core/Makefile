@@ -9,7 +9,7 @@ BIN := $(BUILD_DIR)/hidloom-logicd-core
 
 all: $(BIN)
 
-$(BIN): src/main.rs Cargo.toml Cargo.lock
+$(BIN): $(wildcard src/*.rs) Cargo.toml Cargo.lock
 	$(CARGO) build --release --locked
 
 test:

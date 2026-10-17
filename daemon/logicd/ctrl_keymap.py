@@ -58,6 +58,9 @@ async def process_keymap_get_json(ctx: Any, writer: Any = None) -> None:
             "output_target": getattr(ctx, "current_output_target", ""),
             "active": ctx.layers.active_snapshot(),
         }
+        coordinator = getattr(ctx, "keymap_coordinator", None)
+        if coordinator is not None:
+            response["consistency"] = coordinator.snapshot()
         await ctrl_response(writer, response)
         log.log(_TRACE_LEVEL, "ctrl G: keymap sent (%d layers)", len(layers))
     except Exception as exc:

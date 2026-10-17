@@ -40,7 +40,9 @@
     "idle_after_ms": 100,
     "deep_idle_after_ms": 500,
     "debounce_mode": "time",
-    "debounce_ms": 5,
+    "debounce_ms": 6,
+    "press_debounce_ms": 5,
+    "repress_guard_ms": 16,
     "settle_us": 20,
     "post_row_settle_us": 2
   },

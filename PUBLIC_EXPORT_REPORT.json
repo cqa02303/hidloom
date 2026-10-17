@@ -4,39 +4,39 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "a5065d1dc9b6010bb304753c8fde3dcf300e033d",
-    "base_tree": "5a1386d9f4ddfdbcacb386de1a2b12aedb044205",
-    "base_revision_count": 2059,
-    "selected_path_count": 1271,
-    "selected_snapshot_sha256": "5c9d0c64db94fdc6a8346619a455d767dba67eb6f60b9ff40215bd0f29b47e97"
+    "base_commit": "abe9ef4ce0edc4fcadd70b1c38c37203d7b7ed75",
+    "base_tree": "1b8808db957eee9da51954fce1756c36e8dc6b6d",
+    "base_revision_count": 2115,
+    "selected_path_count": 1334,
+    "selected_snapshot_sha256": "247fb7466a41cd110ad6b3b4fe1c2f0df89da5e6f61b4ffc31f575f2c3511135"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
-  "file_count": 1271,
+  "file_count": 1334,
   "source_selection": {
-    "tracked_paths": 1339,
-    "public_source_paths": 1271,
-    "private_only_paths": 68,
+    "tracked_paths": 1410,
+    "public_source_paths": 1334,
+    "private_only_paths": 76,
     "generated_output_paths": 0,
     "unclassified_paths": 0
   },
   "finding_summary": {
     "warn:credential_word": {
       "implementation_security_keyword": 64,
-      "documentation_security_keyword": 81,
+      "documentation_security_keyword": 82,
       "security_implementation_keyword": 82,
-      "test_fixture": 54
+      "test_fixture": 58
+    },
+    "warn:legacy_project_name": {
+      "allowed_device_profile": 853,
+      "scanner_definition": 1
     },
     "warn:linux_foundation_vid": {
       "migration_documentation": 2,
-      "pid_codes_migration_required": 17,
+      "pid_codes_migration_required": 19,
       "scanner_definition": 1,
       "test_fixture": 1
-    },
-    "warn:legacy_project_name": {
-      "allowed_device_profile": 820,
-      "scanner_definition": 1
     },
     "warn:private_ipv4": {
       "allowed_private_network_range": 3,
@@ -52,6 +52,15 @@
       "excerpt": "GH_TOKEN: ${{ github.token }}",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": ".gitignore",
+      "line": 11,
+      "excerpt": "!kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -79,6 +88,42 @@
       "excerpt": "source code form), and must require no special password or key for",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "README.md",
+      "line": 14,
+      "excerpt": "- 回路図PDF: [cqa02303v5 schematic](kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf)",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "README.md",
+      "line": 15,
+      "excerpt": "- PCB fabrication-layer PDF: [cqa02303v5 fabrication layers](kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf)",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "README.md",
+      "line": 16,
+      "excerpt": "- 編集可能なhardware source: [KiCad project](kicad/cqa02303v5rpi/README.md)",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "README.md",
+      "line": 108,
+      "excerpt": "| `kicad/cqa02303v5rpi/` | 編集可能なKiCad hardware source、回路図・PCB review PDF |",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -159,7 +204,7 @@
       "line": 69,
       "excerpt": "canonical inputは`kicad/cqa02303v5rpi/keymap.kicad_sch`と",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -168,7 +213,7 @@
       "line": 70,
       "excerpt": "`kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb`です。",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -177,7 +222,7 @@
       "line": 3,
       "excerpt": "入力PCB: kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -186,7 +231,7 @@
       "line": 378,
       "excerpt": "os.path.join(repo_root, \"kicad\", \"cqa02303v5rpi\", \"keymap.kicad_sch\")",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -195,7 +240,7 @@
       "line": 311,
       "excerpt": "default_pcb = os.path.join(repo_root, \"kicad\", \"cqa02303v5rpi\", \"cqa02303v5rpi.kicad_pcb\")",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -204,7 +249,7 @@
       "line": 20,
       "excerpt": "PCB_FILE  : kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -213,7 +258,7 @@
       "line": 165,
       "excerpt": "repo_root, \"kicad\", \"cqa02303v5rpi\", \"cqa02303v5rpi.kicad_pcb\"",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -460,6 +505,24 @@
     },
     {
       "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "config/public-assets.json",
+      "line": 189,
+      "excerpt": "\"kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf\",",
+      "disposition": "allowed_device_profile",
+      "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "config/public-assets.json",
+      "line": 190,
+      "excerpt": "\"kicad/cqa02303v5rpi/cqa02303v5rpi-schematic.pdf\"",
+      "disposition": "allowed_device_profile",
+      "reason": "the asset manifest records immutable cqa02303v5 hardware and KiCad paths"
+    },
+    {
+      "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export-deny-patterns.json",
       "line": 56,
@@ -480,7 +543,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 107,
+      "line": 108,
       "excerpt": "\"macro/examples/password.kml\",",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -489,7 +552,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 252,
+      "line": 257,
       "excerpt": "\"reason\": \"reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -498,7 +561,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 258,
+      "line": 263,
       "excerpt": "\"reason\": \"credential words are validation fixtures; concrete token patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -507,7 +570,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 304,
+      "line": 309,
       "excerpt": "\"reason\": \"security documentation names credential concepts; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -516,7 +579,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "config/public-export.json",
-      "line": 332,
+      "line": 338,
       "excerpt": "\"reason\": \"reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers\"",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -534,7 +597,16 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 194,
+      "line": 133,
+      "excerpt": "\"kicad/cqa02303v5rpi/cqa02303v5rpi-pcb-fabrication-layers.pdf\"",
+      "disposition": "allowed_device_profile",
+      "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "config/repository-hygiene.json",
+      "line": 196,
       "excerpt": "\"kicad/cqa02303v5rpi-01/fabrication-toolkit-options.json\",",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -543,7 +615,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 195,
+      "line": 197,
       "excerpt": "\"kicad/cqa02303v5rpi/fabrication-toolkit-options.json\"",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -552,7 +624,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 201,
+      "line": 203,
       "excerpt": "\"kicad/cqa02303v5rpi-01/other.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -561,7 +633,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "config/repository-hygiene.json",
-      "line": 202,
+      "line": 204,
       "excerpt": "\"kicad/cqa02303v5rpi/other.kicad_sch\"",
       "disposition": "allowed_device_profile",
       "reason": "the exact duplicate policy records immutable cqa02303v5 KiCad project paths"
@@ -750,7 +822,7 @@
       "severity": "warn",
       "pattern_id": "private_ipv4",
       "path": "daemon/http/httpd.py",
-      "line": 230,
+      "line": 231,
       "excerpt": "ipaddress.ip_network(\"10.0.0.0/8\"),",
       "disposition": "allowed_private_network_range",
       "reason": "RFC1918 CIDRs are intentional HTTP access-control ranges"
@@ -759,7 +831,7 @@
       "severity": "warn",
       "pattern_id": "private_ipv4",
       "path": "daemon/http/httpd.py",
-      "line": 231,
+      "line": 232,
       "excerpt": "ipaddress.ip_network(\"172.16.0.0/12\"),",
       "disposition": "allowed_private_network_range",
       "reason": "RFC1918 CIDRs are intentional HTTP access-control ranges"
@@ -768,7 +840,7 @@
       "severity": "warn",
       "pattern_id": "private_ipv4",
       "path": "daemon/http/httpd.py",
-      "line": 232,
+      "line": 233,
       "excerpt": "ipaddress.ip_network(\"192.168.0.0/16\"),",
       "disposition": "allowed_private_network_range",
       "reason": "RFC1918 CIDRs are intentional HTTP access-control ranges"
@@ -777,7 +849,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 275,
+      "line": 276,
       "excerpt": "set_csrf_cookie(response, cookie_name=HTTPD_CSRF_COOKIE, token=HTTPD_CSRF_TOKEN)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -786,7 +858,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 298,
+      "line": 299,
       "excerpt": "def _hash_http_basic_auth_password(password: str, *, iterations: int = 200_000) -> str:",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -795,7 +867,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 299,
+      "line": 300,
       "excerpt": "return hash_http_basic_auth_password(password, iterations=iterations)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -804,7 +876,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 302,
+      "line": 303,
       "excerpt": "def _verify_http_basic_auth_password(password: str, stored: str) -> bool:",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -813,7 +885,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 303,
+      "line": 304,
       "excerpt": "return verify_http_basic_auth_password(password, stored)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -822,7 +894,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 317,
+      "line": 318,
       "excerpt": "def _write_http_basic_auth_file(username: str, password: str) -> tuple[Path, str]:",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -831,7 +903,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 320,
+      "line": 321,
       "excerpt": "password,",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -840,7 +912,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/http/httpd.py",
-      "line": 363,
+      "line": 364,
       "excerpt": "log.warning(\"Rejecting request with invalid CSRF token: method=%s path=%s\", request.method, request.path)",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1236,7 +1308,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "daemon/logicd/input_events.py",
-      "line": 708,
+      "line": 752,
       "excerpt": "message = f\"Wi-Fi ON\\n{status.ssid or 'connected'}\"",
       "disposition": "security_implementation_keyword",
       "reason": "reviewed authentication and credential-aware daemon paths necessarily name credential concepts; concrete token patterns remain blockers"
@@ -1353,7 +1425,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "dev/mcp/keyboard/README.md",
-      "line": 270,
+      "line": 276,
       "excerpt": "at this checkout's stdio command. It redacts environment values, bearer token",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1362,7 +1434,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "dev/mcp/keyboard/README.md",
-      "line": 301,
+      "line": 307,
       "excerpt": "returns values only for a small allowlist of non-secret operational flags, and",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1740,7 +1812,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/buildroot-fast-boot-experiment.md",
-      "line": 538,
+      "line": 555,
       "excerpt": "M6 runtime artifact、image内`pi`/`wheel`/SHA-256 password hash、kernel disable設定をpassした。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1749,7 +1821,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
-      "line": 19,
+      "line": 20,
       "excerpt": "- SSH key、IP address、token、password、`.env` の値は docs に書かない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1758,7 +1830,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/codex-ssh-stdio-mcp-profile.md",
-      "line": 78,
+      "line": 79,
       "excerpt": "- `env` / `env_vars` で bearer token や password を渡さない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1767,7 +1839,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 145,
+      "line": 198,
       "excerpt": "- fixed candidate: source `0ebc76ddb`、core/profile `0.0.2043+git0ebc76ddb`、accepted manifest `f0eeb2eef76f0ba10439cd7690012c0d6de1948bb1f95c1e52b6e665a2a0a322`でsnapshot v2を再試験した。one-shot boot ID `7def",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1776,7 +1848,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 242,
+      "line": 295,
       "excerpt": "- recovery: add only the reviewed implementation path to the existing narrow security-keyword classification, add the new test to a canonical suite or inventory, and update the mechanically checked ca",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1785,7 +1857,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 244,
+      "line": 297,
       "excerpt": "- evidence: 2026-07-20 HTTP i18n added reviewed password-setting UI strings, one new test, and two feature documents. The gates detected all three missing classifications/inventories; after bounded up",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1794,7 +1866,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 304,
+      "line": 357,
       "excerpt": "- detect: OLEDへ到達する`notify alert` / `notify warning`と直接`hidloom-notify` messageを抽出し、固定文字列を`str.isascii()`で検査する。SSID、hostname、設定名などの動的文字列も確認し、実機ではi2cd journalの受信messageとOLED表示を照合する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1803,7 +1875,7 @@
       "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "docs/ops/failure-patterns.md",
-      "line": 506,
+      "line": 559,
       "excerpt": "- symptom: public rootのUSB guideが「セットアップ完了」と断言し、削除済み`send_key.sh`やlayout fileを案内し、未割当`0x1d6b:0x0105`を通常のdevice identityとして表示する。",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
@@ -1812,7 +1884,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 758,
+      "line": 820,
       "excerpt": "- symptom: clean exportのuntriaged warningは0のままだが、review済みscope外のfileへpassword、token、SSID等を追加しても既存の`implementation_security_keyword`へ自動分類され、個別reviewなしでreadinessを通過する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1821,7 +1893,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 833,
+      "line": 895,
       "excerpt": "- recovery: `--rewrite-retired-keys`のdry-runでkey mappingだけを確認し、operator承認後に明示token付き`--apply`を使う。atomic replaceでmode `0600`とvalue byteを維持し、secret-bearing backupやcompatibility aliasを作らない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1830,7 +1902,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/failure-patterns.md",
-      "line": 1278,
+      "line": 1340,
       "excerpt": "- symptom: source checkoutのshell scriptはLFで`bash -n`をpassするが、public export先の同scriptだけが`syntax error near unexpected token $'{\\r''`で停止する。またはexport後のmanifest hygieneがSBOM、privacy、asset、referenceの生成JSON/",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1839,7 +1911,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 53,
+      "line": 54,
       "excerpt": "MCP レベルの bearer token / OAuth は使わず、起動できる OS user、Codex の trusted project 設定、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1848,7 +1920,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 81,
+      "line": 82,
       "excerpt": "| loopback HTTP | local bearer token など | 後続候補 | browser / 複数 client 共有が必要になった時だけ |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1857,7 +1929,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 82,
+      "line": 83,
       "excerpt": "| LAN / Internet HTTP | OAuth 2.1 / protected resource metadata / scoped token | 非推奨から開始 | read-only でも runtime 情報が出るため、必要性が出るまで作らない |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1866,7 +1938,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 102,
+      "line": 103,
       "excerpt": "この場合も認証は SSH key と remote user 権限で扱い、MCP server 自体には secret を持たせません。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1875,7 +1947,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 140,
+      "line": 141,
       "excerpt": "| [`get_http_status_summary`](#get_http_status_summary) | local HTTPS `/api/status` の health を要約 | `url`, `username`, `password`, `timeout_sec`, `verify_tls` | なし |",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1884,7 +1956,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 763,
+      "line": 764,
       "excerpt": "local Codex CLI からこの MCP server を使える状態かを、secret を返さずに要約します。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1893,7 +1965,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 776,
+      "line": 777,
       "excerpt": "- bearer token env var 名",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1902,7 +1974,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 858,
+      "line": 859,
       "excerpt": "- 情報用 confirmation token と `REFLECT ...` phrase",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1911,7 +1983,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 900,
+      "line": 901,
       "excerpt": "- allowlist 済みの非 secret operational flag の値",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1920,8 +1992,17 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/keyboard-mcp-server.md",
-      "line": 1169,
+      "line": 1170,
       "excerpt": "- HTTP transport を採用する場合の bearer token / OAuth 設計:",
+      "disposition": "documentation_security_keyword",
+      "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "docs/ops/keyboard-write-mcp-server.md",
+      "line": 52,
+      "excerpt": "fileで配置し、必要なCodex profileからだけ起動します。IP、SSH key、password、tokenは設定例やdocsへ",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
     },
@@ -1938,7 +2019,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/rpi-os-early-initramfs-experiment.md",
-      "line": 605,
+      "line": 612,
       "excerpt": "early token/treeはなく通常boot 4 hashは正しく、`keyboard_ready` 14.666秒、`usb->input` 0.686秒、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1947,7 +2028,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/rpi-os-early-initramfs-experiment.md",
-      "line": 659,
+      "line": 666,
       "excerpt": "通常rebootを1回実行し、fallback boot ID `c0e63dd9-5ce0-4c9d-b613-d2e72f6f00e4`、early token/treeなし、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1956,7 +2037,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/ops/rpi-os-early-initramfs-experiment.md",
-      "line": 702,
+      "line": 709,
       "excerpt": "`749a1fad-577a-4bd5-8c7e-d1be8ecfbd04`へ戻した。early token/treeなし、keyboard ready 14.092秒、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1983,7 +2064,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/policy/decisions-spec.md",
-      "line": 130,
+      "line": 136,
       "excerpt": "- HTTP UI に Settings タブを追加し、Basic 認証 password を変更できるようにする。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -1992,7 +2073,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/policy/decisions-spec.md",
-      "line": 132,
+      "line": 138,
       "excerpt": "- `config/default/config.json` の `settings.http_basic_auth.password` は `__HOSTNAME__` を許可し、",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2001,7 +2082,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/policy/decisions-spec.md",
-      "line": 133,
+      "line": 139,
       "excerpt": "fresh install の初期 password は node 名 (`hostname` の出力) とする。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2010,7 +2091,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/policy/decisions-spec.md",
-      "line": 135,
+      "line": 141,
       "excerpt": "- password 変更値は専用 override ファイルへ保存する。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2019,7 +2100,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/policy/decisions-spec.md",
-      "line": 139,
+      "line": 145,
       "excerpt": "- 保存形式は平文 `password` ではなく、salt 付き PBKDF2-SHA256 の `password_hash` とする。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2028,7 +2109,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/policy/decisions-spec.md",
-      "line": 140,
+      "line": 146,
       "excerpt": "- 専用 override ファイルは `0600` で作成し、ログには password 本体を出さない。",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2037,7 +2118,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "docs/policy/decisions-spec.md",
-      "line": 154,
+      "line": 160,
       "excerpt": "- POST / PUT / DELETE と `/ws` は CSRF token を要求する。通常 UI は `hidloom_csrf`",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -2325,7 +2406,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 492,
+      "line": 508,
       "excerpt": "\"filename\": \"cqa02303v5rpi-01.kicad_pro\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2334,7 +2415,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 592,
+      "line": 608,
       "excerpt": "\"bom_export_filename\": \"cqa02303v5rpi.csv\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2343,7 +2424,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 791,
+      "line": 807,
       "excerpt": "\"filename\": \"cqa02303v5rpi-01.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2352,7 +2433,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 792,
+      "line": 808,
       "excerpt": "\"name\": \"cqa02303v5rpi-01\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -2361,7 +2442,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "kicad/cqa02303v5rpi-01/cqa02303v5rpi-01.kicad_pro",
-      "line": 806,
+      "line": 822,
       "excerpt": "\"cqa02303v5rpi\"",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
@@ -5639,6 +5720,114 @@
       "path": "kicad/cqa02303v5rpi-01/mouse_sch.kicad_sch",
       "line": 1372,
       "excerpt": "(project \"cqa02303v5rpi-01\"",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/README.md",
+      "line": 1,
+      "excerpt": "# cqa02303v5rpi Hardware",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/README.md",
+      "line": 8,
+      "excerpt": "- [Schematic PDF](cqa02303v5rpi-schematic.pdf) contains all four hierarchical",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/README.md",
+      "line": 10,
+      "excerpt": "- [PCB fabrication-layer PDF](cqa02303v5rpi-pcb-fabrication-layers.pdf) contains",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 6,
+      "excerpt": "\"path\": \"cqa02303v5rpi-pcb-fabrication-layers.pdf\",",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 11,
+      "excerpt": "\"path\": \"cqa02303v5rpi-schematic.pdf\",",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 36,
+      "excerpt": "\"project\": \"cqa02303v5rpi\",",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 44,
+      "excerpt": "\"cqa02303v5rpi.kicad_pcb\": {",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 45,
+      "excerpt": "\"path\": \"cqa02303v5rpi.kicad_pcb\",",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 49,
+      "excerpt": "\"cqa02303v5rpi.kicad_pro\": {",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 50,
+      "excerpt": "\"path\": \"cqa02303v5rpi.kicad_pro\",",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 54,
+      "excerpt": "\"cqa02303v5rpi.kicad_sch\": {",
+      "disposition": "allowed_device_profile",
+      "reason": "cqa02303v5 remains the hardware and KiCad project identity"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json",
+      "line": 55,
+      "excerpt": "\"path\": \"cqa02303v5rpi.kicad_sch\",",
       "disposition": "allowed_device_profile",
       "reason": "cqa02303v5 remains the hardware and KiCad project identity"
     },
@@ -9208,10 +9397,28 @@
     },
     {
       "severity": "warn",
+      "pattern_id": "linux_foundation_vid",
+      "path": "script/test_buildroot_fast_boot_assets.py",
+      "line": 93,
+      "excerpt": "assert json.loads((target / \"mnt/p3/config.json\").read_text())[\"device\"][\"vendor_id\"] == \"0x1d6b\"",
+      "disposition": "pid_codes_migration_required",
+      "reason": "public USB profile must use an assigned pid.codes VID/PID"
+    },
+    {
+      "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_buildroot_fast_boot_assets.py",
-      "line": 293,
+      "line": 348,
       "excerpt": "assert 'filesystem_file(debugfs, rootfs, \"/etc/passwd\")' in m6_verify_text",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "script/test_control_owner_sessions.py",
+      "line": 102,
+      "excerpt": "# EOF is observed even while this source executes a long token macro.",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
     },
@@ -9223,6 +9430,42 @@
       "excerpt": "assert config[\"settings\"][\"http_basic_auth\"][\"password\"] == \"__HOSTNAME__\"",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "script/test_hardware_pdf_exports.py",
+      "line": 16,
+      "excerpt": "PROJECT = ROOT / \"kicad\" / \"cqa02303v5rpi\"",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "script/test_hardware_pdf_exports.py",
+      "line": 18,
+      "excerpt": "\"cqa02303v5rpi-schematic.pdf\",",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "script/test_hardware_pdf_exports.py",
+      "line": 19,
+      "excerpt": "\"cqa02303v5rpi-pcb-fabrication-layers.pdf\",",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "script/test_hardware_pdf_exports.py",
+      "line": 21,
+      "excerpt": "PROVENANCE = \"cqa02303v5rpi-hardware-pdf-exports.json\"",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -9248,6 +9491,15 @@
       "path": "script/test_http_interaction_ui_assets.py",
       "line": 130,
       "excerpt": "assert 'id=\"settings-confirm-password\"' in index_html",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "script/test_http_runtime_config.py",
+      "line": 38,
+      "excerpt": "document = {\"settings\": {\"interaction\": {\"tapping_term\": 0.2}, \"http_basic_auth\": {\"username\": \"fixture\", \"password\": \"fixture-only\"}}, \"macros\": {\"USER\": [\"KC_A\"]}, \"unknown\": {\"preserve\": 7}}",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
     },
@@ -9330,7 +9582,7 @@
       "line": 40,
       "excerpt": "\"kicad/cqa02303v5rpi/keymap.kicad_sch\",",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -9339,7 +9591,7 @@
       "line": 41,
       "excerpt": "\"kicad/cqa02303v5rpi/cqa02303v5rpi.kicad_pcb\",",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -9348,7 +9600,7 @@
       "line": 54,
       "excerpt": "(fixture / \"kicad/cqa02303v5rpi/keymap.kicad_sch\").unlink()",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -9357,7 +9609,7 @@
       "line": 98,
       "excerpt": "raw_leds = led_gen._extract_led_positions(str(ROOT / \"kicad\" / \"cqa02303v5rpi\" / \"cqa02303v5rpi.kicad_pcb\"))",
       "disposition": "allowed_device_profile",
-      "reason": "these sources reference the immutable KiCad hardware project path"
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -9587,8 +9839,26 @@
     {
       "severity": "warn",
       "pattern_id": "credential_word",
+      "path": "script/test_mcp_keyboard_write_server.py",
+      "line": 265,
+      "excerpt": "assert \"password\" not in serialized",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
+      "path": "script/test_mcp_keyboard_write_server.py",
+      "line": 266,
+      "excerpt": "assert \"token\" not in serialized",
+      "disposition": "test_fixture",
+      "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 250,
+      "line": 252,
       "excerpt": "unknown.write_text(\"password\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9597,7 +9867,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 253,
+      "line": 255,
       "excerpt": "reviewed.write_text(\"password\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9606,7 +9876,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_export.py",
-      "line": 256,
+      "line": 258,
       "excerpt": "reviewed_scanner.write_text(\"token\\n\", encoding=\"utf-8\")",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9624,7 +9894,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "script/test_public_usb_identity.py",
-      "line": 326,
+      "line": 338,
       "excerpt": "contract[\"source_bindings\"][\"usb_config\"] = \"../../etc/passwd\"",
       "disposition": "test_fixture",
       "reason": "credential words are validation fixtures; concrete token patterns remain blockers"
@@ -9633,7 +9903,7 @@
       "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "script/test_rpi_os_early_gadget_adopt_tool.py",
-      "line": 33,
+      "line": 34,
       "excerpt": "\"HIDLOOM_USB_VENDOR_ID\": \"0x1d6b\",",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
@@ -9642,7 +9912,7 @@
       "severity": "warn",
       "pattern_id": "linux_foundation_vid",
       "path": "script/test_rpi_os_early_gadget_adopt_tool.py",
-      "line": 263,
+      "line": 264,
       "excerpt": "\"idVendor\": \"0x1d6b\",",
       "disposition": "pid_codes_migration_required",
       "reason": "public USB profile must use an assigned pid.codes VID/PID"
@@ -9840,7 +10110,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/README.md",
-      "line": 102,
+      "line": 107,
       "excerpt": "したがって、review済みscope外のfileへpassword、token、SSID等のcredential語が追加された場合は、既存の",
       "disposition": "documentation_security_keyword",
       "reason": "security documentation names credential concepts; concrete secret patterns remain blockers"
@@ -9874,9 +10144,18 @@
     },
     {
       "severity": "warn",
+      "pattern_id": "linux_foundation_vid",
+      "path": "tools/buildroot_m6_identity.py",
+      "line": 23,
+      "excerpt": "\"printf '0x1d6b\\\\n' > idVendor\": ('idVendor', values['vendor_id']),",
+      "disposition": "pid_codes_migration_required",
+      "reason": "public USB profile must use an assigned pid.codes VID/PID"
+    },
+    {
+      "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 134,
+      "line": 142,
       "excerpt": "filesystem_file(debugfs, rootfs, \"/etc/passwd\"),",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -9885,7 +10164,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 136,
+      "line": 144,
       "excerpt": "f\"{rootfs}:/etc/passwd\",",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -9894,7 +10173,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 139,
+      "line": 147,
       "excerpt": "raise SystemExit(\"invalid M6 pi passwd entry\")",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -9903,7 +10182,7 @@
       "severity": "warn",
       "pattern_id": "credential_word",
       "path": "tools/buildroot_m6_verify.py",
-      "line": 149,
+      "line": 157,
       "excerpt": "raise SystemExit(\"M6 pi password hash does not match the SHA-256 users table\")",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
@@ -9952,6 +10231,87 @@
       "excerpt": "comments[offset : offset + len(token.string)] = token.string",
       "disposition": "implementation_security_keyword",
       "reason": "reviewed implementation or configuration paths name credential concepts or parse command-line tokens; concrete secret patterns remain blockers"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 17,
+      "excerpt": "DEFAULT_PROJECT_DIR = ROOT / \"kicad\" / \"cqa02303v5rpi\"",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 19,
+      "excerpt": "SCHEMATIC_PDF = \"cqa02303v5rpi-schematic.pdf\"",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 20,
+      "excerpt": "PCB_PDF = \"cqa02303v5rpi-pcb-fabrication-layers.pdf\"",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 21,
+      "excerpt": "PROVENANCE_JSON = \"cqa02303v5rpi-hardware-pdf-exports.json\"",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 23,
+      "excerpt": "\"cqa02303v5rpi.kicad_pro\",",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 24,
+      "excerpt": "\"cqa02303v5rpi.kicad_sch\",",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 29,
+      "excerpt": "\"cqa02303v5rpi.kicad_pcb\",",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 177,
+      "excerpt": "str(project_dir / \"cqa02303v5rpi.kicad_sch\"),",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
+    },
+    {
+      "severity": "warn",
+      "pattern_id": "legacy_project_name",
+      "path": "tools/export_hardware_pdfs.py",
+      "line": 198,
+      "excerpt": "str(project_dir / \"cqa02303v5rpi.kicad_pcb\"),",
+      "disposition": "allowed_device_profile",
+      "reason": "these sources, ignore exception, and public entry points reference the immutable KiCad hardware project path"
     },
     {
       "severity": "warn",
@@ -10146,7 +10506,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 23,
+      "line": 30,
       "excerpt": "違う version の Windows SDK を使う場合は、`build-sign-install-cqa-jis-inf-admin.ps1` の",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10155,7 +10515,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 40,
+      "line": 47,
       "excerpt": ".\\build-sign-install-cqa-jis-inf-admin.ps1",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10164,7 +10524,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 45,
+      "line": 52,
       "excerpt": "で install される。log は `build-sign-install-cqa-jis-inf.log` に残る。",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10173,7 +10533,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 70,
+      "line": 77,
       "excerpt": "`build-sign-install-cqa-jis-inf-admin.ps1` が失敗した場合は、まず log を見る。",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10182,7 +10542,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 73,
+      "line": 80,
       "excerpt": "Get-Content .\\build-sign-install-cqa-jis-inf.log -Tail 80",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"
@@ -10191,7 +10551,7 @@
       "severity": "warn",
       "pattern_id": "legacy_project_name",
       "path": "windows-driver/README.md",
-      "line": 84,
+      "line": 91,
       "excerpt": "必要に応じて repository root の `script\\cleanup_windows_cqa_stale_devices.ps1` を使う。",
       "disposition": "allowed_device_profile",
       "reason": "driver files identify the cqa02303v5 hardware profile"

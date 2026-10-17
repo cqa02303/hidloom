@@ -19,6 +19,7 @@ touch kiosk healthをbuild host上で検証します。
 - `buildroot_source_prepare.py`
 - `collect_license_evidence.py`
 - `development_residue_hygiene.py`
+- `export_hardware_pdfs.py`
 - `generate_cyclonedx_sbom.py`
 - `generated_binary_hygiene.py`
 - `generate_hidloom_icons.py`
@@ -64,6 +65,10 @@ touch kiosk healthをbuild host上で検証します。
 
 `public_usb_identity.py`は現行private互換profileと将来のpublic正式profileを同じcontractで検査する。
 現行config/Vial定義とのdriftを拒否し、pid.codes merge evidenceが揃うまで正式profile bundleを生成しない。
+
+`export_hardware_pdfs.py`はKiCad sourceから回路図とPCB fabrication-layerのreview PDFを一時directoryへ
+生成し、両方のPDF構造とsource/output checksum recordを検証してから同時に公開する。PCB PDFは
+Gerber/Excellon manufacturing outputの代替ではない。
 
 `public_repository_create.py`はcanonical GitHub account、repositoryの404、`private=false`、説明、homepage、
 feature/merge設定、branch/tag 0を検査する。通常はnon-mutating plan/auditだけを行い、完全一致する
@@ -247,13 +252,15 @@ version を同時に install し、`hidloom-profile <profile> --apply --backup -
 runtime 定義と service policy を反映します。
 
 Pi Zero 2 Wのactual直前は`package/low_memory_install_preflight.py`を実機上でread-only実行し、
-memory / swap、`dpkg --audit`、package process / lockのJSON gateを通します。
+cold / strictまたは長時間稼働向けsteady-state headroomのmemory / swap、`dpkg --audit`、
+package process / lockのJSON gateを通します。
 
 ```bash
 ssh <device> 'python3 -' < tools/package/low_memory_install_preflight.py
 ```
 
-`ready=false`ならinstallを開始せず、swapを変更せずに原因を解消してから取り直します。
+`ready=false`ならinstallを開始せず、swapを変更せずに原因を解消してから取り直します。同じAPT
+simulationとgateは反復せず、`admission_policy`も証跡へ残します。
 
 標準キーボード用の例:
 
@@ -819,6 +826,8 @@ daemon warning/error なしです。`ledd_key_message_count` は dummy splash �
 キー取りこぼしや ghost が再発した直後に、後から見返すための Markdown snapshot を採取する helper です。
 `matrixd` 設定、systemd unit、priority、HID gadget、process、recent journal、LED state、
 短時間の `key_events.sock` / `ledd_events.sock` 監視結果を 1 ファイルにまとめます。
+RAM上の`/run/hidloom/matrixd-trace.1.jsonl`、`matrixd-trace.jsonl`を古い順に取り込み、
+boot ID、core/profile/early-boot package、matrixd/logicd-core/hidd/outputd statusも併記します。
 前回 boot と直近 journal から shutdown / reboot / systemctl restart / OOM / signal などの
 候補行も抽出するため、`matrixd` / `logicd` の再起動が意図した操作か異常終了かを後から切り分けやすくします。
 また、`logicd` ctrl socket の `ACTIVE` / `K` 応答、daemon thread の wait channel、
@@ -831,10 +840,15 @@ UNIX socket、open fd、kernel log、pressure / memory も保存するため、s
 sudo python3 tools/matrixd_diagnostics_snapshot.py
 sudo python3 tools/matrixd_diagnostics_snapshot.py --duration 30 --since "5 minutes ago"
 sudo python3 tools/matrixd_diagnostics_snapshot.py --output /mnt/p3/matrixd-diagnostics/repro.md
+ssh pi@DEVICE 'sudo -n python3 /usr/lib/hidloom/tools/matrixd_diagnostics_snapshot.py --duration 30 --since "30 minutes ago" --output -' > matrixd-incident.md
+chmod 600 matrixd-incident.md
 ```
 
 既定では `/mnt/p3/matrixd-diagnostics/` があればそこへ保存し、なければ `/tmp/hidloom-smoke/` に保存します。
 症状が出たら、何度か問題のキーを押しながら `--duration 30` 程度で採取します。
+`--output -`はreportを標準出力へ出すため、上のSSH例は実機へsnapshot fileを書きません。
+trace自体はRAM限定なので、再起動前に採取してください。詳細は
+[`docs/ops/matrixd-incident-snapshot.md`](../docs/ops/matrixd-incident-snapshot.md)を参照します。
 
 ## touch_flick_composition_smoke.py
 

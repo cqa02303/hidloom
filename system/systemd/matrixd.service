@@ -14,6 +14,8 @@ WorkingDirectory=@HIDLOOM_REPO_ROOT@
 User=root
 Group=root
 Environment=MATRIXD_STATUS_PATH=/run/hidloom/matrixd-status.json
+Environment=MATRIXD_EVENT_LOG_PATH=/run/hidloom/matrixd-trace.jsonl
+Environment=MATRIXD_EVENT_LOG_MAX_BYTES=4194304
 RuntimeDirectory=hidloom
 RuntimeDirectoryPreserve=yes
 

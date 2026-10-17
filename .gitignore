@@ -8,6 +8,7 @@ kicad/**/.history/
 kicad/*production/*fp-info-cache
 kicad/*/*rpi*.csv
 kicad/*/*rpi*.json
+!kicad/cqa02303v5rpi/cqa02303v5rpi-hardware-pdf-exports.json
 *.kicad_prl
 _autosave-*
 ~*.lck
