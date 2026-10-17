@@ -2,6 +2,7 @@
 """Run the bounded validation gate required for public pull requests."""
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 
@@ -50,6 +51,14 @@ def main() -> None:
         "script/public_pr_gate.py",
         "HIDLOOM_PUBLIC_PR_GATE_SNAPSHOT",
     )
+    # Public clones carry an active export contract; fresh-export tests alone
+    # cannot detect stale committed receipts after source or action updates.
+    if (ROOT / "PUBLIC_EXPORT_MANIFEST.json").exists():
+        subprocess.run(
+            [sys.executable, str(ROOT / "tools/public_export_manifest.py"), "verify", str(ROOT)],
+            cwd=ROOT,
+            check=True,
+        )
     duplicates = sorted({test for test in TESTS if TESTS.count(test) > 1})
     if duplicates:
         raise SystemExit(f"duplicate public PR gate entries: {duplicates}")
