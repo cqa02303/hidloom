@@ -69,6 +69,17 @@ def write_export_json(export: Path, relative: str, payload: dict[str, object]) -
     )
 
 
+def unassign_public_identity_fixture(export: Path) -> None:
+    # Exercise the unassigned guard independently of the live source allocation.
+    # The assigned-ready cases below still use assign_public_identity().
+    identity = json.loads((export / "config/public-usb-identity.json").read_text(encoding="utf-8"))
+    identity["assignment"]["status"] = "candidate-unassigned"
+    identity["assignment"]["allocation_evidence"] = None
+    identity["profiles"]["public_formal"]["status"] = "blocked-until-pid-codes-merge"
+    identity["profiles"]["public_formal"]["public_release_allowed"] = False
+    write_export_json(export, "config/public-usb-identity.json", identity)
+
+
 def assign_public_identity(export: Path) -> None:
     identity_path = export / "config/public-usb-identity.json"
     identity = json.loads(identity_path.read_text(encoding="utf-8"))
@@ -215,6 +226,7 @@ def main() -> None:
             capture_output=True,
             text=True,
         )
+        unassign_public_identity_fixture(export)
         (export / "build").mkdir(exist_ok=True)
         (export / "build" / "unlisted-build-output.bin").write_bytes(b"must not enter source archive")
         packages.mkdir()

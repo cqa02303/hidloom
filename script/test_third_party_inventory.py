@@ -81,8 +81,8 @@ def main() -> None:
         )
         assert any(
             item["name"] == "actions/checkout"
-            and item["version"] == "7.0.0"
-            and item["commit_sha"] == "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0"
+            and item["version"] == "7.0.1"
+            and item["commit_sha"] == "3d3c42e5aac5ba805825da76410c181273ba90b1"
             and item["license"] == "MIT"
             and item["distribution_scope"] == "ci-action-reference"
             for item in inventory["components"]
