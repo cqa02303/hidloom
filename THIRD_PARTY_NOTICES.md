@@ -73,7 +73,7 @@ It is an inventory, not a final legal notice or source-offer determination.
 | debian | socat | distribution-selected | REVIEW_REQUIRED | external-install-dependency | not-redistributed |
 | debian | wireless-tools | distribution-selected | REVIEW_REQUIRED | external-install-dependency | not-redistributed |
 | github-actions | actions/cache | 6.1.0 | MIT | ci-action-reference | not-redistributed |
-| github-actions | actions/checkout | 7.0.0 | MIT | ci-action-reference | not-redistributed |
+| github-actions | actions/checkout | 7.0.1 | MIT | ci-action-reference | not-redistributed |
 | pypi | luma.oled | unpinned | REVIEW_REQUIRED | external-install-dependency | not-redistributed |
 | pypi | rpi_ws281x | unpinned | REVIEW_REQUIRED | external-install-dependency | not-redistributed |
 
