@@ -827,19 +827,19 @@
     },
     {
       "path": "script/test_public_release_bundle.py",
-      "line": 86,
+      "line": 97,
       "slug": "pidcodes/pidcodes.github.com",
       "url": "https://github.com/pidcodes/pidcodes.github.com"
     },
     {
       "path": "script/test_public_release_bundle.py",
-      "line": 701,
+      "line": 713,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom.git"
     },
     {
       "path": "script/test_public_release_bundle.py",
-      "line": 763,
+      "line": 775,
       "slug": "cqa02303/hidloom",
       "url": "https://github.com/cqa02303/hidloom.git"
     },

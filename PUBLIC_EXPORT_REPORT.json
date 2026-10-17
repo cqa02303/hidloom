@@ -4,21 +4,21 @@
     "schema": "hidloom.source-provenance.v1",
     "mode": "clean-head",
     "publishable": true,
-    "base_commit": "abe9ef4ce0edc4fcadd70b1c38c37203d7b7ed75",
-    "base_tree": "1b8808db957eee9da51954fce1756c36e8dc6b6d",
-    "base_revision_count": 2115,
+    "base_commit": "18096d1d2ce77e9460e10085f8f0431471472794",
+    "base_tree": "3afb73ca74cb93b5d3c1ec2227eea873ebc6520a",
+    "base_revision_count": 21,
     "selected_path_count": 1334,
-    "selected_snapshot_sha256": "247fb7466a41cd110ad6b3b4fe1c2f0df89da5e6f61b4ffc31f575f2c3511135"
+    "selected_snapshot_sha256": "1ba1126a092833ce1de43bfef30d5013341389abe95d08058794b326dbfc72e7"
   },
   "public_repository": "hidloom",
   "initial_version": "0.1.0",
   "expected_license": "GPL-3.0-or-later",
   "file_count": 1334,
   "source_selection": {
-    "tracked_paths": 1410,
+    "tracked_paths": 1346,
     "public_source_paths": 1334,
-    "private_only_paths": 76,
-    "generated_output_paths": 0,
+    "private_only_paths": 0,
+    "generated_output_paths": 12,
     "unclassified_paths": 0
   },
   "finding_summary": {
